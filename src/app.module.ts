@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule } from '@nestjs/config';
+import { UserModule } from './user/user.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -16,7 +17,8 @@ import { ConfigModule } from '@nestjs/config';
           pass: process.env.SMTP_PASSWORD,
         },
       },
-})],
+}),
+    UserModule],
   controllers: [AppController],
   providers: [AppService],
 })
