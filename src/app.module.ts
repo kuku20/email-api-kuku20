@@ -4,6 +4,8 @@ import { AppService } from './app.service';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from './user/user.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -17,8 +19,15 @@ import { UserModule } from './user/user.module';
           pass: process.env.SMTP_PASSWORD,
         },
       },
-}),
-    UserModule],
+    }),
+    TypeOrmModule.forRoot({
+      type: 'sqlite',
+      database: 'db.sqlite',
+      entities: [User],
+      synchronize: true,
+    }),
+    UserModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

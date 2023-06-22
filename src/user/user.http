@@ -7,4 +7,4 @@ GET http://localhost:3000/user/1
 ### Post User
 curl --location 'http://localhost:3000/user' \
 --header 'Content-Type: application/json' \
---data-raw '{"nnono":"Sun Jun 18 2023 17:58:43 GMT-0500 (Central Daylight Time)","name":"fads","email":"lluu3790@gmail.com","phone":"5456456"}'
+--data-raw '{"email":"ll@gmail.com","password":"132fasd"}'
