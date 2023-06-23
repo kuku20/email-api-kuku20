@@ -8,25 +8,28 @@ import {
   Patch,
   Post,
   Query,
-  UseInterceptors,
-  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/createUserDto';
 import { UserService } from './user.service';
-import { User } from './user.entity';
 import { UpdateUserDto } from './dto/updateUser.dto';
-import { Serialize, SerializeInterceptor } from 'src/interceptors/serialize.interceptor';
+import { Serialize } from 'src/interceptors/serialize.interceptor';
 import { UserDto } from './dto/user.dto';
+import { AuthService } from './auth.service';
 
 @Serialize(UserDto)
 @Controller('auth')
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService, private authService: AuthService) {}
 
 
   @Post('/signup')
   async createUser(@Body() body: CreateUserDto) {
-      const user = await this.userService.create(body.email, body.password)
+      const user = await this.authService.signUp(body.email, body.password)
+      return user
+  }
+  @Post('/signin')
+  async signIn(@Body() body: CreateUserDto) {
+      const user = await this.authService.signIn(body.email, body.password)
       return user
   }
 
