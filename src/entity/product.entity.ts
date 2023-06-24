@@ -13,7 +13,7 @@ export class Product {
   @Column()
   PictureUrl:string;
   @Column()
-  ProductType:string;
+  ProductTypeId:string;
   @Column()
-  ProductBrand:string;
+  ProductBrandId:string;
 }

@@ -8,9 +8,8 @@ const cookieSession = require('cookie-session');
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const seedService = app.get(SeedService);
-  
-  await seedService.seedData();
+  // const seedService = app.get(SeedService);
+  // await seedService.seedData();
   app.use(cookieSession({
     keys:['mynameLoc']
   }))

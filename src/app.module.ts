@@ -10,6 +10,7 @@ import { ShopModule } from './shop/shop.module';
 import { Product } from './entity/product.entity';
 import { ProductBrand } from './entity/ProductBrands.entity';
 import { ProductType } from './entity/productTypes.entity';
+import { SeedService } from './SeedData/shop.service';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -46,6 +47,6 @@ import { ProductType } from './entity/productTypes.entity';
     ShopModule,
   ],
   controllers: [AppController],
-  providers: [AppService,],
+  providers: [AppService],
 })
 export class AppModule {}

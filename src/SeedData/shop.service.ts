@@ -18,13 +18,13 @@ export class SeedService {
 
       async seedData() {
         try {
-          const seedDataPath = 'src/SeedData/brands.json'; // Update with the actual path to the JSON file
+          const seedDataPath = 'src/SeedData/products.json'; // Update with the actual path to the JSON file
     
           const seedData = fs.readFileSync(seedDataPath, 'utf8');
-          const parsedData: { Id: number; Name: string }[] = JSON.parse(seedData);
+          const parsedData: Product[] = JSON.parse(seedData);
     
-          const productTypes = parsedData.map(data => this.brandRepo.create(data));
-          await this.brandRepo.save(productTypes);
+          const productTypes = parsedData.map(data => this.productRepo.create(data));
+          await this.productRepo.save(productTypes);
     
           console.log('Product types seeded successfully!');
         } catch (error) {
