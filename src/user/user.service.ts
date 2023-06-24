@@ -13,7 +13,7 @@ export class UserService {
     }
 
     findOne(id: number) {
-        if(!id) return null
+        if(!id) throw new NotFoundException('user not found');
         return this.repo.findOne({ where: { id } });
     }
 
