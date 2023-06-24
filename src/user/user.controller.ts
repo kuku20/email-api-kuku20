@@ -22,25 +22,26 @@ import { AuthService } from './auth.service';
 export class UserController {
   constructor(private userService: UserService, private authService: AuthService) {}
 
-  @Get('/colors/:color')
-  async setColor(@Param('color') color:string, @Session() session: any){
-    session.color = color
+  @Get('/whoami')
+  whoAmI(@Session() session: any) {
+      return this.userService.findOne(session.userId)
   }
 
-  @Get('/colors')
-  async getColor( @Session() session: any){
-     return session.color
+  @Post('/signout')
+  signOut(@Session() session: any) {
+      session.userId = null
   }
-
 
   @Post('/signup')
-  async createUser(@Body() body: CreateUserDto) {
+  async createUser(@Body() body:  CreateUserDto, @Session() session: any) {
       const user = await this.authService.signUp(body.email, body.password)
+      session.userId = user.id
       return user
   }
   @Post('/signin')
-  async signIn(@Body() body: CreateUserDto) {
+  async signIn(@Body() body:  CreateUserDto, @Session() session: any) {
       const user = await this.authService.signIn(body.email, body.password)
+      session.userId = user.id
       return user
   }
 
