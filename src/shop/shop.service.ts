@@ -17,18 +17,19 @@ export class ShopService {
   ) {}
 
   getAllProducts(){
-    return this.productRepo.find()
+    return this.productRepo.find({
+      relations: ['productType', 'productBrand'],})
   }
 
   getProduct(Id:number){
-    return this.productRepo.findOne({ where: { Id } });
+    return this.productRepo.findOne({ where: { Id } ,relations: ['productType', 'productBrand'],});
   }
 
-  getBrands(){
+  getBrands(): Promise<ProductBrand[]>{
     return this.brandRepo.find()
   }
 
-  getTypes(){
+  getTypes(): Promise<ProductType[]>{
     return this.typeRepo.find()
   }
 }

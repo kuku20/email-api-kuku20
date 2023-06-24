@@ -1,4 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { ProductType } from './productTypes.entity';
+import { ProductBrand } from './ProductBrands.entity';
 
 @Entity()
 export class Product {
@@ -16,4 +18,12 @@ export class Product {
   ProductTypeId:string;
   @Column()
   ProductBrandId:string;
+
+  @ManyToOne(() => ProductType)
+  @JoinColumn({ name: 'Id' })
+  productType: ProductType;
+
+  @ManyToOne(() => ProductBrand)
+  @JoinColumn({ name: 'Id' })
+  productBrand: ProductBrand;
 }
