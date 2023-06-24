@@ -3,7 +3,6 @@ import {
     ExecutionContext,
     NestInterceptor,
     Injectable,
-    NotFoundException
 } from '@nestjs/common';
 import { UserService } from '../user.service';
 
@@ -17,8 +16,7 @@ export class CurrentUserInterceptor implements NestInterceptor {
         if (userId) {
             const user = await this.usersService.findOne(userId);
             request.currentUser = user
-        }else
-    {throw new NotFoundException('Not found')}
+        }
         return next.handle()
     }
 
