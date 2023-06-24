@@ -6,6 +6,10 @@ import { ConfigService, ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user/user.entity';
+import { ShopModule } from './shop/shop.module';
+import { Product } from './entity/product.entity';
+import { ProductBrand } from './entity/ProductBrands.entity';
+import { ProductType } from './entity/productTypes.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -33,14 +37,15 @@ import { User } from './user/user.entity';
         return {
           type: 'sqlite',
           database: config.get<string>('DB_NAME'),
-          entities: [User],
+          entities: [User, Product, ProductBrand, ProductType],
           synchronize: true,
         }
       }
     }),
     UserModule,
+    ShopModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,],
 })
 export class AppModule {}
