@@ -7,46 +7,28 @@ import { Repository } from 'typeorm';
 import * as fs from 'fs';
 @Injectable()
 export class ShopService {
-    constructor(
-        @InjectRepository(Product)
-        private productRepo: Repository<Product>,
-        @InjectRepository(ProductBrand)
-        private brandRepo: Repository<ProductBrand>,
-        @InjectRepository(ProductType)
-        private typeRepo: Repository<ProductType>,
-      ) {}
+  constructor(
+    @InjectRepository(Product)
+    private productRepo: Repository<Product>,
+    @InjectRepository(ProductBrand)
+    private brandRepo: Repository<ProductBrand>,
+    @InjectRepository(ProductType)
+    private typeRepo: Repository<ProductType>,
+  ) {}
 
-      async seedData() {
-        const seedData = [
-          {
-            "Id": 1,
-            "Name": "Boards"
-          },
-          {
-            "Id": 2,
-            "Name": "Hats"
-          },
-          {
-            "Id": 3,
-            "Name": "Boots"
-          },
-          {
-            "Id": 4,
-            "Name": "Gloves"
-          }
-        ]
-    
-        const productTypes = seedData.map(data => this.typeRepo.create(data));
-        await this.typeRepo.save(productTypes);
-        console.log('Product types seeded successfully!');
-      }
+  getAllProducts(){
+    return this.productRepo.find()
+  }
 
+  getProduct(Id:number){
+    return this.productRepo.findOne({ where: { Id } });
+  }
 
+  getBrands(){
+    return this.brandRepo.find()
+  }
 
-
-
-
-
-
-
+  getTypes(){
+    return this.typeRepo.find()
+  }
 }
