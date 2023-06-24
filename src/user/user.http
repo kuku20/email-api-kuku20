@@ -23,7 +23,7 @@ GET http://localhost:3000/auth/whoami
 POST  http://localhost:3000/auth/signout
 
 ### Find a particular user with a given ID
-GET http://localhost:3000/auth/6
+GET http://localhost:3000/auth/8
 
 ### Find all users with a fiven email
 GET  http://localhost:3000/auth/?email=ll@gmail.com
@@ -40,3 +40,6 @@ Content-Type: application/json
 {
     "email": "aaaa@gmail.com"
 }
+
+### Sent email
+POST  http://localhost:3000/sent
