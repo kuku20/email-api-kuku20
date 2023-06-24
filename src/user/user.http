@@ -38,3 +38,9 @@ Content-Type: application/json
 {
     "email": "aaaa@gmail.com"
 }
+
+### Set color cookie
+GET http://localhost:3000/auth/colors/blue
+
+### Get color cookie
+GET http://localhost:3000/auth/colors
