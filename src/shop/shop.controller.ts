@@ -1,7 +1,7 @@
 import { Controller, DefaultValuePipe, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { ShopService } from './shop.service';
-import { PaginationDto } from 'src/dto/paginatiorDto';
-import { ProductOutputDto } from 'src/dto/productOutputDto';
+import { PaginationDto } from 'src/dto/out/paginatiorDto';
+import { ProductOutputDto } from 'src/dto/out/productOutputDto';
 
 @Controller('shop/products')
 export class ShopController {
