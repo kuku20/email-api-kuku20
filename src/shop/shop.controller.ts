@@ -21,8 +21,8 @@ export class ShopController {
     }
 
     @Get('/:id')
-    getProduct(@Param('id') id: number) {
-        return this.shopService.getProduct(id)
+    getProduct(@Param('id') id: string) {
+        return this.shopService.getProduct(parseInt(id))
     }
 
 
