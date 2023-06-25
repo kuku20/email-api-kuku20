@@ -46,7 +46,7 @@ import { SeedService } from './SeedData/shop.service';
             options: routingId,
           },
           entities: [User, Product, ProductBrand, ProductType],
-          synchronize: true,
+          synchronize: false,
         };
       },
     }),
