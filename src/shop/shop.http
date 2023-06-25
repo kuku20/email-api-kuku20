@@ -46,3 +46,14 @@ curl -X 'GET' \
 curl -X 'GET' \
   'http://localhost:3000/api/products?sort=priceDesc' \
   -H 'accept: */*'
+
+
+### Sort brands
+curl -X 'GET' \
+  'http://localhost:3000/api/products?brandId=1' \
+  -H 'accept: */*'
+
+### Sort Types
+curl -X 'GET' \
+  'http://localhost:3000/api/products?typeId=1' \
+  -H 'accept: */*'

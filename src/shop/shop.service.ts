@@ -51,12 +51,15 @@ export class ShopService {
     pageIndex: number,
     pageSize: number,
     sort: string,
+    brandId: number,
+    typeId: number,
   ): Promise<PaginationDto<any>> {
     const queryBuilder = this.productRepo
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.ProductBrand', 'ProductBrand')
       .leftJoinAndSelect('product.ProductType', 'ProductType');
 
+    queryBuilder.orderBy('product.Name');
     // Apply sorting based on the sort parameter
     if (sort === 'priceAsc') {
       queryBuilder.orderBy('product.Price', 'ASC');
@@ -66,6 +69,13 @@ export class ShopService {
 
     const skip = (pageIndex - 1) * pageSize;
     queryBuilder.skip(skip).take(pageSize);
+
+    if (brandId) {
+      queryBuilder.where('product.ProductBrandId = :brandId', { brandId });
+    }
+    if (typeId) {
+      queryBuilder.where('product.ProductTypeId = :typeId', { typeId });
+    }
 
     const [data, count] = await queryBuilder.getManyAndCount();
     const products = plainToInstance(ProductOutputDto, data);
