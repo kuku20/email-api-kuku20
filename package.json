@@ -8,16 +8,16 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "cross-env NODE_ENV=dev node dist/main",
-    "start:dev": "cross-env NODE_ENV=dev nest start --watch",
-    "start:debug": "cross-env NODE_ENV=dev nest start --debug --watch",
+    "start": "node dist/main",
+    "start:dev": "nest start --watch",
+    "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "cross-env NODE_ENV=test jest",
-    "test:watch": "cross-env NODE_ENV=test jest --watch",
-    "test:cov": "cross-env NODE_ENV=test jest --coverage",
-    "test:debug": "cross-env NODE_ENV=test node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "cross-env NODE_ENV=test jest --config ./test/jest-e2e.json"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.8.1",
@@ -25,20 +25,10 @@
     "@nestjs/config": "^3.0.0",
     "@nestjs/core": "^9.0.0",
     "@nestjs/platform-express": "^9.0.0",
-    "@nestjs/typeorm": "^10.0.0",
-    "@types/cookie-session": "^2.0.44",
-    "aws-sdk": "^2.1401.0",
-    "class-transformer": "^0.5.1",
-    "class-validator": "^0.14.0",
-    "cookie-session": "^2.0.0",
-    "cross-env": "^7.0.3",
     "dotenv": "^16.3.1",
-    "mysql": "^2.18.1",
     "nodemailer": "^6.9.3",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.2.0",
-    "sqlite3": "^5.1.6",
-    "typeorm": "^0.3.17"
+    "rxjs": "^7.2.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",
