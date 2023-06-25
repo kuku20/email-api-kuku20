@@ -28,12 +28,12 @@ export class ShopService {
     return plainToInstance(ProductOutputDto, products);
   }
 
-  async getProduct(Id: number): Promise<ProductOutputDto> {
+  async getProduct(Id: number): Promise<any> {
     const product = await this.productRepo.findOne({
       where: { Id },
       relations: ['ProductType', 'ProductBrand'],
     });
-    // return product;
+    return product;
     return plainToInstance(ProductOutputDto, product);
   }
 
@@ -78,13 +78,13 @@ export class ShopService {
     }
 
     const [data, count] = await queryBuilder.getManyAndCount();
-    const products = plainToInstance(ProductOutputDto, data);
+    // const products = plainToInstance(ProductOutputDto, data);
 
     return {
       count,
       pageIndex,
       pageSize,
-      data: products,
+      data: data,
     };
   }
 

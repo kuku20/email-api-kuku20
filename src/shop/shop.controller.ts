@@ -42,7 +42,7 @@ export class ShopController {
     @Query('brandId') brandId: number,
     @Query('typeId') typeId: number,
 
-  ): Promise<PaginationDto<ProductOutputDto>> {
+  ): Promise<PaginationDto<any>> {
     return this.shopService.getPaginatedProducts(page, limit, sort,brandId, typeId);
   }
 
