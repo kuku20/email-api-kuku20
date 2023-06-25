@@ -22,7 +22,7 @@ import { User } from './user.entity';
 import { AuthGuard } from 'src/guard/auth.guard';
 
 
-@Serialize(UserDto)
+// @Serialize(UserDto)
 @Controller('auth')
 export class UserController {
   constructor(private userService: UserService, private authService: AuthService) {}
