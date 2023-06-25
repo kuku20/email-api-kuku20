@@ -13,13 +13,12 @@ import { ProductType } from './entity/productTypes.entity';
 import { SeedService } from './SeedData/shop.service';
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: `.env.${process.env.NODE_ENV}`,
-    }),
+    ShopModule,
+    ConfigModule.forRoot({ isGlobal: true }),
     MailerModule.forRootAsync({
+      imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
+      useFactory: async (configService: ConfigService) => ({
         transport: {
           host: process.env.SMTP_HOST,
           port: Number(process.env.SMTP_PORT),
