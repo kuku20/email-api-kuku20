@@ -1,48 +1,48 @@
 ### Get all products
 curl -X 'GET' \
-  'http://localhost:3000/shop/products/test' \
+  'http://localhost:3000/api/products/test' \
   -H 'accept: */*'
 
 ### Get all products
 curl -X 'GET' \
-  'http://localhost:3000/shop/products/test/1' \
+  'http://localhost:3000/api/products/test/1' \
   -H 'accept: */*' 
 
 ### Get brands
 curl -X 'GET' \
-  'http://localhost:3000/shop/products/brands' \
+  'http://localhost:3000/api/products/brands' \
   -H 'accept: */*'
 
 ### Get types
 curl -X 'GET' \
-  'http://localhost:3000/shop/products/types' \
+  'http://localhost:3000/api/products/types' \
   -H 'accept: */*'
 
 ### get product 1
 curl -X 'GET' \
-  'http://localhost:3000/shop/products/1' \
+  'http://localhost:3000/api/products/1' \
   -H 'accept: */*'
 
 ### get page 2 with 6 products
 curl -X 'GET' \
-  'http://localhost:3000/shop/products?pageSize=6&pageIndex=2' \
+  'http://localhost:3000/api/products?pageSize=6&pageIndex=2' \
   -H 'accept: */*'
 
 ### get page 1 with 6 products
 curl -X 'GET' \
-  'http://localhost:3000/shop/products?pageSize=6&pageIndex=1' \
+  'http://localhost:3000/api/products?pageSize=6&pageIndex=1' \
   -H 'accept: */*'
 ###
 curl -X 'GET' \
-  'http://localhost:3000/shop/products' \
+  'http://localhost:3000/api/products' \
   -H 'accept: */*'
 
 ### Sort Asc order get page 1 with 6 products
 curl -X 'GET' \
-  'http://localhost:3000/shop/products?sort=priceAsc&pageSize=6&pageIndex=3' \
+  'http://localhost:3000/api/products?sort=priceAsc&pageSize=6&pageIndex=3' \
   -H 'accept: */*'
 
 ### Sort Desc order
 curl -X 'GET' \
-  'http://localhost:3000/shop/products?sort=priceDesc' \
+  'http://localhost:3000/api/products?sort=priceDesc' \
   -H 'accept: */*'
