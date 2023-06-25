@@ -7,9 +7,9 @@ import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user/user.entity';
 import { ShopModule } from './shop/shop.module';
-import { Product } from './entity/product.entity';
-import { ProductBrand } from './entity/ProductBrands.entity';
-import { ProductType } from './entity/productTypes.entity';
+import { Product } from './shop/product.entity';
+import { ProductBrand } from './shop/ProductBrands.entity';
+import { ProductType } from './shop/productTypes.entity';
 import { SeedService } from './SeedData/shop.service';
 @Module({
   imports: [

@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ProductBrand } from 'src/entity/ProductBrands.entity';
-import { Product } from 'src/entity/product.entity';
-import { ProductType } from 'src/entity/productTypes.entity';
+import { ProductBrand } from 'src/shop/ProductBrands.entity';
+import { Product } from 'src/shop/product.entity';
+import { ProductType } from 'src/shop/productTypes.entity';
 import { Repository } from 'typeorm';
 import { plainToClass, plainToInstance } from 'class-transformer';
-import { ProductOutputDto } from 'src/dto/out/productOutputDto';
-import { PaginationDto } from 'src/dto/out/paginatiorDto';
-import { BrandsDto } from 'src/dto/out/brandsOutDto';
-import { TypesDto } from 'src/dto/out/typesOutDto';
+import { ProductOutputDto } from 'src/shop/productOutputDto';
+import { PaginationDto } from 'src/shop/paginatiorDto';
+import { BrandsDto } from 'src/shop/brandsOutDto';
+import { TypesDto } from 'src/shop/typesOutDto';
 @Injectable()
 export class ShopService {
   constructor(
