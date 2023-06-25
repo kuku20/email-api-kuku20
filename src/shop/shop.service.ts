@@ -24,38 +24,52 @@ export class ShopService {
     const products = await this.productRepo.find({
       relations: ['ProductType', 'ProductBrand'],
     });
-    // return products;
+    return products;
     return plainToInstance(ProductOutputDto, products);
   }
 
-  async getProduct(Id: number) : Promise<ProductOutputDto>{
+  async getProduct(Id: number): Promise<ProductOutputDto> {
     const product = await this.productRepo.findOne({
       where: { Id },
       relations: ['ProductType', 'ProductBrand'],
     });
     // return product;
-    return plainToInstance(ProductOutputDto,product);
+    return plainToInstance(ProductOutputDto, product);
   }
 
-  async getBrands() : Promise<BrandsDto[]> {
-     const brands =  await this.brandRepo.find();
-     return plainToInstance(BrandsDto,brands);
+  async getBrands(): Promise<BrandsDto[]> {
+    const brands = await this.brandRepo.find();
+    return plainToInstance(BrandsDto, brands);
   }
 
   async getTypes(): Promise<TypesDto[]> {
-    const types =  await this.typeRepo.find();
-     return plainToInstance(TypesDto,types);
+    const types = await this.typeRepo.find();
+    return plainToInstance(TypesDto, types);
   }
 
-  async getPaginatedProducts(pageIndex: number, pageSize: number): Promise<PaginationDto<ProductOutputDto>> {
-    const [data, count] = await this.productRepo.findAndCount({
-      relations: ['ProductType', 'ProductBrand'],
-      skip: (pageIndex - 1) * pageSize,
-      take: pageSize,
-    });
-  
+  async getPaginatedProducts(
+    pageIndex: number,
+    pageSize: number,
+    sort: string,
+  ): Promise<PaginationDto<any>> {
+    const queryBuilder = this.productRepo
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.ProductBrand', 'ProductBrand')
+      .leftJoinAndSelect('product.ProductType', 'ProductType');
+
+    // Apply sorting based on the sort parameter
+    if (sort === 'priceAsc') {
+      queryBuilder.orderBy('product.Price', 'ASC');
+    } else if (sort === 'priceDesc') {
+      queryBuilder.orderBy('product.Price', 'DESC');
+    }
+
+    const skip = (pageIndex - 1) * pageSize;
+    queryBuilder.skip(skip).take(pageSize);
+
+    const [data, count] = await queryBuilder.getManyAndCount();
     const products = plainToInstance(ProductOutputDto, data);
-  
+
     return {
       count,
       pageIndex,
@@ -63,5 +77,17 @@ export class ShopService {
       data: products,
     };
   }
-  
+
+  async getProductWithRelations(id: number): Promise<any> {
+    const product = await this.productRepo
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.ProductBrand', 'ProductBrand')
+      .leftJoinAndSelect('product.ProductType', 'ProductType')
+      // .where('product.Id = :id', { id })
+      // .getOne();
+      .getMany();
+
+    return product;
+    return plainToInstance(ProductOutputDto, product);
+  }
 }

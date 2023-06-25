@@ -1,41 +1,50 @@
-import { Controller, DefaultValuePipe, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
+import {
+  Controller,
+  DefaultValuePipe,
+  Get,
+  Param,
+  ParseIntPipe,
+  Query,
+} from '@nestjs/common';
 import { ShopService } from './shop.service';
 import { PaginationDto } from 'src/dto/out/paginatiorDto';
 import { ProductOutputDto } from 'src/dto/out/productOutputDto';
 
 @Controller('shop/products')
 export class ShopController {
-    constructor(private shopService : ShopService){}
+  constructor(private shopService: ShopService) {}
 
-    // @Get()
-    // getAllProducts(){
-    //     return this.shopService.getAllProducts()
-    // }
+  @Get('/test')
+  getAllProducts() {
+    return this.shopService.getAllProducts();
+  }
 
-    @Get('/brands')
-    getBrands(){
-        return this.shopService.getBrands()
-    }
+  @Get('/test/:id')
+  getId(@Param('id') id: string) {
+    return this.shopService.getProductWithRelations(parseInt(id));
+  }
 
-    @Get('/types')
-    getTypes(){
-        return this.shopService.getTypes()
-    }
+  @Get('/brands')
+  getBrands() {
+    return this.shopService.getBrands();
+  }
 
-    @Get('')
-    async getPaginatedProducts(
-      @Query('pageIndex',new DefaultValuePipe(1), ParseIntPipe) page: number,
-      @Query('pageSize', new DefaultValuePipe(6),ParseIntPipe) limit: number,
-    ): Promise<PaginationDto<ProductOutputDto>> {
-      return this.shopService.getPaginatedProducts(page, limit);
-    }
+  @Get('/types')
+  getTypes() {
+    return this.shopService.getTypes();
+  }
 
+  @Get('')
+  async getPaginatedProducts(
+    @Query('pageIndex', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('pageSize', new DefaultValuePipe(6), ParseIntPipe) limit: number,
+    @Query('sort') sort: string,
+  ): Promise<PaginationDto<ProductOutputDto>> {
+    return this.shopService.getPaginatedProducts(page, limit, sort);
+  }
 
-
-    @Get('/:id')
-    getProduct(@Param('id') id: string) {
-        return this.shopService.getProduct(parseInt(id))
-    }
-
-
+  @Get('/:id')
+  getProduct(@Param('id') id: string) {
+    return this.shopService.getProduct(parseInt(id));
+  }
 }

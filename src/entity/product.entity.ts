@@ -1,4 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { ProductType } from './productTypes.entity';
 import { ProductBrand } from './ProductBrands.entity';
 
@@ -7,17 +13,17 @@ export class Product {
   @PrimaryGeneratedColumn()
   Id: number;
   @Column()
-  Name:string;
+  Name: string;
   @Column()
-  Description:string;
+  Description: string;
   @Column()
-  Price:number;
+  Price: number;
   @Column()
-  PictureUrl:string;
+  PictureUrl: string;
   @Column()
-  ProductTypeId:string;
+  ProductTypeId: string;
   @Column()
-  ProductBrandId:string;
+  ProductBrandId: string;
 
   @ManyToOne(() => ProductType)
   @JoinColumn({ name: 'ProductTypeId' })
@@ -26,4 +32,5 @@ export class Product {
   @ManyToOne(() => ProductBrand)
   @JoinColumn({ name: 'ProductBrandId' })
   ProductBrand: ProductBrand;
+  
 }
