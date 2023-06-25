@@ -6,9 +6,6 @@ import { ProductType } from 'src/shop/productTypes.entity';
 import { Repository } from 'typeorm';
 import { plainToClass, plainToInstance } from 'class-transformer';
 
-import { PaginationDto } from 'src/shop/paginatiorDto';
-import { BrandsDto } from 'src/shop/brandsOutDto';
-import { TypesDto } from 'src/shop/typesOutDto';
 @Injectable()
 export class ShopService {
   constructor(
@@ -37,14 +34,13 @@ export class ShopService {
 
   }
 
-  async getBrands(): Promise<BrandsDto[]> {
-    const brands = await this.brandRepo.find();
-    return plainToInstance(BrandsDto, brands);
+  async getBrands(): Promise<any[]> {
+    return await this.brandRepo.find();
+
   }
 
-  async getTypes(): Promise<TypesDto[]> {
-    const types = await this.typeRepo.find();
-    return plainToInstance(TypesDto, types);
+  async getTypes(): Promise<any[]> {
+    return await this.typeRepo.find();
   }
 
   async getPaginatedProducts(
@@ -53,7 +49,7 @@ export class ShopService {
     sort: string,
     brandId: number,
     typeId: number,
-  ): Promise<PaginationDto<any>> {
+  ){
     const queryBuilder = this.productRepo
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.ProductBrand', 'ProductBrand')

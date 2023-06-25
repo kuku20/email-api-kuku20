@@ -7,7 +7,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ShopService } from './shop.service';
-import { PaginationDto } from 'src/shop/paginatiorDto';
+
 
 
 @Controller('api/products')
@@ -42,7 +42,7 @@ export class ShopController {
     @Query('brandId') brandId: number,
     @Query('typeId') typeId: number,
 
-  ): Promise<PaginationDto<any>> {
+  ) {
     return this.shopService.getPaginatedProducts(page, limit, sort,brandId, typeId);
   }
 
