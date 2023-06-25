@@ -5,7 +5,7 @@ import { Product } from 'src/shop/product.entity';
 import { ProductType } from 'src/shop/productTypes.entity';
 import { Repository } from 'typeorm';
 import { plainToClass, plainToInstance } from 'class-transformer';
-import { ProductOutputDto } from 'src/shop/productOutputDto';
+
 import { PaginationDto } from 'src/shop/paginatiorDto';
 import { BrandsDto } from 'src/shop/brandsOutDto';
 import { TypesDto } from 'src/shop/typesOutDto';
@@ -25,7 +25,7 @@ export class ShopService {
       relations: ['ProductType', 'ProductBrand'],
     });
     return products;
-    return plainToInstance(ProductOutputDto, products);
+
   }
 
   async getProduct(Id: number): Promise<any> {
@@ -34,7 +34,7 @@ export class ShopService {
       relations: ['ProductType', 'ProductBrand'],
     });
     return product;
-    return plainToInstance(ProductOutputDto, product);
+
   }
 
   async getBrands(): Promise<BrandsDto[]> {
@@ -78,7 +78,7 @@ export class ShopService {
     }
 
     const [data, count] = await queryBuilder.getManyAndCount();
-    // const products = plainToInstance(ProductOutputDto, data);
+
 
     return {
       count,
@@ -98,6 +98,6 @@ export class ShopService {
       .getMany();
 
     return product;
-    return plainToInstance(ProductOutputDto, product);
+
   }
 }

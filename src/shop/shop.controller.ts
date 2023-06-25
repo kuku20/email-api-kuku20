@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { ShopService } from './shop.service';
 import { PaginationDto } from 'src/shop/paginatiorDto';
-import { ProductOutputDto } from 'src/shop/productOutputDto';
+
 
 @Controller('api/products')
 export class ShopController {
