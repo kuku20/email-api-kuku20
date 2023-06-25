@@ -21,12 +21,12 @@ import { SeedService } from './SeedData/shop.service';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         transport: {
-          host: config.get<string>('SMTP_HOST'),
-          port: Number(config.get<string>('SMTP_PORT')),
-          secure: Boolean(config.get<string>('SMTP_SECURE')),
+          host: process.env.SMTP_HOST,
+          port: Number(process.env.SMTP_PORT),
+          secure: Boolean(process.env.SMTP_SECURE),
           auth: {
-            user: config.get<string>('SMTP_USERNAME'),
-            pass: config.get<string>('SMTP_PASSWORD'),
+            user: process.env.SMTP_USERNAME,
+            pass: process.env.SMTP_PASSWORD,
           },
         },
       }),
@@ -35,7 +35,7 @@ import { SeedService } from './SeedData/shop.service';
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
-        const dbUrl = new URL(config.get<string>('DATABASE_URL'));
+        const dbUrl = new URL(process.env.DATABASE_URL);
         const routingId = dbUrl.searchParams.get('options');
         dbUrl.searchParams.delete('options');
 
