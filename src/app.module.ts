@@ -10,7 +10,6 @@ import { ShopModule } from './shop/shop.module';
 import { Product } from './shop/product.entity';
 import { ProductBrand } from './shop/ProductBrands.entity';
 import { ProductType } from './shop/productTypes.entity';
-import { SeedService } from './SeedData/shop.service';
 @Module({
   imports: [
     ConfigModule.forRoot({

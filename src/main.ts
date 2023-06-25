@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import * as cors from 'cors';
 import { ValidationPipe } from '@nestjs/common';
 import { ShopService } from './shop/shop.service';
-import { SeedService } from './SeedData/shop.service';
+
 const cookieSession = require('cookie-session');
 
 async function bootstrap() {
