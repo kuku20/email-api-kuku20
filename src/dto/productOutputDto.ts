@@ -16,11 +16,11 @@ export class ProductOutputDto {
   @Expose({ name: 'PictureUrl' })
   pictureUrl: string;
 
-  @Expose({ name: 'productType' })
+  @Expose({ name: 'ProductType' })
   @Transform(({ value }) => value ? value.Name : null)
   productType: string;
 
-  @Expose({ name: 'productBrand' })
+  @Expose({ name: 'ProductBrand' })
   @Transform(({ value }) => value ? value.Name : null)
   productBrand: string;
   

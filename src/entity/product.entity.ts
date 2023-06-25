@@ -20,10 +20,10 @@ export class Product {
   ProductBrandId:string;
 
   @ManyToOne(() => ProductType)
-  @JoinColumn({ name: 'Id' })
-  productType: ProductType;
+  @JoinColumn({ name: 'ProductTypeId' })
+  ProductType: ProductType;
 
   @ManyToOne(() => ProductBrand)
-  @JoinColumn({ name: 'Id' })
-  productBrand: ProductBrand;
+  @JoinColumn({ name: 'ProductBrandId' })
+  ProductBrand: ProductBrand;
 }
