@@ -35,21 +35,21 @@ export class AppService {
     return 'Hello World Email!';
   }
 
-  async createEmail(name: string, email: string, message:string): Promise<any> {
-    try {
-      const result = await this.mailerService.sendMail({
-        to: 'loc.luu.1990@gmail.com',
-        from: 'email',
-        subject: 'LOC JOB ON MY WEB',
-        text: `\nName: ${name}\nEmail: ${email}\nMessage: ${message}`,
-        html: `<p>Name: ${name}</p><p>Email: ${email}</p><p>Message: ${message}</p>`,
-      });
-      if(result)
-      return { message: 'Email sent successfully' };
-    } catch (error) {
-      console.error(error); // Log the error if needed
+  // async createEmail(name: string, email: string, message:string): Promise<any> {
+  //   try {
+  //     const result = await this.mailerService.sendMail({
+  //       to: 'loc.luu.1990@gmail.com',
+  //       from: 'email',
+  //       subject: 'LOC JOB ON MY WEB',
+  //       text: `\nName: ${name}\nEmail: ${email}\nMessage: ${message}`,
+  //       html: `<p>Name: ${name}</p><p>Email: ${email}</p><p>Message: ${message}</p>`,
+  //     });
+  //     if(result)
+  //     return { message: 'Email sent successfully' };
+  //   } catch (error) {
+  //     console.error(error); // Log the error if needed
 
-      return { message: 'Failed to send email' };
-    }
-  }
+  //     return { message: 'Failed to send email' };
+  //   }
+  // }
 }
