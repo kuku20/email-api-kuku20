@@ -34,13 +34,21 @@ import { ProductType } from './shop/productTypes.entity';
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
+        const dbUrl = new URL(config.get<string>('DATABASE_URL'));
+        const routingId = dbUrl.searchParams.get('options');
+        dbUrl.searchParams.delete('options');
+
         return {
-          type: 'sqlite',
-          database: config.get<string>('DB_NAME'),
+          type: 'cockroachdb',
+          url: dbUrl.toString(),
+          ssl: true,
+          extra: {
+            options: routingId,
+          },
           entities: [User, Product, ProductBrand, ProductType],
           synchronize: true,
-        }
-      }
+        };
+      },
     }),
     UserModule,
     ShopModule,
