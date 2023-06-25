@@ -6,6 +6,7 @@ import { ProductType } from 'src/entity/productTypes.entity';
 import { Repository } from 'typeorm';
 import { plainToClass, plainToInstance } from 'class-transformer';
 import { ProductOutputDto } from 'src/dto/productOutputDto';
+import { PaginationDto } from 'src/dto/paginatiorDto';
 @Injectable()
 export class ShopService {
   constructor(
@@ -17,20 +18,21 @@ export class ShopService {
     private typeRepo: Repository<ProductType>,
   ) {}
 
-  async getAllProducts(): Promise<ProductOutputDto[]> {
+  async getAllProducts() {
     const products = await this.productRepo.find({
-      relations: ['productType', 'productBrand'],
+      relations: ['ProductType', 'ProductBrand'],
     });
-  
-    return plainToClass(ProductOutputDto, products);
+    // return products;
+    return plainToInstance(ProductOutputDto, products);
   }
 
   async getProduct(Id: number){
     const product = await this.productRepo.findOne({
       where: { Id },
-      relations: ['productType', 'productBrand'],
+      relations: ['ProductType', 'ProductBrand'],
     });
-    return plainToClass(ProductOutputDto,product);
+    // return product;
+    return plainToInstance(ProductOutputDto,product);
   }
 
   getBrands(): Promise<ProductBrand[]> {
@@ -40,4 +42,22 @@ export class ShopService {
   getTypes(): Promise<ProductType[]> {
     return this.typeRepo.find();
   }
+
+  async getPaginatedProducts(pageIndex: number, pageSize: number): Promise<PaginationDto<ProductOutputDto>> {
+    const [data, count] = await this.productRepo.findAndCount({
+      relations: ['ProductType', 'ProductBrand'],
+      skip: (pageIndex - 1) * pageSize,
+      take: pageSize,
+    });
+  
+    const products = plainToInstance(ProductOutputDto, data);
+  
+    return {
+      count,
+      pageIndex,
+      pageSize,
+      data: products,
+    };
+  }
+  
 }

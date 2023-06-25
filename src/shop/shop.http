@@ -20,5 +20,14 @@ curl -X 'GET' \
 
 ###
 curl -X 'GET' \
-  'http://localhost:3000/shop/products/products?page=2&limit=6' \
+  'http://localhost:3000/shop/products?pageSize=6&pageIndex=2' \
+  -H 'accept: */*'
+
+###
+curl -X 'GET' \
+  'http://localhost:3000/shop/products?pageSize=6&pageIndex=1' \
+  -H 'accept: */*'
+###
+curl -X 'GET' \
+  'http://localhost:3000/shop/products' \
   -H 'accept: */*'
