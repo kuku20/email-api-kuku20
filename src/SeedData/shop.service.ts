@@ -30,28 +30,32 @@ export class SeedService {
         } catch (error) {
           console.error('Error seeding product types:', error);
         }
-        // const seedData = [
-        //   {
-        //     "Id": 1,
-        //     "Name": "Boards"
-        //   },
-        //   {
-        //     "Id": 2,
-        //     "Name": "Hats"
-        //   },
-        //   {
-        //     "Id": 3,
-        //     "Name": "Boots"
-        //   },
-        //   {
-        //     "Id": 4,
-        //     "Name": "Gloves"
-        //   }
-        // ]
+        try {
+          const seedDataPath = 'src/SeedData/brands.json'; // Update with the actual path to the JSON file
     
-        // const productTypes = seedData.map(data => this.typeRepo.create(data));
-        // await this.typeRepo.save(productTypes);
-        // console.log('Product types seeded successfully!');
+          const seedData = fs.readFileSync(seedDataPath, 'utf8');
+          const parsedData: ProductBrand[] = JSON.parse(seedData);
+    
+          const productTypes = parsedData.map(data => this.brandRepo.create(data));
+          await this.brandRepo.save(productTypes);
+    
+          console.log('ProductBrand types seeded successfully!');
+        } catch (error) {
+          console.error('Error seeding product types:', error);
+        }
+        try {
+          const seedDataPath = 'src/SeedData/types.json'; // Update with the actual path to the JSON file
+    
+          const seedData = fs.readFileSync(seedDataPath, 'utf8');
+          const parsedData: ProductType[] = JSON.parse(seedData);
+    
+          const productTypes = parsedData.map(data => this.typeRepo.create(data));
+          await this.typeRepo.save(productTypes);
+    
+          console.log('ProductType types seeded successfully!');
+        } catch (error) {
+          console.error('Error seeding product types:', error);
+        }
       }
 
 

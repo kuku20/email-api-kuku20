@@ -21,9 +21,7 @@ export class ShopService {
   ) {}
 
   async getAllProducts() {
-    const products = await this.productRepo.find({
-      relations: ['ProductType', 'ProductBrand'],
-    });
+    const products = await this.productRepo.find();
     return products;
     return plainToInstance(ProductOutputDto, products);
   }

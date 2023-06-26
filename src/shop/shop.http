@@ -1,11 +1,11 @@
 ### Get all products
 curl -X 'GET' \
-  'http://localhost:3000/api/products/test' \
+  'https://email-api-kuku20-production.up.railway.app/api/products/test' \
   -H 'accept: */*'
 
 ### Get all products
 curl -X 'GET' \
-  'http://localhost:3000/api/products/test/1' \
+  'http://localhost:3000/api/products/test' \
   -H 'accept: */*' 
 
 ### Get brands
