@@ -11,7 +11,7 @@ export class ProductOutputDto {
   description: string;
 
   @Expose({ name: 'Price' })
-  price: number;
+  price: any;
 
   @Expose({ name: 'PictureUrl' })
   pictureUrl: string;

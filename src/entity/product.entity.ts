@@ -21,9 +21,9 @@ export class Product {
   @Column()
   PictureUrl: string;
   @Column()
-  ProductTypeId: string;
+  ProductTypeId: number;
   @Column()
-  ProductBrandId: string;
+  ProductBrandId: number;
 
   @ManyToOne(() => ProductType)
   @JoinColumn({ name: 'ProductTypeId' })
