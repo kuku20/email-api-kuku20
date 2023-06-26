@@ -1,14 +1,15 @@
 ### create a new user
-POST  http://localhost:3000/auth/signup
+POST  http://localhost:3000/account/register
 Content-Type: application/json
 
 {
-    "email": "te2st@gmail.com",
-    "password": "fadfjloc"
+    "email": "test@gmail.com",
+    "password": "fadfjloc",
+    "displayName":"Loc"
 }
 
 ### Sign in
-POST  http://localhost:3000/auth/signin
+POST  http://localhost:3000/account/login
 Content-Type: application/json
 
 {
@@ -17,24 +18,27 @@ Content-Type: application/json
 }
 
 ### Get the currently signed in user
-GET http://localhost:3000/auth/whoami
+GET http://localhost:3000/account
+
+### Check if email exists
+GET http://localhost:3000/account/emailExists?email=te2st@gmail.com
 
 ### SignOut
-POST  http://localhost:3000/auth/signout
+POST  http://localhost:3000/account/signout
 
 ### Find a particular user with a given ID
-GET http://localhost:3000/auth/8
+GET http://localhost:3000/account/8
 
 ### Find all users with a fiven email
-GET  http://localhost:3000/auth/?email=ll@gmail.com
+GET  http://localhost:3000/account/?email=ll@gmail.com
 
 ### Find all users
-GET  http://localhost:3000/auth
+GET  http://localhost:3000/account
 ### Delete a user given Id
-DELETE http://localhost:3000/auth/7
+DELETE http://localhost:3000/account/7
 
 ### Update a user 2
-PATCH http://localhost:3000/auth/2
+PATCH http://localhost:3000/account/2
 Content-Type: application/json
 
 {

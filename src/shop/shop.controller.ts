@@ -10,7 +10,7 @@ import { ShopService } from './shop.service';
 import { PaginationDto } from 'src/dto/out/paginatiorDto';
 import { ProductOutputDto } from 'src/dto/out/productOutputDto';
 
-@Controller('api/products')
+@Controller('products')
 export class ShopController {
   constructor(private shopService: ShopService) {}
 

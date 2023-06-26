@@ -16,7 +16,7 @@ export class Product {
   Name: string;
   @Column()
   Description: string;
-  @Column()
+  @Column('decimal')
   Price: number;
   @Column()
   PictureUrl: string;
