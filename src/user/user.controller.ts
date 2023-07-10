@@ -10,6 +10,7 @@ import {
   Query,
   Session,
   UseGuards,
+  Res 
 } from '@nestjs/common';
 import { CreateUserDto } from '../dto/createUserDto';
 import { UserService } from './user.service';
@@ -32,12 +33,13 @@ export class UserController {
   @Get('')
   @UseGuards(AuthGuard)
   whoAmI(@CurrentUser() user: User) {
-    return { ...user, token: user.id };
+    return { ...user,  token: "This is the token" };
   }
 
-  @Post('/signout')
-  signOut(@Session() session: any) {
+  @Get('/signout')
+  signOut(@Session() session: any,  @Res({ passthrough: true }) response: any) {
     session.userId = null;
+    // response.clearCookie(); 
   }
 
   @Get('/emailExists')
@@ -57,14 +59,14 @@ export class UserController {
       body.displayName,
     );
     session.userId = user.id;
-    const matchOther = { ...user, token: user.id };
+    const matchOther = { ...user, token: "This is the token" };
     return matchOther;
   }
   @Post('/login')
-  async signIn(@Body() body: CreateUserDto, @Session() session: any) {
+  async signIn(@Body() body: CreateUserDto, @Session() session: any,) {
     const user = await this.authService.signIn(body.email, body.password);
     session.userId = user.id;
-    const matchOther = { ...user, token: user.id };
+    const matchOther = { ...user, token: "This is the token" };
     return matchOther;
   }
 

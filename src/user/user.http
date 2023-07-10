@@ -3,9 +3,9 @@ POST  http://localhost:3000/account/register
 Content-Type: application/json
 
 {
-    "email": "test@gmail.com",
+    "email": "tes2t@gmail.com",
     "password": "fadfjloc",
-    "displayName":"Loc"
+    "displayName":"2Loc"
 }
 
 ### Sign in
@@ -13,7 +13,7 @@ POST  http://localhost:3000/account/login
 Content-Type: application/json
 
 {
-    "email": "te2st@gmail.com",
+    "email": "test@gmail.com",
     "password": "fadfjloc"
 }
 
@@ -24,7 +24,7 @@ GET http://localhost:3000/account
 GET http://localhost:3000/account/emailExists?email=te2st@gmail.com
 
 ### SignOut
-POST  http://localhost:3000/account/signout
+GET  http://localhost:3000/account/signout
 
 ### Find a particular user with a given ID
 GET http://localhost:3000/account/8
