@@ -11,6 +11,8 @@ import { Product } from './entity/product.entity';
 import { ProductBrand } from './entity/ProductBrands.entity';
 import { ProductType } from './entity/productTypes.entity';
 import { SeedService } from './SeedData/shop.service';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -53,6 +55,10 @@ import { SeedService } from './SeedData/shop.service';
     }),
     UserModule,
     ShopModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '/src/assets/images'), // Specify the path to the assets directory
+      serveRoot: '/images', // The URL path to access the assets
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
