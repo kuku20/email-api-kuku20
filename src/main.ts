@@ -2,10 +2,11 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 const cookieSession = require('cookie-session');
-
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
     // const seedService = app.get(SeedService);
   // await seedService.seedData();
   app.enableCors({
@@ -14,7 +15,8 @@ async function bootstrap() {
   });
   
   app.use(cookieSession({
-    keys:['mynameLoc']
+    keys:['mynameLoc'],
+    secure: configService.get<boolean>('SECURE'),
   }))
 
   app.useGlobalPipes(
