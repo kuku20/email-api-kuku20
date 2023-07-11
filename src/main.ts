@@ -10,7 +10,7 @@ async function bootstrap() {
     // const seedService = app.get(SeedService);
   // await seedService.seedData();
   app.enableCors({
-    origin: ['http://localhost:4200','http://localhost:60762'],
+    origin: ['https://onlinebuyer.web.app','http://localhost:4200','http://localhost:60762'],
     credentials: true,
   });
   
