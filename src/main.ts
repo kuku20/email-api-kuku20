@@ -16,7 +16,7 @@ async function bootstrap() {
   
   app.use(cookieSession({
     keys:['mynameLoc'],
-    secure: configService.get<boolean>('SECURE'),
+    secure:true,
   }))
 
   app.useGlobalPipes(
