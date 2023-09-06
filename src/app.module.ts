@@ -13,6 +13,7 @@ import { ProductType } from './entity/productTypes.entity';
 import { SeedService } from './SeedData/shop.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { ContentfulModule } from './contentful/contentful.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -59,6 +60,7 @@ import { join } from 'path';
       rootPath: join(__dirname, '..', '/src/assets/images'), // Specify the path to the assets directory
       serveRoot: '/images', // The URL path to access the assets
     }),
+    ContentfulModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,0 +1,2 @@
+### Get profolio content
+GET http://localhost:3000/contentful/profolio
