@@ -1,11 +1,9 @@
 // blogPageQuery.ts
 
 export const blogPageQuery = `
-  query proFolioEntryQuery {
-    proFolio(id: "DAMTTkOHJKjtTHpQ4wlLh") {
-      sys {
-        id
-      }
+query proFolioCollectionQuery {
+  proFolioCollection(limit: 1) {
+    items {
       hello
       aboutCollection {
         items {
@@ -29,18 +27,8 @@ export const blogPageQuery = `
           }
         }
       }
+      # add the fields you want to query
     }
   }
+}
 `;
-// blogPageQuery.ts
-
-// export const blogPageQuery = `
-//   query GetProFolioCollection($preview: Boolean) {
-//     proFolioCollection(preview: $preview) {
-//       items {
-//         hello
-//       }
-//     }
-//   }
-// `;
-
