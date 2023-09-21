@@ -27,4 +27,15 @@ export class ContentfulController {
       throw error;
     }
   }
+
+  @Get('/letcode')
+  async leetCodeData(@Param('preview') preview: boolean) {
+    try {
+      const data = await this.contentfulService.getLeetCode(preview);
+      return data;
+    } catch (error) {
+      // Handle errors here
+      throw error;
+    }
+  }
 }

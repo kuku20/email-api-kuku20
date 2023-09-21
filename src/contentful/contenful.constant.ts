@@ -32,3 +32,29 @@ query proFolioCollectionQuery {
   }
 }
 `;
+
+export const leetCodeQuery = `
+query leetcodeCollectionQuery {
+  leetcodeCollection(limit: 1) {
+    items {
+      title
+      questionCollection {
+        items {
+          title
+          question {
+            json
+          }
+          answerCollection {
+            items {
+              title
+              details {
+                json
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+`;
