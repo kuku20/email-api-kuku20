@@ -10,3 +10,7 @@ npm i cross-env
 1type/brand to many product
 
 1 product to 1type/brand
+
+nest g mo stock
+nest g co stock
+nest g s stock

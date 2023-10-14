@@ -14,6 +14,7 @@ import { SeedService } from './SeedData/shop.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { ContentfulModule } from './contentful/contentful.module';
+import { StockModule } from './stock/stock.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -61,6 +62,7 @@ import { ContentfulModule } from './contentful/contentful.module';
       serveRoot: '/images', // The URL path to access the assets
     }),
     ContentfulModule,
+    StockModule,
   ],
   controllers: [AppController],
   providers: [AppService],
