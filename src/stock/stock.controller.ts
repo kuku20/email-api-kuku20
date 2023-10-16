@@ -27,9 +27,11 @@ export class StockController {
     }
 
     @Get('/news')
-    async tickerNews(@Query('stockTicker') stockTicker: string,) {
+    async tickerNews(@Query('stockTicker') stockTicker: string,
+    @Query('start') start: string,
+    @Query('end') end: string,) {
       try {
-        const data = await this.stockService.tickerNews(stockTicker);
+        const data = await this.stockService.tickerNews(stockTicker, start, end);
         return data;
       } catch (error) {
         // Handle errors here

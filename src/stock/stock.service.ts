@@ -8,7 +8,11 @@ export class StockService {
     constructor(private readonly configService: ConfigService) {}
     async search(query: string) {
         for (const key of this.configService.get<any>('POLYGON_STOCK_API_KEY').split(',')) {
-          const url = `${this.BASE_URL}/aggs/ticker/${query}/range/1/day/2023-10-02/2023-10-11?apiKey=${key}`;
+        const today = new Date();
+        today.setDate(today.getDate() - 5);
+        const lastFiveDays = today.toISOString().replace(/T.*$/, '');
+        const current = new Date().toISOString().replace(/T.*$/, '');
+          const url = `${this.BASE_URL}/aggs/ticker/${query}/range/1/day/${lastFiveDays}/${current}?apiKey=${key}`;
           try {
             const response = await axios.get(url);
             return response.data;
@@ -102,10 +106,14 @@ export class StockService {
       }
     }
 
-    async tickerNews(query: string) {
+    async tickerNews(query: string, start?:string, end?:string) {
       const BASE_URL ='https://finnhub.io/api/v1/company-news?symbol='
       for (const key of this.configService.get<any>('FINNHUB_STOCK_API_KEY').split(',')) {
-        const url = `${BASE_URL}${query}&from=2023-11-15&to=2023-11-15&token=${key}`;
+        const today = new Date();
+        today.setDate(today.getDate() - 5);
+        const lastFiveDays = start || today.toISOString().replace(/T.*$/, '');
+        const current = end || new Date().toISOString().replace(/T.*$/, '');
+        const url = `${BASE_URL}${query}&from=${lastFiveDays}&to=${current}&token=${key}`;
         try {
           const response = await axios.get(url);
           return response.data;

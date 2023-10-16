@@ -7,8 +7,11 @@ curl --location 'http://localhost:3000/stock/realtimeprice?stockTicker=ROKU'
 ### get all current price
 curl --location 'http://localhost:3000/stock/realtimepriceall'
 
-### Get ticker news
-curl --location 'http://localhost:3000/stock/news?stockTicker=ROKU'
+### Get ticker news for 5day
+curl --location 'http://localhost:3000/stock/news?stockTicker=AAL'
+
+### Get ticker news from 2023-01-11 to 2023-02-11
+curl --location 'http://localhost:3000/stock/news?stockTicker=AAL&start=2023-01-11&end=2023-02-11'
 
 ### Get list ticker for type ahead
 curl --location 'http://localhost:3000/stock/searchlist?stockTicker=AA'
