@@ -5,9 +5,11 @@ import { StockService } from './stock.service';
 export class StockController {
     constructor(private readonly stockService: StockService) {}
     @Get('/byday')
-    async profolioData(@Param('preview') preview: string, @Query('stockTicker') stockTicker: string,) {
+    async profolioData(@Param('preview') preview: string, @Query('stockTicker') stockTicker: string,
+    @Query('start') start: string,
+    @Query('end') end: string,) {
       try {
-        const data = await this.stockService.search(stockTicker);
+        const data = await this.stockService.search(stockTicker, start, end);
         return data;
       } catch (error) {
         // Handle errors here

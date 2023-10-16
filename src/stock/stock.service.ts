@@ -6,12 +6,12 @@ export class StockService {
     private readonly graphqlEndpoint = 'https://api.polygon.io/v2/aggs/ticker/AAPL/range/1/day/2023-10-02/2023-10-11?apiKey=GpBhGaI12ENRIUVkDMvDY5spqQR0ptOj';
     private BASE_URL: string = 'https://api.polygon.io/v2'; 
     constructor(private readonly configService: ConfigService) {}
-    async search(query: string) {
+    async search(query: string, start?:string, end?:string) {
         for (const key of this.configService.get<any>('POLYGON_STOCK_API_KEY').split(',')) {
-        const today = new Date();
-        today.setDate(today.getDate() - 5);
-        const lastFiveDays = today.toISOString().replace(/T.*$/, '');
-        const current = new Date().toISOString().replace(/T.*$/, '');
+          const today = new Date();
+          today.setDate(today.getDate() - 5);
+          const lastFiveDays = start || today.toISOString().replace(/T.*$/, '');
+          const current = end || new Date().toISOString().replace(/T.*$/, '');
           const url = `${this.BASE_URL}/aggs/ticker/${query}/range/1/day/${lastFiveDays}/${current}?apiKey=${key}`;
           try {
             const response = await axios.get(url);
