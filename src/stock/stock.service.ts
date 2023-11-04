@@ -157,4 +157,33 @@ export class StockService {
           mess:"Check later"
       }
     }
+
+    async earningsCal(start?:string, end?:string) {
+      const BASE_URL ='https://finnhub.io/api/v1/calendar/earnings?'
+      for (const key of this.configService.get<any>('FINNHUB_STOCK_API_KEY').split(',')) {
+        const today = new Date();
+        const cstOffset = 5 * 60; // CST is UTC-6
+        today.setMinutes(today.getMinutes() - cstOffset);//set to local Houston Time zone
+        const current = end || today.toISOString().replace(/T.*$/, '');
+        console.log(current)
+        const url = `${BASE_URL}from=${current}&to=${current}&token=${key}`;
+        try {
+          const response = await axios.get(url);
+          return response.data;
+        } catch (error) {
+          if (error.response && error.response.status === 500) {
+            // Handle 500 error
+            console.error(`Internal Server Error with key `, error.response.data);
+          } else {
+            // Handle other errors
+            console.error(`Error with key `, error.message);
+          }
+        }
+      }
+      // If none of the API keys work, throw an error
+      return {
+          statusCode : 500,
+          mess:"Check later"
+      }
+    }
 }

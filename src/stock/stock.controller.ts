@@ -41,6 +41,19 @@ export class StockController {
       }
     }
 
+    @Get('/earnings')
+    async earningsCal(
+    @Query('start') start: string,
+    @Query('end') end: string,) {
+      try {
+        const data = await this.stockService.earningsCal(start, end);
+        return data;
+      } catch (error) {
+        // Handle errors here
+        throw error;
+      }
+    }
+
     @Get('/realtimeprice')
     async realtimeprice(@Query('stockTicker') stockTicker: string,) {
       try {
