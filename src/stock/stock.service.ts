@@ -165,7 +165,6 @@ export class StockService {
         const cstOffset = 5 * 60; // CST is UTC-6
         today.setMinutes(today.getMinutes() - cstOffset);//set to local Houston Time zone
         const current = end || today.toISOString().replace(/T.*$/, '');
-        console.log(current)
         const url = `${BASE_URL}from=${current}&to=${current}&token=${key}`;
         try {
           const response = await axios.get(url);
