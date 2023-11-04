@@ -38,52 +38,52 @@ export class StockService {
       }
   
 
-    async tickerList(query: string) {
-      const BASE_URL ='https://financialmodelingprep.com/api/v3/search?query='
-      for (const key of this.configService.get<any>('FMP_STOCK_API_KEY').split(',')) {
-        const url = `${BASE_URL}${query}&apikey=${key}`;
-        try {
-          const response = await axios.get(url);
-          // return response.data.slice(0, 10);
-          return plainToClass(SearchSymbolOutFinnhubDto, response.data.slice(0, 10));
-        } catch (error) {
-          if (error.response && error.response.status === 500) {
-            // Handle 500 error
-            console.error(`Internal Server Error with key `, error.response.data);
-          } else {
-            // Handle other errors
-            console.error(`Error with key `, error.message);
-          }
-        }
-      }
-      // If none of the API keys work, throw an error
-      return {
-          statusCode : 500,
-          mess:"Check later"
-      }
-    }
-
     // async tickerList(query: string) {
-    //   const BASE_URL ='https://api.polygon.io/v3/reference/tickers?'
-    //   for (const key of this.configService.get<any>('POLYGON_STOCK_API_KEY').split(',')) {
-    //     const url = `${BASE_URL}search=${query}&active=true&apiKey=${key}`;
+    //   const BASE_URL ='https://financialmodelingprep.com/api/v3/search?query='
+    //   for (const key of this.configService.get<any>('FMP_STOCK_API_KEY').split(',')) {
+    //     const url = `${BASE_URL}${query}&apikey=${key}`;
     //     try {
     //       const response = await axios.get(url);
-    //       return response.data;
-    //       return plainToClass(SearchSymbolOutPolygonDto, response.data.results.slice(0, 10));
+    //       // return response.data.slice(0, 10);
+    //       return plainToClass(SearchSymbolOutFinnhubDto, response.data.slice(0, 10));
     //     } catch (error) {
     //       if (error.response && error.response.status === 500) {
     //         // Handle 500 error
     //         console.error(`Internal Server Error with key `, error.response.data);
     //       } else {
     //         // Handle other errors
-    //         console.error(`Error with key : ${key}`, error.message);
+    //         console.error(`Error with key `, error.message);
     //       }
     //     }
     //   }
     //   // If none of the API keys work, throw an error
-    //   throw new Error();
+    //   return {
+    //       statusCode : 500,
+    //       mess:"Check later"
+    //   }
     // }
+
+    async tickerList(query: string) {
+      const BASE_URL ='https://api.polygon.io/v3/reference/tickers?'
+      for (const key of this.configService.get<any>('POLYGON_STOCK_API_KEY').split(',')) {
+        const url = `${BASE_URL}search=${query}&active=true&apiKey=${key}`;
+        try {
+          const response = await axios.get(url);
+          return response.data;
+          return plainToClass(SearchSymbolOutPolygonDto, response.data.results.slice(0, 10));
+        } catch (error) {
+          if (error.response && error.response.status === 500) {
+            // Handle 500 error
+            console.error(`Internal Server Error with key `, error.response.data);
+          } else {
+            // Handle other errors
+            console.error(`Error with key : ${key}`, error.message);
+          }
+        }
+      }
+      // If none of the API keys work, throw an error
+      throw new Error();
+    }
 
     async realTimePrice(query: string) {
       const BASE_URL ='https://financialmodelingprep.com/api/v3/stock/real-time-price/'
