@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { ConfigService, ConfigModule } from '@nestjs/config';
 import { plainToClass, plainToInstance } from 'class-transformer';
-import { DividendOutDto, RealTimePriceFinnhubDto, SearchSymbolOutFinnhubDto, SearchSymbolOutPolygonDto } from './dto';
+import { DividendOutDto, InsiderTransactionsDto, RealTimePriceFinnhubDto, SearchSymbolOutFinnhubDto, SearchSymbolOutPolygonDto } from './dto';
 
 
 @Injectable()
@@ -246,8 +246,8 @@ export class StockService {
         const url = `${BASE_URL}${query}&token=${key}`;
         try {
           const response = await axios.get(url);
-          // return response.data;
-          return plainToClass(RealTimePriceFinnhubDto, response.data);
+          // return response.data.data;
+          return plainToClass(InsiderTransactionsDto, response.data.data);
         } catch (error) {
           if (error.response && error.response.status === 500) {
             // Handle 500 error
