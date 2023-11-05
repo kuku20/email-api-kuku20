@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { ConfigService, ConfigModule } from '@nestjs/config';
 import { plainToClass, plainToInstance } from 'class-transformer';
-import { BulkRequestsDto, DividendOutDto, InsiderTransactionsDto, RealTimePriceFinnhubDto, SearchSymbolOutFinnhubDto, SearchSymbolOutPolygonDto } from './dto';
+import { BulkRequestsDto, DividendOutDto, GainersOrLosersDto, InsiderTransactionsDto, RealTimePriceFinnhubDto, SearchSymbolOutFinnhubDto, SearchSymbolOutPolygonDto } from './dto';
 
 
 @Injectable()
@@ -274,6 +274,31 @@ export class StockService {
           const response = await axios.get(url);
           // return response.data;
           return plainToClass(BulkRequestsDto, response.data);
+        } catch (error) {
+          if (error.response && error.response.status === 500) {
+            // Handle 500 error
+            console.error(`Internal Server Error with key `, error.response.data);
+          } else {
+            // Handle other errors
+            console.error(`Error with key `, error.message);
+          }
+        }
+      }
+      // If none of the API keys work, throw an error
+      return {
+          statusCode : 500,
+          mess:"Check later"
+      }
+    }
+
+    async gainersOrLosers(query: string) {//losers/gainers
+      const BASE_URL ='https://financialmodelingprep.com/api/v3/stock_market/'
+      for (const key of this.configService.get<any>('FMP_STOCK_API_KEY').split(',')) {
+        const url = `${BASE_URL}${query}?apikey=${key}`;
+        try {
+          const response = await axios.get(url);
+          // return response.data;
+          return plainToClass(GainersOrLosersDto, response.data);
         } catch (error) {
           if (error.response && error.response.status === 500) {
             // Handle 500 error

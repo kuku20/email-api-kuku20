@@ -119,4 +119,15 @@ export class StockController {
         throw error;
       }
     }
+
+    @Get('/gainers-or-losers')
+    async gainersOrLosers(@Query('stockMarket') stockTicker: string,) {
+      try {
+        const data = await this.stockService.gainersOrLosers(stockTicker);
+        return data;
+      } catch (error) {
+        // Handle errors here
+        throw error;
+      }
+    }
 }

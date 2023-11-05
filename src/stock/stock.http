@@ -37,3 +37,8 @@ curl --location 'http://localhost:3000/stock/multiple-company-prices?stockTicker
 
 ### Get current price
 curl --location 'http://localhost:3000/stock/v2/realtimeprice?stockTicker=ROKU'
+
+### Get losers
+curl --location 'http://localhost:3000/stock/gainers-or-losers?stockMarket=losers'
+### Get gainers
+curl --location 'http://localhost:3000/stock/gainers-or-losers?stockMarket=gainers'
