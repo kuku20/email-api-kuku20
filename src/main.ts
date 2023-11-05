@@ -1,26 +1,35 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import * as cors from 'cors';
 import { ValidationPipe } from '@nestjs/common';
-import { ShopService } from './shop/shop.service';
-import { SeedService } from './SeedData/shop.service';
 const cookieSession = require('cookie-session');
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  // const seedService = app.get(SeedService);
+  const configService = app.get(ConfigService);
+    // const seedService = app.get(SeedService);
   // await seedService.seedData();
-  app.use(cookieSession({
-    keys:['mynameLoc']
-  }))
-  // Enable CORS
-  app.use(cors());
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist:true,
-    forbidNonWhitelisted:true
-  }))
+  app.enableCors({
+    origin: '*',
+    credentials: true,
+  });
   
-  await app.listen(3000);
+  app.use(cookieSession({
+    keys:['mynameLoc'],
+    secure:true,
+  }))
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  );
+
+  const port = process.env.PORT || 3000;
+  await app.listen(port, '0.0.0.0', function () {
+    console.log(`Application listening on port ${port}`);
+  });
 }
 
 bootstrap();

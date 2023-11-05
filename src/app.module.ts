@@ -11,6 +11,10 @@ import { Product } from './entity/product.entity';
 import { ProductBrand } from './entity/ProductBrands.entity';
 import { ProductType } from './entity/productTypes.entity';
 import { SeedService } from './SeedData/shop.service';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+import { ContentfulModule } from './contentful/contentful.module';
+import { StockModule } from './stock/stock.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -35,16 +39,30 @@ import { SeedService } from './SeedData/shop.service';
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
+        const dbUrl = new URL(config.get<string>('DATABASE_URL'));
+        const routingId = dbUrl.searchParams.get('options');
+        dbUrl.searchParams.delete('options');
+
         return {
-          type: 'sqlite',
-          database: config.get<string>('DB_NAME'),
+          type: 'cockroachdb',
+          url: dbUrl.toString(),
+          ssl: true,
+          extra: {
+            options: routingId,
+          },
           entities: [User, Product, ProductBrand, ProductType],
-          synchronize: true,
-        }
-      }
+          synchronize: false,
+        };
+      },
     }),
     UserModule,
     ShopModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '/src/assets/images'), // Specify the path to the assets directory
+      serveRoot: '/images', // The URL path to access the assets
+    }),
+    ContentfulModule,
+    StockModule,
   ],
   controllers: [AppController],
   providers: [AppService],

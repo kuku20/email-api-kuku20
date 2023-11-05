@@ -1,0 +1,29 @@
+### get price by day
+curl --location 'http://localhost:3000/stock/byday?stockTicker=AAU'
+
+### Get current price
+curl --location 'http://localhost:3000/stock/realtimeprice?stockTicker=ROKU'
+
+
+### Get current price
+curl --location 'http://localhost:3000/stock/v2/realtimeprice?stockTicker=ROKU'
+
+### get all current price
+curl --location 'http://localhost:3000/stock/realtimepriceall'
+
+### Get ticker news for 5day
+curl --location 'http://localhost:3000/stock/news?stockTicker=AAL'
+
+### Get ticker news from 2023-01-11 to 2023-02-11
+curl --location 'http://localhost:3000/stock/news?stockTicker=AAL&start=2023-01-11&end=2023-02-11'
+
+### Get list ticker for type ahead
+curl --location 'http://localhost:3000/stock/searchlist?stockTicker=BILL'
+
+### Get divident
+curl --location 'http://localhost:3000/stock/dividends?stockTicker=T'
+
+### Get earning call from 2023-01-11 to 2023-02-11
+# curl --location 'http://localhost:3000/stock/earnings?start=2023-01-11&end=2023-02-11'
+# curl --location 'http://localhost:3000/stock/earnings?end=2023-11-03'
+curl --location 'http://localhost:3000/stock/earnings?end=2023-11-04'

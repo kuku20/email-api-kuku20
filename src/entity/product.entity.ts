@@ -16,14 +16,14 @@ export class Product {
   Name: string;
   @Column()
   Description: string;
-  @Column()
+  @Column('decimal')
   Price: number;
   @Column()
   PictureUrl: string;
   @Column()
-  ProductTypeId: string;
+  ProductTypeId: number;
   @Column()
-  ProductBrandId: string;
+  ProductBrandId: number;
 
   @ManyToOne(() => ProductType)
   @JoinColumn({ name: 'ProductTypeId' })
