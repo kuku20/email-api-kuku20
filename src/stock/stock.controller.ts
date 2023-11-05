@@ -65,6 +65,17 @@ export class StockController {
       }
     }
 
+    @Get('/v2/realtimeprice')
+    async realTimePriceFinnhub(@Query('stockTicker') stockTicker: string,) {
+      try {
+        const data = await this.stockService.realTimePriceFinnhub(stockTicker);
+        return data;
+      } catch (error) {
+        // Handle errors here
+        throw error;
+      }
+    }
+
     @Get('/realtimepriceall')
     async realtimepriceall() {
       try {

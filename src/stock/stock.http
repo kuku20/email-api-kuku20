@@ -4,6 +4,10 @@ curl --location 'http://localhost:3000/stock/byday?stockTicker=AAU'
 ### Get current price
 curl --location 'http://localhost:3000/stock/realtimeprice?stockTicker=ROKU'
 
+
+### Get current price
+curl --location 'http://localhost:3000/stock/v2/realtimeprice?stockTicker=ROKU'
+
 ### get all current price
 curl --location 'http://localhost:3000/stock/realtimepriceall'
 
