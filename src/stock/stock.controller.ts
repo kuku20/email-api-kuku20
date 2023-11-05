@@ -76,6 +76,17 @@ export class StockController {
       }
     }
 
+    @Get('/insider-transactions')
+    async insiderTransactions(@Query('stockTicker') stockTicker: string,) {
+      try {
+        const data = await this.stockService.insiderTransactions(stockTicker);
+        return data;
+      } catch (error) {
+        // Handle errors here
+        throw error;
+      }
+    }
+
     @Get('/realtimepriceall')
     async realtimepriceall() {
       try {

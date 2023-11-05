@@ -196,7 +196,7 @@ export class StockService {
         const url = `${BASE_URL}from=${current}&to=${current}&token=${key}`;
         try {
           const response = await axios.get(url);
-          return response.data;
+          return response.data.earningsCalendar;
         } catch (error) {
           if (error.response && error.response.status === 500) {
             // Handle 500 error
@@ -216,6 +216,32 @@ export class StockService {
 
     async realTimePriceFinnhub(query: string) {
       const BASE_URL ='https://finnhub.io/api/v1/quote?symbol='
+      for (const key of this.configService.get<any>('FINNHUB_STOCK_API_KEY').split(',')) {
+        const url = `${BASE_URL}${query}&token=${key}`;
+        try {
+          const response = await axios.get(url);
+          // return response.data;
+          return plainToClass(RealTimePriceFinnhubDto, response.data);
+        } catch (error) {
+          if (error.response && error.response.status === 500) {
+            // Handle 500 error
+            console.error(`Internal Server Error with key `, error.response.data);
+          } else {
+            // Handle other errors
+            console.error(`Error with key `, error.message);
+          }
+        }
+      }
+      // If none of the API keys work, throw an error
+      return {
+          statusCode : 500,
+          mess:"Check later"
+      }
+    }
+
+
+    async insiderTransactions(query: string) {
+      const BASE_URL ='https://finnhub.io/api/v1/stock/insider-transactions?symbol='
       for (const key of this.configService.get<any>('FINNHUB_STOCK_API_KEY').split(',')) {
         const url = `${BASE_URL}${query}&token=${key}`;
         try {
