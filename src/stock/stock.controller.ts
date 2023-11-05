@@ -87,6 +87,17 @@ export class StockController {
       }
     }
 
+    @Get('/multiple-company-prices')
+    async bulkrequestsMulCom(@Query('stockTicker') stockTicker: string,) {
+      try {
+        const data = await this.stockService.bulkrequestsMulCom(stockTicker);
+        return data;
+      } catch (error) {
+        // Handle errors here
+        throw error;
+      }
+    }
+
     @Get('/realtimepriceall')
     async realtimepriceall() {
       try {

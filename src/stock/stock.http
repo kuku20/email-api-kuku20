@@ -31,3 +31,9 @@ curl --location 'http://localhost:3000/stock/earnings?end=2023-11-04'
 
 ### get insider transactions
 curl --location 'http://localhost:3000/stock/insider-transactions?stockTicker=ROKU'
+
+### get multiple-company-prices
+curl --location 'http://localhost:3000/stock/multiple-company-prices?stockTicker=ROKU,AAL,NCLH'
+
+### Get current price
+curl --location 'http://localhost:3000/stock/v2/realtimeprice?stockTicker=ROKU'
