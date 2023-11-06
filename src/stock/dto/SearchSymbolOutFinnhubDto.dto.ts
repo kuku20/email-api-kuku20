@@ -3,12 +3,10 @@ import { Exclude, Expose } from 'class-transformer';
 export class SearchSymbolOutFinnhubDto {
   @Expose()
   symbol: string;
-  @Expose()
+  @Expose({ name: 'description' })
   name: string;
   @Exclude()
-  currency: string;
+  displaySymbol: string;
   @Exclude()
-  stockExchange: string;
-  @Exclude()
-  exchangeShortName: string;
+  type: string;
 }
