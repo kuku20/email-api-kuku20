@@ -130,4 +130,15 @@ export class StockController {
         throw error;
       }
     }
+
+    @Get('/company-profile')
+    async companyProfile(@Query('stockTicker') stockTicker: string,) {
+      try {
+        const data = await this.stockService.companyProfile_FINNHUB(stockTicker);
+        return data;
+      } catch (error) {
+        // Handle errors here
+        throw error;
+      }
+    }
 }

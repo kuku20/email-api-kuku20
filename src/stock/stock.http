@@ -33,7 +33,7 @@ curl --location 'http://localhost:3000/stock/earnings?end=2023-11-05'
 curl --location 'http://localhost:3000/stock/insider-transactions?stockTicker=ROKU'
 
 ### get multiple-company-prices
-curl --location 'http://localhost:3000/stock/multiple-company-prices?stockTicker=ROKU'
+curl --location 'http://localhost:3000/stock/multiple-company-prices?stockTicker=ROKU,AAL'
 
 ### Get current price
 curl --location 'http://localhost:3000/stock/v2/realtimeprice?stockTicker=ROKU'
@@ -42,3 +42,15 @@ curl --location 'http://localhost:3000/stock/v2/realtimeprice?stockTicker=ROKU'
 curl --location 'http://localhost:3000/stock/gainers-or-losers?stockMarket=losers'
 ### Get gainers
 curl --location 'http://localhost:3000/stock/gainers-or-losers?stockMarket=gainers'
+
+### Get company profile
+curl --location 'http://localhost:3000/stock/company-profile?stockTicker=aal'
+
+
+
+###
+you can write detail from her
+/company-profile
+###
+GET /stock/gainers-or-losers?stockMarket=gainers HTTP/1.1
+Host: localhost:3000
