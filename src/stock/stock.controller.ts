@@ -9,7 +9,7 @@ export class StockController {
     @Query('start') start: string,
     @Query('end') end: string,) {
       try {
-        const data = await this.stockService.search(stockTicker, start, end);
+        const data = await this.stockService.search_POLYGON(stockTicker, start, end);
         return data;
       } catch (error) {
         // Handle errors here
@@ -17,10 +17,10 @@ export class StockController {
       }
     }
 
-    @Get('/searchlist')
+    @Get('/typeahead')
     async listTicker(@Query('stockTicker') stockTicker: string,) {
       try {
-        const data = await this.stockService.tickerList(stockTicker);
+        const data = await this.stockService.tickerList_FINNHUB(stockTicker);
         return data;
       } catch (error) {
         // Handle errors here
@@ -33,7 +33,7 @@ export class StockController {
     @Query('start') start: string,
     @Query('end') end: string,) {
       try {
-        const data = await this.stockService.tickerNews(stockTicker, start, end);
+        const data = await this.stockService.tickerNews_FINNHUB(stockTicker, start, end);
         return data;
       } catch (error) {
         // Handle errors here
@@ -46,7 +46,7 @@ export class StockController {
     @Query('start') start: string,
     @Query('end') end: string,) {
       try {
-        const data = await this.stockService.earningsCal(start, end);
+        const data = await this.stockService.earningsCal_FINNHUB(start, end);
         return data;
       } catch (error) {
         // Handle errors here
@@ -57,7 +57,7 @@ export class StockController {
     @Get('/realtimeprice')
     async realtimeprice(@Query('stockTicker') stockTicker: string,) {
       try {
-        const data = await this.stockService.realTimePrice(stockTicker);
+        const data = await this.stockService.realTimePrice_FMP(stockTicker);
         return data;
       } catch (error) {
         // Handle errors here
@@ -68,7 +68,29 @@ export class StockController {
     @Get('/v2/realtimeprice')
     async realTimePriceFinnhub(@Query('stockTicker') stockTicker: string,) {
       try {
-        const data = await this.stockService.realTimePriceFinnhub(stockTicker);
+        const data = await this.stockService.realTimePrice_FINNHUB(stockTicker);
+        return data;
+      } catch (error) {
+        // Handle errors here
+        throw error;
+      }
+    }
+
+    @Get('/insider-transactions')
+    async insiderTransactions(@Query('stockTicker') stockTicker: string,) {
+      try {
+        const data = await this.stockService.insiderTransactions_FINNHUB(stockTicker);
+        return data;
+      } catch (error) {
+        // Handle errors here
+        throw error;
+      }
+    }
+
+    @Get('/multiple-company-prices')
+    async bulkrequestsMulCom(@Query('stockTicker') stockTicker: string,) {
+      try {
+        const data = await this.stockService.bulkrequestsMulCom_FMP(stockTicker);
         return data;
       } catch (error) {
         // Handle errors here
@@ -79,7 +101,7 @@ export class StockController {
     @Get('/realtimepriceall')
     async realtimepriceall() {
       try {
-        const data = await this.stockService.realTimePriceAll();
+        const data = await this.stockService.realTimePriceAll_FMP();
         return data;
       } catch (error) {
         // Handle errors here
@@ -90,7 +112,29 @@ export class StockController {
     @Get('/dividends')
     async tickerDividends(@Query('stockTicker') stockTicker: string,) {
       try {
-        const data = await this.stockService.tickerDividends(stockTicker);
+        const data = await this.stockService.tickerDividends_POLYGON(stockTicker);
+        return data;
+      } catch (error) {
+        // Handle errors here
+        throw error;
+      }
+    }
+
+    @Get('/gainers-or-losers')
+    async gainersOrLosers(@Query('stockMarket') stockTicker: string,) {
+      try {
+        const data = await this.stockService.gainersOrLosers_FMP(stockTicker);
+        return data;
+      } catch (error) {
+        // Handle errors here
+        throw error;
+      }
+    }
+
+    @Get('/company-profile')
+    async companyProfile(@Query('stockTicker') stockTicker: string,) {
+      try {
+        const data = await this.stockService.companyProfile_FINNHUB(stockTicker);
         return data;
       } catch (error) {
         // Handle errors here

@@ -2,17 +2,17 @@ import { Expose } from 'class-transformer';
 
 export class RealTimePriceFinnhubDto {
   @Expose({ name: 'c' })
-  current_price: number;
+  price: number;
   @Expose({ name: 'd' })
   change: number;
   @Expose({ name: 'dp' })
-  percent_change: number;
+  pctChange: number;
   @Expose({ name: 'h' })
-  high_of_the_day: number;
+  dayHigh: number;
   @Expose({ name: 'l' })
-  low_of_the_day: number;
+  dayLow: number;
   @Expose({ name: 'o' })
-  open_price_otd: number;
+  open: number;
   @Expose({ name: 'pc' })
-  previous_close_price: number;
+  previousClose: number;
 }

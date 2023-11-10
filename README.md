@@ -14,3 +14,5 @@ npm i cross-env
 nest g mo stock
 nest g co stock
 nest g s stock
+
+https://site.financialmodelingprep.com/developer/docs#daily-chart-charts

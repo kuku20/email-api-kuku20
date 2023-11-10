@@ -18,12 +18,39 @@ curl --location 'http://localhost:3000/stock/news?stockTicker=AAL'
 curl --location 'http://localhost:3000/stock/news?stockTicker=AAL&start=2023-01-11&end=2023-02-11'
 
 ### Get list ticker for type ahead
-curl --location 'http://localhost:3000/stock/searchlist?stockTicker=BILL'
+curl --location 'http://localhost:3000/stock/typeahead?stockTicker=BILL'
 
 ### Get divident
-curl --location 'http://localhost:3000/stock/dividends?stockTicker=T'
+curl --location 'http://localhost:3000/stock/dividends?stockTicker=ROKU'
 
 ### Get earning call from 2023-01-11 to 2023-02-11
 # curl --location 'http://localhost:3000/stock/earnings?start=2023-01-11&end=2023-02-11'
 # curl --location 'http://localhost:3000/stock/earnings?end=2023-11-03'
-curl --location 'http://localhost:3000/stock/earnings?end=2023-11-04'
+curl --location 'http://localhost:3000/stock/earnings?end=2023-11-05'
+
+
+### get insider transactions
+curl --location 'http://localhost:3000/stock/insider-transactions?stockTicker=ROKU'
+
+### get multiple-company-prices
+curl --location 'http://localhost:3000/stock/multiple-company-prices?stockTicker=ROKU,AAL'
+
+### Get current price
+curl --location 'http://localhost:3000/stock/v2/realtimeprice?stockTicker=ROKU'
+
+### Get losers
+curl --location 'http://localhost:3000/stock/gainers-or-losers?stockMarket=losers'
+### Get gainers
+curl --location 'http://localhost:3000/stock/gainers-or-losers?stockMarket=gainers'
+
+### Get company profile
+curl --location 'http://localhost:3000/stock/company-profile?stockTicker=aal'
+
+
+
+###
+you can write detail from her
+/company-profile
+###
+GET /stock/gainers-or-losers?stockMarket=gainers HTTP/1.1
+Host: localhost:3000
