@@ -15,27 +15,31 @@ export class AuthService {
   constructor(
     private jwt: JwtService,
     private config: ConfigService,
-    private usersService: UserServiceV2
+    private usersService: UserServiceV2,
   ) {}
 
   async signUp(dto: AuthDto, @Res({ passthrough: true }) response?: Response) {
     //see if email is in use
     const users = await this.usersService.find(dto.email);
     if (users.length) {
-        throw new BadRequestException('Email is use')
+      throw new BadRequestException('Email is use');
     }
     // generate the password hash
     const hash = await argon.hash(dto.password);
     try {
-      const user = await this.usersService.create(dto.email, dto.displayName, hash);
+      const user = await this.usersService.create(
+        dto.email,
+        dto.displayName,
+        hash,
+      );
       const token = await this.signToken(user.id, user.email);
-    if (!token) throw new ForbiddenException('NOT Valid token');
+      if (!token) throw new ForbiddenException('NOT Valid token');
 
-    response.cookie('token', token,{sameSite:'none', secure:true});
+      response.cookie('token', token, { sameSite: 'none', secure: true });
 
-    return {
-      message: 'Logged in succefully',
-    };
+      return {
+        message: 'Logged in succefully',
+      };
     } catch (error) {
       throw error;
     }
@@ -44,8 +48,8 @@ export class AuthService {
   async signIn(dto: AuthDto, @Res({ passthrough: true }) response?: Response) {
     //check
     const [user] = await this.usersService.find(dto.email);
-    if(!user){
-        throw new NotFoundException('Email not Found!!!')
+    if (!user) {
+      throw new NotFoundException('Email not Found!!!');
     }
     // if user does not exist throw exception
     if (!user) throw new ForbiddenException('Credentials incorrect');
@@ -57,7 +61,7 @@ export class AuthService {
     const token = await this.signToken(user.id, user.email);
     if (!token) throw new ForbiddenException('NOT Valid token');
 
-    response.cookie('token', token,{sameSite:'none', secure:true});
+    response.cookie('token', token, { sameSite: 'none', secure: true });
 
     return {
       message: 'Logged in succefully',
@@ -69,11 +73,11 @@ export class AuthService {
     return { message: 'Logged out succefully' };
   }
 
-  async signToken(userId: number,email: string,): Promise<any> {
+  async signToken(userId: number, email: string): Promise<any> {
     const payload = {
       sub: userId,
       email,
-      signature:'LLC_LC'
+      signature: 'LLC_LC',
     };
     const secret = this.config.get('JWT_SECRET');
 
