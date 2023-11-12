@@ -69,7 +69,7 @@ export class AuthService {
   }
 
   async signout(@Res({ passthrough: true }) response?: Response) {
-    response.clearCookie('token');
+    response.clearCookie('token', { sameSite: 'none', secure: true });
     return { message: 'Logged out succefully' };
   }
 
