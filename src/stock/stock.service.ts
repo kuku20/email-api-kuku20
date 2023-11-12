@@ -37,7 +37,7 @@ export class StockService {
           console.error(`Internal Server Error with key `, error.response.data);
         } else {
           // Handle other errors
-          console.error(`Error with key `, error.message);
+          console.error(`Error with key POLYGON_STOCK_API_KEY `, error.message);
         }
       }
     }
@@ -60,7 +60,7 @@ export class StockService {
           console.error(`Internal Server Error with key `, error.response.data);
         } else {
           // Handle other errors
-          console.error(`Error with key `, error.message);
+          console.error(`Error with key FMP_STOCK_API_KEY`, error.message);
         }
       }
     }
@@ -86,7 +86,7 @@ export class StockService {
           console.error(`Internal Server Error with key `, error.response.data);
         } else {
           // Handle other errors
-          console.error(`Error with key `, error.message);
+          console.error(`Error with key FMP_STOCK_API_KEY `, error.message);
         }
       }
     }
@@ -115,7 +115,7 @@ export class StockService {
           console.error(`Internal Server Error with key `, error.response.data);
         } else {
           // Handle other errors
-          console.error(`Error with key `, error.message);
+          console.error(`Error with key FINNHUB_STOCK_API_KEY`, error.message);
         }
       }
     }
@@ -139,7 +139,7 @@ export class StockService {
           console.error(`Internal Server Error with key `, error.response.data);
         } else {
           // Handle other errors
-          console.error(`Error with key `, error.message);
+          console.error(`Error with key POLYGON_STOCK_API_KEY`, error.message);
         }
       }
     }
@@ -166,7 +166,7 @@ export class StockService {
           console.error(`Internal Server Error with key `, error.response.data);
         } else {
           // Handle other errors
-          console.error(`Error with key `, error.message);
+          console.error(`Error with key FINNHUB_STOCK_API_KEY`, error.message);
         }
       }
     }
@@ -190,7 +190,7 @@ export class StockService {
           console.error(`Internal Server Error with key `, error.response.data);
         } else {
           // Handle other errors
-          console.error(`Error with key `, error.message);
+          console.error(`Error with key FINNHUB_STOCK_API_KEY`, error.message);
         }
       }
     }
@@ -225,7 +225,7 @@ export class StockService {
           console.error(`Internal Server Error with key `, error.response.data);
         } else {
           // Handle other errors
-          console.error(`Error with key `, error.message);
+          console.error(`Error with key FINNHUB_STOCK_API_KEY `, error.message);
         }
       }
     }
@@ -250,7 +250,7 @@ export class StockService {
           console.error(`Internal Server Error with key `, error.response.data);
         } else {
           // Handle other errors
-          console.error(`Error with key `, error.message);
+          console.error(`Error with key FMP_STOCK_API_KEY`, error.message);
         }
       }
     }
@@ -275,7 +275,7 @@ export class StockService {
           console.error(`Internal Server Error with key `, error.response.data);
         } else {
           // Handle other errors
-          console.error(`Error with key `, error.message);
+          console.error(`Error with key FMP_STOCK_API_KEY`, error.message);
         }
       }
     }
@@ -302,7 +302,7 @@ export class StockService {
           console.error(`Internal Server Error with key `, error.response.data);
         } else {
           // Handle other errors
-          console.error(`Error with key `, error.message);
+          console.error(`Error with key FINNHUB_STOCK_API_KEY`, error.message);
         }
       }
     }
@@ -328,7 +328,7 @@ export class StockService {
           console.error(`Internal Server Error with key `, error.response.data);
         } else {
           // Handle other errors
-          console.error(`Error with key `, error.message);
+          console.error(`Error with key FMP_STOCK_API_KEY `, error.message);
         }
       }
     }
@@ -351,7 +351,7 @@ export class StockService {
           console.error(`Internal Server Error with key `, error.response.data);
         } else {
           // Handle other errors
-          console.error(`Error with key`, error.message);
+          console.error(`Error with key POLYGON_STOCK_API_KEY`, error.message);
         }
       }
     }
@@ -375,7 +375,7 @@ export class StockService {
           console.error(`Internal Server Error with key `, error.response.data);
         } else {
           // Handle other errors
-          console.error(`Error with key `, error.message);
+          console.error(`Error with key FINNHUB_STOCK_API_KEY`, error.message);
         }
       }
     }
