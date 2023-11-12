@@ -31,7 +31,7 @@ export class AuthService {
       const token = await this.signToken(user.id, user.email);
     if (!token) throw new ForbiddenException('NOT Valid token');
 
-    response.cookie('token', token);
+    response.cookie('token', token,{sameSite:'none', secure:true});
 
     return {
       message: 'Logged in succefully',
@@ -57,7 +57,7 @@ export class AuthService {
     const token = await this.signToken(user.id, user.email);
     if (!token) throw new ForbiddenException('NOT Valid token');
 
-    response.cookie('token', token);
+    response.cookie('token', token,{sameSite:'none', secure:true});
 
     return {
       message: 'Logged in succefully',
