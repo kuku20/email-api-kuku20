@@ -72,7 +72,7 @@ export class UserController {
 
   @Get('/:id')
   async findUser(@Param('id') id: string) {
-    const user = await this.userService.findOne(+id);
+    const user = await this.userService.findOne(id);
     if (!user) {
       throw new NotFoundException('Not found');
     }
@@ -86,11 +86,11 @@ export class UserController {
   @Delete('/:id')
   @UseGuards(AuthGuard)
   removerUser(@Param('id') id: string) {
-    return this.userService.remove(parseInt(id));
+    return this.userService.remove((id));
   }
 
   @Patch('/:id')
   updateUser(@Param('id') id: string, @Body() body: UpdateUserDto) {
-    return this.userService.update(+id, body);
+    return this.userService.update(id, body);
   }
 }
