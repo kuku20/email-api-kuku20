@@ -15,6 +15,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { ContentfulModule } from './contentful/contentful.module';
 import { StockModule } from './stock/stock.module';
+import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -51,7 +52,7 @@ import { StockModule } from './stock/stock.module';
             options: routingId,
           },
           entities: [User, Product, ProductBrand, ProductType],
-          synchronize: false,
+          synchronize: true,
         };
       },
     }),
@@ -63,6 +64,7 @@ import { StockModule } from './stock/stock.module';
     }),
     ContentfulModule,
     StockModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],
