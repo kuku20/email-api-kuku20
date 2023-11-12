@@ -11,7 +11,7 @@ async function bootstrap() {
     // const seedService = app.get(SeedService);
   // await seedService.seedData();
   app.enableCors({
-    origin: ['https://onlinebuyer.web.app','http://localhost:4200','http://localhost:60762','https://lewisluu.web.app/'],
+    origin: ['https://onlinebuyer.web.app','http://localhost:4200','https://stockmarkets000.web.app','https://lewisluu.web.app/'],
     // origin: '*',
     credentials: true,
   });
