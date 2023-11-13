@@ -18,3 +18,11 @@ nest g s stock
 https://site.financialmodelingprep.com/developer/docs#daily-chart-charts
 
 nest g resource stockUser
+
+oneToOne:
+one User have only One stockUser(user-list)
+
+ManyToOne:
+many watchList to one stockUser(user-list)
+
+https://nestjs-doc.exceptionfound.com/classes/httpexception.html

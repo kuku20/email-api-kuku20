@@ -15,6 +15,16 @@ curl --location 'http://localhost:3000/stock-user/user-list' \
     "listTickers": ["AAL","NCLH"]
 }'
 
+### update this list
+curl --location --request PATCH 'http://localhost:3000/stock-user/user-list/c0ad60b4-e391-429a-8571-f77f1a8cc5fd' \
+--header 'Content-Type: application/json' \
+--data '{
+    "listTickers": ["AAL","NO"]
+}'
+
+### Get Update c0ad60b4-e391-429a-8571-f77f1a8cc5fd
+GET http://localhost:3000/stock-user/user-list/c0ad60b4-e391-429a-8571-f77f1a8cc5fd
+
 ### Sign IN
 curl --location 'http://localhost:3000/auth/v2/signin' \
 --header 'Content-Type: application/json' \
@@ -35,22 +45,46 @@ curl --location 'http://localhost:3000/stock-user/user-list' \
 ### Get all user-lists
 GET http://localhost:3000/stock-user/all-lists
 
-### Get all user-lists
-GET http://localhost:3000/stock-user/user-list/c0ad60b4-e391-429a-8571-f77f1a8cc5fd
 ### Get all all-watchlists
 GET http://localhost:3000/stock-user/all-watchlists
 
-### Delete
-curl --location --request DELETE 'http://localhost:3000/stock-user/user-list/81354b21-41a4-4edc-b327-aff34eda6070'
+### Get user list c0ad60b4-e391-429a-8571-f77f1a8cc5fd
+GET http://localhost:3000/stock-user/user-list/c0ad60b4-e391-429a-8571-f77f1a8cc5fd
 
-###
-curl --location --request DELETE 'http://localhost:3000/stock-user/watchlist/dae29364-8830-48c3-8228-eaa8f784693d'
+
+### Get user list 6cbc11b8-cc22-4a97-8f4f-0fe92b2fff7d
+GET http://localhost:3000/stock-user/user-list/6cbc11b8-cc22-4a97-8f4f-0fe92b2fff7d
+
+
+
+### Delete user-list c0ad60b4-e391-429a-8571-f77f1a8cc5fd
+curl --location --request DELETE 'http://localhost:3000/stock-user/user-list/c0ad60b4-e391-429a-8571-f77f1a8cc5fd'
+
+### Delete user-list 6cbc11b8-cc22-4a97-8f4f-0fe92b2fff7d
+curl --location --request DELETE 'http://localhost:3000/stock-user/user-list/6cbc11b8-cc22-4a97-8f4f-0fe92b2fff7d'
+
+### Delete watchlist
+curl --location --request DELETE 'http://localhost:3000/stock-user/watchlist/c0ad60b4-e391-429a-8571-f77f1a8cc5fd/9f0a85d0-8ad2-4fc2-b650-0ebe72aa64f2'
+
+
+### update watchlist
+curl --location --request PATCH 'http://localhost:3000/stock-user/watchlist/c0ad60b4-e391-429a-8571-f77f1a8cc5fd/4dcf22eb-9359-4fc2-93db-8adfe270d279' \
+--header 'Content-Type: application/json' \
+--data '{
+    "dateAdded": "2023-11-09",
+    "pctChangeAtAdded": -1.5981,
+    "priceAtAdded": 62.19,
+    "symbol":"BILL",
+    "spotline":true
+}'
+
+
 ### post watchlist
 curl --location 'http://localhost:3000/stock-user/watchlist' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "id": "c0ad60b4-e391-429a-8571-f77f1a8cc5fd",
-    "stockUserId":"eb3ca0f6-0bc9-42eb-918d-778664f933ae",
+    "stockUserId":"e8bd3075-ba07-4c82-b358-2a4af951a612",
     "dateAdded": "2023-11-09",
     "pctChangeAtAdded": -1.5981,
     "priceAtAdded": 62.19,
@@ -62,7 +96,7 @@ curl --location 'http://localhost:3000/stock-user/watchlist' \
 curl --location 'http://localhost:3000/stock-user/watchlist' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "id": "c0ad60b4-e391-429a-8571-f77f1a8cc5fd",
+    "id": "6cbc11b8-cc22-4a97-8f4f-0fe92b2fff7d",
     "stockUserId":"42b25434-47a6-44d3-b4e1-74ad8a445637",
     "dateAdded": "2023-11-09",
     "pctChangeAtAdded": -1.7759,

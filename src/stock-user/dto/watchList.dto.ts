@@ -5,9 +5,8 @@ import {
   IsBoolean,
   IsString,
   IsOptional,
-  IsDecimal,
 } from 'class-validator';
-import { Decimal128 } from 'typeorm';
+
 
 export class WatchListDto {
   @IsUUID()

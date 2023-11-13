@@ -13,5 +13,5 @@ export class CreateStockUserDto {
   @IsOptional()
   watchlists?: WatchListDto[];
 
-  userId: string;
+  userId: UserDto;
 }
