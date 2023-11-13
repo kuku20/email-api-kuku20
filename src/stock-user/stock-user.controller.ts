@@ -6,15 +6,27 @@ import { WatchListDto,CreateStockUserDto,UpdateStockUserDto } from './dto';
 export class StockUserController {
   constructor(private readonly stockUserService: StockUserService) {}
 
-  @Post('/list')
+  @Post('/user-list')
   createStockUser(@Body() createStockUserDto: CreateStockUserDto) {
     return this.stockUserService.createStockUser(createStockUserDto);
+  }
+
+  @Delete('/user-list/:id')
+  removelist(@Param('id') id: string) {
+    return this.stockUserService.removeStockUserList(id);
   }
 
   @Post('/watchlist')
   createWatchList(@Body() createwatchListDto: WatchListDto) {
     return this.stockUserService.createWatchList(createwatchListDto);
   }
+
+  @Delete('/watchlist/:id')
+  removewatchlist(@Param('id') id: string) {
+    return this.stockUserService.removeList(id);
+  }
+
+
 
   @Get('/all-lists')
   findAllStockUsers() {
@@ -26,18 +38,10 @@ export class StockUserController {
     return this.stockUserService.findAllwatchlists();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.stockUserService.findOne(+id);
-  }
-
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateStockUserDto: UpdateStockUserDto) {
     return this.stockUserService.update(+id, updateStockUserDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.stockUserService.remove(+id);
-  }
+  
 }
