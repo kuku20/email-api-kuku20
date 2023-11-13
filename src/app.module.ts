@@ -16,6 +16,9 @@ import { join } from 'path';
 import { ContentfulModule } from './contentful/contentful.module';
 import { StockModule } from './stock/stock.module';
 import { AuthModule } from './auth/auth.module';
+import { StockUserModule } from './stock-user/stock-user.module';
+import { StockUser } from './stock-user/entities/stock-user.entity';
+import { WatchList } from './stock-user/entities/watchlist.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -36,7 +39,7 @@ import { AuthModule } from './auth/auth.module';
         },
       }),
     }),
-    
+
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
@@ -51,7 +54,14 @@ import { AuthModule } from './auth/auth.module';
           extra: {
             options: routingId,
           },
-          entities: [User, Product, ProductBrand, ProductType],
+          entities: [
+            User,
+            Product,
+            ProductBrand,
+            ProductType,
+            StockUser,
+            WatchList,
+          ],
           synchronize: true,
         };
       },
@@ -64,7 +74,8 @@ import { AuthModule } from './auth/auth.module';
     }),
     ContentfulModule,
     StockModule,
-    AuthModule
+    AuthModule,
+    StockUserModule,
   ],
   controllers: [AppController],
   providers: [AppService],

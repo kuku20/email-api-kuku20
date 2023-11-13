@@ -1,5 +1,6 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { StockService } from './stock.service';
+import { JwtGuard } from 'src/auth/guard';
 
 @Controller('stock')
 export class StockController {

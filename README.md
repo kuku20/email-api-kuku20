@@ -16,3 +16,5 @@ nest g co stock
 nest g s stock
 
 https://site.financialmodelingprep.com/developer/docs#daily-chart-charts
+
+nest g resource stockUser
