@@ -30,5 +30,5 @@ export class WatchList {
 
   @ManyToOne(() => StockUser, (stockUser) => stockUser.watchlists)
   @JoinColumn({ name: 'stockUserId' }) // Specify the column name for the foreign key
-  stockUserId: string;
+  stockUserId: StockUser;
 }

@@ -26,7 +26,10 @@ export class StockUserController {
     return this.stockUserService.removeList(id);
   }
 
-
+  @Get('/user-list/:id')
+  getUserListById(@Param('id') id: string) {
+    return this.stockUserService.findStockUserByUserId(id);
+  }
 
   @Get('/all-lists')
   findAllStockUsers() {

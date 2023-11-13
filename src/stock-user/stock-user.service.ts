@@ -3,8 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { StockUser } from './entities/stock-user.entity';
 import { WatchList } from './entities/watchlist.entity';
-import { CreateStockUserDto, WatchListDto, UpdateStockUserDto } from './dto';
+import { CreateStockUserDto, WatchListDto, UpdateStockUserDto, UserListOutDto } from './dto';
 import { User } from 'src/user/user.entity';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class StockUserService {
@@ -25,7 +26,7 @@ export class StockUserService {
 
     // Create the StockUser entity
     const stockUser = this.stockUserRepo.create({
-      userId: user.id,
+      userId: user,
       listTickers: createStockUserDto.listTickers,
     });
 
@@ -34,29 +35,50 @@ export class StockUserService {
   }
 
   async createWatchList(watchListDto: WatchListDto): Promise<WatchList> {
+    const user = await this.stockUserRepo.findOneOrFail({
+      where: { id: watchListDto.stockUserId },
+    });
     const watchlist = this.watchListRepo.create({
       dateAdded: watchListDto.dateAdded,
       pctChangeAtAdded: watchListDto.pctChangeAtAdded,
       priceAtAdded: watchListDto.priceAtAdded,
       spotline: watchListDto.spotline,
       symbol: watchListDto.symbol,
-      stockUserId: watchListDto.stockUserId,
+      stockUserId: user,
     });
     return await this.watchListRepo.save(watchlist);
   }
 
   async findAllStockUsers() {
     const stockUserRepo = await this.stockUserRepo.find({
-      relations: ['userId','watchlists'], // Load the associated userId
+      // relations: ['userId','watchlists'], // Load the associated userId
+      relations: ['watchlists'], // Load the associated userId
     });
     return stockUserRepo;
+    return plainToInstance(UserListOutDto, stockUserRepo);
   }
+
+  async findStockUserByUserId(userId: string) {
+    const stockUser = await this.stockUserRepo.findOne({
+      where: { userId: { id: userId } },
+      relations: ['watchlists'], // Load the associated watchlists
+    });
+  
+    if (!stockUser) {
+      return null; // Or throw an exception, depending on your use case
+    }
+  
+    return stockUser;
+    return plainToInstance(UserListOutDto, stockUser);
+  }
+
 
   async findAllwatchlists() {
     const watchListRepo = await this.watchListRepo.find({
       relations: ['stockUserId',], // Load the associated userId
     });
-    return watchListRepo;
+    // return watchListRepo;
+    return plainToInstance(UserListOutDto, watchListRepo);
   }
 
   update(id: number, updateStockUserDto: UpdateStockUserDto) {

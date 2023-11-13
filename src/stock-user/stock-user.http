@@ -15,24 +15,42 @@ curl --location 'http://localhost:3000/stock-user/user-list' \
     "listTickers": ["AAL","NCLH"]
 }'
 
+### Sign IN
+curl --location 'http://localhost:3000/auth/v2/signin' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "email": "test1@gmail.com",
+    "password": "fadfjloc"
+}'
+
+
+### create user list
+curl --location 'http://localhost:3000/stock-user/user-list' \
+--header 'Content-Type: application/json' \
+--data '{
+    "id": "6cbc11b8-cc22-4a97-8f4f-0fe92b2fff7d",
+    "listTickers": ["AAL","NCLH"]
+}'
+
 ### Get all user-lists
 GET http://localhost:3000/stock-user/all-lists
 
-
+### Get all user-lists
+GET http://localhost:3000/stock-user/user-list/c0ad60b4-e391-429a-8571-f77f1a8cc5fd
 ### Get all all-watchlists
 GET http://localhost:3000/stock-user/all-watchlists
 
 ### Delete
-curl --location --request DELETE 'http://localhost:3000/stock-user/user-list/dfdc004a-2ca9-49ef-b42e-fa1045586121'
+curl --location --request DELETE 'http://localhost:3000/stock-user/user-list/81354b21-41a4-4edc-b327-aff34eda6070'
 
 ###
-curl --location --request DELETE 'http://localhost:3000/stock-user/watchlist/f776cf8e-4fa2-481b-a785-cd1f35dd282a'
+curl --location --request DELETE 'http://localhost:3000/stock-user/watchlist/dae29364-8830-48c3-8228-eaa8f784693d'
 ### post watchlist
 curl --location 'http://localhost:3000/stock-user/watchlist' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "id": "c0ad60b4-e391-429a-8571-f77f1a8cc5fd",
-    "stockUserId":"b19c792e-5840-4d87-9adc-1769c8a617c6",
+    "stockUserId":"eb3ca0f6-0bc9-42eb-918d-778664f933ae",
     "dateAdded": "2023-11-09",
     "pctChangeAtAdded": -1.5981,
     "priceAtAdded": 62.19,
@@ -45,7 +63,7 @@ curl --location 'http://localhost:3000/stock-user/watchlist' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "id": "c0ad60b4-e391-429a-8571-f77f1a8cc5fd",
-    "stockUserId":"b19c792e-5840-4d87-9adc-1769c8a617c6",
+    "stockUserId":"42b25434-47a6-44d3-b4e1-74ad8a445637",
     "dateAdded": "2023-11-09",
     "pctChangeAtAdded": -1.7759,
     "priceAtAdded": 155.97,

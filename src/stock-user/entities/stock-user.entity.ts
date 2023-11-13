@@ -24,5 +24,5 @@ export class StockUser {
 
   @OneToOne(() => User)
   @JoinColumn()
-  userId: string;
+  userId: User;
 }
