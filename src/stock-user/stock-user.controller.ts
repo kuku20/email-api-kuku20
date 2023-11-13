@@ -1,11 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { StockUserService } from './stock-user.service';
-import { WatchListDto,CreateStockUserDto,UpdateStockUserDto } from './dto';
+import { WatchListDto, CreateStockUserDto} from './dto';
 import { JwtGuard } from 'src/auth/guard';
 import { UserAuthGuard } from './guard';
 
 @UseGuards(JwtGuard)
-
 @Controller('stock-user')
 export class StockUserController {
   constructor(private readonly stockUserService: StockUserService) {}
@@ -30,7 +38,10 @@ export class StockUserController {
 
   @UseGuards(UserAuthGuard)
   @Patch('user-list/:userId')
-  updateUlist(@Param('userId') userId: string, @Body() updateStockUserDto: UpdateStockUserDto) {
+  updateUlist(
+    @Param('userId') userId: string,
+    @Body() updateStockUserDto: Partial<CreateStockUserDto>,
+  ) {
     return this.stockUserService.updateUlist(userId, updateStockUserDto);
   }
 
@@ -47,7 +58,10 @@ export class StockUserController {
 
   @UseGuards(UserAuthGuard)
   @Patch('/watchlist/:userId/:listId')
-  updatewatchlist(@Param('listId') listId: string, @Body() updateStockUserDto: Partial<WatchListDto>) {
+  updatewatchlist(
+    @Param('listId') listId: string,
+    @Body() updateStockUserDto: Partial<WatchListDto>,
+  ) {
     return this.stockUserService.updatewatchList(listId, updateStockUserDto);
   }
 
@@ -65,6 +79,4 @@ export class StockUserController {
   // update(@Param('id') id: string, @Body() updateStockUserDto: UpdateStockUserDto) {
   //   return this.stockUserService.update(+id, updateStockUserDto);
   // }
-
-  
 }

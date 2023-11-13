@@ -11,7 +11,6 @@ import { WatchList } from './entities/watchlist.entity';
 import {
   CreateStockUserDto,
   WatchListDto,
-  UpdateStockUserDto,
   UserListOutDto,
 } from './dto';
 import { User } from 'src/user/user.entity';
@@ -131,7 +130,7 @@ export class StockUserService {
     return plainToInstance(UserListOutDto, watchListRepo);
   }
 
-  async updateUlist(userId: string, updateStockUserDto: UpdateStockUserDto) {
+  async updateUlist(userId: string, updateStockUserDto: Partial<CreateStockUserDto>) {
     try {
       const userlist = await this.stockUserRepo.findOne({
         where: { userId: { id: userId } },
