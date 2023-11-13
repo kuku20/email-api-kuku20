@@ -3,6 +3,7 @@ import {
   InternalServerErrorException,
   NotAcceptableException,
   NotFoundException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityNotFoundError, QueryFailedError, Repository } from 'typeorm';
@@ -50,6 +51,9 @@ export class StockUserService {
         throw new NotFoundException(
           `This user id ${createStockUserDto.id} has list-stock`,
         );
+      }else if (error instanceof QueryFailedError) {
+        // Handle query execution error
+        throw new NotAcceptableException('You cannot have more than 1 user-list');
       }
       // Handle other errors or rethrow
       throw error;
@@ -58,6 +62,15 @@ export class StockUserService {
 
   async createWatchList(watchListDto: WatchListDto): Promise<WatchList> {
     try {
+      const stockUser = await this.stockUserRepo.findOne({
+        where: { userId: { id: watchListDto.id } },
+        relations: ['watchlists'], // Load the associated watchlists
+      });
+
+      
+      if(stockUser.id!==watchListDto.stockUserId){
+        throw new InternalServerErrorException('Error executing the query');
+      }
       const user = await this.stockUserRepo.findOneOrFail({
         where: { id: watchListDto.stockUserId },
       });
@@ -100,6 +113,8 @@ export class StockUserService {
         where: { userId: { id: userId } },
         relations: ['watchlists'], // Load the associated watchlists
       });
+
+      console.log(stockUser)
 
       if (!stockUser) {
         throw new NotFoundException(`You don't have any list`);

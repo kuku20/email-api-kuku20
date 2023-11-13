@@ -24,6 +24,7 @@ export class StockUserController {
     return this.stockUserService.createStockUser(createStockUserDto);
   }
 
+  // @UseGuards(UserAuthGuard)
   @Post('/watchlist')
   createWatchList(@Body() createwatchListDto: WatchListDto) {
     return this.stockUserService.createWatchList(createwatchListDto);
@@ -65,13 +66,13 @@ export class StockUserController {
     return this.stockUserService.updatewatchList(listId, updateStockUserDto);
   }
 
-  // @Get('/all-lists')
-  // findAllStockUsers() {
-  //   return this.stockUserService.findAllStockUsers();
-  // }
+  @Get('/all-lists')
+  findAllStockUsers() {
+    return this.stockUserService.findAllStockUsers();
+  }
 
-  // @Get('/all-watchlists')
-  // findAllwatchlists() {
-  //   return this.stockUserService.findAllwatchlists();
-  // }
+  @Get('/all-watchlists')
+  findAllwatchlists() {
+    return this.stockUserService.findAllwatchlists();
+  }
 }
