@@ -26,3 +26,5 @@ ManyToOne:
 many watchList to one stockUser(user-list)
 
 https://nestjs-doc.exceptionfound.com/classes/httpexception.html
+
+need UseGuards @Post('/watchlist') and @Post('/user-list')

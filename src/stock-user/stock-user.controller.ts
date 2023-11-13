@@ -24,6 +24,11 @@ export class StockUserController {
     return this.stockUserService.createStockUser(createStockUserDto);
   }
 
+  @Post('/watchlist')
+  createWatchList(@Body() createwatchListDto: WatchListDto) {
+    return this.stockUserService.createWatchList(createwatchListDto);
+  }
+
   @UseGuards(UserAuthGuard)
   @Delete('/user-list/:userId')
   removeUlist(@Param('userId') userId: string) {
@@ -45,11 +50,6 @@ export class StockUserController {
     return this.stockUserService.updateUlist(userId, updateStockUserDto);
   }
 
-  @Post('/watchlist')
-  createWatchList(@Body() createwatchListDto: WatchListDto) {
-    return this.stockUserService.createWatchList(createwatchListDto);
-  }
-
   @UseGuards(UserAuthGuard)
   @Delete('/watchlist/:userId/:listId')
   removewatchlist(@Param('listId') listId: string) {
@@ -65,18 +65,13 @@ export class StockUserController {
     return this.stockUserService.updatewatchList(listId, updateStockUserDto);
   }
 
-  @Get('/all-lists')
-  findAllStockUsers() {
-    return this.stockUserService.findAllStockUsers();
-  }
+  // @Get('/all-lists')
+  // findAllStockUsers() {
+  //   return this.stockUserService.findAllStockUsers();
+  // }
 
-  @Get('/all-watchlists')
-  findAllwatchlists() {
-    return this.stockUserService.findAllwatchlists();
-  }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateStockUserDto: UpdateStockUserDto) {
-  //   return this.stockUserService.update(+id, updateStockUserDto);
+  // @Get('/all-watchlists')
+  // findAllwatchlists() {
+  //   return this.stockUserService.findAllwatchlists();
   // }
 }
