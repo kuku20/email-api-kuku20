@@ -4,11 +4,11 @@ import { StockUserController } from './stock-user.controller';
 import { StockUser } from './entities/stock-user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { WatchList } from './entities/watchlist.entity';
-import { User } from 'src/user/user.entity';
+import { UserAuth } from 'src/auth/userAuth.entity';
 
 @Module({
   controllers: [StockUserController],
   providers: [StockUserService],
-  imports: [TypeOrmModule.forFeature([StockUser, WatchList, User])],
+  imports: [TypeOrmModule.forFeature([StockUser, WatchList, UserAuth])],
 })
 export class StockUserModule {}

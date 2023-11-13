@@ -13,8 +13,8 @@ import {
   WatchListDto,
   UserListOutDto,
 } from './dto';
-import { User } from 'src/user/user.entity';
 import { plainToInstance } from 'class-transformer';
+import { UserAuth } from 'src/auth/userAuth.entity';
 
 @Injectable()
 export class StockUserService {
@@ -23,8 +23,8 @@ export class StockUserService {
     private stockUserRepo: Repository<StockUser>,
     @InjectRepository(WatchList)
     private watchListRepo: Repository<WatchList>,
-    @InjectRepository(User)
-    private userRepo: Repository<User>,
+    @InjectRepository(UserAuth)
+    private userRepo: Repository<UserAuth>,
   ) {}
   async createStockUser(
     createStockUserDto: CreateStockUserDto,

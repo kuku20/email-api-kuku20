@@ -4,7 +4,6 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
-  Decimal128,
 } from 'typeorm';
 import { StockUser } from './stock-user.entity'; // Update the import path
 

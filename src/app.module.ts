@@ -19,6 +19,7 @@ import { AuthModule } from './auth/auth.module';
 import { StockUserModule } from './stock-user/stock-user.module';
 import { StockUser } from './stock-user/entities/stock-user.entity';
 import { WatchList } from './stock-user/entities/watchlist.entity';
+import { UserAuth } from './auth/userAuth.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -61,6 +62,7 @@ import { WatchList } from './stock-user/entities/watchlist.entity';
             ProductType,
             StockUser,
             WatchList,
+            UserAuth
           ],
           synchronize: true,
         };

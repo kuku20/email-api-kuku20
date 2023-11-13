@@ -7,7 +7,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { WatchList } from './watchlist.entity'; // Update the import path
-import { User } from '../../user/user.entity';
+import { UserAuth } from 'src/auth/userAuth.entity';
 
 @Entity()
 export class StockUser {
@@ -22,7 +22,7 @@ export class StockUser {
   })
   watchlists: WatchList[];
 
-  @OneToOne(() => User)
+  @OneToOne(() => UserAuth)
   @JoinColumn()
-  userId: User;
+  userId: UserAuth;
 }
