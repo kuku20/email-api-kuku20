@@ -1,0 +1,119 @@
+### Sign IN
+curl --location 'http://localhost:3000/auth/v2/signin' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "email": "test@gmail.com",
+    "password": "fadfjloc"
+}'
+
+
+### create user list
+curl --location 'http://localhost:3000/stock-user/user-list' \
+--header 'Content-Type: application/json' \
+--data '{
+    "id": "bc5686e9-43b7-4fe6-9070-cdde11a574e5",
+    "listTickers": ["AAL","NCLH"]
+}'
+
+### update this list
+curl --location --request PATCH 'http://localhost:3000/stock-user/user-list/bc5686e9-43b7-4fe6-9070-cdde11a574e5' \
+--header 'Content-Type: application/json' \
+--data '{
+    "listTickers": ["NTES","JJSF","aal"]
+}'
+
+### Get Update bc5686e9-43b7-4fe6-9070-cdde11a574e5
+GET http://localhost:3000/stock-user/user-list/bc5686e9-43b7-4fe6-9070-cdde11a574e5
+
+### Sign IN
+curl --location 'http://localhost:3000/auth/v2/signin' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "email": "test1@gmail.com",
+    "password": "fadfjloc"
+}'
+
+
+### create user list
+curl --location 'http://localhost:3000/stock-user/user-list' \
+--header 'Content-Type: application/json' \
+--data '{
+    "id": "39a6072b-abc2-4092-921e-91aab42fa443",
+    "listTickers": ["AAL","NCLH"]
+}'
+
+### Get all user-lists
+GET http://localhost:3000/stock-user/all-lists
+
+### Get all all-watchlists
+GET http://localhost:3000/stock-user/all-watchlists
+
+### Get user list bc5686e9-43b7-4fe6-9070-cdde11a574e5
+GET http://localhost:3000/stock-user/user-list/bc5686e9-43b7-4fe6-9070-cdde11a574e5
+
+
+### Get user list 39a6072b-abc2-4092-921e-91aab42fa443
+GET http://localhost:3000/stock-user/user-list/39a6072b-abc2-4092-921e-91aab42fa443
+
+### Get user list e1240614-ea62-4815-a264-a9b7fb531c3c of NEW USER "statusCode": 404,=> call create userlist
+GET http://localhost:3000/stock-user/user-list/e1240614-ea62-4815-a264-a9b7fb531c3c
+
+
+### Delete user-list bc5686e9-43b7-4fe6-9070-cdde11a574e5
+curl --location --request DELETE 'http://localhost:3000/stock-user/user-list/bc5686e9-43b7-4fe6-9070-cdde11a574e5'
+
+### Delete user-list 39a6072b-abc2-4092-921e-91aab42fa443
+curl --location --request DELETE 'http://localhost:3000/stock-user/user-list/39a6072b-abc2-4092-921e-91aab42fa443'
+
+### Delete watchlist
+curl --location --request DELETE 'http://localhost:3000/stock-user/watchlist/bc5686e9-43b7-4fe6-9070-cdde11a574e5/9f0a85d0-8ad2-4fc2-b650-0ebe72aa64f2'
+
+
+### update watchlist
+curl --location --request PATCH 'http://localhost:3000/stock-user/watchlist/bc5686e9-43b7-4fe6-9070-cdde11a574e5/90fd496c-a1a3-400b-a9fc-a09f1f9ebeb6' \
+--header 'Content-Type: application/json' \
+--data '{
+    "dateAdded": "2023-11-09",
+    "pctChangeAtAdded": -1.5981,
+    "priceAtAdded": 62.19,
+    "symbol":"AAL",
+    "spotline":true
+}'
+
+### post watchlist "statusCode": 200
+curl --location 'http://localhost:3000/stock-user/watchlist' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "id": "39a6072b-abc2-4092-921e-91aab42fa443",
+    "stockUserId":"130d60a1-3e28-4a8b-9c3c-8f38ee812ba8",
+    "dateAdded": "2023-11-09",
+    "pctChangeAtAdded": -1.5981,
+    "priceAtAdded": 62.19,
+    "symbol":"BILL",
+    "spotline":false
+}'
+
+### post watchlist "statusCode": 500
+curl --location 'http://localhost:3000/stock-user/watchlist' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "id": "bc5686e9-43b7-4fe6-9070-cdde11a574e5",
+    "stockUserId":"130d60a1-3e28-4a8b-9c3c-8f38ee812ba8",
+    "dateAdded": "2023-11-09",
+    "pctChangeAtAdded": -1.5981,
+    "priceAtAdded": 62.19,
+    "symbol":"AAL",
+    "spotline":false
+}'
+
+### post watchlist AAL
+curl --location 'http://localhost:3000/stock-user/watchlist' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "id": "bc5686e9-43b7-4fe6-9070-cdde11a574e5",
+    "stockUserId":"ac48cca9-6203-49a7-9acd-cc1f0d3f4f08",
+    "dateAdded": "2023-11-09",
+    "pctChangeAtAdded": -1.7759,
+    "priceAtAdded": 155.97,
+    "symbol":"AAL"
+}'

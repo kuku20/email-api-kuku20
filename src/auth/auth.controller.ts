@@ -12,7 +12,7 @@ import { AuthService } from './auth.service';
 import { AuthDto } from './dto'; // all in dto more code less import
 import { Response } from 'express';
 import { GetUser } from './decorator';
-import { User } from './user.entity';
+import { UserAuth } from './userAuth.entity';
 import { JwtGuard } from './guard';
 
 @Controller('auth/v2')

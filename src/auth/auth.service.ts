@@ -35,9 +35,11 @@ export class AuthService {
       const token = await this.signToken(user.id, user.email);
       if (!token) throw new ForbiddenException('NOT Valid token');
 
-      response.cookie('token', token, { sameSite: 'none', secure: true });
+      // response.cookie('token', token, { sameSite: 'none', secure: true });
+      response.cookie('token', token);
 
       return {
+        id: user.id,
         message: 'Logged in succefully',
       };
     } catch (error) {
@@ -61,19 +63,22 @@ export class AuthService {
     const token = await this.signToken(user.id, user.email);
     if (!token) throw new ForbiddenException('NOT Valid token');
 
-    response.cookie('token', token, { sameSite: 'none', secure: true });
+    response.cookie('token', token);
+    // response.cookie('token', token, { sameSite: 'none', secure: true });
 
     return {
+      id: user.id,
       message: 'Logged in succefully',
     };
   }
 
   async signout(@Res({ passthrough: true }) response?: Response) {
-    response.clearCookie('token', { sameSite: 'none', secure: true });
+    response.clearCookie('token');
+    // response.clearCookie('token', { sameSite: 'none', secure: true });
     return { message: 'Logged out succefully' };
   }
 
-  async signToken(userId: number, email: string): Promise<any> {
+  async signToken(userId: string, email: string): Promise<any> {
     const payload = {
       sub: userId,
       email,
