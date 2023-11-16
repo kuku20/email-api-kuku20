@@ -35,7 +35,7 @@ export class AuthService {
       const token = await this.signToken(user.id, user.email);
       if (!token) throw new ForbiddenException('NOT Valid token');
 
-      response.cookie('token', token, { sameSite: 'none', secure: true });
+      response.cookie('token', token, { sameSite: 'none', secure: true, httpOnly: true });
       // response.cookie('token', token);
 
       return {
@@ -64,7 +64,7 @@ export class AuthService {
     if (!token) throw new ForbiddenException('NOT Valid token');
 
     // response.cookie('token', token);
-    response.cookie('token', token, { sameSite: 'none', secure: true });
+    response.cookie('token', token, { sameSite: 'none', secure: true, httpOnly: true });
 
     return {
       id: user.id,
@@ -74,7 +74,7 @@ export class AuthService {
 
   async signout(@Res({ passthrough: true }) response?: Response) {
     // response.clearCookie('token');
-    response.clearCookie('token', { sameSite: 'none', secure: true });
+    response.clearCookie('token', { sameSite: 'none', secure: true, httpOnly: true });
     return { message: 'Logged out succefully' };
   }
 
