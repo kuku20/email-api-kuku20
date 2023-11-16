@@ -13,6 +13,7 @@ import {
   CreateStockUserDto,
   WatchListDto,
   UserListOutDto,
+  ListOutDto,
 } from './dto';
 import { plainToInstance } from 'class-transformer';
 import { UserAuth } from 'src/auth/userAuth.entity';
@@ -82,7 +83,9 @@ export class StockUserService {
         symbol: watchListDto.symbol,
         stockUserId: user,
       });
-      return await this.watchListRepo.save(watchlist);
+      const newList = await this.watchListRepo.save(watchlist)
+      // return newList;
+      return plainToInstance(ListOutDto, newList);
     } catch (error) {
       if (error instanceof EntityNotFoundError) {
         // Handle not found exception as needed
@@ -113,8 +116,6 @@ export class StockUserService {
         where: { userId: { id: userId } },
         relations: ['watchlists'], // Load the associated watchlists
       });
-
-      console.log(stockUser)
 
       if (!stockUser) {
         throw new NotFoundException(`You don't have any list`);
@@ -178,7 +179,9 @@ export class StockUserService {
         throw new NotFoundException('List not found');
       }
       Object.assign(list, watchListDto);
-      return this.watchListRepo.save(list);
+      const newList = await this.watchListRepo.save(list)
+      // return newList;
+      return plainToInstance(ListOutDto, newList);
     } catch (error) {
       if (error instanceof EntityNotFoundError) {
         // Handle not found exception as needed

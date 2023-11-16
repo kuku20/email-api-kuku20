@@ -19,7 +19,7 @@ curl --location 'http://localhost:3000/stock-user/user-list' \
 curl --location --request PATCH 'http://localhost:3000/stock-user/user-list/bc5686e9-43b7-4fe6-9070-cdde11a574e5' \
 --header 'Content-Type: application/json' \
 --data '{
-    "listTickers": ["AAL","NO"]
+    "listTickers": ["NTES","JJSF","aal"]
 }'
 
 ### Get Update bc5686e9-43b7-4fe6-9070-cdde11a574e5
@@ -70,13 +70,13 @@ curl --location --request DELETE 'http://localhost:3000/stock-user/watchlist/bc5
 
 
 ### update watchlist
-curl --location --request PATCH 'http://localhost:3000/stock-user/watchlist/bc5686e9-43b7-4fe6-9070-cdde11a574e5/93ba41f5-3d6d-4041-87ed-144122e3a083' \
+curl --location --request PATCH 'http://localhost:3000/stock-user/watchlist/bc5686e9-43b7-4fe6-9070-cdde11a574e5/90fd496c-a1a3-400b-a9fc-a09f1f9ebeb6' \
 --header 'Content-Type: application/json' \
 --data '{
     "dateAdded": "2023-11-09",
     "pctChangeAtAdded": -1.5981,
     "priceAtAdded": 62.19,
-    "symbol":"BILL",
+    "symbol":"AAL",
     "spotline":true
 }'
 
@@ -102,18 +102,18 @@ curl --location 'http://localhost:3000/stock-user/watchlist' \
     "dateAdded": "2023-11-09",
     "pctChangeAtAdded": -1.5981,
     "priceAtAdded": 62.19,
-    "symbol":"BILL",
+    "symbol":"AAL",
     "spotline":false
 }'
 
-### post watchlist FANG
+### post watchlist AAL
 curl --location 'http://localhost:3000/stock-user/watchlist' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "id": "39a6072b-abc2-4092-921e-91aab42fa443",
-    "stockUserId":"42b25434-47a6-44d3-b4e1-74ad8a445637",
+    "id": "bc5686e9-43b7-4fe6-9070-cdde11a574e5",
+    "stockUserId":"ac48cca9-6203-49a7-9acd-cc1f0d3f4f08",
     "dateAdded": "2023-11-09",
     "pctChangeAtAdded": -1.7759,
     "priceAtAdded": 155.97,
-    "symbol":"FANG"
+    "symbol":"AAL"
 }'
