@@ -15,6 +15,11 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { ContentfulModule } from './contentful/contentful.module';
 import { StockModule } from './stock/stock.module';
+import { AuthModule } from './auth/auth.module';
+import { StockUserModule } from './stock-user/stock-user.module';
+import { StockUser } from './stock-user/entities/stock-user.entity';
+import { WatchList } from './stock-user/entities/watchlist.entity';
+import { UserAuth } from './auth/userAuth.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -35,7 +40,7 @@ import { StockModule } from './stock/stock.module';
         },
       }),
     }),
-    
+
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
@@ -50,8 +55,16 @@ import { StockModule } from './stock/stock.module';
           extra: {
             options: routingId,
           },
-          entities: [User, Product, ProductBrand, ProductType],
-          synchronize: false,
+          entities: [
+            User,
+            Product,
+            ProductBrand,
+            ProductType,
+            StockUser,
+            WatchList,
+            UserAuth
+          ],
+          synchronize: true,
         };
       },
     }),
@@ -63,6 +76,8 @@ import { StockModule } from './stock/stock.module';
     }),
     ContentfulModule,
     StockModule,
+    AuthModule,
+    StockUserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
