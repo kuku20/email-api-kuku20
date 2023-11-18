@@ -28,3 +28,7 @@ many watchList to one stockUser(user-list)
 https://nestjs-doc.exceptionfound.com/classes/httpexception.html
 
 need UseGuards @Post('/watchlist') and @Post('/user-list')
+
+
+  "sentiment_score_definition": "x <= -0.35: Bearish; -0.35 < x <= -0.15: Somewhat-Bearish; -0.15 < x < 0.15: Neutral; 0.15 <= x < 0.35: Somewhat_Bullish; x >= 0.35: Bullish",
+  "relevance_score_definition": "0 < x <= 1, with a higher score indicating higher relevance.",

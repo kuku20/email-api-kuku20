@@ -7,3 +7,6 @@ export * from './bulkRequests.dto';
 export * from './gainerOrLoser.dto';
 export * from './companyProfile.dto';
 export * from './SearchSymbolOutFMP.dto';
+export * from './NewsAlphaVantageOut.dto';
+export * from './NewsFinnhubOut.dto';
+export * from './EarningCalFinnhubOut.dto';

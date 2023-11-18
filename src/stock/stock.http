@@ -12,10 +12,10 @@ curl --location 'http://localhost:3000/stock/v2/realtimeprice?stockTicker=ROKU'
 curl --location 'http://localhost:3000/stock/realtimepriceall'
 
 ### Get ticker news for 5day
-curl --location 'http://localhost:3000/stock/news?stockTicker=AAL'
+curl --location 'http://localhost:3000/stock/news-finn-hub?stockTicker=AAL'
 
 ### Get ticker news from 2023-01-11 to 2023-02-11
-curl --location 'http://localhost:3000/stock/news?stockTicker=AAL&start=2023-01-11&end=2023-02-11'
+curl --location 'http://localhost:3000/stock/news-finn-hub?stockTicker=AAL&start=2023-01-11&end=2023-02-11'
 
 ### Get list ticker for type ahead
 curl --location 'http://localhost:3000/stock/typeahead?stockTicker=BILL'
@@ -62,7 +62,10 @@ https://api.stockdata.org/v1/news/all?symbols=TSLA,AMZN,MSFT&filter_entities=tru
 https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=AAPL&apikey=4Q8CK4DC1YAI8FP0
 
 ###Get New form  news-alpha-vantage
-curl --location 'http://localhost:3000/stock/news-alpha-vantage?stockTicker=TSLA'
+curl --location 'http://localhost:3000/stock/news-alpha-vantage?stockTicker=AAL'
 
 ###Get New form 
-curl --location 'http://localhost:3000/stock/news-stock-data?stockTicker=TSLA,AAL'
+curl --location 'http://localhost:3000/stock/news-stock-data?stockTicker=TSLA'
+
+###
+curl --location 'https://api.stockdata.org/v1/news/all?filter_entities=true&language=en&api_token=0OdHuywpP3fEcY08womcfgMgTQZqTnUsnrNR3bT3&published_before=2023-11-18T02%3A00%3A00&published_after=2023-11-18T01%3A00%3A00&symbols=TSLA'

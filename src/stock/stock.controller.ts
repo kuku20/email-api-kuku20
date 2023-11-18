@@ -21,20 +21,7 @@ export class StockController {
     @Get('/typeahead')
     async listTicker(@Query('stockTicker') stockTicker: string,) {
       try {
-        const data = await this.stockService.tickerList_FINNHUB(stockTicker);
-        return data;
-      } catch (error) {
-        // Handle errors here
-        throw error;
-      }
-    }
-
-    @Get('/news')
-    async tickerNews(@Query('stockTicker') stockTicker: string,
-    @Query('start') start: string,
-    @Query('end') end: string,) {
-      try {
-        const data = await this.stockService.tickerNews_FINNHUB(stockTicker, start, end);
+        const data = await this.stockService.tickerList_POLYGON(stockTicker);
         return data;
       } catch (error) {
         // Handle errors here
@@ -136,6 +123,19 @@ export class StockController {
     async companyProfile(@Query('stockTicker') stockTicker: string,) {
       try {
         const data = await this.stockService.companyProfile_FINNHUB(stockTicker);
+        return data;
+      } catch (error) {
+        // Handle errors here
+        throw error;
+      }
+    }
+
+    @Get('/news-finn-hub')
+    async tickerNews(@Query('stockTicker') stockTicker: string,
+    @Query('start') start: string,
+    @Query('end') end: string,) {
+      try {
+        const data = await this.stockService.tickerNews_FINNHUB(stockTicker, start, end);
         return data;
       } catch (error) {
         // Handle errors here

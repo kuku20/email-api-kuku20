@@ -6,8 +6,11 @@ import {
   BulkRequestsDto,
   CompanyProfileDto,
   DividendOutDto,
+  EarningCalFinnhubOut,
   GainersOrLosersDto,
   InsiderTransactionsDto,
+  NewsAlphaVantageOutDto,
+  NewsFinnhubOutDto,
   RealTimePriceFinnhubDto,
   SearchSymbolOutFMPDto,
   SearchSymbolOutFinnhubDto,
@@ -16,7 +19,6 @@ import {
 
 @Injectable()
 export class StockService {
-  
   constructor(private readonly configService: ConfigService) {}
 
   async search_POLYGON(query: string, start?: string, end?: string) {
@@ -49,13 +51,13 @@ export class StockService {
     const current = end || new Date().toISOString().replace(/T.*$/, '');
     const BASE_URL = `https://finnhub.io/api/v1/company-news?symbol=${query}&from=${lastFiveDays}&to=${current}&token=`;
     const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
-    return response;
+    return plainToClass(NewsFinnhubOutDto, response);
   }
 
   async tickerDividends_POLYGON(query: string) {
     const BASE_URL = `https://api.polygon.io/v3/reference/dividends?ticker=${query}&apiKey=`;
     const response = await this.tryCatchF(BASE_URL, 'POLYGON_STOCK_API_KEY');
-    return plainToClass(DividendOutDto, response.results);
+    return plainToClass(DividendOutDto, response?.results);
   }
 
   async earningsCal_FINNHUB(start?: string, end?: string) {
@@ -64,9 +66,8 @@ export class StockService {
     today.setMinutes(today.getMinutes() - cstOffset); //set to local Houston Time zone
     const current = end || today.toISOString().replace(/T.*$/, '');
     const BASE_URL = `https://finnhub.io/api/v1/calendar/earnings?from=${current}&to=${current}&token=`;
-
     const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
-    return response.earningsCalendar;
+    return plainToClass(EarningCalFinnhubOut, response?.earningsCalendar);
   }
 
   async realTimePrice_FINNHUB(query: string) {
@@ -78,7 +79,7 @@ export class StockService {
   async insiderTransactions_FINNHUB(query: string) {
     const BASE_URL = `https://finnhub.io/api/v1/stock/insider-transactions?symbol=${query}&token=`;
     const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
-    return plainToClass(InsiderTransactionsDto, response.data);
+    return plainToClass(InsiderTransactionsDto, response?.data);
   }
 
   async bulkrequestsMulCom_FMP(query: string) {
@@ -99,23 +100,22 @@ export class StockService {
   async tickerList_FINNHUB(query: string) {
     const BASE_URL = `https://finnhub.io/api/v1/search?q=${query}&token=`;
     const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
-    // return  response.slice(0, 10);
     return plainToClass(
       SearchSymbolOutFinnhubDto,
-      response.result.slice(0, 10),
+      response?.result?.slice(0, 10),
     );
   }
   async tickerList_FMP(query: string) {
     const BASE_URL = `https://financialmodelingprep.com/api/v3/search?query=${query}&apikey=`;
     const response = await this.tryCatchF(BASE_URL, 'FMP_STOCK_API_KEY');
     // return  response.slice(0, 10);
-    return plainToClass(SearchSymbolOutFMPDto, response.slice(0, 10));
+    return plainToClass(SearchSymbolOutFMPDto, response?.slice(0, 10));
   }
 
   async tickerList_POLYGON(query: string) {
     const BASE_URL = `https://api.polygon.io/v3/reference/tickers?search=${query}&active=true&apiKey=`;
     const response = await this.tryCatchF(BASE_URL, 'POLYGON_STOCK_API_KEY');
-    return plainToClass(SearchSymbolOutPolygonDto, response.results);
+    return plainToClass(SearchSymbolOutPolygonDto, response?.results);
   }
 
   async companyProfile_FINNHUB(query: string) {
@@ -130,29 +130,44 @@ export class StockService {
     return await this.tryCatchF(BASE_URL, 'STOCK_DATA');
   }
 
-  //AAL
+  //AAL NewsAlphaVantageOutDto
   async tickerNews_ALPHA_VANTAGE(query: string) {
     const BASE_URL = `https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=${query}&apikey=`;
-    return await this.tryCatchF(BASE_URL, 'ALPHA_VANTAGE');
+    const response = await this.tryCatchF(BASE_URL, 'ALPHA_VANTAGE');
+    // return  response.feed;
+    return plainToClass(NewsAlphaVantageOutDto, response?.feed);
   }
 
   async tryCatchF(BASE_URL: string, keyDATA: string) {
-    for (const key of this.configService.get<any>(keyDATA).split(',')) {
+    const keys = this.configService.get<any>(keyDATA).split(',');
+    this.shuffleArray(keys);
+    for (const key of keys) {
       const url = `${BASE_URL}${key}`;
       try {
         const response = await axios.get(url);
         return response.data;
       } catch (error) {
-        if (error.response && error.response.status === 500) {
+        if (error?.response && error?.response?.status === 500) {
           // Handle 500 error
-          console.error(`Internal Server Error with key `, error.response.data);
+          console.error(
+            `Internal Server Error with key `,
+            error?.response?.data,
+          );
         } else {
           // Handle other errors
-          console.error(`Error with key ${keyDATA}`, error.message);
+          console.error(`Error with key ${keyDATA}`, error?.message);
         }
       }
     }
     // If none of the API keys work, throw an error
     return null;
+  }
+
+  public shuffleArray(array: any[]) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
   }
 }
