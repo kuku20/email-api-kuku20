@@ -130,7 +130,7 @@ export class StockController {
       }
     }
 
-    @Get('/news-finn-hub')
+    @Get('/news-v1')///news-finn-hub
     async tickerNews(@Query('stockTicker') stockTicker: string,
     @Query('start') start: string,
     @Query('end') end: string,) {
@@ -143,7 +143,7 @@ export class StockController {
       }
     }
 
-    @Get('/news-alpha-vantage')
+    @Get('/news-v2') //news-alpha-vantage
     async tickers_News_ALPHA_VANTAGE(@Query('stockTicker') stockTicker: string) {
       try {
         const data = await this.stockService.tickerNews_ALPHA_VANTAGE(stockTicker);
@@ -154,7 +154,7 @@ export class StockController {
       }
     }
 
-    @Get('/news-stock-data')
+    @Get('/news-v3') //news-alpha-vantage
     async tickers_News_STOCK_DATA(@Query('stockTicker') stockTicker: string) {
       try {
         const data = await this.stockService.tickerNews_STOCK_DATA(stockTicker);
