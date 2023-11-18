@@ -139,7 +139,6 @@ export class StockService {
   async tryCatchF(BASE_URL: string, keyDATA: string) {
     for (const key of this.configService.get<any>(keyDATA).split(',')) {
       const url = `${BASE_URL}${key}`;
-      console.log(url);
       try {
         const response = await axios.get(url);
         return response.data;
