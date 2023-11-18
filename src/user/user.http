@@ -53,3 +53,8 @@ POST  http://localhost:3000/sent
 curl -X 'GET' \
   'http://localhost:3000/shop/products/types' \
   -H 'accept: */*'
+
+###
+GET https://www.alphavantage.co/query?function=TOP_GAINERS_LOSERS&apikey=4Q8CK4DC1YAI8FP0
+
+###

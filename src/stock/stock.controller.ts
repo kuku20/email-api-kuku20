@@ -142,4 +142,26 @@ export class StockController {
         throw error;
       }
     }
+
+    @Get('/news-alpha-vantage')
+    async tickers_News_ALPHA_VANTAGE(@Query('stockTicker') stockTicker: string) {
+      try {
+        const data = await this.stockService.tickerNews_ALPHA_VANTAGE(stockTicker);
+        return data;
+      } catch (error) {
+        // Handle errors here
+        throw error;
+      }
+    }
+
+    @Get('/news-stock-data')
+    async tickers_News_STOCK_DATA(@Query('stockTicker') stockTicker: string) {
+      try {
+        const data = await this.stockService.tickerNews_STOCK_DATA(stockTicker);
+        return data;
+      } catch (error) {
+        // Handle errors here
+        throw error;
+      }
+    }
 }

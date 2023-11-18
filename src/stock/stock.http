@@ -1,5 +1,5 @@
 ### get price by day
-curl --location 'http://localhost:3000/stock/byday?stockTicker=AAU'
+curl --location 'http://localhost:3000/stock/byday?stockTicker=AuiuuuAU'
 
 ### Get current price
 curl --location 'http://localhost:3000/stock/realtimeprice?stockTicker=ROKU'
@@ -21,12 +21,12 @@ curl --location 'http://localhost:3000/stock/news?stockTicker=AAL&start=2023-01-
 curl --location 'http://localhost:3000/stock/typeahead?stockTicker=BILL'
 
 ### Get divident
-curl --location 'http://localhost:3000/stock/dividends?stockTicker=ROKU'
+curl --location 'http://localhost:3000/stock/dividends?stockTicker=AAL'
 
 ### Get earning call from 2023-01-11 to 2023-02-11
 # curl --location 'http://localhost:3000/stock/earnings?start=2023-01-11&end=2023-02-11'
 # curl --location 'http://localhost:3000/stock/earnings?end=2023-11-03'
-curl --location 'http://localhost:3000/stock/earnings?end=2023-11-05'
+curl --location 'http://localhost:3000/stock/earnings?end=2023-11-07'
 
 
 ### get insider transactions
@@ -54,3 +54,15 @@ you can write detail from her
 ###
 GET /stock/gainers-or-losers?stockMarket=gainers HTTP/1.1
 Host: localhost:3000
+
+####
+https://api.stockdata.org/v1/news/all?symbols=TSLA,AMZN,MSFT&filter_entities=true&language=en&api_token=mf4IEBGqcJz6ZltjoeqYLVsY59T9RgXAoyt5LNFi
+
+####
+https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=AAPL&apikey=4Q8CK4DC1YAI8FP0
+
+###Get New form  news-alpha-vantage
+curl --location 'http://localhost:3000/stock/news-alpha-vantage?stockTicker=TSLA'
+
+###Get New form 
+curl --location 'http://localhost:3000/stock/news-stock-data?stockTicker=TSLA,AAL'
