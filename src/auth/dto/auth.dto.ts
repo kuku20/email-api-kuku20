@@ -11,4 +11,7 @@ export class AuthDto {
 
   @IsOptional()
   displayName:string;
+
+  @IsOptional()
+  isAdmin:string;
 }

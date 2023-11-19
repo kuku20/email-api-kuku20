@@ -11,19 +11,19 @@ curl --location 'http://localhost:3000/auth/v2/signin' \
 curl --location 'http://localhost:3000/stock-user/user-list' \
 --header 'Content-Type: application/json' \
 --data '{
-    "id": "bc5686e9-43b7-4fe6-9070-cdde11a574e5",
+    "id": "35d471c6-c637-46f2-a222-1549c789985f",
     "listTickers": ["AAL","NCLH"]
 }'
 
 ### update this list
-curl --location --request PATCH 'http://localhost:3000/stock-user/user-list/bc5686e9-43b7-4fe6-9070-cdde11a574e5' \
+curl --location --request PATCH 'http://localhost:3000/stock-user/user-list/35d471c6-c637-46f2-a222-1549c789985f' \
 --header 'Content-Type: application/json' \
 --data '{
     "listTickers": ["NTES","JJSF","aal"]
 }'
 
-### Get Update bc5686e9-43b7-4fe6-9070-cdde11a574e5
-GET http://localhost:3000/stock-user/user-list/bc5686e9-43b7-4fe6-9070-cdde11a574e5
+### Get Update 35d471c6-c637-46f2-a222-1549c789985f
+GET http://localhost:3000/stock-user/user-list/35d471c6-c637-46f2-a222-1549c789985f
 
 ### Sign IN
 curl --location 'http://localhost:3000/auth/v2/signin' \
@@ -48,8 +48,8 @@ GET http://localhost:3000/stock-user/all-lists
 ### Get all all-watchlists
 GET http://localhost:3000/stock-user/all-watchlists
 
-### Get user list bc5686e9-43b7-4fe6-9070-cdde11a574e5
-GET http://localhost:3000/stock-user/user-list/bc5686e9-43b7-4fe6-9070-cdde11a574e5
+### Get user list 35d471c6-c637-46f2-a222-1549c789985f
+GET http://localhost:3000/stock-user/user-list/35d471c6-c637-46f2-a222-1549c789985f
 
 
 ### Get user list 39a6072b-abc2-4092-921e-91aab42fa443
@@ -59,18 +59,18 @@ GET http://localhost:3000/stock-user/user-list/39a6072b-abc2-4092-921e-91aab42fa
 GET http://localhost:3000/stock-user/user-list/e1240614-ea62-4815-a264-a9b7fb531c3c
 
 
-### Delete user-list bc5686e9-43b7-4fe6-9070-cdde11a574e5
-curl --location --request DELETE 'http://localhost:3000/stock-user/user-list/bc5686e9-43b7-4fe6-9070-cdde11a574e5'
+### Delete user-list 35d471c6-c637-46f2-a222-1549c789985f
+curl --location --request DELETE 'http://localhost:3000/stock-user/user-list/35d471c6-c637-46f2-a222-1549c789985f'
 
 ### Delete user-list 39a6072b-abc2-4092-921e-91aab42fa443
 curl --location --request DELETE 'http://localhost:3000/stock-user/user-list/39a6072b-abc2-4092-921e-91aab42fa443'
 
 ### Delete watchlist
-curl --location --request DELETE 'http://localhost:3000/stock-user/watchlist/bc5686e9-43b7-4fe6-9070-cdde11a574e5/9f0a85d0-8ad2-4fc2-b650-0ebe72aa64f2'
+curl --location --request DELETE 'http://localhost:3000/stock-user/watchlist/35d471c6-c637-46f2-a222-1549c789985f/9f0a85d0-8ad2-4fc2-b650-0ebe72aa64f2'
 
 
 ### update watchlist
-curl --location --request PATCH 'http://localhost:3000/stock-user/watchlist/bc5686e9-43b7-4fe6-9070-cdde11a574e5/90fd496c-a1a3-400b-a9fc-a09f1f9ebeb6' \
+curl --location --request PATCH 'http://localhost:3000/stock-user/watchlist/35d471c6-c637-46f2-a222-1549c789985f/90fd496c-a1a3-400b-a9fc-a09f1f9ebeb6' \
 --header 'Content-Type: application/json' \
 --data '{
     "dateAdded": "2023-11-09",
@@ -97,7 +97,7 @@ curl --location 'http://localhost:3000/stock-user/watchlist' \
 curl --location 'http://localhost:3000/stock-user/watchlist' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "id": "bc5686e9-43b7-4fe6-9070-cdde11a574e5",
+    "id": "35d471c6-c637-46f2-a222-1549c789985f",
     "stockUserId":"130d60a1-3e28-4a8b-9c3c-8f38ee812ba8",
     "dateAdded": "2023-11-09",
     "pctChangeAtAdded": -1.5981,
@@ -110,7 +110,7 @@ curl --location 'http://localhost:3000/stock-user/watchlist' \
 curl --location 'http://localhost:3000/stock-user/watchlist' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "id": "bc5686e9-43b7-4fe6-9070-cdde11a574e5",
+    "id": "35d471c6-c637-46f2-a222-1549c789985f",
     "stockUserId":"ac48cca9-6203-49a7-9acd-cc1f0d3f4f08",
     "dateAdded": "2023-11-09",
     "pctChangeAtAdded": -1.7759,

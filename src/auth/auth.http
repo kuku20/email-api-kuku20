@@ -2,7 +2,7 @@
 curl --location 'http://localhost:3000/auth/v2/signup' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "email": "test2@gmail.com",
+    "email": "testtrue@gmail.com",
     "password": "fadfjloc",
     "displayName":"2Loc"
 }'
@@ -12,6 +12,10 @@ curl --location 'http://localhost:3000/auth/v2/signup' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "email": "test@gmail.com",
+    "password": "fadfjloc",
+    "displayName":"2Loc",
+    "isAdmin": true
+    
 }'
 
 
@@ -19,7 +23,7 @@ curl --location 'http://localhost:3000/auth/v2/signup' \
 curl --location 'http://localhost:3000/auth/v2/signin' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "email": "test@gmail.com",
+    "email": "testtrue@gmail.com",
     "password": "fadfjloc"
 }'
 

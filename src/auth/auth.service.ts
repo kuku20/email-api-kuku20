@@ -32,14 +32,14 @@ export class AuthService {
         dto.displayName,
         hash,
       );
-      const token = await this.signToken(user.id, user.email);
+      const token = await this.signToken(user.id, user.email,user.isAdmin);
       if (!token) throw new ForbiddenException('NOT Valid token');
 
       response.cookie('token', token, { sameSite: 'none', secure: true });
       // response.cookie('token', token);
 
       return {
-        id: user.id,
+        id: user.id,isAdmin: user.isAdmin,
         message: 'Logged in succefully',
       };
     } catch (error) {
@@ -60,14 +60,14 @@ export class AuthService {
     // if password incorrect throw exception
     if (!pwMatches) throw new ForbiddenException('Credentials incorrect');
 
-    const token = await this.signToken(user.id, user.email);
+    const token = await this.signToken(user.id, user.email, user.isAdmin);
     if (!token) throw new ForbiddenException('NOT Valid token');
 
     // response.cookie('token', token);
     response.cookie('token', token, { sameSite: 'none', secure: true });
 
     return {
-      id: user.id,
+      id: user.id,isAdmin: user.isAdmin,
       message: 'Logged in succefully',
     };
   }
@@ -78,16 +78,16 @@ export class AuthService {
     return { message: 'Logged out succefully' };
   }
 
-  async signToken(userId: string, email: string): Promise<any> {
+  async signToken(userId: string, email: string,isAdmin:boolean): Promise<any> {
     const payload = {
       sub: userId,
-      email,
+      email,isAdmin,
       signature: 'LLC_LC',
     };
     const secret = this.config.get('JWT_SECRET');
 
     const token = await this.jwt.signAsync(payload, {
-      expiresIn: '1m',
+      expiresIn: '30d',
       secret: secret,
     });
 

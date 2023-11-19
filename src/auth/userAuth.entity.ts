@@ -14,4 +14,7 @@ export class UserAuth {
 
   @Column()
   displayName: string;
+
+  @Column()
+  isAdmin?: boolean;
 }
