@@ -157,9 +157,7 @@ export class StockService {
     const keys = this.configService.get<any>(keyDATA).split(',');
     this.shuffleArray(keys);
     for (const key of keys) {
-      console.log(key);
       const url = `${BASE_URL}${key}`;
-      console.log(url);
       try {
         const response = await axios.get(url);
         return response.data;
