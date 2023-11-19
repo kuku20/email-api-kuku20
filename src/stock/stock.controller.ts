@@ -168,7 +168,7 @@ export class StockController {
   async tickers_News_ALPHA_VANTAGE(@Query('stockTicker') stockTicker: string) {
     try {
       const data = await this.stockService.tickerNews_ALPHA_VANTAGE(
-        stockTicker,
+        stockTicker
       );
       return data;
     } catch (error) {
@@ -179,7 +179,7 @@ export class StockController {
 
   @Get('/news-v2/fb') //news-alpha-vantage
   async tickerNews_AV_FirebaseGet(
-    @Query('ticker') ticker: string,
+    @Query('stockTicker') ticker: string,
     @Query('date') date: string,
   ) {
     try {
@@ -194,9 +194,11 @@ export class StockController {
     }
   }
 
+  @UseGuards(JwtGuard)
+  // @UseGuards(UserAuthGuard)//develop admin user
   @Patch('/news-v2/fb')
   updateNewsAV2FB(
-    @Query('ticker') ticker: string,
+    @Query('stockTicker') ticker: string,
     @Query('date') date: string,
     @Body() newsBody: any,
   ) {

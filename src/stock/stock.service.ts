@@ -134,22 +134,23 @@ export class StockService {
   async tickerNews_ALPHA_VANTAGE(query: string) {
     const BASE_URL = `https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=${query}&apikey=`;
     const response = await this.tryCatchF(BASE_URL, 'ALPHA_VANTAGE');
-    return response?.data;
-    return plainToClass(NewsAlphaVantageOutDto, response?.feed);
+    return response;
+    // return plainToClass(NewsAlphaVantageOutDto, response?.feed);
   }
 
-  //AAL NewsAlphaVantageOutDto
+  //AAL new form FireBase
   async tickerNews_AV_FirebaseGet(ticker: string, date: string) {
     const BASE_URL = `https://stockmarkets000-default-rtdb.firebaseio.com/eyJhbGciOiJSUzI1NiIsImtpZCI6ImE2YzYzNTNm/stockAVnews/${ticker}/${date}.json`;
     const response = await axios.get(BASE_URL);
+    // return response?.data
     return plainToClass(NewsAlphaVantageOutDto, response?.data?.feed);
   }
-
+  
+  //pat to database
   async tickerNews_AV_FirebasePut(ob: any, ticker: string, date: string) {
     const BASE_URL = `https://stockmarkets000-default-rtdb.firebaseio.com/eyJhbGciOiJSUzI1NiIsImtpZCI6ImE2YzYzNTNm/stockAVnews/${ticker}/${date}.json`;
     const response = await axios.patch(BASE_URL, ob);
     return  response.data;
-    return plainToClass(NewsAlphaVantageOutDto, response?.data?.feed);
   }
 
   async tryCatchF(BASE_URL: string, keyDATA: string) {

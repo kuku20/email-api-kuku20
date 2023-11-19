@@ -62,7 +62,7 @@ https://api.stockdata.org/v1/news/all?symbols=TSLA,AMZN,MSFT&filter_entities=tru
 https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=AAPL&apikey=4Q8CK4DC1YAI8FP0
 
 ###Get New form  news-alpha-vantage
-curl --location 'http://localhost:3000/stock/news-v2?stockTicker=TSLA'
+curl --location 'http://localhost:3000/stock/news-v2?stockTicker=BABA'
 
 ###Get New form  //news-stock-data
 curl --location 'http://localhost:3000/stock/news-v3?stockTicker=TSLA'
