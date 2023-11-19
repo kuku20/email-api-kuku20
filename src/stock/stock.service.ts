@@ -142,15 +142,16 @@ export class StockService {
   async tickerNews_AV_FirebaseGet(ticker: string, date: string) {
     const BASE_URL = `https://stockmarkets000-default-rtdb.firebaseio.com/eyJhbGciOiJSUzI1NiIsImtpZCI6ImE2YzYzNTNm/stockAVnews/${ticker}/${date}.json`;
     const response = await axios.get(BASE_URL);
-    // return response?.data
-    return plainToClass(NewsAlphaVantageOutDto, response?.data?.feed);
+    if (response?.data?.feed)
+      return plainToClass(NewsAlphaVantageOutDto, response.data.feed);
+    return [];
   }
-  
+
   //pat to database
   async tickerNews_AV_FirebasePut(ob: any, ticker: string, date: string) {
     const BASE_URL = `https://stockmarkets000-default-rtdb.firebaseio.com/eyJhbGciOiJSUzI1NiIsImtpZCI6ImE2YzYzNTNm/stockAVnews/${ticker}/${date}.json`;
     const response = await axios.patch(BASE_URL, ob);
-    return  response.data;
+    return response.data;
   }
 
   async tryCatchF(BASE_URL: string, keyDATA: string) {
