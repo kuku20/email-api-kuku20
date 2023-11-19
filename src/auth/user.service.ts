@@ -8,7 +8,7 @@ export class UserServiceV2 {
   constructor(@InjectRepository(UserAuth) private repo: Repository<UserAuth>) { }
 
     create(email: string, displayName:string, password: string) {
-        const user = this.repo.create({ email,displayName, password }) // user entity instance
+        const user = this.repo.create({ email,displayName, password,isAdmin:false }) // user entity instance
         return this.repo.save(user);
     }
 

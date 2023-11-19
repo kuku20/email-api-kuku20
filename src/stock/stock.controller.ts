@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { StockService } from './stock.service';
 import { JwtGuard } from 'src/auth/guard';
+import { AdminUserAuthGuard } from 'src/stock-user/guard';
 
 @Controller('stock')
 export class StockController {
@@ -164,6 +165,8 @@ export class StockController {
     }
   }
 
+  @UseGuards(JwtGuard) //proteched as well since this is 25/day
+  @UseGuards(AdminUserAuthGuard)
   @Get('/news-v2') //news-alpha-vantage
   async tickers_News_ALPHA_VANTAGE(@Query('stockTicker') stockTicker: string) {
     try {
@@ -195,7 +198,7 @@ export class StockController {
   }
 
   @UseGuards(JwtGuard)
-  // @UseGuards(UserAuthGuard)//develop admin user
+  @UseGuards(AdminUserAuthGuard)
   @Patch('/news-v2/fb')
   updateNewsAV2FB(
     @Query('stockTicker') ticker: string,
