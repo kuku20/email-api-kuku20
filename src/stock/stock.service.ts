@@ -84,7 +84,7 @@ export class StockService {
 
   async bulkrequestsMulCom_FMP(query: string) {
     //AAPL,FB,GOOG
-    const BASE_URL = `https://financialmodelingprep.com/api/v3/quote/}${query}?apikey=`;
+    const BASE_URL = `https://financialmodelingprep.com/api/v3/quote/${query}?apikey=`;
     const response = await this.tryCatchF(BASE_URL, 'FMP_STOCK_API_KEY');
     return plainToClass(BulkRequestsDto, response);
   }
@@ -134,15 +134,31 @@ export class StockService {
   async tickerNews_ALPHA_VANTAGE(query: string) {
     const BASE_URL = `https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=${query}&apikey=`;
     const response = await this.tryCatchF(BASE_URL, 'ALPHA_VANTAGE');
-    // return  response.feed;
+    return response?.data;
     return plainToClass(NewsAlphaVantageOutDto, response?.feed);
+  }
+
+  //AAL NewsAlphaVantageOutDto
+  async tickerNews_AV_FirebaseGet(ticker: string, date: string) {
+    const BASE_URL = `https://stockmarkets000-default-rtdb.firebaseio.com/eyJhbGciOiJSUzI1NiIsImtpZCI6ImE2YzYzNTNm/stockAVnews/${ticker}/${date}.json`;
+    const response = await axios.get(BASE_URL);
+    return plainToClass(NewsAlphaVantageOutDto, response?.data?.feed);
+  }
+
+  async tickerNews_AV_FirebasePut(ob: any, ticker: string, date: string) {
+    const BASE_URL = `https://stockmarkets000-default-rtdb.firebaseio.com/eyJhbGciOiJSUzI1NiIsImtpZCI6ImE2YzYzNTNm/stockAVnews/${ticker}/${date}.json`;
+    const response = await axios.patch(BASE_URL, ob);
+    return  response.data;
+    return plainToClass(NewsAlphaVantageOutDto, response?.data?.feed);
   }
 
   async tryCatchF(BASE_URL: string, keyDATA: string) {
     const keys = this.configService.get<any>(keyDATA).split(',');
     this.shuffleArray(keys);
     for (const key of keys) {
+      console.log(key);
       const url = `${BASE_URL}${key}`;
+      console.log(url);
       try {
         const response = await axios.get(url);
         return response.data;
