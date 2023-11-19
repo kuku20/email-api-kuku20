@@ -142,9 +142,9 @@ export class StockService {
   async tickerNews_AV_FirebaseGet(ticker: string, date: string) {
     const BASE_URL = `https://stockmarkets000-default-rtdb.firebaseio.com/eyJhbGciOiJSUzI1NiIsImtpZCI6ImE2YzYzNTNm/stockAVnews/${ticker}/${date}.json`;
     const response = await axios.get(BASE_URL);
-    if (response?.data?.feed)
-      return plainToClass(NewsAlphaVantageOutDto, response.data.feed);
-    return [];
+    if (response?.data?.items)
+      return [];
+    return plainToClass(NewsAlphaVantageOutDto, response?.data?.feed);
   }
 
   //pat to database
