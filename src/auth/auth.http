@@ -23,7 +23,7 @@ curl --location 'http://localhost:3000/auth/v2/signup' \
 curl --location 'http://localhost:3000/auth/v2/signin' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "email": "testtrue@gmail.com",
+    "email": "test@gmail.com",
     "password": "fadfjloc"
 }'
 

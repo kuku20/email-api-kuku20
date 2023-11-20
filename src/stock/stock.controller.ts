@@ -180,15 +180,32 @@ export class StockController {
     }
   }
 
-  @Get('/news-v2/fb') //news-alpha-vantage
+  @Get('/news-fb/:db') //news-alpha-vantage
   async tickerNews_AV_FirebaseGet(
     @Query('stockTicker') ticker: string,
     @Query('date') date: string,
+    @Param('db') db: string,
   ) {
     try {
       const data = await this.stockService.tickerNews_AV_FirebaseGet(
         ticker,
-        date,
+        date,db
+      );
+      return data;
+    } catch (error) {
+      // Handle errors here
+      throw error;
+    }
+  }
+
+  @Get('/news-fball/:db') //news-alpha-vantage
+  async tickerNews_AV_FirebaseGetAll(
+    @Query('stockTicker') ticker: string,
+    @Param('db') db: string,
+  ) {
+    try {
+      const data = await this.stockService.tickerNews_AV_FirebaseGetALL(
+        ticker,db
       );
       return data;
     } catch (error) {
@@ -199,20 +216,36 @@ export class StockController {
 
   @UseGuards(JwtGuard)
   @UseGuards(AdminUserAuthGuard)
-  @Patch('/news-v2/fb')
+  @Patch('/news-fb/:db')
   updateNewsAV2FB(
+    @Param('db') db: string,
     @Query('stockTicker') ticker: string,
     @Query('date') date: string,
     @Body() newsBody: any,
   ) {
-    return this.stockService.tickerNews_AV_FirebasePut(newsBody, ticker, date);
+    return this.stockService.tickerNews_AV_FirebasePut(newsBody, ticker, date,db);
   }
 
   @Get('/news-v3') //news-alpha-vantage
-  async tickers_News_STOCK_DATA(@Query('stockTicker') stockTicker: string) {
+  async tickers_News_STOCK_DATA(@Query('stockTicker') stockTicker: string,@Query('date') date: string, @Query('type') type: string) {//type: allday,24,12st,12nd
     try {
-      const data = await this.stockService.tickerNews_STOCK_DATA(stockTicker);
-      return data;
+      if(type==='allday'){
+        const data = await this.stockService.tickerNews_STOCK_DATA(
+          stockTicker,
+          date,
+        );
+        return { feed: data?.data, totalfound: data?.meta?.found };
+      }else if(type==='24'){
+        const data = await this.stockService.tickerNews_STOCK_DATA24(stockTicker,date);
+        return {feed : data};
+      }else if(type == '12st'){
+        return {notfound:'"NOT DEVELOP YET"'}
+      }
+      else if(type == '12nd'){
+        return {notfound:'"NOT DEVELOP YET"'}
+      }else{
+        return {notfound:"Please select: allday, 24, 12st, 12nd"}
+      }
     } catch (error) {
       // Handle errors here
       throw error;

@@ -125,9 +125,48 @@ export class StockService {
   }
 
   //TSLA,AMZN,MSFT
-  async tickerNews_STOCK_DATA(query: string) {
-    const BASE_URL = `https://api.stockdata.org/v1/news/all?filter_entities=true&language=en&symbols=${query}&api_token=`;
+  async tickerNews_STOCK_DATA(query: string,date:string) {
+    const BASE_URL = `https://api.stockdata.org/v1/news/all?filter_entities=true&language=en&published_on=${date}&symbols=${query}&api_token=`;
     return await this.tryCatchF(BASE_URL, 'STOCK_DATA');
+  }
+  //should run 24 
+  async tickerNews_STOCK_DATA24(query: string,date:string) {
+    const data = []
+    //00-09
+    for (let i = 0; i < 9; i++) {
+      const hour= await this.tickerNews_STOCK_DATA_ONEH(query,date,`0${i}:00:00`,`0${i+1}:00:00`)
+      if(hour.length !==0)
+      data.push(...hour)
+    }
+    //09-10
+    const hour= await this.tickerNews_STOCK_DATA_ONEH(query,date,`09:00:00`,`10:00:00`)
+    if(hour.length !==0)
+      data.push(...hour)
+    // //10-19
+    for (let i = 0; i < 9; i++) {
+      const hour= await this.tickerNews_STOCK_DATA_ONEH(query,date,`1${i}:00:00`,`1${i+1}:00:00`)
+      // Your code here
+      if(hour.length !==0)
+      data.push(...hour)
+    }
+    // 19-24
+    for (let i = 19; i < 24; i++) {
+      const hour= await this.tickerNews_STOCK_DATA_ONEH(query,date,`${i}:00:00`,`${i+1}:00:00`)
+      // Your code here
+      if(hour.length !==0)
+      data.push(...hour)
+    }
+    return data
+  }
+  
+  //hourly
+  async tickerNews_STOCK_DATA_ONEH(query: string, date:string, start:string, end:string) { // 23-11-18 / 00:00:00 / 01:00:00
+    // `https://api.stockdata.org/v1/news/all?filter_entities=true&language=en&api_token=FpDPF5CdoDSP8E4VynMN6EipS6zm9eeSPiNCJKb8&published_before=2023-11-18T02:00:00&published_after=2023-11-18T01:00:00&symbols=${query}`
+    const BASE_URL = `https://api.stockdata.org/v1/news/all?filter_entities=true&language=en&published_before=${date}T${end}&published_after=${date}T${start}&symbols=${query}&api_token=`;
+    const response = await this.tryCatchF(BASE_URL, 'STOCK_DATA')
+    if(response?.data)
+      return response?.data;
+    return []
   }
 
   //AAL NewsAlphaVantageOutDto
@@ -138,18 +177,25 @@ export class StockService {
     // return plainToClass(NewsAlphaVantageOutDto, response?.feed);
   }
 
-  //AAL new form FireBase
-  async tickerNews_AV_FirebaseGet(ticker: string, date: string) {
-    const BASE_URL = `https://stockmarkets000-default-rtdb.firebaseio.com/eyJhbGciOiJSUzI1NiIsImtpZCI6ImE2YzYzNTNm/stockAVnews/${ticker}/${date}.json`;
+  //AAL new form FireBase //stockAVnews | stockSDnews
+  async tickerNews_AV_FirebaseGet(ticker: string, date: string,db:string) {
+    const BASE_URL = `${this.configService.get<any>('FIREBASE_DATA')}/${db}/${ticker}/${date}.json`;
     const response = await axios.get(BASE_URL);
     if (response?.data?.items==='0')
       return [];
     return plainToClass(NewsAlphaVantageOutDto, response?.data?.feed);
   }
 
-  //pat to database
-  async tickerNews_AV_FirebasePut(ob: any, ticker: string, date: string) {
-    const BASE_URL = `https://stockmarkets000-default-rtdb.firebaseio.com/eyJhbGciOiJSUzI1NiIsImtpZCI6ImE2YzYzNTNm/stockAVnews/${ticker}/${date}.json`;
+    //AAL new form FireBase //stockAVnews | stockSDnews
+    async tickerNews_AV_FirebaseGetALL(ticker: string, db:string) {
+      const BASE_URL = `${this.configService.get<any>('FIREBASE_DATA')}/${db}/${ticker}.json`;
+      const response = await axios.get(BASE_URL);
+      return response.data
+    }
+
+  //pat to database //stockAVnews | stockSDnews
+  async tickerNews_AV_FirebasePut(ob: any, ticker: string, date: string,db:string) {
+    const BASE_URL = `${this.configService.get<any>('FIREBASE_DATA')}/${db}/${ticker}/${date}.json`;
     const response = await axios.patch(BASE_URL, ob);
     return response.data;
   }

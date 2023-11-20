@@ -65,7 +65,10 @@ https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=AAPL&apikey=4Q
 curl --location 'http://localhost:3000/stock/news-v2?stockTicker=BABA'
 
 ###Get New form  //news-stock-data
-curl --location 'http://localhost:3000/stock/news-v3?stockTicker=TSLA'
+curl --location 'http://localhost:3000/stock/news-v3?stockTicker=AAL&date=2023-11-18'
+
+###Get New form  //news-stock-data
+curl --location 'http://localhost:3000/stock/news-v3?stockTicker=TSLA&date=2023-11-17'
 
 ### Get ticker news for 5day
 curl --location 'http://localhost:3000/stock/news-v1?stockTicker=AAL'
