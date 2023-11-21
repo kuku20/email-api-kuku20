@@ -235,16 +235,14 @@ export class StockController {
           date,
         );
         return { feed: data?.data, totalfound: data?.meta?.found };
+      }else if(type == '12'){
+        const data = await this.stockService.tickerNews_STOCK_DATA12(stockTicker,date);
+        return {feed : data};
       }else if(type==='24'){
         const data = await this.stockService.tickerNews_STOCK_DATA24(stockTicker,date);
         return {feed : data};
-      }else if(type == '12st'){
-        return {notfound:'"NOT DEVELOP YET"'}
-      }
-      else if(type == '12nd'){
-        return {notfound:'"NOT DEVELOP YET"'}
       }else{
-        return {notfound:"Please select: allday, 24, 12st, 12nd"}
+        return {notfound:"Please select: allday, 24, 12"}
       }
     } catch (error) {
       // Handle errors here

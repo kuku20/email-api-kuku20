@@ -129,36 +129,7 @@ export class StockService {
     const BASE_URL = `https://api.stockdata.org/v1/news/all?filter_entities=true&language=en&published_on=${date}&symbols=${query}&api_token=`;
     return await this.tryCatchF(BASE_URL, 'STOCK_DATA');
   }
-  //should run 24 
-  async tickerNews_STOCK_DATA24(query: string,date:string) {
-    const data = []
-    //00-09
-    for (let i = 0; i < 9; i++) {
-      const hour= await this.tickerNews_STOCK_DATA_ONEH(query,date,`0${i}:00:00`,`0${i+1}:00:00`)
-      if(hour.length !==0)
-      data.push(...hour)
-    }
-    //09-10
-    const hour= await this.tickerNews_STOCK_DATA_ONEH(query,date,`09:00:00`,`10:00:00`)
-    if(hour.length !==0)
-      data.push(...hour)
-    // //10-19
-    for (let i = 0; i < 9; i++) {
-      const hour= await this.tickerNews_STOCK_DATA_ONEH(query,date,`1${i}:00:00`,`1${i+1}:00:00`)
-      // Your code here
-      if(hour.length !==0)
-      data.push(...hour)
-    }
-    // 19-24
-    for (let i = 19; i < 24; i++) {
-      const hour= await this.tickerNews_STOCK_DATA_ONEH(query,date,`${i}:00:00`,`${i+1}:00:00`)
-      // Your code here
-      if(hour.length !==0)
-      data.push(...hour)
-    }
-    return data
-  }
-  
+
   //hourly
   async tickerNews_STOCK_DATA_ONEH(query: string, date:string, start:string, end:string) { // 23-11-18 / 00:00:00 / 01:00:00
     // `https://api.stockdata.org/v1/news/all?filter_entities=true&language=en&api_token=FpDPF5CdoDSP8E4VynMN6EipS6zm9eeSPiNCJKb8&published_before=2023-11-18T02:00:00&published_after=2023-11-18T01:00:00&symbols=${query}`
@@ -231,5 +202,57 @@ export class StockService {
       [array[i], array[j]] = [array[j], array[i]];
     }
     return array;
+  }
+
+    //should run 24 
+  async tickerNews_STOCK_DATA24(query: string,date:string) {
+    const data = []
+    //00-09
+    for (let i = 0; i < 9; i++) {
+      const hour= await this.tickerNews_STOCK_DATA_ONEH(query,date,`0${i}:00:00`,`0${i+1}:00:00`)
+      if(hour.length !==0)
+      data.push(...hour)
+    }
+    //09-10
+    const hour= await this.tickerNews_STOCK_DATA_ONEH(query,date,`09:00:00`,`10:00:00`)
+    if(hour.length !==0)
+      data.push(...hour)
+    // //10-19
+    for (let i = 0; i < 9; i++) {
+      const hour= await this.tickerNews_STOCK_DATA_ONEH(query,date,`1${i}:00:00`,`1${i+1}:00:00`)
+      // Your code here
+      if(hour.length !==0)
+      data.push(...hour)
+    }
+    // 19-24
+    for (let i = 19; i < 24; i++) {
+      const hour= await this.tickerNews_STOCK_DATA_ONEH(query,date,`${i}:00:00`,`${i+1}:00:00`)
+      // Your code here
+      if(hour.length !==0)
+      data.push(...hour)
+    }
+    return data
+  }
+
+  async tickerNews_STOCK_DATA12(query: string,date:string) {
+    const data = []
+    //05-09
+    for (let i = 5; i < 9; i++) {
+      const hour= await this.tickerNews_STOCK_DATA_ONEH(query,date,`0${i}:00:00`,`0${i+1}:00:00`)
+      if(hour.length !==0)
+      data.push(...hour)
+    }
+    //09-10
+    const hour= await this.tickerNews_STOCK_DATA_ONEH(query,date,`09:00:00`,`10:00:00`)
+    if(hour.length !==0)
+      data.push(...hour)
+    // //10-19
+    for (let i = 0; i < 9; i++) {
+      const hour= await this.tickerNews_STOCK_DATA_ONEH(query,date,`1${i}:00:00`,`1${i+1}:00:00`)
+      // Your code here
+      if(hour.length !==0)
+      data.push(...hour)
+    }
+    return data
   }
 }
