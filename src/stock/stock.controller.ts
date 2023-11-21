@@ -173,7 +173,7 @@ export class StockController {
       const data = await this.stockService.tickerNews_ALPHA_VANTAGE(
         stockTicker
       );
-      return data;
+      return {feed:data};
     } catch (error) {
       // Handle errors here
       throw error;
@@ -234,7 +234,7 @@ export class StockController {
           stockTicker,
           date,
         );
-        return { feed: data?.data, totalfound: data?.meta?.found };
+        return { feed: data };
       }else if(type == '12'){
         const data = await this.stockService.tickerNews_STOCK_DATA12(stockTicker,date);
         return {feed : data};

@@ -11,6 +11,7 @@ import {
   InsiderTransactionsDto,
   NewsAlphaVantageOutDto,
   NewsFinnhubOutDto,
+  NewsStockDataOut,
   RealTimePriceFinnhubDto,
   SearchSymbolOutFMPDto,
   SearchSymbolOutFinnhubDto,
@@ -127,7 +128,8 @@ export class StockService {
   //TSLA,AMZN,MSFT
   async tickerNews_STOCK_DATA(query: string,date:string) {
     const BASE_URL = `https://api.stockdata.org/v1/news/all?filter_entities=true&language=en&published_on=${date}&symbols=${query}&api_token=`;
-    return await this.tryCatchF(BASE_URL, 'STOCK_DATA');
+    const response = await this.tryCatchF(BASE_URL, 'STOCK_DATA');
+    return  plainToClass(NewsStockDataOut, response?.data);
   }
 
   //hourly
@@ -144,8 +146,8 @@ export class StockService {
   async tickerNews_ALPHA_VANTAGE(query: string) {
     const BASE_URL = `https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=${query}&apikey=`;
     const response = await this.tryCatchF(BASE_URL, 'ALPHA_VANTAGE');
-    return response;
-    // return plainToClass(NewsAlphaVantageOutDto, response?.feed);
+    // return response;
+    return plainToClass(NewsAlphaVantageOutDto, response?.feed);
   }
 
   //AAL new form FireBase //stockAVnews | stockSDnews
@@ -154,7 +156,12 @@ export class StockService {
     const response = await axios.get(BASE_URL);
     if (response?.data?.items==='0')
       return [];
-    return plainToClass(NewsAlphaVantageOutDto, response?.data?.feed);
+    if(db==='stockAVnews'){
+      return plainToClass(NewsAlphaVantageOutDto, response?.data?.feed);
+    }
+    else{
+      return plainToClass(NewsStockDataOut, response?.data?.feed);
+    }
   }
 
     //AAL new form FireBase //stockAVnews | stockSDnews
@@ -231,7 +238,8 @@ export class StockService {
       if(hour.length !==0)
       data.push(...hour)
     }
-    return data
+    // return data
+    return  plainToInstance(NewsStockDataOut, data);
   }
 
   async tickerNews_STOCK_DATA12(query: string,date:string) {
@@ -253,6 +261,7 @@ export class StockService {
       if(hour.length !==0)
       data.push(...hour)
     }
-    return data
+    // return data
+    return  plainToInstance(NewsStockDataOut, data);
   }
 }
