@@ -18,6 +18,9 @@ export class Deposit {
   @Column({ nullable: true })
   method?: string;
 
+  @Column({ nullable: true })
+  status?: string;
+
   @Column({ type: 'double precision' })
   amount: number;
 

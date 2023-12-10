@@ -19,6 +19,9 @@ export class HoldingAmounts {
   amount: number;
 
   @Column({ type: 'double precision' })
+  matchPrice: number;
+
+  @Column({ type: 'double precision' })
   marketCap: number;
 
   @ManyToOne(() => StockPortfolio, (sPortfolio) => sPortfolio.holding_amounts)

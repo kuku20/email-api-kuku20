@@ -1,11 +1,64 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { StockPortfolioService } from './stock-portfolio.service';
-import { CreateStockPortfolioDto } from './dto/create-stock-portfolio.dto';
-import { UpdateStockPortfolioDto } from './dto/update-stock-portfolio.dto';
+import {
+  BuyDto,
+  DepositDto,
+  HoldingAmountsDto,
+  SellDto,
+  WithdrawDto,
+  UserDto,
+  CreateStockPortfolioDto,
+  UpdateStockPortfolioDto,
+} from './dto/index';
 
 @Controller('stock-portfolio')
 export class StockPortfolioController {
   constructor(private readonly stockPortfolioService: StockPortfolioService) {}
+
+  // @UseGuards(UserAuthGuard)
+  @Post('/wallet')
+  createPortfolio(@Body() createStockUserDto: CreateStockPortfolioDto) {
+    return this.stockPortfolioService.createPortfolio(createStockUserDto);
+  }
+
+  // @UseGuards(UserAuthGuard)
+  @Get('/wallet/:walletId')
+  getUserListById(@Param('walletId') walletId: string) {
+    return this.stockPortfolioService.findStockUserByUserId(walletId);
+  }
+
+  @Get('/all')
+  findOne() {
+    return this.stockPortfolioService.findAllPortfolios();
+  }
+
+  @Post('/deposit')
+  deposits(@Body() depositDto: DepositDto) {
+    return this.stockPortfolioService.deposits(depositDto);
+  }
+
+  @Post('/withdraw')
+  withdraws(@Body() withdrawDto: WithdrawDto) {
+    return this.stockPortfolioService.withdraws(withdrawDto);
+  }
+
+  @Post('/buy')
+  buys(@Body() buyDto: BuyDto) {
+    return this.stockPortfolioService.buys(buyDto);
+  }
+
+  @Post('/sell')
+  sells(@Body() sellDto: SellDto) {
+    return this.stockPortfolioService.sells(sellDto);
+  }
 
   @Post()
   create(@Body() createStockPortfolioDto: CreateStockPortfolioDto) {
@@ -17,13 +70,13 @@ export class StockPortfolioController {
     return this.stockPortfolioService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.stockPortfolioService.findOne(+id);
-  }
+
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateStockPortfolioDto: UpdateStockPortfolioDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateStockPortfolioDto: UpdateStockPortfolioDto,
+  ) {
     return this.stockPortfolioService.update(+id, updateStockPortfolioDto);
   }
 

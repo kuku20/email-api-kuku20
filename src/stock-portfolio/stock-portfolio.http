@@ -1,0 +1,74 @@
+### Sign IN
+curl --location 'http://localhost:3000/auth/v2/signin' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "email": "test@gmail.com",
+    "password": "fadfjloc"
+}'
+
+###
+@userId = 66dbefd6-ff65-4b33-b2fc-24d0cda67518
+@walletId = 900cfcda-6703-4a17-a50e-b34484e99f5a
+### create user portfolio
+curl --location 'http://localhost:3000/stock-portfolio/wallet' \
+--header 'Content-Type: application/json' \
+--data '{
+    "id": "{{userId}}",
+    "balance": 0
+}'
+
+### Get all user portfolios
+GET http://localhost:3000/stock-portfolio/all
+
+### Get Wallet
+GET http://localhost:3000/stock-portfolio/wallet/{{userId}}
+
+### post deposit "statusCode": 200
+curl --location 'http://localhost:3000/stock-portfolio/deposit' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "id": "{{userId}}",
+    "sPortfolioId":"{{walletId}}",
+    "dateDeposit": "2023-11-09",
+    "amount": 1000,
+    "method": "direct",
+    "status":"complete"
+}'
+
+### post withdraw "statusCode": 200
+curl --location 'http://localhost:3000/stock-portfolio/withdraw' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "id": "{{userId}}",
+    "sPortfolioId":"{{walletId}}",
+    "dateWithdraw": "2023-11-09",
+    "amount": 1000,
+    "method": "direct",
+    "status":"complete"
+}'
+
+### post buy "statusCode": 200
+curl --location 'http://localhost:3000/stock-portfolio/buy' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "id": "{{userId}}",
+    "sPortfolioId":"{{walletId}}",
+    "dateBuy": "2023-11-09",
+    "symbol":"AAL",
+    "amount": 1000,
+    "matchPrice":14.12,
+    "marketCap": 1000000000
+}'
+
+### post withdraw "statusCode": 200
+curl --location 'http://localhost:3000/stock-portfolio/sell' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "id": "{{userId}}",
+    "sPortfolioId":"{{walletId}}",
+    "dateSell": "2023-11-09",
+    "symbol":"AAL",
+    "amount": 1000,
+    "matchPrice":15.12,
+    "marketCap": 1000000000
+}'
