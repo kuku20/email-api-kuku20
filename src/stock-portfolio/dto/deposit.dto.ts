@@ -9,6 +9,9 @@ export class DepositDto {
   @IsString()
   method?: string;
 
+  @IsString()
+  status?: string;
+
   @IsNumber()
   amount: number;
 

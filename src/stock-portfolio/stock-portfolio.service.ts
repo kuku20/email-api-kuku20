@@ -1,10 +1,28 @@
-import {Injectable,NotAcceptableException,NotFoundException,} from '@nestjs/common';
+import {
+  Injectable,
+  NotAcceptableException,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityNotFoundError, QueryFailedError, Repository } from 'typeorm';
-import { Buy, Sell, Withdraw, Deposit, HoldingAmounts ,StockPortfolio} from './entities/index';
-import {BuyDto,DepositDto,
-  HoldingAmountsDto,SellDto,WithdrawDto,UserDto,
-  CreateStockPortfolioDto,UpdateStockPortfolioDto
+import {
+  Buy,
+  Sell,
+  Withdraw,
+  Deposit,
+  HoldingAmounts,
+  StockPortfolio,
+} from './entities/index';
+import {
+  BuyDto,
+  DepositDto,
+  HoldingAmountsDto,
+  SellDto,
+  WithdrawDto,
+  UserDto,
+  CreateStockPortfolioDto,
+  UpdateStockPortfolioDto,
 } from './dto/index';
 
 import { WalletOutPutDto } from './dto/out/index';
@@ -27,7 +45,7 @@ export class StockPortfolioService {
     private BuyRepo: Repository<Buy>,
     @InjectRepository(UserAuth)
     private userRepo: Repository<UserAuth>,
-  ){}
+  ) {}
 
   async createPortfolio(
     createPortfolio: CreateStockPortfolioDto,
@@ -38,14 +56,14 @@ export class StockPortfolioService {
       });
 
       // Create the PortfolioRepo entity
-      const stockUser = this.PortfolioRepo.create({
+      const stockPortfolio = this.PortfolioRepo.create({
         userId: user,
-        balance:0
+        balance: 0,
       });
 
-      // Save the StockUser entity to the database
-      const result = await this.PortfolioRepo.save(stockUser);
-      return result
+      // Save the stockPortfolio entity to the database
+      const result = await this.PortfolioRepo.save(stockPortfolio);
+      return result;
       // return plainToInstance(WalletOutPutDto, result);
     } catch (error) {
       if (error instanceof EntityNotFoundError) {
@@ -53,9 +71,45 @@ export class StockPortfolioService {
         throw new NotFoundException(
           `This user id ${createPortfolio.id} has list-stock`,
         );
-      }else if (error instanceof QueryFailedError) {
+      } else if (error instanceof QueryFailedError) {
         // Handle query execution error
-        throw new NotAcceptableException('You cannot have more than 1 user-list');
+        throw new NotAcceptableException(
+          'You cannot have more than 1 user-list',
+        );
+      }
+      // Handle other errors or rethrow
+      throw error;
+    }
+  }
+
+  async findStockUserByUserId(userId: string) {
+    try {
+      const stockUser = await this.PortfolioRepo.findOne({
+        where: { userId: { id: userId } },
+        relations: [
+          'deposits',
+          'withdraws',
+          'buys',
+          'sells',
+          'holding_amounts',
+        ], // Load the associated userId
+      });
+
+      if (!stockUser) {
+        throw new NotFoundException(`You don't have any list`);
+      }
+
+      return stockUser;
+      // return plainToInstance(UserListOutDto, stockUser);
+    } catch (error) {
+      if (error instanceof EntityNotFoundError) {
+        // Handle not found exception as needed
+        throw new NotFoundException(
+          `StockUser with userId ${userId} not found`,
+        );
+      } else if (error instanceof QueryFailedError) {
+        // Handle query execution error
+        throw new InternalServerErrorException('Error executing the query');
       }
       // Handle other errors or rethrow
       throw error;
@@ -65,11 +119,95 @@ export class StockPortfolioService {
   async findAllPortfolios() {
     const PortfolioRepo = await this.PortfolioRepo.find({
       // relations: ['userId', 'watchlists'], // Load the associated userId
-      relations: ['userId','deposits','withdraws','buys','sells','holding_amounts'], // Load the associated userId
+      relations: [
+        'userId',
+        'deposits',
+        'withdraws',
+        'buys',
+        'sells',
+        'holding_amounts',
+      ], // Load the associated userId
     });
     // return PortfolioRepo;
     return plainToInstance(WalletOutPutDto, PortfolioRepo);
   }
+
+  async deposits(depositDto: DepositDto): Promise<Deposit> {
+    try {
+      const stockPortfolio = await this.PortfolioRepo.findOne({
+        where: { userId: { id: depositDto.id } },
+        relations: ['deposits'], // Load the associated watchlists
+      });
+
+      if (stockPortfolio.id !== depositDto.sPortfolioId) {
+        throw new InternalServerErrorException('Error executing the query');
+      }
+      const user = await this.PortfolioRepo.findOneOrFail({
+        where: { id: depositDto.sPortfolioId },
+      });
+      const deposit = this.DepositRepo.create({
+        dateDeposit: depositDto.dateDeposit,
+        amount: depositDto.amount,
+        method: depositDto.method,
+        status:depositDto.status,
+        sPortfolioId: user,
+      });
+      const newDeposit= await this.DepositRepo.save(deposit);
+      return newDeposit;
+      // return plainToInstance(ListOutDto, newList);
+    } catch (error) {
+      if (error instanceof EntityNotFoundError) {
+        // Handle not found exception as needed
+        throw new NotFoundException(
+          `stockPortfolio with userId ${depositDto.sPortfolioId} not found`,
+        );
+      } else if (error instanceof QueryFailedError) {
+        // Handle query execution error
+        throw new InternalServerErrorException('Error executing the query');
+      }
+      // Handle other errors or rethrow
+      throw error;
+    }
+  }
+
+  async withdraws(withdrawDto: WithdrawDto): Promise<Withdraw> {
+    try {
+      const stockPortfolio = await this.PortfolioRepo.findOne({
+        where: { userId: { id: withdrawDto.id } },
+        relations: ['withdraws'], // Load the associated watchlists
+      });
+
+      if (stockPortfolio.id !== withdrawDto.sPortfolioId) {
+        throw new InternalServerErrorException('Error executing the query');
+      }
+      const user = await this.PortfolioRepo.findOneOrFail({
+        where: { id: withdrawDto.sPortfolioId },
+      });
+      const withdraw = this.WithdrawRepo.create({
+        dateWithdraw: withdrawDto.dateWithdraw,
+        amount: withdrawDto.amount,
+        method: withdrawDto.method,
+        status:withdrawDto.status,
+        sPortfolioId: user,
+      });
+      const newWithdraw= await this.WithdrawRepo.save(withdraw);
+      return newWithdraw;
+      // return plainToInstance(ListOutDto, newList);
+    } catch (error) {
+      if (error instanceof EntityNotFoundError) {
+        // Handle not found exception as needed
+        throw new NotFoundException(
+          `stockPortfolio with userId ${withdrawDto.sPortfolioId} not found`,
+        );
+      } else if (error instanceof QueryFailedError) {
+        // Handle query execution error
+        throw new InternalServerErrorException('Error executing the query');
+      }
+      // Handle other errors or rethrow
+      throw error;
+    }
+  }
+
   create(createStockPortfolioDto: CreateStockPortfolioDto) {
     return 'This action adds a new stockPortfolio';
   }

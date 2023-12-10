@@ -28,6 +28,28 @@ export class StockPortfolioController {
   createPortfolio(@Body() createStockUserDto: CreateStockPortfolioDto) {
     return this.stockPortfolioService.createPortfolio(createStockUserDto);
   }
+
+  // @UseGuards(UserAuthGuard)
+  @Get('/wallet/:walletId')
+  getUserListById(@Param('walletId') walletId: string) {
+    return this.stockPortfolioService.findStockUserByUserId(walletId);
+  }
+
+  @Get('/all')
+  findOne() {
+    return this.stockPortfolioService.findAllPortfolios();
+  }
+
+  @Post('/deposit')
+  deposits(@Body() depositDto: DepositDto) {
+    return this.stockPortfolioService.deposits(depositDto);
+  }
+
+  @Post('/withdraw')
+  withdraws(@Body() withdrawDto: WithdrawDto) {
+    return this.stockPortfolioService.withdraws(withdrawDto);
+  }
+
   @Post()
   create(@Body() createStockPortfolioDto: CreateStockPortfolioDto) {
     return this.stockPortfolioService.create(createStockPortfolioDto);
@@ -38,10 +60,7 @@ export class StockPortfolioController {
     return this.stockPortfolioService.findAll();
   }
 
-  @Get('/all')
-  findOne() {
-    return this.stockPortfolioService.findAllPortfolios();
-  }
+
 
   @Patch(':id')
   update(

@@ -17,3 +17,30 @@ curl --location 'http://localhost:3000/stock-portfolio/wallet' \
 
 ### Get all user portfolios
 GET http://localhost:3000/stock-portfolio/all
+
+### Get user list 39a6072b-abc2-4092-921e-91aab42fa443
+GET http://localhost:3000/stock-portfolio/wallet/66dbefd6-ff65-4b33-b2fc-24d0cda67518
+
+### post deposit "statusCode": 200
+curl --location 'http://localhost:3000/stock-portfolio/deposit' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "id": "66dbefd6-ff65-4b33-b2fc-24d0cda67518",
+    "sPortfolioId":"900cfcda-6703-4a17-a50e-b34484e99f5a",
+    "dateDeposit": "2023-11-09",
+    "amount": 1000,
+    "method": "direct",
+    "status":"complete"
+}'
+
+### post withdraw "statusCode": 200
+curl --location 'http://localhost:3000/stock-portfolio/withdraw' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "id": "66dbefd6-ff65-4b33-b2fc-24d0cda67518",
+    "sPortfolioId":"900cfcda-6703-4a17-a50e-b34484e99f5a",
+    "dateWithdraw": "2023-11-09",
+    "amount": 1000,
+    "method": "direct",
+    "status":"complete"
+}'
