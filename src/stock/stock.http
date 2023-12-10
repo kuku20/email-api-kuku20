@@ -65,7 +65,10 @@ https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=AAPL&apikey=4Q
 curl --location 'http://localhost:3000/stock/news-v2?stockTicker=BABA'
 
 ###Get New form  //news-stock-data
-curl --location 'http://localhost:3000/stock/news-v3?stockTicker=TSLA'
+curl --location 'http://localhost:3000/stock/news-v3?stockTicker=AAL&date=2023-11-18'
+
+###Get New form  //news-stock-data
+curl --location 'http://localhost:3000/stock/news-v3?stockTicker=AAL&date=2023-11-17&type=24'
 
 ### Get ticker news for 5day
 curl --location 'http://localhost:3000/stock/news-v1?stockTicker=AAL'
@@ -73,5 +76,14 @@ curl --location 'http://localhost:3000/stock/news-v1?stockTicker=AAL'
 ###
 curl --location 'https://stockmarkets000-default-rtdb.firebaseio.com/stockAVnews/-Nj_0EV4eY_FJJEOYyo2/feed.json'
 
-###
-curl --location 'https://api.stockdata.org/v1/news/all?filter_entities=true&language=en&api_token=0OdHuywpP3fEcY08womcfgMgTQZqTnUsnrNR3bT3&published_before=2023-11-18T02%3A00%3A00&published_after=2023-11-18T01%3A00%3A00&symbols=TSLA'
+#### FIREBASE ALL
+http://localhost:3000/stock/news-fball/stockSDnews?stockTicker=ZM
+
+#### FIREBASE ALL
+http://localhost:3000/stock/news-fball/stockAVnews?stockTicker=T
+
+###FIREBASE day 
+GET http://localhost:3000/stock/news-fb/stockAVnews?stockTicker=T&date=2023-11-20
+
+#### FIREBASE day
+GET http://localhost:3000/stock/news-fb/stockSDnews?stockTicker=T&date=2023-11-20
