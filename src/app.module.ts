@@ -11,6 +11,17 @@ import { Product } from './entity/product.entity';
 import { ProductBrand } from './entity/ProductBrands.entity';
 import { ProductType } from './entity/productTypes.entity';
 import { SeedService } from './SeedData/shop.service';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+import { ContentfulModule } from './contentful/contentful.module';
+import { StockModule } from './stock/stock.module';
+import { AuthModule } from './auth/auth.module';
+import { StockUserModule } from './stock-user/stock-user.module';
+import { StockUser } from './stock-user/entities/stock-user.entity';
+import { WatchList } from './stock-user/entities/watchlist.entity';
+import { UserAuth } from './auth/userAuth.entity';
+import { StockPortfolioModule } from './stock-portfolio/stock-portfolio.module';
+import { Buy, Deposit, HoldingAmounts, Sell, StockPortfolio, Withdraw } from './stock-portfolio/entities';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -31,20 +42,46 @@ import { SeedService } from './SeedData/shop.service';
         },
       }),
     }),
-    
+
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
+        const dbUrl = new URL(config.get<string>('DATABASE_URL'));
+        const routingId = dbUrl.searchParams.get('options');
+        dbUrl.searchParams.delete('options');
+
         return {
-          type: 'sqlite',
-          database: config.get<string>('DB_NAME'),
-          entities: [User, Product, ProductBrand, ProductType],
+          type: 'cockroachdb',
+          url: dbUrl.toString(),
+          ssl: true,
+          extra: {
+            options: routingId,
+          },
+          entities: [
+            User,
+            Product,
+            ProductBrand,
+            ProductType,
+            StockUser,
+            WatchList,
+            UserAuth,
+            StockPortfolio,Buy, Sell, Withdraw, Deposit, HoldingAmounts
+          ],
           synchronize: true,
-        }
-      }
+        };
+      },
     }),
     UserModule,
     ShopModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '/src/assets/images'), // Specify the path to the assets directory
+      serveRoot: '/images', // The URL path to access the assets
+    }),
+    ContentfulModule,
+    StockModule,
+    AuthModule,
+    StockUserModule,
+    StockPortfolioModule,
   ],
   controllers: [AppController],
   providers: [AppService],
