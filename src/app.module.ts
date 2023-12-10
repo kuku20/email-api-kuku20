@@ -20,6 +20,8 @@ import { StockUserModule } from './stock-user/stock-user.module';
 import { StockUser } from './stock-user/entities/stock-user.entity';
 import { WatchList } from './stock-user/entities/watchlist.entity';
 import { UserAuth } from './auth/userAuth.entity';
+import { StockPortfolioModule } from './stock-portfolio/stock-portfolio.module';
+import { Buy, Deposit, HoldingAmounts, Sell, StockPortfolio, Withdraw } from './stock-portfolio/entities';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -62,7 +64,8 @@ import { UserAuth } from './auth/userAuth.entity';
             ProductType,
             StockUser,
             WatchList,
-            UserAuth
+            UserAuth,
+            StockPortfolio,Buy, Sell, Withdraw, Deposit, HoldingAmounts
           ],
           synchronize: true,
         };
@@ -78,6 +81,7 @@ import { UserAuth } from './auth/userAuth.entity';
     StockModule,
     AuthModule,
     StockUserModule,
+    StockPortfolioModule,
   ],
   controllers: [AppController],
   providers: [AppService],
