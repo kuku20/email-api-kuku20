@@ -14,6 +14,9 @@ export class BuyDto {
   amount?: number;
 
   @IsNumber()
+  matchPrice?: number;
+
+  @IsNumber()
   marketCap?: number;
 
   @IsUUID()

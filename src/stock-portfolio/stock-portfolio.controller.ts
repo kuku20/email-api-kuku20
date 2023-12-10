@@ -50,6 +50,16 @@ export class StockPortfolioController {
     return this.stockPortfolioService.withdraws(withdrawDto);
   }
 
+  @Post('/buy')
+  buys(@Body() buyDto: BuyDto) {
+    return this.stockPortfolioService.buys(buyDto);
+  }
+
+  @Post('/sell')
+  sells(@Body() sellDto: SellDto) {
+    return this.stockPortfolioService.sells(sellDto);
+  }
+
   @Post()
   create(@Body() createStockPortfolioDto: CreateStockPortfolioDto) {
     return this.stockPortfolioService.create(createStockPortfolioDto);

@@ -1,15 +1,21 @@
-import { IsUUID, IsString } from 'class-validator';
+import { IsUUID, IsString,IsNumber } from 'class-validator';
 
 export class HoldingAmountsDto {
   @IsUUID()
   id: string;
 
   @IsString()
-  password: string;
+  symbol?: string;
 
-  @IsString()
-  email: string;
+  @IsNumber()
+  amount?: number;
 
-  @IsString()
-  displayName: string;
+  @IsNumber()
+  matchPrice?: number;
+
+  @IsNumber()
+  marketCap?: number;
+
+  @IsUUID()
+  sPortfolioId: string;
 }

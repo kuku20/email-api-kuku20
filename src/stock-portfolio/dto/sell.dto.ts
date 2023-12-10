@@ -4,16 +4,19 @@ export class SellDto {
   id: string;
 
   @IsString()
-  dateSell: string;
+  dateSell?: string;
 
   @IsString()
-  symbol: string;
+  symbol?: string;
 
   @IsNumber()
-  amount: number;
+  amount?: number;
 
   @IsNumber()
-  marketCap: number;
+  matchPrice?: number;
+
+  @IsNumber()
+  marketCap?: number;
 
   @IsUUID()
   sPortfolioId: string;

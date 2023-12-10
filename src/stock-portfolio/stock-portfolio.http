@@ -44,3 +44,29 @@ curl --location 'http://localhost:3000/stock-portfolio/withdraw' \
     "method": "direct",
     "status":"complete"
 }'
+
+### post buy "statusCode": 200
+curl --location 'http://localhost:3000/stock-portfolio/buy' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "id": "66dbefd6-ff65-4b33-b2fc-24d0cda67518",
+    "sPortfolioId":"900cfcda-6703-4a17-a50e-b34484e99f5a",
+    "dateBuy": "2023-11-09",
+    "symbol":"AAL",
+    "amount": 1000,
+    "matchPrice":14.12,
+    "marketCap": 1000000000
+}'
+
+### post withdraw "statusCode": 200
+curl --location 'http://localhost:3000/stock-portfolio/sell' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "id": "66dbefd6-ff65-4b33-b2fc-24d0cda67518",
+    "sPortfolioId":"900cfcda-6703-4a17-a50e-b34484e99f5a",
+    "dateSell": "2023-11-09",
+    "symbol":"AAL",
+    "amount": 1000,
+    "matchPrice":15.12,
+    "marketCap": 1000000000
+}'

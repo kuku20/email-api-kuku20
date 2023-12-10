@@ -208,6 +208,84 @@ export class StockPortfolioService {
     }
   }
 
+  async buys(BuyDto: BuyDto): Promise<Buy> {
+    try {
+      const stockPortfolio = await this.PortfolioRepo.findOne({
+        where: { userId: { id: BuyDto.id } },
+        relations: ['buys'], // Load the associated watchlists
+      });
+
+      if (stockPortfolio.id !== BuyDto.sPortfolioId) {
+        throw new InternalServerErrorException('Error executing the query');
+      }
+      const user = await this.PortfolioRepo.findOneOrFail({
+        where: { id: BuyDto.sPortfolioId },
+      });
+      const buy = this.BuyRepo.create({
+        dateBuy:BuyDto.dateBuy,
+        symbol:BuyDto.symbol,
+        amount:BuyDto.amount,
+        matchPrice:BuyDto.matchPrice,
+        marketCap:BuyDto.marketCap,
+        sPortfolioId: user,
+      });
+      const newBuy= await this.BuyRepo.save(buy);
+      return newBuy;
+      // return plainToInstance(ListOutDto, newList);
+    } catch (error) {
+      if (error instanceof EntityNotFoundError) {
+        // Handle not found exception as needed
+        throw new NotFoundException(
+          `stockPortfolio with userId ${BuyDto.sPortfolioId} not found`,
+        );
+      } else if (error instanceof QueryFailedError) {
+        // Handle query execution error
+        throw new InternalServerErrorException('Error executing the query');
+      }
+      // Handle other errors or rethrow
+      throw error;
+    }
+  }
+
+  async sells(SellDto: SellDto): Promise<Sell> {
+    try {
+      const stockPortfolio = await this.PortfolioRepo.findOne({
+        where: { userId: { id: SellDto.id } },
+        relations: ['withdraws'], // Load the associated watchlists
+      });
+
+      if (stockPortfolio.id !== SellDto.sPortfolioId) {
+        throw new InternalServerErrorException('Error executing the query');
+      }
+      const user = await this.PortfolioRepo.findOneOrFail({
+        where: { id: SellDto.sPortfolioId },
+      });
+      const sell = this.SellRepo.create({
+        dateSell:SellDto.dateSell,
+        symbol:SellDto.symbol,
+        amount:SellDto.amount,
+        matchPrice:SellDto.matchPrice,
+        marketCap:SellDto.marketCap,
+        sPortfolioId: user,
+      });
+      const newSell= await this.SellRepo.save(sell);
+      return newSell;
+      // return plainToInstance(ListOutDto, newList);
+    } catch (error) {
+      if (error instanceof EntityNotFoundError) {
+        // Handle not found exception as needed
+        throw new NotFoundException(
+          `stockPortfolio with userId ${SellDto.sPortfolioId} not found`,
+        );
+      } else if (error instanceof QueryFailedError) {
+        // Handle query execution error
+        throw new InternalServerErrorException('Error executing the query');
+      }
+      // Handle other errors or rethrow
+      throw error;
+    }
+  }
+
   create(createStockPortfolioDto: CreateStockPortfolioDto) {
     return 'This action adds a new stockPortfolio';
   }
