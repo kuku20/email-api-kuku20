@@ -249,4 +249,26 @@ export class StockController {
       throw error;
     }
   }
+
+  @Get('/realtimefb-multiple/:db') //watchlists | gainers | losers
+  async lists_FirebaseGet(@Param('db') db: string,  @Query('date') date: string,) {
+    try {
+      const data = await this.stockService.lists_FirebaseGet(db,date);
+      return data;
+    } catch (error) {
+      // Handle errors here
+      throw error;
+    }
+  }
+
+  // @UseGuards(JwtGuard)
+  // @UseGuards(AdminUserAuthGuard)
+  @Patch('/realtimefb-multiple/:db')
+  lists_FirebasePut(
+    @Param('db') db: string,
+    @Body() newsBody: any,
+    @Query('date') date: string,
+  ) {
+    return this.stockService.lists_FirebasePut(newsBody,db,date);
+  }
 }

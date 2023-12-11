@@ -13,4 +13,7 @@ export class UserListOutDto {
 
   @Expose({ name: 'watchlists' })
   watchlists: [];
+
+  @Expose({name:'maxLists'})
+  maxLists: number;
 }

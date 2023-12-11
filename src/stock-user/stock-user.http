@@ -16,14 +16,17 @@ curl --location 'http://localhost:3000/stock-user/user-list' \
 }'
 
 ### update this list
-curl --location --request PATCH 'http://localhost:3000/stock-user/user-list/35d471c6-c637-46f2-a222-1549c789985f' \
+curl --location --request PATCH 'http://localhost:3000/stock-user/user-list/66dbefd6-ff65-4b33-b2fc-24d0cda67518' \
 --header 'Content-Type: application/json' \
 --data '{
-    "listTickers": ["NTES","JJSF","aal"]
+     "listTickers": [
+    "TWLO",
+    "BABA"
+  ], "maxLists":30
 }'
 
 ### Get Update 35d471c6-c637-46f2-a222-1549c789985f
-GET http://localhost:3000/stock-user/user-list/35d471c6-c637-46f2-a222-1549c789985f
+GET http://localhost:3000/stock-user/user-list/66dbefd6-ff65-4b33-b2fc-24d0cda67518
 
 ### Sign IN
 curl --location 'http://localhost:3000/auth/v2/signin' \
@@ -44,6 +47,9 @@ curl --location 'http://localhost:3000/stock-user/user-list' \
 
 ### Get all user-lists
 GET http://localhost:3000/stock-user/all-lists
+
+### Get all user-listTickers
+GET http://localhost:3000/stock-user/all-listTickers
 
 ### Get all all-watchlists
 GET http://localhost:3000/stock-user/all-watchlists
