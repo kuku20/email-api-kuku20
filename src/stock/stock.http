@@ -87,3 +87,30 @@ GET http://localhost:3000/stock/news-fb/stockAVnews?stockTicker=T&date=2023-11-2
 
 #### FIREBASE day
 GET http://localhost:3000/stock/news-fb/stockSDnews?stockTicker=T&date=2023-11-20
+
+
+####
+curl --location --request GET 'http://localhost:3000/stock/realtimefb-multiple/watchlists'
+
+###Patch
+PATCH /stock/realtimefb-multiple/watchlists HTTP/1.1
+User-Agent: vscode-restclient
+Content-Type: application/json
+Host: localhost:3000
+Content-Length: 490
+
+{ "data":[ { "symbol": "DE", "name": "Deere & Company", "price": 363.67, "pctChange": 0.6783, "change": 2.45, "dayLow": 360.87, "dayHigh": 364.17, "yearHigh": 450, "yearLow": 345.55, "marketCap": 104737323670, "priceAvg50": 374.484, "priceAvg200": 393.17575, "exchange": "NYSE", "volume": 2059976, "avgVolume": 1568398, "open": 361.8, "previousClose": 361.22, "eps": 34.63, "pe": 10.5, "earnAnn": "2024-02-15T13:30:00.000+0000", "sharesOutstanding": 288001000, "timestamp": 1702069202 } ] }
+
+####
+curl --location --request GET 'http://localhost:3000/stock/realtimefb-multiple/gainers'
+
+
+
+
+
+####
+curl --location --request GET 'http://localhost:3000/stock/realtimefb-multiple/losers'
+
+
+####
+curl --location --request GET 'http://localhost:3000/stock/realtimefb-multiple/earncal?date=2023-12-10'
