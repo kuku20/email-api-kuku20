@@ -13,7 +13,7 @@ import {
   CreateStockUserDto,
   WatchListDto,
   UserListOutDto,
-  ListOutDto,
+  ListOutDto,ListTickersDto
 } from './dto';
 import { plainToInstance } from 'class-transformer';
 import { UserAuth } from 'src/auth/userAuth.entity';
@@ -40,6 +40,7 @@ export class StockUserService {
       const stockUser = this.stockUserRepo.create({
         userId: user,
         listTickers: createStockUserDto.listTickers,
+        maxLists:15
       });
 
       // Save the StockUser entity to the database
@@ -109,6 +110,14 @@ export class StockUserService {
     // return stockUserRepo;
     return plainToInstance(UserListOutDto, stockUserRepo);
   }
+
+  async findAllUserListTickers() {
+    const data = await this.stockUserRepo.find();
+    const uniqueTickers = Array.from(new Set(data.flatMap(item => item.listTickers)));
+    return uniqueTickers;
+    return plainToInstance(ListTickersDto, data);
+  }
+
 
   async findStockUserByUserId(userId: string) {
     try {

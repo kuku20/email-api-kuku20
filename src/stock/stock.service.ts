@@ -177,6 +177,27 @@ export class StockService {
     const response = await axios.patch(BASE_URL, ob);
     return response.data;
   }
+ 
+  //put list to database //watchlists | gainers | losers | earncal
+  async lists_FirebasePut(tickerlistsRL: any, db:string, date?:string) {
+    let BASE_URL = `${this.configService.get<any>('FIREBASE_DATA')}/realtime/${db}.json`;
+    if(db ==='earncal')
+      BASE_URL = `${this.configService.get<any>('FIREBASE_DATA')}/realtime/earncal/${date}.json`;
+    const response = await axios.patch(BASE_URL, tickerlistsRL);
+    return response.data;
+  }
+
+  //get list to database //watchlists | gainers | losers | earncal
+  async lists_FirebaseGet(db:string, date?:string) {
+    let BASE_URL = `${this.configService.get<any>('FIREBASE_DATA')}/realtime/${db}.json`;
+    if(db ==='earncal')
+      BASE_URL = `${this.configService.get<any>('FIREBASE_DATA')}/realtime/earncal/${date}.json`;
+    const response = await axios.get(BASE_URL);
+    if (response?.data ==='0')
+      return [];
+    return response?.data
+  }
+  
 
   async tryCatchF(BASE_URL: string, keyDATA: string) {
     const keys = this.configService.get<any>(keyDATA).split(',');
