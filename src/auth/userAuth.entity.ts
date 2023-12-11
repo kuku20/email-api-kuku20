@@ -14,7 +14,11 @@ export class UserAuth {
 
   @Column()
   displayName: string;
+  
+  @Column({ nullable: true })
+  memberShips?: boolean;
 
   @Column()
   isAdmin?: boolean;
+
 }

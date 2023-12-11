@@ -75,4 +75,9 @@ export class StockUserController {
   findAllwatchlists() {
     return this.stockUserService.findAllwatchlists();
   }
+
+  @Get('/all-listTickers')
+  findAllUserListTickers() {
+    return this.stockUserService.findAllUserListTickers();
+  }
 }

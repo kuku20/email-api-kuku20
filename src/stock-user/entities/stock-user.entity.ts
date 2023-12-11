@@ -17,6 +17,9 @@ export class StockUser {
   @Column('simple-array', { nullable: true })
   listTickers: string[];
 
+  @Column({ nullable: true })
+  maxLists: number;
+
   @OneToMany(() => WatchList, (watchList) => watchList.stockUserId, {
     cascade: true,
   })
