@@ -261,8 +261,8 @@ export class StockController {
     }
   }
 
-  // @UseGuards(JwtGuard)
-  // @UseGuards(AdminUserAuthGuard)
+  @UseGuards(JwtGuard)
+  @UseGuards(AdminUserAuthGuard)
   @Patch('/realtimefb-multiple/:db')
   lists_FirebasePut(
     @Param('db') db: string,
