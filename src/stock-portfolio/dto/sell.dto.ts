@@ -18,6 +18,9 @@ export class SellDto {
   @IsNumber()
   marketCap?: number;
 
+  @IsNumber()
+  netvalue?: number;
+
   @IsUUID()
   sPortfolioId: string;
 }

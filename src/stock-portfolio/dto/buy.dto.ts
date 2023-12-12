@@ -17,6 +17,9 @@ export class BuyDto {
   matchPrice?: number;
 
   @IsNumber()
+  netvalue?: number;
+
+  @IsNumber()
   marketCap?: number;
 
   @IsUUID()

@@ -226,6 +226,7 @@ export class StockPortfolioService {
         symbol:BuyDto.symbol,
         amount:BuyDto.amount,
         matchPrice:BuyDto.matchPrice,
+        netvalue:BuyDto.netvalue,
         marketCap:BuyDto.marketCap,
         sPortfolioId: user,
       });
@@ -266,6 +267,7 @@ export class StockPortfolioService {
         amount:SellDto.amount,
         matchPrice:SellDto.matchPrice,
         marketCap:SellDto.marketCap,
+        netvalue:SellDto.netvalue,
         sPortfolioId: user,
       });
       const newSell= await this.SellRepo.save(sell);

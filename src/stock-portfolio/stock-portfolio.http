@@ -57,6 +57,7 @@ curl --location 'http://localhost:3000/stock-portfolio/buy' \
     "symbol":"AAL",
     "amount": 1000,
     "matchPrice":14.12,
+    "netvalue":14120,
     "marketCap": 1000000000
 }'
 
@@ -70,5 +71,6 @@ curl --location 'http://localhost:3000/stock-portfolio/sell' \
     "symbol":"AAL",
     "amount": 1000,
     "matchPrice":15.12,
+     "netvalue":14120,
     "marketCap": 1000000000
 }'
