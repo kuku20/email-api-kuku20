@@ -31,6 +31,9 @@ export class StockPortfolio {
   @Column({ nullable: true, type: 'double precision' })
   balance?: number;
 
+  @Column({ nullable: true, type: 'double precision' })
+  netDeposit?: number;
+
   @OneToMany(() => Buy, (buys) => buys.sPortfolioId, {
     cascade: true,
   })

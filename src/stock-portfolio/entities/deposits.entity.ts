@@ -13,7 +13,7 @@ export class Deposit {
   id: string;
 
   @Column()
-  dateDeposit: string;
+  date: string;
 
   @Column({ nullable: true })
   method?: string;

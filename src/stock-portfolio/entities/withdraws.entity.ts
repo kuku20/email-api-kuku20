@@ -13,7 +13,7 @@ export class Withdraw {
   id: string;
 
   @Column()
-  dateWithdraw: string;
+  date: string;
 
   @Column({ nullable: true })
   method?: string;

@@ -13,7 +13,7 @@ export class Sell {
   id: string;
 
   @Column()
-  dateSell: string;
+  date: string;
 
   @Column()
   symbol: string;

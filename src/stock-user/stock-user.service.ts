@@ -164,7 +164,7 @@ export class StockUserService {
       if (!userlist) {
         throw new NotFoundException('user not found');
       }
-      Object.assign(userlist, updateStockUserDto);
+      Object.assign(userlist, { "maxLists": 9});
       return this.stockUserRepo.save(userlist);
     } catch (error) {
       if (error instanceof EntityNotFoundError) {

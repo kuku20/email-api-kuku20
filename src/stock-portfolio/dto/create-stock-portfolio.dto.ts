@@ -22,6 +22,9 @@ export class CreateStockPortfolioDto {
   @IsOptional()
   balance?: number;
 
+  @IsOptional()
+  netDeposit?: number;
+
   @IsArray()
   @IsOptional()
   buys?: BuyDto[];

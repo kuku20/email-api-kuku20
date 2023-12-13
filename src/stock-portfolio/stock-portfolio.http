@@ -29,7 +29,7 @@ curl --location 'http://localhost:3000/stock-portfolio/deposit' \
 --data-raw '{
     "id": "{{userId}}",
     "sPortfolioId":"{{walletId}}",
-    "dateDeposit": "2023-11-09",
+    "date": "2023-11-09",
     "amount": 1000,
     "method": "direct",
     "status":"complete"
@@ -41,7 +41,7 @@ curl --location 'http://localhost:3000/stock-portfolio/withdraw' \
 --data-raw '{
     "id": "{{userId}}",
     "sPortfolioId":"{{walletId}}",
-    "dateWithdraw": "2023-11-09",
+    "date": "2023-11-09",
     "amount": 1000,
     "method": "direct",
     "status":"complete"
@@ -53,24 +53,38 @@ curl --location 'http://localhost:3000/stock-portfolio/buy' \
 --data-raw '{
     "id": "{{userId}}",
     "sPortfolioId":"{{walletId}}",
-    "dateBuy": "2023-11-09",
-    "symbol":"AAL",
-    "amount": 1000,
-    "matchPrice":14.12,
-    "netvalue":14120,
+    "date": "2023-11-09",
+    "symbol":"NCLH",
+    "amount": 15,
+    "matchPrice":7,
+    "netvalue":105,
     "marketCap": 1000000000
 }'
 
-### post withdraw "statusCode": 200
+### post sell "statusCode": 200
+curl --location 'http://localhost:3000/stock-portfolio/buy' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "id": "{{userId}}",
+    "sPortfolioId":"{{walletId}}",
+    "date": "2023-11-09",
+    "symbol":"NCLH",
+    "amount": 1000,
+    "matchPrice":15.12,
+     "netvalue":14120,
+    "marketCap": 1000000000
+}'
+
+### post sell "statusCode": 200
 curl --location 'http://localhost:3000/stock-portfolio/sell' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "id": "{{userId}}",
     "sPortfolioId":"{{walletId}}",
-    "dateSell": "2023-11-09",
-    "symbol":"AAL",
-    "amount": 1000,
-    "matchPrice":15.12,
-     "netvalue":14120,
+    "date": "2023-11-09",
+    "symbol":"NCLH",
+    "amount": 11,
+    "matchPrice":14.12,
+    "netvalue":14120,
     "marketCap": 1000000000
 }'

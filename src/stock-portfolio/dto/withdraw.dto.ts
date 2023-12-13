@@ -1,10 +1,10 @@
-import { IsUUID, IsNumber, IsString } from 'class-validator';
+import { IsUUID, IsNumber, IsString,IsPositive } from 'class-validator';
 export class WithdrawDto {
   @IsUUID()
   id: string;
 
   @IsString()
-  dateWithdraw: string;
+  date: string;
 
   @IsString()
   method?: string;
@@ -12,6 +12,7 @@ export class WithdrawDto {
   @IsString()
   status?: string;
 
+  @IsPositive()
   @IsNumber()
   amount: number;
 

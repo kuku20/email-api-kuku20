@@ -4,7 +4,7 @@ export class SellDto {
   id: string;
 
   @IsString()
-  dateSell?: string;
+  date?: string;
 
   @IsString()
   symbol?: string;
