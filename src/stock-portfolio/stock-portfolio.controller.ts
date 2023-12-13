@@ -10,11 +10,10 @@ import {
 } from '@nestjs/common';
 import { StockPortfolioService } from './stock-portfolio.service';
 import {
-  BuyDto,
-  DepositDto,
+
   HoldingAmountsDto,
-  SellDto,
-  WithdrawDto,
+  InBuySellDto,
+  InDepositWithDrawDto,
   UserDto,
   CreateStockPortfolioDto,
   UpdateStockPortfolioDto,
@@ -23,17 +22,16 @@ import { UserAuthGuard } from 'src/stock-user/guard';
 import { JwtGuard } from 'src/auth/guard';
 
 @UseGuards(JwtGuard)
+@UseGuards(UserAuthGuard)
 @Controller('stock-portfolio')
 export class StockPortfolioController {
   constructor(private readonly stockPortfolioService: StockPortfolioService) {}
 
-  @UseGuards(UserAuthGuard)
   @Post('/wallet')
   createPortfolio(@Body() createStockUserDto: CreateStockPortfolioDto) {
     return this.stockPortfolioService.createPortfolio(createStockUserDto);
   }
 
-  @UseGuards(UserAuthGuard)
   @Get('/wallet/:walletId')
   getUserListById(@Param('walletId') walletId: string) {
     return this.stockPortfolioService.findStockUserByUserId(walletId);
@@ -43,26 +41,9 @@ export class StockPortfolioController {
   // findOne() {
   //   return this.stockPortfolioService.findAllPortfolios();
   // }
-  @UseGuards(UserAuthGuard)
-  @Post('/deposit')
-  deposits(@Body() depositDto: DepositDto) {
-    return this.stockPortfolioService.deposits(depositDto);
-  }
-  @UseGuards(UserAuthGuard)
-  @Post('/withdraw')
-  withdraws(@Body() withdrawDto: WithdrawDto) {
-    return this.stockPortfolioService.withdraws(withdrawDto);
-  }
 
-  @UseGuards(UserAuthGuard)
-  @Post('/buy')
-  buys(@Body() buyDto: BuyDto) {
-    return this.stockPortfolioService.buys(buyDto);
-  }
-
-  @UseGuards(UserAuthGuard)
-  @Post('/sell')
-  sells(@Body() sellDto: SellDto) {
-    return this.stockPortfolioService.sells(sellDto);
+  @Post('/submit')
+  submit(@Body() submit: (InBuySellDto|InDepositWithDrawDto)) {
+    return this.stockPortfolioService.submit(submit);
   }
 }

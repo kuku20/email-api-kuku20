@@ -27,11 +27,12 @@ curl --location 'http://localhost:3000/stock-portfolio/wallet' \
 GET http://localhost:3000/stock-portfolio/wallet/{{userId}}
 
 ### post deposit "statusCode": 200
-curl --location 'http://localhost:3000/stock-portfolio/deposit' \
+curl --location 'http://localhost:3000/stock-portfolio/submit' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "id": "{{userId}}",
     "sPortfolioId":"{{walletId}}",
+    "requestType":"deposit",
     "date": "2023-11-09",
     "amount": 1000,
     "method": "direct",
@@ -39,23 +40,25 @@ curl --location 'http://localhost:3000/stock-portfolio/deposit' \
 }'
 
 ### post withdraw "statusCode": 200
-curl --location 'http://localhost:3000/stock-portfolio/withdraw' \
+curl --location 'http://localhost:3000/stock-portfolio/submit' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "id": "{{userId}}",
     "sPortfolioId":"{{walletId}}",
+    "requestType":"withdraw",
     "date": "2023-11-09",
-    "amount": 10000,
+    "amount": 1000,
     "method": "direct",
     "status":"complete"
 }'
 
 ### post buy "statusCode": 200
-curl --location 'http://localhost:3000/stock-portfolio/sell' \
+curl --location 'http://localhost:3000/stock-portfolio/submit' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "id": "{{userId}}",
     "sPortfolioId":"{{walletId}}",
+    "requestType":"buy",
     "date": "2023-11-09",
     "symbol":"NCLH",
     "amount": 15,
@@ -65,29 +68,16 @@ curl --location 'http://localhost:3000/stock-portfolio/sell' \
 }'
 
 ### post sell "statusCode": 200
-curl --location 'http://localhost:3000/stock-portfolio/buy' \
+curl --location 'http://localhost:3000/stock-portfolio/submit' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "id": "{{userId}}",
     "sPortfolioId":"{{walletId}}",
+    "requestType":"sell",
     "date": "2023-11-09",
     "symbol":"NCLH",
-    "amount": 1000,
-    "matchPrice":15.12,
-     "netvalue":14120,
-    "marketCap": 1000000000
-}'
-
-### post sell "statusCode": 200
-curl --location 'http://localhost:3000/stock-portfolio/sell' \
---header 'Content-Type: application/json' \
---data-raw '{
-    "id": "{{userId}}",
-    "sPortfolioId":"{{walletId}}",
-    "date": "2023-11-09",
-    "symbol":"NCLH",
-    "amount": 11,
-    "matchPrice":14.12,
-    "netvalue":14120,
+    "amount": 15,
+    "matchPrice":7,
+    "netvalue":105,
     "marketCap": 1000000000
 }'

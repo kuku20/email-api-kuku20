@@ -1,29 +1,32 @@
 import { IsUUID, IsNumber, IsString, IsPositive } from 'class-validator';
 
-export class BuyDto {
+export class InBuySellDto {
   @IsUUID()
   id: string;
 
   @IsString()
-  date?: string;
+  requestType:string;
+  
+  @IsString()
+  date: string;
 
   @IsString()
-  symbol?: string;
+  symbol: string;
 
   @IsPositive()
   @IsNumber()
-  amount?: number;
+  amount: number;
 
   @IsPositive()
   @IsNumber()
-  matchPrice?: number;
+  matchPrice: number;
 
   @IsPositive()
   @IsNumber()
-  netvalue?: number;
+  netvalue: number;
 
   @IsNumber()
-  marketCap?: number;
+  marketCap: number;
 
   @IsUUID()
   sPortfolioId?: string;

@@ -1,7 +1,10 @@
 import { IsUUID, IsNumber, IsString, IsPositive } from 'class-validator';
-export class WithdrawDto {
+export class InDepositWithDrawDto {
   @IsUUID()
   id: string;
+
+  @IsString()
+  requestType:string;
 
   @IsString()
   date: string;
