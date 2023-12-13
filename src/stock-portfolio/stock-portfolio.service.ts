@@ -25,9 +25,9 @@ import {
   UpdateStockPortfolioDto,
 } from './dto/index';
 
-import { WalletOutPutDto } from './dto/out/index';
+import { BuyOrSellDto, DepositOrWithdrawDto, UserPortfolioDto, WalletOutPutDto } from './dto/out/index';
 import { UserAuth } from 'src/auth/userAuth.entity';
-import { plainToInstance } from 'class-transformer';
+import { plainToClass, plainToInstance } from 'class-transformer';
 @Injectable()
 export class StockPortfolioService {
   constructor(
@@ -96,8 +96,8 @@ export class StockPortfolioService {
         throw new NotFoundException(`You don't have any list`);
       }
 
-      return stockUser;
-      // return plainToInstance(UserListOutDto, stockUser);
+      // return stockUser;
+      return plainToInstance(UserPortfolioDto, stockUser);
     } catch (error) {
       if (error instanceof EntityNotFoundError) {
         // Handle not found exception as needed
@@ -113,23 +113,23 @@ export class StockPortfolioService {
     }
   }
 
-  async findAllPortfolios() {
-    const PortfolioRepo = await this.PortfolioRepo.find({
-      // relations: ['userId', 'watchlists'], // Load the associated userId
-      relations: [
-        'userId',
-        'deposits',
-        'withdraws',
-        'buys',
-        'sells',
-        'holding_amounts',
-      ], // Load the associated userId
-    });
-    // return PortfolioRepo;
-    return plainToInstance(WalletOutPutDto, PortfolioRepo);
-  }
+  // async findAllPortfolios() {
+  //   const PortfolioRepo = await this.PortfolioRepo.find({
+  //     // relations: ['userId', 'watchlists'], // Load the associated userId
+  //     relations: [
+  //       'userId',
+  //       'deposits',
+  //       'withdraws',
+  //       'buys',
+  //       'sells',
+  //       'holding_amounts',
+  //     ], // Load the associated userId
+  //   });
+  //   // return PortfolioRepo;
+  //   return plainToInstance(WalletOutPutDto, PortfolioRepo);
+  // }
 
-  async deposits(depositDto: DepositDto): Promise<Deposit> {
+  async deposits(depositDto: DepositDto): Promise<DepositOrWithdrawDto> {
     try {
       const stockPortfolio = await this.PortfolioRepo.findOne({
         where: { userId: { id: depositDto.id } },
@@ -167,8 +167,12 @@ export class StockPortfolioService {
         sPortfolioId: userwallet,
       });
       const newDeposit= await this.DepositRepo.save(deposit);
-      return newDeposit;
-      // return plainToInstance(ListOutDto, newList);
+      const response = {
+        statusCode: 200,
+        transaction: newDeposit,
+      };
+      // return response;
+      return plainToInstance(DepositOrWithdrawDto, response);
     } catch (error) {
       if (error instanceof EntityNotFoundError) {
         // Handle not found exception as needed
@@ -184,7 +188,7 @@ export class StockPortfolioService {
     }
   }
 
-  async withdraws(withdrawDto: WithdrawDto): Promise<Withdraw> {
+  async withdraws(withdrawDto: WithdrawDto): Promise<DepositOrWithdrawDto> {
     try {
       const stockPortfolio = await this.PortfolioRepo.findOne({
         where: { userId: { id: withdrawDto.id } },
@@ -215,8 +219,12 @@ export class StockPortfolioService {
         sPortfolioId: userwallet,
       });
       const newWithdraw= await this.WithdrawRepo.save(withdraw);
-      return newWithdraw;
-      // return plainToInstance(ListOutDto, newList);
+      const response = {
+        statusCode: 200,
+        transaction: newWithdraw,
+      };
+      // return response;
+      return plainToInstance(DepositOrWithdrawDto, response);
     } catch (error) {
       if (error instanceof EntityNotFoundError) {
         // Handle not found exception as needed
@@ -232,7 +240,7 @@ export class StockPortfolioService {
     }
   }
 
-  async buys(BuyDto: BuyDto): Promise<any> {
+  async buys(BuyDto: BuyDto): Promise<BuyOrSellDto> {
     try {
       const stockPortfolio = await this.PortfolioRepo.findOne({
         where: { userId: { id: BuyDto.id } },
@@ -301,8 +309,7 @@ export class StockPortfolioService {
         transaction: newBuy,
         newHolding: holdingSymbol,
       };
-      return response;
-      // return plainToInstance(ListOutDto, newList);
+      return plainToClass(BuyOrSellDto, response,{ excludeExtraneousValues: true });
     } catch (error) {
       if (error instanceof EntityNotFoundError) {
         // Handle not found exception as needed
@@ -318,7 +325,7 @@ export class StockPortfolioService {
     }
   }
 
-  async sells(SellDto: SellDto): Promise<any> {
+  async sells(SellDto: SellDto): Promise<BuyOrSellDto> {
     try {
       const stockPortfolio = await this.PortfolioRepo.findOne({
         where: { userId: { id: SellDto.id } },
@@ -371,13 +378,13 @@ export class StockPortfolioService {
       }
       const holdingSymbol = await this.HoldingRepo.save(h_Symbol);
       const newSell = await this.SellRepo.save(sell);
-      const res = {
+      const response = {
         statusCode: 200,
         transaction: newSell,
-        stockHolding: holdingSymbol,
+        newHolding: holdingSymbol,
       };
-      return res;
-      // return plainToInstance(ListOutDto, newList);
+      // return response;
+      return plainToClass(BuyOrSellDto, response,{ excludeExtraneousValues: true });
     } catch (error) {
       if (error instanceof EntityNotFoundError) {
         // Handle not found exception as needed
@@ -391,26 +398,6 @@ export class StockPortfolioService {
       // Handle other errors or rethrow
       throw error;
     }
-  }
-
-  create(createStockPortfolioDto: CreateStockPortfolioDto) {
-    return 'This action adds a new stockPortfolio';
-  }
-
-  findAll() {
-    return `This action returns all stockPortfolio`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} stockPortfolio`;
-  }
-
-  update(id: number, updateStockPortfolioDto: UpdateStockPortfolioDto) {
-    return `This action updates a #${id} stockPortfolio`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} stockPortfolio`;
   }
 
 }

@@ -1,7 +1,8 @@
-import { IsUUID, IsString,IsNumber } from 'class-validator';
-
+import { IsUUID, IsString, IsNumber } from 'class-validator';
+import { Exclude } from 'class-transformer';
 export class HoldingAmountsDto {
   @IsUUID()
+  @Exclude()
   id: string;
 
   @IsString()

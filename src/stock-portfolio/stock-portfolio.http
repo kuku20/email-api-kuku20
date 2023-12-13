@@ -18,7 +18,7 @@ curl --location 'http://localhost:3000/stock-portfolio/wallet' \
 }'
 
 ### Get all user portfolios
-GET http://localhost:3000/stock-portfolio/all
+# GET http://localhost:3000/stock-portfolio/all
 
 ### Get Wallet
 GET http://localhost:3000/stock-portfolio/wallet/{{userId}}
@@ -42,13 +42,13 @@ curl --location 'http://localhost:3000/stock-portfolio/withdraw' \
     "id": "{{userId}}",
     "sPortfolioId":"{{walletId}}",
     "date": "2023-11-09",
-    "amount": 1000,
+    "amount": 10000,
     "method": "direct",
     "status":"complete"
 }'
 
 ### post buy "statusCode": 200
-curl --location 'http://localhost:3000/stock-portfolio/buy' \
+curl --location 'http://localhost:3000/stock-portfolio/sell' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "id": "{{userId}}",

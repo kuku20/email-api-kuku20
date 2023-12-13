@@ -1,4 +1,4 @@
-import { IsUUID, IsNumber, IsString,IsPositive } from 'class-validator';
+import { IsUUID, IsNumber, IsString, IsPositive } from 'class-validator';
 export class WithdrawDto {
   @IsUUID()
   id: string;
