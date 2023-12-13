@@ -6,6 +6,9 @@ curl --location 'http://localhost:3000/auth/v2/signin' \
     "password": "fadfjloc"
 }'
 
+### signout
+curl --location 'http://localhost:3000/auth/v2/signout'
+
 ###
 @userId = 66dbefd6-ff65-4b33-b2fc-24d0cda67518
 @walletId = 900cfcda-6703-4a17-a50e-b34484e99f5a
