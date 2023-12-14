@@ -109,7 +109,7 @@ curl --location --request GET 'http://localhost:3000/stock/realtimefb-multiple/g
 
 
 ####
-curl --location --request GET 'http://localhost:3000/stock/realtimefb-multiple/losers'
+curl --location --request GET 'http://localhost:3000/stock/realtimefb-multiple/losers?date='
 
 
 ####

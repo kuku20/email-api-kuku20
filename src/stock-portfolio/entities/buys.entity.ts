@@ -13,7 +13,7 @@ export class Buy {
   id: string;
 
   @Column()
-  dateBuy: string;
+  date: string;
 
   @Column()
   symbol: string;
@@ -23,6 +23,9 @@ export class Buy {
 
   @Column({ type: 'double precision' })
   matchPrice: number;
+
+  @Column({ type: 'double precision',nullable: true})
+  netvalue?: number;
 
   @Column({ type: 'double precision' })
   marketCap: number;

@@ -1,10 +1,13 @@
-import { IsUUID, IsNumber, IsString } from 'class-validator';
-export class DepositDto {
+import { IsUUID, IsNumber, IsString, IsPositive } from 'class-validator';
+export class InDepositWithDrawDto {
   @IsUUID()
   id: string;
 
   @IsString()
-  dateDeposit: string;
+  requestType:string;
+
+  @IsString()
+  date: string;
 
   @IsString()
   method?: string;
@@ -12,6 +15,7 @@ export class DepositDto {
   @IsString()
   status?: string;
 
+  @IsPositive()
   @IsNumber()
   amount: number;
 

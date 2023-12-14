@@ -1,10 +1,8 @@
 import { IsArray, IsOptional, IsUUID } from 'class-validator';
 import {
-  BuyDto,
-  DepositDto,
+  InDepositWithDrawDto,
   HoldingAmountsDto,
-  SellDto,
-  WithdrawDto,
+  InBuySellDto,
   UserDto,
 } from './index';
 
@@ -13,22 +11,25 @@ export class CreateStockPortfolioDto {
   id: string;
 
   @IsOptional()
-  deposits?: DepositDto[];
+  deposits?: InDepositWithDrawDto[];
 
   @IsArray()
   @IsOptional()
-  withdraws?: WithdrawDto[];
+  withdraws?: InDepositWithDrawDto[];
 
   @IsOptional()
   balance?: number;
 
-  @IsArray()
   @IsOptional()
-  buys?: BuyDto[];
+  netDeposit?: number;
 
   @IsArray()
   @IsOptional()
-  sells?: SellDto[];
+  buys?: InBuySellDto[];
+
+  @IsArray()
+  @IsOptional()
+  sells?: InBuySellDto[];
 
   @IsArray()
   @IsOptional()

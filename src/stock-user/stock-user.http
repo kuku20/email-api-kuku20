@@ -22,7 +22,7 @@ curl --location --request PATCH 'http://localhost:3000/stock-user/user-list/66db
      "listTickers": [
     "TWLO",
     "BABA"
-  ], "maxLists":30
+  ], "maxLists":10
 }'
 
 ### Get Update 35d471c6-c637-46f2-a222-1549c789985f
