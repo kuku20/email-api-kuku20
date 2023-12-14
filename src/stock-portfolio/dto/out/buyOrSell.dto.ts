@@ -31,7 +31,7 @@ export class StockHoldingDTO {
   id: string;
 
   @Expose({ name: 'symbol' })
-  symbolaa: string;
+  symbol: string;
 
   @Expose({ name: 'amount' })
   amount: number;

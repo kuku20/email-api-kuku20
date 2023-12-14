@@ -60,7 +60,7 @@ curl --location 'http://localhost:3000/stock-portfolio/submit' \
     "sPortfolioId":"{{walletId}}",
     "requestType":"buy",
     "date": "2023-11-09",
-    "symbol":"NCLH",
+    "symbol":"AAL",
     "amount": 15,
     "matchPrice":7,
     "netvalue":105,

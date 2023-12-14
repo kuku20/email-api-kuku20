@@ -16,16 +16,16 @@ import {
   StockPortfolio,
 } from './entities/index';
 import {
-
-  HoldingAmountsDto,
   InBuySellDto,
   InDepositWithDrawDto,
-  UserDto,
   CreateStockPortfolioDto,
-  UpdateStockPortfolioDto,
 } from './dto/index';
 
-import { BuyOrSellDto, DepositOrWithdrawDto, UserPortfolioDto, WalletOutPutDto } from './dto/out/index';
+import {
+  BuyOrSellDto,
+  DepositOrWithdrawDto,
+  UserPortfolioDto,
+} from './dto/out/index';
 import { UserAuth } from 'src/auth/userAuth.entity';
 import { plainToClass, plainToInstance } from 'class-transformer';
 import { ValidationError, validateSync } from 'class-validator';
@@ -100,17 +100,8 @@ export class StockPortfolioService {
       // return stockUser;
       return plainToInstance(UserPortfolioDto, stockUser);
     } catch (error) {
-      if (error instanceof EntityNotFoundError) {
-        // Handle not found exception as needed
-        throw new NotFoundException(
-          `StockUser with userId ${userId} not found`,
-        );
-      } else if (error instanceof QueryFailedError) {
-        // Handle query execution error
-        throw new InternalServerErrorException('Error executing the query');
-      }
-      // Handle other errors or rethrow
-      throw error;
+      const mes = `StockUser with userId ${userId} not found`;
+      this.catchBlock(error, mes);
     }
   }
 
@@ -130,22 +121,22 @@ export class StockPortfolioService {
   //   return plainToInstance(WalletOutPutDto, PortfolioRepo);
   // }
 
-  async deposits(depositDto: InDepositWithDrawDto): Promise<DepositOrWithdrawDto> {
+  async deposits(requestBody: InDepositWithDrawDto): Promise<DepositOrWithdrawDto> {
     try {
       const stockPortfolio = await this.PortfolioRepo.findOne({
-        where: { userId: { id: depositDto.id } },
+        where: { userId: { id: requestBody.id } },
         relations: ['deposits'], // Load the associated watchlists
       });
 
-      if (stockPortfolio.id !== depositDto.sPortfolioId) {
+      if (stockPortfolio.id !== requestBody.sPortfolioId) {
         throw new InternalServerErrorException('Error executing the query');
       }
       const userwallet = await this.PortfolioRepo.findOneOrFail({
-        where: { id: depositDto.sPortfolioId },
+        where: { id: requestBody.sPortfolioId },
       });
       // update balance
-      const newBalance = userwallet.balance + depositDto.amount;
-      const netDeposit = userwallet.netDeposit + depositDto.amount;
+      const newBalance = userwallet.balance + requestBody.amount;
+      const netDeposit = userwallet.netDeposit + requestBody.amount;
       const maxAllow = 100000;
       if (netDeposit > maxAllow) {
         throw new NotAcceptableException(
@@ -164,10 +155,7 @@ export class StockPortfolioService {
         throw new NotAcceptableException('Balance Not Enough');
       }
       const deposit = this.DepositRepo.create({
-        date: depositDto.date,
-        amount: depositDto.amount,
-        method: depositDto.method,
-        status: depositDto.status,
+        ...requestBody,
         sPortfolioId: userwallet,
       });
       const newDeposit = await this.DepositRepo.save(deposit);
@@ -178,36 +166,27 @@ export class StockPortfolioService {
       // return response;
       return plainToInstance(DepositOrWithdrawDto, response);
     } catch (error) {
-      if (error instanceof EntityNotFoundError) {
-        // Handle not found exception as needed
-        throw new NotFoundException(
-          `stockPortfolio with userId ${depositDto.sPortfolioId} not found`,
-        );
-      } else if (error instanceof QueryFailedError) {
-        // Handle query execution error
-        throw new InternalServerErrorException('Error executing the query');
-      }
-      // Handle other errors or rethrow
-      throw error;
+      const mes = `stockPortfolio with userId ${requestBody.sPortfolioId} not found`;
+      this.catchBlock(error, mes);
     }
   }
 
-  async withdraws(withdrawDto: InDepositWithDrawDto): Promise<DepositOrWithdrawDto> {
+  async withdraws(requestBody: InDepositWithDrawDto): Promise<DepositOrWithdrawDto> {
     try {
       const stockPortfolio = await this.PortfolioRepo.findOne({
-        where: { userId: { id: withdrawDto.id } },
+        where: { userId: { id: requestBody.id } },
         relations: ['withdraws'], // Load the associated watchlists
       });
 
-      if (stockPortfolio.id !== withdrawDto.sPortfolioId) {
+      if (stockPortfolio.id !== requestBody.sPortfolioId) {
         throw new InternalServerErrorException('Error executing the query');
       }
       const userwallet = await this.PortfolioRepo.findOneOrFail({
-        where: { id: withdrawDto.sPortfolioId },
+        where: { id: requestBody.sPortfolioId },
       });
       // update balance
-      const newBalance = userwallet.balance - withdrawDto.amount;
-      const netDeposit = userwallet.netDeposit - withdrawDto.amount;
+      const newBalance = userwallet.balance - requestBody.amount;
+      const netDeposit = userwallet.netDeposit - requestBody.amount;
       if (newBalance > 0) {
         Object.assign(userwallet, {
           balance: newBalance,
@@ -219,10 +198,7 @@ export class StockPortfolioService {
       }
 
       const withdraw = this.WithdrawRepo.create({
-        date: withdrawDto.date,
-        amount: withdrawDto.amount,
-        method: withdrawDto.method,
-        status: withdrawDto.status,
+        ...requestBody,
         sPortfolioId: userwallet,
       });
       const newWithdraw = await this.WithdrawRepo.save(withdraw);
@@ -233,36 +209,27 @@ export class StockPortfolioService {
       // return response;
       return plainToInstance(DepositOrWithdrawDto, response);
     } catch (error) {
-      if (error instanceof EntityNotFoundError) {
-        // Handle not found exception as needed
-        throw new NotFoundException(
-          `stockPortfolio with userId ${withdrawDto.sPortfolioId} not found`,
-        );
-      } else if (error instanceof QueryFailedError) {
-        // Handle query execution error
-        throw new InternalServerErrorException('Error executing the query');
-      }
-      // Handle other errors or rethrow
-      throw error;
+      const mes = `stockPortfolio with userId ${requestBody.sPortfolioId} not found`;
+      this.catchBlock(error, mes);
     }
   }
 
-  async buys(BuyDto: InBuySellDto): Promise<BuyOrSellDto> {
+  async buys(requestBody: InBuySellDto): Promise<BuyOrSellDto> {
     try {
       const stockPortfolio = await this.PortfolioRepo.findOne({
-        where: { userId: { id: BuyDto.id } },
+        where: { userId: { id: requestBody.id } },
         relations: ['buys', 'holding_amounts'], // Load the associated watchlists
       });
 
-      if (stockPortfolio.id !== BuyDto.sPortfolioId) {
+      if (stockPortfolio.id !== requestBody.sPortfolioId) {
         throw new InternalServerErrorException('Error executing the query');
       }
       const userwallet = await this.PortfolioRepo.findOneOrFail({
-        where: { id: BuyDto.sPortfolioId },
+        where: { id: requestBody.sPortfolioId },
       });
 
       // update balance
-      const newBalance = userwallet.balance - BuyDto.amount * BuyDto.matchPrice;
+      const newBalance = userwallet.balance - requestBody.amount * requestBody.matchPrice;
       if (newBalance > 0) {
         Object.assign(userwallet, { balance: newBalance });
         this.PortfolioRepo.save(userwallet);
@@ -271,44 +238,31 @@ export class StockPortfolioService {
       }
 
       const buy = this.BuyRepo.create({
-        date: BuyDto.date,
-        symbol: BuyDto.symbol,
-        amount: BuyDto.amount,
-        matchPrice: BuyDto.matchPrice,
-        netvalue: BuyDto.netvalue,
-        marketCap: BuyDto.marketCap,
+        ...requestBody,
         sPortfolioId: userwallet,
       });
       const newBuy = await this.BuyRepo.save(buy);
       //check in holding
-      const stockInHolding = await this.PortfolioRepo.createQueryBuilder(
-        'portfolio',
-      )
+      const stockInHolding = await this.PortfolioRepo.createQueryBuilder('portfolio',)
         .leftJoinAndSelect('portfolio.holding_amounts', 'holding_amount')
-        .where('portfolio.userId = :userId', { userId: BuyDto.id })
-        .andWhere('holding_amount.symbol = :symbol', { symbol: BuyDto.symbol })
+        .where('portfolio.userId = :userId', { userId: requestBody.id })
+        .andWhere('holding_amount.symbol = :symbol', { symbol: requestBody.symbol })
         .getOne();
       let h_Symbol;
       if (!stockInHolding) {
         //set to database in holding
         h_Symbol = this.HoldingRepo.create({
-          symbol: BuyDto.symbol,
-          amount: BuyDto.amount,
-          matchPrice: BuyDto.matchPrice,
-          marketCap: BuyDto.marketCap,
+          ...requestBody,
           sPortfolioId: userwallet,
         });
       } else {
         h_Symbol = stockInHolding.holding_amounts[0];
-        const n_Amount = BuyDto.amount + h_Symbol.amount;
-        const n_Price =
-          (BuyDto.matchPrice * BuyDto.amount +
-            h_Symbol.matchPrice * h_Symbol.amount) /
-          n_Amount;
+        const n_Amount = requestBody.amount + h_Symbol.amount;
+        const n_Price =(requestBody.matchPrice * requestBody.amount +h_Symbol.matchPrice * h_Symbol.amount) / n_Amount;
         const up_H_Symbol = {
           amount: n_Amount,
           matchPrice: n_Price,
-          marketCap: BuyDto.marketCap,
+          marketCap: requestBody.marketCap,
         };
         Object.assign(h_Symbol, up_H_Symbol);
       }
@@ -323,36 +277,27 @@ export class StockPortfolioService {
         excludeExtraneousValues: true,
       });
     } catch (error) {
-      if (error instanceof EntityNotFoundError) {
-        // Handle not found exception as needed
-        throw new NotFoundException(
-          `stockPortfolio with userId ${BuyDto.sPortfolioId} not found`,
-        );
-      } else if (error instanceof QueryFailedError) {
-        // Handle query execution error
-        throw new InternalServerErrorException('Error executing the query');
-      }
-      // Handle other errors or rethrow
-      throw error;
+      const mes = `stockPortfolio with userId ${requestBody.sPortfolioId} not found`;
+      this.catchBlock(error, mes);
     }
   }
 
-  async sells(SellDto: InBuySellDto): Promise<BuyOrSellDto> {
+  async sells(requestBody: InBuySellDto): Promise<BuyOrSellDto> {
     try {
       const stockPortfolio = await this.PortfolioRepo.findOne({
-        where: { userId: { id: SellDto.id } },
+        where: { userId: { id: requestBody.id } },
         relations: ['withdraws'], // Load the associated watchlists
       });
 
-      if (stockPortfolio.id !== SellDto.sPortfolioId) {
+      if (stockPortfolio.id !== requestBody.sPortfolioId) {
         throw new InternalServerErrorException('Error executing the query');
       }
       const userwallet = await this.PortfolioRepo.findOneOrFail({
-        where: { id: SellDto.sPortfolioId },
+        where: { id: requestBody.sPortfolioId },
       });
       // update balance
       const newBalance =
-        userwallet.balance + SellDto.amount * SellDto.matchPrice;
+        userwallet.balance + requestBody.amount * requestBody.matchPrice;
       if (newBalance > 0) {
         Object.assign(userwallet, { balance: newBalance });
         this.PortfolioRepo.save(userwallet);
@@ -360,21 +305,14 @@ export class StockPortfolioService {
         throw new NotAcceptableException('Balance Not Enough');
       }
       const sell = this.SellRepo.create({
-        date: SellDto.date,
-        symbol: SellDto.symbol,
-        amount: SellDto.amount,
-        matchPrice: SellDto.matchPrice,
-        marketCap: SellDto.marketCap,
-        netvalue: SellDto.netvalue,
+        ...requestBody,
         sPortfolioId: userwallet,
       });
       //check in holding
-      const stockInHolding = await this.PortfolioRepo.createQueryBuilder(
-        'portfolio',
-      )
+      const stockInHolding = await this.PortfolioRepo.createQueryBuilder('portfolio')
         .leftJoinAndSelect('portfolio.holding_amounts', 'holding_amount')
-        .where('portfolio.userId = :userId', { userId: SellDto.id })
-        .andWhere('holding_amount.symbol = :symbol', { symbol: SellDto.symbol })
+        .where('portfolio.userId = :userId', { userId: requestBody.id })
+        .andWhere('holding_amount.symbol = :symbol', { symbol: requestBody.symbol })
         .getOne();
       let h_Symbol;
       if (!stockInHolding) {
@@ -382,13 +320,13 @@ export class StockPortfolioService {
         throw new NotAcceptableException("You don't Have this");
       } else {
         h_Symbol = stockInHolding.holding_amounts[0];
-        const n_Amount = h_Symbol.amount - SellDto.amount;
+        const n_Amount = h_Symbol.amount - requestBody.amount;
         if (n_Amount < 0) {
           throw new NotAcceptableException("You don't that much");
         }
         const up_H_Symbol = {
           amount: n_Amount,
-          marketCap: SellDto.marketCap,
+          marketCap: requestBody.marketCap,
         };
         Object.assign(h_Symbol, up_H_Symbol);
       }
@@ -404,44 +342,35 @@ export class StockPortfolioService {
         excludeExtraneousValues: true,
       });
     } catch (error) {
-      if (error instanceof EntityNotFoundError) {
-        // Handle not found exception as needed
-        throw new NotFoundException(
-          `stockPortfolio with userId ${SellDto.sPortfolioId} not found`,
-        );
-      } else if (error instanceof QueryFailedError) {
-        // Handle query execution error
-        throw new InternalServerErrorException('Error executing the query');
-      }
-      // Handle other errors or rethrow
-      throw error;
+      const mes = `stockPortfolio with userId ${requestBody.sPortfolioId} not found`;
+      this.catchBlock(error, mes);
     }
   }
 
-  async submit(submit: any) {
-    if (submit.requestType === requestType.SELL) {
-      this.validateRequest(submit, InBuySellDto);
-      return this.sells(submit);
+  async submit(requestBody: any) {
+    if (requestBody.requestType === requestType.SELL) {
+      this.validateRequest(requestBody, InBuySellDto);
+      return this.sells(requestBody);
     }
-    if (submit.requestType === requestType.BUY) {
-      this.validateRequest(submit, InBuySellDto);
-      return this.buys(submit);
+    if (requestBody.requestType === requestType.BUY) {
+      this.validateRequest(requestBody, InBuySellDto);
+      return this.buys(requestBody);
     }
-    if (submit.requestType === requestType.DEPOSIT) {
-      this.validateRequest(submit, InDepositWithDrawDto);
-      return this.deposits(submit);
+    if (requestBody.requestType === requestType.DEPOSIT) {
+      this.validateRequest(requestBody, InDepositWithDrawDto);
+      return this.deposits(requestBody);
     }
-    if (submit.requestType === requestType.WITHDRAW) {
-      this.validateRequest(submit, InDepositWithDrawDto);
-      return this.withdraws(submit);
+    if (requestBody.requestType === requestType.WITHDRAW) {
+      this.validateRequest(requestBody, InDepositWithDrawDto);
+      return this.withdraws(requestBody);
     }
     throw new NotAcceptableException(
       'Type as: deposit, withdraw, sell, or buy',
     );
   }
-  private validateRequest(submit: any, dtoClass: any): void {
+  private validateRequest(requestBody: any, dtoClass: any): void {
     const dtoInstance = new dtoClass();
-    Object.assign(dtoInstance, submit);
+    Object.assign(dtoInstance, requestBody);
 
     const errors: ValidationError[] = validateSync(dtoInstance, {
       skipMissingProperties: false,
@@ -457,9 +386,21 @@ export class StockPortfolioService {
       .map((error) =>
         Object.values(error.constraints)
           .map((message) => message)
-          .join(', ')
+          .join(', '),
       )
       .join(', ');
+  }
+
+  private catchBlock(error, mes) {
+    if (error instanceof EntityNotFoundError) {
+      // Handle not found exception as needed
+      throw new NotFoundException(mes);
+    } else if (error instanceof QueryFailedError) {
+      // Handle query execution error
+      throw new InternalServerErrorException('Error executing the query');
+    }
+    // Handle other errors or rethrow
+    throw error;
   }
 }
 

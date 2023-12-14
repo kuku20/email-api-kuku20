@@ -1,28 +1,14 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
 import { StockPortfolioService } from './stock-portfolio.service';
 import {
-
-  HoldingAmountsDto,
   InBuySellDto,
   InDepositWithDrawDto,
-  UserDto,
   CreateStockPortfolioDto,
-  UpdateStockPortfolioDto,
 } from './dto/index';
 import { UserAuthGuard } from 'src/stock-user/guard';
 import { JwtGuard } from 'src/auth/guard';
 
-@UseGuards(JwtGuard)
-@UseGuards(UserAuthGuard)
+@UseGuards(JwtGuard, UserAuthGuard)
 @Controller('stock-portfolio')
 export class StockPortfolioController {
   constructor(private readonly stockPortfolioService: StockPortfolioService) {}
@@ -43,7 +29,7 @@ export class StockPortfolioController {
   // }
 
   @Post('/submit')
-  submit(@Body() submit: (InBuySellDto|InDepositWithDrawDto)) {
+  submit(@Body() submit: InBuySellDto | InDepositWithDrawDto) {
     return this.stockPortfolioService.submit(submit);
   }
 }
