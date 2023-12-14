@@ -91,8 +91,8 @@ export class StockUserService {
         stockUserId: user,
       });
       const newList = await this.watchListRepo.save(watchlist)
-      return newList;
-      // return plainToInstance(ListOutDto, newList);
+      // return newList;
+      return plainToInstance(ListOutDto, newList);
     } catch (error) {
       if (error instanceof EntityNotFoundError) {
         // Handle not found exception as needed
