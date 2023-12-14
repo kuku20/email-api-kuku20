@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import axios from 'axios';
 import { ConfigService, ConfigModule } from '@nestjs/config';
 import { plainToClass, plainToInstance } from 'class-transformer';
@@ -17,7 +17,7 @@ import {
   SearchSymbolOutFinnhubDto,
   SearchSymbolOutPolygonDto,
 } from './dto';
-
+import {FMPRType, FhRequestType, PolygonRType} from './dto/sourceData'
 @Injectable()
 export class StockService {
   constructor(private readonly configService: ConfigService) {}
@@ -33,6 +33,31 @@ export class StockService {
     return response;
   }
 
+  async tickerList_POLYGON(query: string) {
+    const BASE_URL = `https://api.polygon.io/v3/reference/tickers?search=${query}&active=true&apiKey=`;
+    const response = await this.tryCatchF(BASE_URL, 'POLYGON_STOCK_API_KEY');
+    return plainToClass(SearchSymbolOutPolygonDto, response?.results);
+  }
+  
+  async tickerDividends_POLYGON(query: string) {
+    const BASE_URL = `https://api.polygon.io/v3/reference/dividends?ticker=${query}&apiKey=`;
+    const response = await this.tryCatchF(BASE_URL, 'POLYGON_STOCK_API_KEY');
+    return plainToClass(DividendOutDto, response?.results);
+  }
+
+  async fromPolygon(type,stockTicker, start, end){
+    if(type===PolygonRType.BYDAY){
+      return this.search_POLYGON(stockTicker,start, end)
+    }
+    if(type===PolygonRType.TYPEAHEAD){
+      return this.tickerList_POLYGON(stockTicker)
+    }
+    if(type===PolygonRType.DIVIDEND){
+      return this.tickerDividends_POLYGON(stockTicker)
+    }
+    throw new NotFoundException("NOT FOUND");
+  }
+
   async realTimePrice_FMP(query: string) {
     const BASE_URL = `https://financialmodelingprep.com/api/v3/stock/real-time-price/${query}?apikey=`;
     const response = await this.tryCatchF(BASE_URL, 'FMP_STOCK_API_KEY');
@@ -43,44 +68,6 @@ export class StockService {
     const BASE_URL = `https://financialmodelingprep.com/api/v3/stock/real-time-price?apikey=`;
     const response = await this.tryCatchF(BASE_URL, 'FMP_STOCK_API_KEY');
     return response;
-  }
-
-  async tickerNews_FINNHUB(query: string, start?: string, end?: string) {
-    const today = new Date();
-    today.setDate(today.getDate() - 5);
-    const lastFiveDays = start || today.toISOString().replace(/T.*$/, '');
-    const current = end || new Date().toISOString().replace(/T.*$/, '');
-    const BASE_URL = `https://finnhub.io/api/v1/company-news?symbol=${query}&from=${lastFiveDays}&to=${current}&token=`;
-    const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
-    return plainToClass(NewsFinnhubOutDto, response);
-  }
-
-  async tickerDividends_POLYGON(query: string) {
-    const BASE_URL = `https://api.polygon.io/v3/reference/dividends?ticker=${query}&apiKey=`;
-    const response = await this.tryCatchF(BASE_URL, 'POLYGON_STOCK_API_KEY');
-    return plainToClass(DividendOutDto, response?.results);
-  }
-
-  async earningsCal_FINNHUB(start?: string, end?: string) {
-    const today = new Date();
-    const cstOffset = 5 * 60; // CST is UTC-6
-    today.setMinutes(today.getMinutes() - cstOffset); //set to local Houston Time zone
-    const current = end || today.toISOString().replace(/T.*$/, '');
-    const BASE_URL = `https://finnhub.io/api/v1/calendar/earnings?from=${current}&to=${current}&token=`;
-    const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
-    return plainToClass(EarningCalFinnhubOut, response?.earningsCalendar);
-  }
-
-  async realTimePrice_FINNHUB(query: string) {
-    const BASE_URL = `https://finnhub.io/api/v1/quote?symbol=${query}&token=`;
-    const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
-    return plainToClass(RealTimePriceFinnhubDto, response);
-  }
-
-  async insiderTransactions_FINNHUB(query: string) {
-    const BASE_URL = `https://finnhub.io/api/v1/stock/insider-transactions?symbol=${query}&token=`;
-    const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
-    return plainToClass(InsiderTransactionsDto, response?.data);
   }
 
   async bulkrequestsMulCom_FMP(query: string) {
@@ -97,6 +84,71 @@ export class StockService {
     return plainToClass(GainersOrLosersDto, response);
   }
 
+
+  async tickerList_FMP(query: string) {
+    const BASE_URL = `https://financialmodelingprep.com/api/v3/search?query=${query}&apikey=`;
+    const response = await this.tryCatchF(BASE_URL, 'FMP_STOCK_API_KEY');
+    // return  response.slice(0, 10);
+    return plainToClass(SearchSymbolOutFMPDto, response?.slice(0, 10));
+  }
+
+  async fromFMP(type,stockTicker, stockMarket){
+    if(type===FMPRType.RTP){
+      return this.realTimePrice_FMP(stockTicker)
+    }
+    if(type===FMPRType.RTPA){
+      return this.realTimePriceAll_FMP()
+    }
+    if(type===FMPRType.MCP){
+      return this.bulkrequestsMulCom_FMP(stockTicker)
+    }
+    if(type===FMPRType.GAINORlOSE){
+      return this.gainersOrLosers_FMP(stockMarket)
+    }
+    if(type===FMPRType.SEARCH){
+      return this.tickerList_FMP(stockTicker)
+    }
+    throw new NotFoundException("NOT FOUND");
+  }
+
+  async earningsCal_FINNHUB(start?: string, end?: string) {
+    const today = new Date();
+    const cstOffset = 5 * 60; // CST is UTC-6
+    today.setMinutes(today.getMinutes() - cstOffset); //set to local Houston Time zone
+    const current = end || today.toISOString().replace(/T.*$/, '');
+    const BASE_URL = `https://finnhub.io/api/v1/calendar/earnings?from=${current}&to=${current}&token=`;
+    const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
+    return plainToClass(EarningCalFinnhubOut, response?.earningsCalendar);
+  }
+
+  async tickerNews_FINNHUB(query: string, start?: string, end?: string) {
+    const today = new Date();
+    today.setDate(today.getDate() - 5);
+    const lastFiveDays = start || today.toISOString().replace(/T.*$/, '');
+    const current = end || new Date().toISOString().replace(/T.*$/, '');
+    const BASE_URL = `https://finnhub.io/api/v1/company-news?symbol=${query}&from=${lastFiveDays}&to=${current}&token=`;
+    const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
+    return plainToClass(NewsFinnhubOutDto, response);
+  }
+
+  async realTimePrice_FINNHUB(query: string) {
+    const BASE_URL = `https://finnhub.io/api/v1/quote?symbol=${query}&token=`;
+    const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
+    return plainToClass(RealTimePriceFinnhubDto, response);
+  }
+
+  async companyProfile_FINNHUB(query: string) {
+    const BASE_URL = `https://finnhub.io/api/v1/stock/profile2?symbol=${query}&token=`;
+    const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
+    return plainToClass(CompanyProfileDto, response);
+  }
+  
+  async insiderTransactions_FINNHUB(query: string) {
+    const BASE_URL = `https://finnhub.io/api/v1/stock/insider-transactions?symbol=${query}&token=`;
+    const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
+    return plainToClass(InsiderTransactionsDto, response?.data);
+  }
+  
   // search function
   async tickerList_FINNHUB(query: string) {
     const BASE_URL = `https://finnhub.io/api/v1/search?q=${query}&token=`;
@@ -106,23 +158,27 @@ export class StockService {
       response?.result?.slice(0, 10),
     );
   }
-  async tickerList_FMP(query: string) {
-    const BASE_URL = `https://financialmodelingprep.com/api/v3/search?query=${query}&apikey=`;
-    const response = await this.tryCatchF(BASE_URL, 'FMP_STOCK_API_KEY');
-    // return  response.slice(0, 10);
-    return plainToClass(SearchSymbolOutFMPDto, response?.slice(0, 10));
-  }
 
-  async tickerList_POLYGON(query: string) {
-    const BASE_URL = `https://api.polygon.io/v3/reference/tickers?search=${query}&active=true&apiKey=`;
-    const response = await this.tryCatchF(BASE_URL, 'POLYGON_STOCK_API_KEY');
-    return plainToClass(SearchSymbolOutPolygonDto, response?.results);
-  }
-
-  async companyProfile_FINNHUB(query: string) {
-    const BASE_URL = `https://finnhub.io/api/v1/stock/profile2?symbol=${query}&token=`;
-    const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
-    return plainToClass(CompanyProfileDto, response);
+  async fromFinnhub(type,stockTicker, start, end){
+    if(type===FhRequestType.EARNING){
+      return this.earningsCal_FINNHUB(start, end)
+    }
+    if(type===FhRequestType.NEWS){
+      return this.tickerNews_FINNHUB(stockTicker,start, end)
+    }
+    if(type===FhRequestType.RTP){
+      return this.earningsCal_FINNHUB(start, end)
+    }
+    if(type===FhRequestType.ComPro){
+      return this.companyProfile_FINNHUB(stockTicker)
+    }
+    if(type===FhRequestType.INTRAN){
+      return this.earningsCal_FINNHUB(stockTicker)
+    }
+    if(type===FhRequestType.TICKLIST){
+      return this.tickerList_FINNHUB(stockTicker)
+    }
+    throw new NotFoundException("NOT FOUND");
   }
 
   //TSLA,AMZN,MSFT

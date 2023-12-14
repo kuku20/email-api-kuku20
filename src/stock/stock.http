@@ -1,96 +1,30 @@
-### get price by day
-curl --location 'http://localhost:3000/stock/byday?stockTicker=AuiuuuAU'
-
-### Get current price
-curl --location 'http://localhost:3000/stock/realtimeprice?stockTicker=ROKU'
-
-
-### Get current price
-curl --location 'http://localhost:3000/stock/v2/realtimeprice?stockTicker=ROKU'
-
-### get all current price
-curl --location 'http://localhost:3000/stock/realtimepriceall'
-
-### Get ticker news for 5day
-curl --location 'http://localhost:3000/stock/news-v1?stockTicker=AAL'
-
-### Get ticker news from 2023-01-11 to 2023-02-11
-curl --location 'http://localhost:3000/stock/news-v1?stockTicker=AAL&start=2023-01-11&end=2023-02-11'
-
-### Get list ticker for type ahead
-curl --location 'http://localhost:3000/stock/typeahead?stockTicker=BILL'
-
-### Get divident
-curl --location 'http://localhost:3000/stock/dividends?stockTicker=AAL'
-
-### Get earning call from 2023-01-11 to 2023-02-11
-# curl --location 'http://localhost:3000/stock/earnings?start=2023-01-11&end=2023-02-11'
-# curl --location 'http://localhost:3000/stock/earnings?end=2023-11-03'
-curl --location 'http://localhost:3000/stock/earnings?end=2023-11-07'
-
-
-### get insider transactions
-curl --location 'http://localhost:3000/stock/insider-transactions?stockTicker=ROKU'
-
-### get multiple-company-prices
-curl --location 'http://localhost:3000/stock/multiple-company-prices?stockTicker=ROKU,AAL,bill'
-
-### Get current price
-curl --location 'http://localhost:3000/stock/v2/realtimeprice?stockTicker=ROKU'
-
-### Get losers
-curl --location 'http://localhost:3000/stock/gainers-or-losers?stockMarket=losers'
-### Get gainers
-curl --location 'http://localhost:3000/stock/gainers-or-losers?stockMarket=gainers'
-
-### Get company profile
-curl --location 'http://localhost:3000/stock/company-profile?stockTicker=aal'
-
-
-
 ###
-you can write detail from her
-/company-profile
-###
-GET /stock/gainers-or-losers?stockMarket=gainers HTTP/1.1
-Host: localhost:3000
-
-####
-https://api.stockdata.org/v1/news/all?symbols=TSLA,AMZN,MSFT&filter_entities=true&language=en&api_token=mf4IEBGqcJz6ZltjoeqYLVsY59T9RgXAoyt5LNFi
-
-####
-https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=AAPL&apikey=4Q8CK4DC1YAI8FP0
+@rootUrl = http://localhost:3000
 
 ###Get New form  news-alpha-vantage
-curl --location 'http://localhost:3000/stock/news-v2?stockTicker=BABA'
+curl --location '{{rootUrl}}/stock/news-v2?stockTicker=BABA'
 
 ###Get New form  //news-stock-data
-curl --location 'http://localhost:3000/stock/news-v3?stockTicker=AAL&date=2023-11-18'
+curl --location '{{rootUrl}}/stock/news-v3?stockTicker=AAL&date=2023-11-18'
 
 ###Get New form  //news-stock-data
-curl --location 'http://localhost:3000/stock/news-v3?stockTicker=AAL&date=2023-11-17&type=24'
-
-### Get ticker news for 5day
-curl --location 'http://localhost:3000/stock/news-v1?stockTicker=AAL'
-
-###
-curl --location 'https://stockmarkets000-default-rtdb.firebaseio.com/stockAVnews/-Nj_0EV4eY_FJJEOYyo2/feed.json'
+curl --location '{{rootUrl}}/stock/news-v3?stockTicker=AAL&date=2023-11-17&type=24'
 
 #### FIREBASE ALL
-http://localhost:3000/stock/news-fball/stockSDnews?stockTicker=ZM
+{{rootUrl}}/stock/news-fball/stockSDnews?stockTicker=ZM
 
 #### FIREBASE ALL
-http://localhost:3000/stock/news-fball/stockAVnews?stockTicker=T
+{{rootUrl}}/stock/news-fball/stockAVnews?stockTicker=T
 
 ###FIREBASE day 
-GET http://localhost:3000/stock/news-fb/stockAVnews?stockTicker=T&date=2023-11-20
+GET {{rootUrl}}/stock/news-fb/stockAVnews?stockTicker=T&date=2023-11-20
 
 #### FIREBASE day
-GET http://localhost:3000/stock/news-fb/stockSDnews?stockTicker=T&date=2023-11-20
+GET {{rootUrl}}/stock/news-fb/stockSDnews?stockTicker=T&date=2023-11-20
 
 
 ####
-curl --location --request GET 'http://localhost:3000/stock/realtimefb-multiple/watchlists'
+curl --location --request GET '{{rootUrl}}/stock/realtimefb-multiple/watchlists'
 
 ###Patch
 PATCH /stock/realtimefb-multiple/watchlists HTTP/1.1
@@ -102,15 +36,68 @@ Content-Length: 490
 { "data":[ { "symbol": "DE", "name": "Deere & Company", "price": 363.67, "pctChange": 0.6783, "change": 2.45, "dayLow": 360.87, "dayHigh": 364.17, "yearHigh": 450, "yearLow": 345.55, "marketCap": 104737323670, "priceAvg50": 374.484, "priceAvg200": 393.17575, "exchange": "NYSE", "volume": 2059976, "avgVolume": 1568398, "open": 361.8, "previousClose": 361.22, "eps": 34.63, "pe": 10.5, "earnAnn": "2024-02-15T13:30:00.000+0000", "sharesOutstanding": 288001000, "timestamp": 1702069202 } ] }
 
 ####
-curl --location --request GET 'http://localhost:3000/stock/realtimefb-multiple/gainers'
+curl --location --request GET '{{rootUrl}}/stock/realtimefb-multiple/gainers'
 
 
 
 
 
 ####
-curl --location --request GET 'http://localhost:3000/stock/realtimefb-multiple/losers'
+curl --location --request GET '{{rootUrl}}/stock/realtimefb-multiple/losers?date='
 
 
 ####
-curl --location --request GET 'http://localhost:3000/stock/realtimefb-multiple/earncal?date=2023-12-10'
+curl --location --request GET '{{rootUrl}}/stock/realtimefb-multiple/earncal?date=2023-12-10'
+
+####------------------------------------------------------------------------------------------
+#### FINNHUB
+@newfhep = /fh
+# @newfhep = 
+### Get current price
+# curl --location '{{rootUrl}}/stock/v2/realtimeprice?stockTicker=ROKU'
+curl --location '{{rootUrl}}/stock{{newfhep}}/realtimeprice?stockTicker=ROKU'
+### get insider transactions
+curl --location '{{rootUrl}}/stock{{newfhep}}/insider-transactions?stockTicker=ROKU'
+
+### get insider transactions
+curl --location '{{rootUrl}}/stock{{newfhep}}/insider-transactions?stockTicker=ROKU'
+### Get company profile
+curl --location '{{rootUrl}}/stock{{newfhep}}/company-profile?stockTicker=aal'
+
+### Get ticker news for 5day
+# curl --location '{{rootUrl}}/stock/news-v1?stockTicker=AAL'
+### Get ticker news from 2023-01-11 to 2023-02-11
+# curl --location '{{rootUrl}}/stock/news-v1?stockTicker=AAL&start=2023-01-11&end=2023-02-11'
+curl --location '{{rootUrl}}/stock{{newfhep}}/news?stockTicker=AAL'
+###
+curl --location '{{rootUrl}}/stock{{newfhep}}/news?stockTicker=AAL&start=2023-01-11&end=2023-02-11'
+
+####------------------------------------------------------------------------------------------
+####POLYGON
+@newpoep = /po
+# @newpoep = 
+### Get list ticker for type ahead
+curl --location '{{rootUrl}}/stock{{newpoep}}/typeahead?stockTicker=BILL'
+
+### Get divident
+curl --location '{{rootUrl}}/stock{{newpoep}}/dividends?stockTicker=AAL'
+
+### get price by day
+curl --location '{{rootUrl}}/stock{{newpoep}}/byday?stockTicker=AuiuuuAU'
+
+####------------------------------------------------------------------------------------------
+####FMP
+@newfmep = /fm
+### Get current price
+curl --location '{{rootUrl}}/stock{{newfmep}}/realtimeprice?stockTicker=ROKU'
+### get all current price
+curl --location '{{rootUrl}}/stock{{newfmep}}/realtimepriceall'
+### get multiple-company-prices
+curl --location '{{rootUrl}}/stock{{newfmep}}/multiple-company-prices?stockTicker=ROKU,AAL,bill'
+### Get losers
+curl --location '{{rootUrl}}/stock{{newfmep}}/gainers-or-losers?stockMarket=losers'
+### Get gainers
+curl --location '{{rootUrl}}/stock{{newfmep}}/gainers-or-losers?stockMarket=gainers'
+###
+GET /stock{{newfmep}}/gainers-or-losers?stockMarket=gainers HTTP/1.1
+Host: localhost:3000
