@@ -112,14 +112,27 @@ curl --location 'http://localhost:3000/stock-user/watchlist' \
     "spotline":false
 }'
 
+### update this list ADMIN ONLY
+curl --location --request PATCH 'http://localhost:3000/stock-user/user-list/66dbefd6-ff65-4b33-b2fc-24d0cda67518' \
+--header 'Content-Type: application/json' \
+--data '{
+     "listTickers": [
+    "TWLO",
+    "BABA"
+  ], "maxLists":10
+}'
+
 ### post watchlist AAL
 curl --location 'http://localhost:3000/stock-user/watchlist' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "id": "35d471c6-c637-46f2-a222-1549c789985f",
-    "stockUserId":"ac48cca9-6203-49a7-9acd-cc1f0d3f4f08",
+    "id": "66dbefd6-ff65-4b33-b2fc-24d0cda67518",
+    "stockUserId":"0b91cc82-41c6-409b-b25b-4d2504457c22",
     "dateAdded": "2023-11-09",
     "pctChangeAtAdded": -1.7759,
     "priceAtAdded": 155.97,
-    "symbol":"AAL"
+    "symbol":"DDE"
 }'
+
+### Get Update 35d471c6-c637-46f2-a222-1549c789985f
+GET http://localhost:3000/stock-user/user-list/66dbefd6-ff65-4b33-b2fc-24d0cda67518
