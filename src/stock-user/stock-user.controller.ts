@@ -11,7 +11,7 @@ import {
 import { StockUserService } from './stock-user.service';
 import { WatchListDto, CreateStockUserDto} from './dto';
 import { JwtGuard } from 'src/auth/guard';
-import { UserAuthGuard } from './guard';
+import { AdminUserAuthGuard, UserAuthGuard } from './guard';
 
 @UseGuards(JwtGuard)
 @Controller('stock-user')
@@ -42,7 +42,7 @@ export class StockUserController {
     return this.stockUserService.findStockUserByUserId(userId);
   }
 
-  @UseGuards(UserAuthGuard)
+   @UseGuards(AdminUserAuthGuard)
   @Patch('user-list/:userId')
   updateUlist(
     @Param('userId') userId: string,

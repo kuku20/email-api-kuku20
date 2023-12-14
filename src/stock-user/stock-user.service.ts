@@ -76,17 +76,23 @@ export class StockUserService {
       const user = await this.stockUserRepo.findOneOrFail({
         where: { id: watchListDto.stockUserId },
       });
+      const hasTicker = user.listTickers.some((item: string) => item == watchListDto.symbol)
+      if(hasTicker){
+        throw new NotAcceptableException('You cannot add this ticker to the list');
+      }else
+      {
+        const oldListTickers = user.listTickers
+        oldListTickers.push(watchListDto.symbol)
+        Object.assign(stockUser,{ listTickers: oldListTickers });
+        const updateNLT = await this.stockUserRepo.save(stockUser);
+      }
       const watchlist = this.watchListRepo.create({
-        dateAdded: watchListDto.dateAdded,
-        pctChangeAtAdded: watchListDto.pctChangeAtAdded,
-        priceAtAdded: watchListDto.priceAtAdded,
-        spotline: watchListDto.spotline,
-        symbol: watchListDto.symbol,
+        ...watchListDto,
         stockUserId: user,
       });
       const newList = await this.watchListRepo.save(watchlist)
-      // return newList;
-      return plainToInstance(ListOutDto, newList);
+      return newList;
+      // return plainToInstance(ListOutDto, newList);
     } catch (error) {
       if (error instanceof EntityNotFoundError) {
         // Handle not found exception as needed
@@ -166,6 +172,7 @@ export class StockUserService {
       }
       Object.assign(userlist, updateStockUserDto);
       return this.stockUserRepo.save(userlist);
+      
     } catch (error) {
       if (error instanceof EntityNotFoundError) {
         // Handle not found exception as needed
