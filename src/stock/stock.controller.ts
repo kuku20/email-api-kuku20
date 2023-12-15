@@ -15,21 +15,6 @@ import { FinnhubDto, FmpDto, PolygonDto } from './dto/sourceData';
 @Controller('stock')
 export class StockController {
   constructor(private readonly stockService: StockService) {}
- 
-  @UseGuards(JwtGuard) //proteched as well since this is 25/day
-  @UseGuards(AdminUserAuthGuard)
-  @Get('/news-v2') //news-alpha-vantage
-  async tickers_News_ALPHA_VANTAGE(@Query('stockTicker') stockTicker: string) {
-    try {
-      const data = await this.stockService.tickerNews_ALPHA_VANTAGE(
-        stockTicker,
-      );
-      return { feed: data };
-    } catch (error) {
-      // Handle errors here
-      throw error;
-    }
-  }
 
   @Get('/news-fb/:db') //news-alpha-vantage
   async tickerNews_AV_FirebaseGet(
@@ -82,6 +67,36 @@ export class StockController {
       date,
       db,
     );
+  }
+
+  @Get('/news-v1')
+  async newsFinnhub(
+  @Query('stockTicker') stockTicker: string,
+  @Query('start') start: string,
+  @Query('end') end: string,
+  ) {
+    try {
+      const data = await this.stockService.tickerNews_FINNHUB(stockTicker,start, end);
+      return data;
+    } catch (error) {
+      // Handle errors here
+      throw error;
+    }
+  }
+
+  @UseGuards(JwtGuard) //proteched as well since this is 25/day
+  @UseGuards(AdminUserAuthGuard)
+  @Get('/news-v2') //news-alpha-vantage
+  async tickers_News_ALPHA_VANTAGE(@Query('stockTicker') stockTicker: string) {
+    try {
+      const data = await this.stockService.tickerNews_ALPHA_VANTAGE(
+        stockTicker,
+      );
+      return { feed: data };
+    } catch (error) {
+      // Handle errors here
+      throw error;
+    }
   }
 
   @Get('/news-v3') //news-alpha-vantage

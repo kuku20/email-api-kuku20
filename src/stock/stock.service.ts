@@ -167,13 +167,13 @@ export class StockService {
       return this.tickerNews_FINNHUB(stockTicker,start, end)
     }
     if(type===FhRequestType.RTP){
-      return this.earningsCal_FINNHUB(start, end)
+      return this.realTimePrice_FINNHUB(stockTicker)
     }
     if(type===FhRequestType.ComPro){
       return this.companyProfile_FINNHUB(stockTicker)
     }
     if(type===FhRequestType.INTRAN){
-      return this.earningsCal_FINNHUB(stockTicker)
+      return this.insiderTransactions_FINNHUB(stockTicker)
     }
     if(type===FhRequestType.TICKLIST){
       return this.tickerList_FINNHUB(stockTicker)
