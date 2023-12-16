@@ -6,6 +6,6 @@ export class UserAuthGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest()
     const url = request.url
-    return url.includes(request.user.id) ;
+    return url.includes(request.user.id) || request.user.id=== request.body.id;
   }
 }
