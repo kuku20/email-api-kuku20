@@ -31,3 +31,19 @@ export class WatchListDto {
   @IsUUID()
   stockUserId: string;
 }
+
+export class UpdateWatchListDto {
+  @IsString()
+  dateAdded: string;
+
+  @IsNumber()
+  pctChangeAtAdded: number;
+
+  @IsNumber()
+  priceAtAdded: number;
+
+  @IsBoolean()
+  @IsOptional()
+  spotline?: boolean;
+
+}

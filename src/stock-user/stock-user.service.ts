@@ -13,7 +13,7 @@ import {
   CreateStockUserDto,
   WatchListDto,
   UserListOutDto,
-  ListOutDto,ListTickersDto
+  ListOutDto,ListTickersDto, UpdateWatchListDto
 } from './dto';
 import { plainToInstance } from 'class-transformer';
 import { UserAuth } from 'src/auth/userAuth.entity';
@@ -87,7 +87,11 @@ export class StockUserService {
         const updateNLT = await this.stockUserRepo.save(stockUser);
       }
       const watchlist = this.watchListRepo.create({
-        ...watchListDto,
+        dateAdded: watchListDto.dateAdded,
+        pctChangeAtAdded: watchListDto.pctChangeAtAdded,
+        priceAtAdded: watchListDto.priceAtAdded,
+        spotline: watchListDto.spotline,
+        symbol: watchListDto.symbol,
         stockUserId: user,
       });
       const newList = await this.watchListRepo.save(watchlist)
@@ -135,7 +139,6 @@ export class StockUserService {
       if (!stockUser) {
         throw new NotFoundException(`You don't have any list`);
       }
-
       return stockUser;
       return plainToInstance(UserListOutDto, stockUser);
     } catch (error) {
@@ -187,7 +190,7 @@ export class StockUserService {
 
   async updatewatchList(
     id: string,
-    watchListDto:Partial<WatchListDto>,
+    watchListDto:UpdateWatchListDto,
   ) {
     try {
       const list = await this.watchListRepo.findOne({ where: { id } });
@@ -229,13 +232,23 @@ export class StockUserService {
     }
   }
 
-  async removeList(id: string) {
+  async removeList(userId:string,listId: string) {
     try {
-      const user = await this.watchListRepo.findOne({ where: { id } });
-      if (!user) {
+      const userlist = await this.watchListRepo.findOne({ where: { id : listId} });
+      if (!userlist) {
         throw new NotFoundException('List not found');
       }
-      return this.watchListRepo.remove(user);
+      const stockUser = await this.stockUserRepo.findOne({
+        where: { userId: { id: userId } },
+        relations: ['watchlists'], // Load the associated watchlists
+      });
+      const ListTickers = stockUser.listTickers.filter(
+        (item: any) => item !== userlist.symbol
+      );
+      Object.assign(stockUser,{ listTickers: ListTickers });
+      const updateNLT = await this.stockUserRepo.save(stockUser);
+      // return ListTickers
+      return this.watchListRepo.remove(userlist);
     } catch (error) {
       if (error instanceof EntityNotFoundError) {
         // Handle not found exception as needed
