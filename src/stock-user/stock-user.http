@@ -6,27 +6,30 @@ curl --location 'http://localhost:3000/auth/v2/signin' \
     "password": "fadfjloc"
 }'
 
-
+###
+@userId = 66dbefd6-ff65-4b33-b2fc-24d0cda67518
+@watchlistID = 0b91cc82-41c6-409b-b25b-4d2504457c22
 ### create user list
 curl --location 'http://localhost:3000/stock-user/user-list' \
 --header 'Content-Type: application/json' \
 --data '{
-    "id": "35d471c6-c637-46f2-a222-1549c789985f",
+    "id": "{{watchlistID}}",
     "listTickers": ["AAL","NCLH"]
 }'
 
 ### update this list
-curl --location --request PATCH 'http://localhost:3000/stock-user/user-list/66dbefd6-ff65-4b33-b2fc-24d0cda67518' \
+curl --location --request PATCH 'http://localhost:3000/stock-user/user-list/{{userId}}' \
 --header 'Content-Type: application/json' \
 --data '{
-     "listTickers": [
-    "TWLO",
-    "BABA"
-  ], "maxLists":30
+     "listTickers": ["DDE"], "maxLists":10
 }'
-
+###
+@list = 78a5e1fb-5568-4110-b3c7-684bf9d0cdc9
 ### Get Update 35d471c6-c637-46f2-a222-1549c789985f
-GET http://localhost:3000/stock-user/user-list/66dbefd6-ff65-4b33-b2fc-24d0cda67518
+GET http://localhost:3000/stock-user/user-list/{{userId}}
+
+### Delete watchlist
+curl --location --request DELETE 'http://localhost:3000/stock-user/watchlist/{{userId}}/{{list}}'
 
 ### Sign IN
 curl --location 'http://localhost:3000/auth/v2/signin' \
@@ -41,7 +44,7 @@ curl --location 'http://localhost:3000/auth/v2/signin' \
 curl --location 'http://localhost:3000/stock-user/user-list' \
 --header 'Content-Type: application/json' \
 --data '{
-    "id": "39a6072b-abc2-4092-921e-91aab42fa443",
+    "id": "bd8d3955-dc5c-471f-971b-67635f563412",
     "listTickers": ["AAL","NCLH"]
 }'
 
@@ -72,17 +75,16 @@ curl --location --request DELETE 'http://localhost:3000/stock-user/user-list/35d
 curl --location --request DELETE 'http://localhost:3000/stock-user/user-list/39a6072b-abc2-4092-921e-91aab42fa443'
 
 ### Delete watchlist
-curl --location --request DELETE 'http://localhost:3000/stock-user/watchlist/35d471c6-c637-46f2-a222-1549c789985f/9f0a85d0-8ad2-4fc2-b650-0ebe72aa64f2'
+curl --location --request DELETE 'http://localhost:3000/stock-user/watchlist/66dbefd6-ff65-4b33-b2fc-24d0cda67518/32bfd162-1fc1-4f51-b0d9-a0ad13827f2d'
 
 
 ### update watchlist
-curl --location --request PATCH 'http://localhost:3000/stock-user/watchlist/35d471c6-c637-46f2-a222-1549c789985f/90fd496c-a1a3-400b-a9fc-a09f1f9ebeb6' \
+curl --location --request PATCH 'http://localhost:3000/stock-user/watchlist/{{userId}}/78a5e1fb-5568-4110-b3c7-684bf9d0cdc9' \
 --header 'Content-Type: application/json' \
 --data '{
     "dateAdded": "2023-11-09",
     "pctChangeAtAdded": -1.5981,
     "priceAtAdded": 62.19,
-    "symbol":"AAL",
     "spotline":true
 }'
 
@@ -90,27 +92,16 @@ curl --location --request PATCH 'http://localhost:3000/stock-user/watchlist/35d4
 curl --location 'http://localhost:3000/stock-user/watchlist' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "id": "39a6072b-abc2-4092-921e-91aab42fa443",
-    "stockUserId":"130d60a1-3e28-4a8b-9c3c-8f38ee812ba8",
+    "id": "{{userId}}",
+    "stockUserId":"{{watchlistID}}",
     "dateAdded": "2023-11-09",
     "pctChangeAtAdded": -1.5981,
     "priceAtAdded": 62.19,
-    "symbol":"BILL",
+    "symbol":"BILLs",
     "spotline":false
 }'
 
-### post watchlist "statusCode": 500
-curl --location 'http://localhost:3000/stock-user/watchlist' \
---header 'Content-Type: application/json' \
---data-raw '{
-    "id": "35d471c6-c637-46f2-a222-1549c789985f",
-    "stockUserId":"130d60a1-3e28-4a8b-9c3c-8f38ee812ba8",
-    "dateAdded": "2023-11-09",
-    "pctChangeAtAdded": -1.5981,
-    "priceAtAdded": 62.19,
-    "symbol":"AAL",
-    "spotline":false
-}'
+
 
 ### update this list ADMIN ONLY
 curl --location --request PATCH 'http://localhost:3000/stock-user/user-list/66dbefd6-ff65-4b33-b2fc-24d0cda67518' \
@@ -126,13 +117,13 @@ curl --location --request PATCH 'http://localhost:3000/stock-user/user-list/66db
 curl --location 'http://localhost:3000/stock-user/watchlist' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "id": "66dbefd6-ff65-4b33-b2fc-24d0cda67518",
-    "stockUserId":"0b91cc82-41c6-409b-b25b-4d2504457c22",
+    "id": "{{userId}}",
+    "stockUserId":"{{watchlistID}}",
     "dateAdded": "2023-11-09",
     "pctChangeAtAdded": -1.7759,
-    "priceAtAdded": 155.97,
-    "symbol":"DDE"
+    "priceAtAdded": 55.97,
+    "symbol":"DEE"
 }'
 
 ### Get Update 35d471c6-c637-46f2-a222-1549c789985f
-GET http://localhost:3000/stock-user/user-list/66dbefd6-ff65-4b33-b2fc-24d0cda67518
+GET http://localhost:3000/stock-user/user-list/{{userId}}
