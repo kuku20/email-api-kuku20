@@ -34,3 +34,6 @@ need UseGuards @Post('/watchlist') and @Post('/user-list')
   "relevance_score_definition": "0 < x <= 1, with a higher score indicating higher relevance.",
 
   create a admin account as well
+
+
+  nest g resource stockPortfolio

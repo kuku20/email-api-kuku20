@@ -117,7 +117,7 @@ export class StockUserService {
       relations: ['userId', 'watchlists'], // Load the associated userId
       // relations: ['watchlists'], // Load the associated userId
     });
-    // return stockUserRepo;
+    return stockUserRepo;
     return plainToInstance(UserListOutDto, stockUserRepo);
   }
 
