@@ -91,8 +91,8 @@ export class StockPortfolioService {
         // 'userId',
         // 'deposits',
         // 'withdraws',
-        // 'buys',
-        // 'sells',
+        'buys',
+        'sells',
         'holding_amounts',
         ],
       });
@@ -254,6 +254,7 @@ export class StockPortfolioService {
         matchPrice:requestBody.matchPrice,
         netvalue:requestBody.netvalue,
         marketCap:requestBody.marketCap,
+        atPctChange:requestBody.atPctChange,
         sPortfolioId: userwallet,
       });
       const newBuy = await this.BuyRepo.save(buy);
@@ -336,6 +337,7 @@ export class StockPortfolioService {
         marketCap:requestBody.marketCap,
         avaragePriceB:requestBody.avaragePriceB,
         netProfit:requestBody.netProfit,
+        atPctChange:requestBody.atPctChange,
         sPortfolioId: userwallet,
       });
       //check in holding
