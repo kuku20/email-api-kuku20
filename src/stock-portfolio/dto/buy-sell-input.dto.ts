@@ -21,6 +21,10 @@ export class InBuySellDto {
   @IsNumber()
   matchPrice: number;
 
+  @IsOptional()
+  @IsNumber()
+  atPctChange?: number;
+
   @IsPositive()
   @IsNumber()
   netvalue: number;
