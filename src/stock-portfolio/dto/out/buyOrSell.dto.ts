@@ -3,6 +3,9 @@ import { PortfolioDTO } from './portfolio.dto';
 export { PortfolioDTO } from './portfolio.dto';
 
 export class TransactionDTO {
+  @Expose()
+  id: string;
+  
   @Expose({ name: 'date' })
   date: string;
 
@@ -27,7 +30,7 @@ export class TransactionDTO {
 }
 
 export class StockHoldingDTO {
-  @Exclude()
+  @Expose()
   id: string;
 
   @Expose({ name: 'symbol' })

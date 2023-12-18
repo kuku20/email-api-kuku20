@@ -6,11 +6,18 @@ curl --location 'http://localhost:3000/auth/v2/signin' \
     "password": "fadfjloc"
 }'
 
+### Sign IN
+curl --location 'http://localhost:3000/auth/v2/signin' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "email": "locprodstock33@gmail.com",
+    "password": "Lock_for123!dotk"
+}'
 ### signout
 curl --location 'http://localhost:3000/auth/v2/signout'
 
 ###
-@userId = 66dbefd6-ff65-4b33-b2fc-24d0cda67518
+@userId = 2c8fdb86-411e-4fbf-ac67-8caca8e84379
 @walletId = 900cfcda-6703-4a17-a50e-b34484e99f5a
 ### create user portfolio
 curl --location 'http://localhost:3000/stock-portfolio/wallet' \
@@ -60,7 +67,7 @@ curl --location 'http://localhost:3000/stock-portfolio/submit' \
     "sPortfolioId":"{{walletId}}",
     "requestType":"buy",
     "date": "2023-11-09",
-    "symbol":"AAL",
+    "symbol":"AALLS",
     "amount": 15,
     "matchPrice":7,
     "netvalue":105,
@@ -79,5 +86,7 @@ curl --location 'http://localhost:3000/stock-portfolio/submit' \
     "amount": 15,
     "matchPrice":7,
     "netvalue":105,
+    "avaragePriceB":8,
+    "netProfit":-15,
     "marketCap": 1000000000
 }'

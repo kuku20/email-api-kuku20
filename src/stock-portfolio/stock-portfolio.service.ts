@@ -88,8 +88,12 @@ export class StockPortfolioService {
       const stockUser = await this.PortfolioRepo.findOne({
         where: { userId: { id: userId } },
         relations: [
-          // 'deposits', 'withdraws', 'buys', 'sells',
-          'holding_amounts',
+        // 'userId',
+        // 'deposits',
+        // 'withdraws',
+        // 'buys',
+        // 'sells',
+        'holding_amounts',
         ],
       });
 
@@ -97,7 +101,7 @@ export class StockPortfolioService {
         throw new NotFoundException(`You don't have any list`);
       }
 
-      // return stockUser;
+      return stockUser;
       return plainToInstance(UserPortfolioDto, stockUser);
     } catch (error) {
       const mes = `StockUser with userId ${userId} not found`;
@@ -155,7 +159,10 @@ export class StockPortfolioService {
         throw new NotAcceptableException('Balance Not Enough');
       }
       const deposit = this.DepositRepo.create({
-        ...requestBody,
+        date:requestBody.date,
+        method:requestBody.method,
+        status:requestBody.status,
+        amount:requestBody.amount,
         sPortfolioId: userwallet,
       });
       const newDeposit = await this.DepositRepo.save(deposit);
@@ -198,7 +205,10 @@ export class StockPortfolioService {
       }
 
       const withdraw = this.WithdrawRepo.create({
-        ...requestBody,
+        date:requestBody.date,
+        method:requestBody.method,
+        status:requestBody.status,
+        amount:requestBody.amount,
         sPortfolioId: userwallet,
       });
       const newWithdraw = await this.WithdrawRepo.save(withdraw);
@@ -214,7 +224,7 @@ export class StockPortfolioService {
     }
   }
 
-  async buys(requestBody: InBuySellDto): Promise<BuyOrSellDto> {
+  async buys(requestBody: InBuySellDto): Promise<any> {
     try {
       const stockPortfolio = await this.PortfolioRepo.findOne({
         where: { userId: { id: requestBody.id } },
@@ -238,7 +248,12 @@ export class StockPortfolioService {
       }
 
       const buy = this.BuyRepo.create({
-        ...requestBody,
+        date:requestBody.date,
+        symbol:requestBody.symbol,
+        amount:requestBody.amount,
+        matchPrice:requestBody.matchPrice,
+        netvalue:requestBody.netvalue,
+        marketCap:requestBody.marketCap,
         sPortfolioId: userwallet,
       });
       const newBuy = await this.BuyRepo.save(buy);
@@ -249,12 +264,17 @@ export class StockPortfolioService {
         .andWhere('holding_amount.symbol = :symbol', { symbol: requestBody.symbol })
         .getOne();
       let h_Symbol;
+      let newSymbol;
       if (!stockInHolding) {
         //set to database in holding
         h_Symbol = this.HoldingRepo.create({
-          ...requestBody,
+          symbol:requestBody.symbol,
+          amount:requestBody.amount,
+          matchPrice:requestBody.matchPrice,
+          marketCap:requestBody.marketCap,
           sPortfolioId: userwallet,
         });
+        newSymbol = true
       } else {
         h_Symbol = stockInHolding.holding_amounts[0];
         const n_Amount = requestBody.amount + h_Symbol.amount;
@@ -265,6 +285,7 @@ export class StockPortfolioService {
           marketCap: requestBody.marketCap,
         };
         Object.assign(h_Symbol, up_H_Symbol);
+        newSymbol = false
       }
       const holdingSymbol = await this.HoldingRepo.save(h_Symbol);
       // Create the response DTO
@@ -272,9 +293,11 @@ export class StockPortfolioService {
         statusCode: 200,
         transaction: newBuy,
         newHolding: holdingSymbol,
+        newSymbol,
       };
+      return response
       return plainToClass(BuyOrSellDto, response, {
-        excludeExtraneousValues: true,
+        // excludeExtraneousValues: true,
       });
     } catch (error) {
       const mes = `stockPortfolio with userId ${requestBody.sPortfolioId} not found`;
@@ -282,7 +305,7 @@ export class StockPortfolioService {
     }
   }
 
-  async sells(requestBody: InBuySellDto): Promise<BuyOrSellDto> {
+  async sells(requestBody: InBuySellDto): Promise<any> {
     try {
       const stockPortfolio = await this.PortfolioRepo.findOne({
         where: { userId: { id: requestBody.id } },
@@ -305,7 +328,14 @@ export class StockPortfolioService {
         throw new NotAcceptableException('Balance Not Enough');
       }
       const sell = this.SellRepo.create({
-        ...requestBody,
+        date:requestBody.date,
+        symbol:requestBody.symbol,
+        amount:requestBody.amount,
+        matchPrice:requestBody.matchPrice,
+        netvalue:requestBody.netvalue,
+        marketCap:requestBody.marketCap,
+        avaragePriceB:requestBody.avaragePriceB,
+        netProfit:requestBody.netProfit,
         sPortfolioId: userwallet,
       });
       //check in holding
@@ -330,16 +360,19 @@ export class StockPortfolioService {
         };
         Object.assign(h_Symbol, up_H_Symbol);
       }
-      const holdingSymbol = await this.HoldingRepo.save(h_Symbol);
+      await this.HoldingRepo.save(h_Symbol);
       const newSell = await this.SellRepo.save(sell);
+      const holdingSymbol = await this.HoldingRepo.save(h_Symbol);
+      // Create the response DTO
       const response = {
         statusCode: 200,
         transaction: newSell,
         newHolding: holdingSymbol,
+        newSymbol:false,
       };
-      // return response;
+      return response;
       return plainToClass(BuyOrSellDto, response, {
-        excludeExtraneousValues: true,
+        // excludeExtraneousValues: true,
       });
     } catch (error) {
       const mes = `stockPortfolio with userId ${requestBody.sPortfolioId} not found`;

@@ -1,4 +1,4 @@
-import { IsUUID, IsNumber, IsString, IsPositive } from 'class-validator';
+import { IsUUID, IsNumber, IsString, IsPositive, IsOptional } from 'class-validator';
 
 export class InBuySellDto {
   @IsUUID()
@@ -24,6 +24,14 @@ export class InBuySellDto {
   @IsPositive()
   @IsNumber()
   netvalue: number;
+
+  @IsOptional()
+  @IsNumber()
+  netProfit?: number;
+  
+  @IsOptional()
+  @IsNumber()
+  avaragePriceB?: number;
 
   @IsNumber()
   marketCap: number;
