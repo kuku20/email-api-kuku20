@@ -25,6 +25,9 @@ export class Sell {
   matchPrice: number;
 
   @Column({ type: 'double precision',nullable: true })
+  atPctChange?: number;
+
+  @Column({ type: 'double precision',nullable: true })
   netvalue?: number;
 
   @Column({ type: 'double precision',nullable: true })
