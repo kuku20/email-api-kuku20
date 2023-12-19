@@ -96,6 +96,41 @@ export class StockPortfolioService {
         'holding_amounts',
         ],
       });
+      // const walletIdd = '3f9f0167-cac3-4aa5-a2aa-0c7e9ef08d86'
+      // await this.HoldingRepo
+      // .createQueryBuilder('holding_amounts')
+      // .delete()
+      // .from(HoldingAmounts)
+      // .where('sPortfolioId = :sPortfolioId', { sPortfolioId: walletIdd })
+      // .execute();
+
+      // await this.BuyRepo
+      // .createQueryBuilder('buys')
+      // .delete()
+      // .from(Buy)
+      // .where('sPortfolioId = :sPortfolioId', { sPortfolioId: walletIdd })
+      // .execute();
+
+      // await this.SellRepo
+      // .createQueryBuilder('sells')
+      // .delete()
+      // .from(Sell)
+      // .where('sPortfolioId = :sPortfolioId', { sPortfolioId: walletIdd })
+      // .execute();
+
+      // await this.DepositRepo
+      // .createQueryBuilder('deposits')
+      // .delete()
+      // .from(Deposit)
+      // .where('sPortfolioId = :sPortfolioId', { sPortfolioId: walletIdd })
+      // .execute();
+
+      // await this.WithdrawRepo
+      // .createQueryBuilder('withdraws')
+      // .delete()
+      // .from(Withdraw)
+      // .where('sPortfolioId = :sPortfolioId', { sPortfolioId: walletIdd })
+      // .execute();
 
       if (!stockUser) {
         throw new NotFoundException(`You don't have any list`);
@@ -121,8 +156,8 @@ export class StockPortfolioService {
   //       'holding_amounts',
   //     ], // Load the associated userId
   //   });
-  //   // return PortfolioRepo;
-  //   return plainToInstance(WalletOutPutDto, PortfolioRepo);
+  //   return PortfolioRepo;
+  //   // return plainToInstance(WalletOutPutDto, PortfolioRepo);
   // }
 
   async deposits(requestBody: InDepositWithDrawDto): Promise<DepositOrWithdrawDto> {
@@ -269,10 +304,12 @@ export class StockPortfolioService {
       if (!stockInHolding) {
         //set to database in holding
         h_Symbol = this.HoldingRepo.create({
+          date:requestBody.date,
           symbol:requestBody.symbol,
           amount:requestBody.amount,
           matchPrice:requestBody.matchPrice,
           marketCap:requestBody.marketCap,
+          atPctChange:requestBody.atPctChange,
           sPortfolioId: userwallet,
         });
         newSymbol = true
