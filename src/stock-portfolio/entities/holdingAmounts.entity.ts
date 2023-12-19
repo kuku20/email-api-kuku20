@@ -15,11 +15,17 @@ export class HoldingAmounts {
   @Column()
   symbol: string;
 
+  @Column()
+  date: string;
+
   @Column({ type: 'double precision' })
   amount: number;
 
   @Column({ type: 'double precision' })
   matchPrice: number;
+
+  @Column({ type: 'double precision',nullable: true })
+  atPctChange?: number;
 
   @Column({ type: 'double precision' })
   marketCap: number;
