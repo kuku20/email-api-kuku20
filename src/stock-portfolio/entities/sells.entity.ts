@@ -28,6 +28,9 @@ export class Sell {
   atPctChange?: number;
 
   @Column({ type: 'double precision',nullable: true })
+  atSellPctChange?: number;
+
+  @Column({ type: 'double precision',nullable: true })
   netvalue?: number;
 
   @Column({ type: 'double precision',nullable: true })

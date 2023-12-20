@@ -63,7 +63,8 @@ curl --location '{{rootUrl}}/stock{{newfhep}}/insider-transactions?stockTicker=R
 curl --location '{{rootUrl}}/stock{{newfhep}}/insider-transactions?stockTicker=ROKU'
 ### Get company profile
 curl --location '{{rootUrl}}/stock{{newfhep}}/company-profile?stockTicker=aal'
-
+###
+{{rootUrl}}/stock/fh/earnings?end=2023-12-17
 ### Get ticker news for 5day
 # curl --location '{{rootUrl}}/stock/news-v1?stockTicker=AAL'
 ### Get ticker news from 2023-01-11 to 2023-02-11

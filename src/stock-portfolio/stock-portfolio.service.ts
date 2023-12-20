@@ -82,17 +82,30 @@ export class StockPortfolioService {
       throw error;
     }
   }
+  async findAllTypeByUserId(userId: string, queryType:string) {
+    try {
+      const queryReturnType = await this.PortfolioRepo.findOne({
+        where: { userId: { id: userId } },
+        relations: [
+          queryType,
+        ],
+      });
+      if (!queryReturnType) {
+        throw new NotFoundException(`You don't have any ${queryType}`);
+      }
+
+      return queryReturnType[queryType];
+    } catch (error) {
+      const mes = `${queryType} with userId ${userId} not found`;
+      this.catchBlock(error, mes);
+    }
+  }
 
   async findStockUserByUserId(userId: string) {
     try {
       const stockUser = await this.PortfolioRepo.findOne({
         where: { userId: { id: userId } },
         relations: [
-        // 'userId',
-        // 'deposits',
-        // 'withdraws',
-        'buys',
-        'sells',
         'holding_amounts',
         ],
       });
@@ -375,6 +388,7 @@ export class StockPortfolioService {
         avaragePriceB:requestBody.avaragePriceB,
         netProfit:requestBody.netProfit,
         atPctChange:requestBody.atPctChange,
+        atSellPctChange:requestBody.atSellPctChange,
         sPortfolioId: userwallet,
       });
       //check in holding
