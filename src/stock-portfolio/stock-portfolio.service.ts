@@ -103,12 +103,12 @@ export class StockPortfolioService {
 
   async findStockUserByUserId(userId: string) {
     try {
-      const stockUser = await this.PortfolioRepo.findOne({
-        where: { userId: { id: userId } },
-        relations: [
-        'holding_amounts',
-        ],
-      });
+      const stockUser = await this.PortfolioRepo
+        .createQueryBuilder('portfolio')
+        .leftJoinAndSelect('portfolio.holding_amounts', 'holding_amounts')
+        .where('portfolio.userId = :userId', { userId })
+        .andWhere('holding_amounts.amount > 0').getOne();
+
       // const walletIdd = '3f9f0167-cac3-4aa5-a2aa-0c7e9ef08d86'
       // await this.HoldingRepo
       // .createQueryBuilder('holding_amounts')
@@ -148,7 +148,6 @@ export class StockPortfolioService {
       if (!stockUser) {
         throw new NotFoundException(`You don't have any list`);
       }
-
       return stockUser;
       return plainToInstance(UserPortfolioDto, stockUser);
     } catch (error) {
