@@ -190,7 +190,7 @@ export class StockUserService {
 
   async updatewatchList(
     id: string,
-    watchListDto:UpdateWatchListDto,
+    watchListDto:Partial<UpdateWatchListDto>,
   ) {
     try {
       const list = await this.watchListRepo.findOne({ where: { id } });
