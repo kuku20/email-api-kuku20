@@ -38,13 +38,13 @@ export class StockService {
   }
 
   async fromPolygon(type,stockTicker, start, end){
-    if(type===PolygonRType.BYDAY){
+    if(type===PolygonRType.BYDAY && stockTicker && start){
       return this.search_POLYGON(stockTicker,start, end)
     }
-    if(type===PolygonRType.TYPEAHEAD){
+    if(type===PolygonRType.TYPEAHEAD && stockTicker){
       return this.tickerList_POLYGON(stockTicker)
     }
-    if(type===PolygonRType.DIVIDEND){
+    if(type===PolygonRType.DIVIDEND && stockTicker){
       return this.tickerDividends_POLYGON(stockTicker)
     }
     throw new NotFoundException("NOT FOUND");
@@ -97,19 +97,19 @@ export class StockService {
   }
 
   async fromFMP(type,stockTicker, stockMarket){
-    if(type===FMPRType.RTP){
+    if(type===FMPRType.RTP && stockTicker){
       return this.realTimePrice_FMP(stockTicker)
     }
-    if(type===FMPRType.RTPA){
+    else if(type===FMPRType.RTPA){
       return this.realTimePriceAll_FMP()
     }
-    if(type===FMPRType.MCP){
+    else if(type===FMPRType.MCP && stockTicker){
       return this.bulkrequestsMulCom_FMP(stockTicker)
     }
-    if(type===FMPRType.GAINORlOSE){
+    else if(type===FMPRType.GAINORlOSE && stockMarket){
       return this.gainersOrLosers_FMP(stockMarket)
     }
-    if(type===FMPRType.SEARCH){
+    else if(type===FMPRType.SEARCH && stockTicker){
       return this.tickerList_FMP(stockTicker)
     }
     throw new NotFoundException("NOT FOUND");

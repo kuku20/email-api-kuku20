@@ -182,12 +182,10 @@ export class StockController {
   @Get('/po/:type')
   async fromPolygon(
   @Param() params: RequestDTO.PolygonDto,
-  @Query('stockTicker') stockTicker: string,
-  @Query('start') start: string,
-  @Query('end') end: string,
+  @Query() query:  RequestDTO.BaseRequire,
   ) {
     try {
-      const data = await this.stockService.fromPolygon(params.type,stockTicker, start, end);
+      const data = await this.stockService.fromPolygon(params.type,query.stockTicker, query.start, query.end);
       return data;
     } catch (error) {
       // Handle errors here
@@ -200,13 +198,10 @@ export class StockController {
   @Get('/fm/:type')
   async fromFMP(
   @Param() params: RequestDTO.FmpDto,
-  @Query('stockTicker') stockTicker: string,
-  @Query('stockMarket') stockMarket: string,
-  @Query('start') start: string,
-  @Query('end') end: string,
+  @Query() query:  RequestDTO.FmpQueryDTO,
   ) {
     try {
-      const data = await this.stockService.fromFMP(params.type,stockTicker, stockMarket);
+      const data = await this.stockService.fromFMP(params.type,query.stockTicker, query.stockMarket);
       return data;
     } catch (error) {
       // Handle errors here
@@ -234,13 +229,9 @@ export class StockController {
   }
 
   @Get('/daily-chart')
-  async getTickerDailyChart_FMP(
-  @Query('stockTicker') stockTicker: string,
-  @Query('start') start: string,
-  @Query('end') end: string,
-  ) {
+  async getTickerDailyChart_FMP( @Query() query: RequestDTO.TickerStartEndDTO) {
     try {
-      const data = await this.stockService.getTickerDailyChart_FMP(stockTicker, start, end);
+      const data = await this.stockService.getTickerDailyChart_FMP(query.stockTicker, query.start, query.end);
       return data;
     } catch (error) {
       // Handle errors here

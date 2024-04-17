@@ -64,14 +64,14 @@ curl --location '{{rootUrl}}/stock{{newfhep}}/insider-transactions?stockTicker=R
 ### Get company profile
 curl --location '{{rootUrl}}/stock{{newfhep}}/company-profile?stockTicker=aal'
 ###
-{{rootUrl}}/stock/fh/earnings?end=2023-12-17
+{{rootUrl}}/stock/fh/earnings?end=2024-01-17
 ### Get ticker news for 5day
 # curl --location '{{rootUrl}}/stock/news-v1?stockTicker=AAL'
 ### Get ticker news from 2023-01-11 to 2023-02-11
 # curl --location '{{rootUrl}}/stock/news-v1?stockTicker=AAL&start=2023-01-11&end=2023-02-11'
 curl --location '{{rootUrl}}/stock{{newfhep}}/news?stockTicker=AAL'
 ###
-curl --location '{{rootUrl}}/stock{{newfhep}}/news?stockTicker=AAL&start=2023-01-11&end=2023-02-11'
+curl --location '{{rootUrl}}/stock{{newfhep}}/news?stockTicker=AAL&start=2024-01-11&end=2024-02-11'
 
 ####------------------------------------------------------------------------------------------
 ####POLYGON
@@ -98,7 +98,7 @@ curl --location '{{rootUrl}}/stock{{newfmep}}/multiple-company-prices?stockTicke
 ### Get losers
 curl --location '{{rootUrl}}/stock{{newfmep}}/gainers-or-losers?stockMarket=losers'
 ### Get gainers
-curl --location '{{rootUrl}}/stock{{newfmep}}/gainers-or-losers?stockMarket=gainers'
+curl --location '{{rootUrl}}/stock{{newfmep}}/gainers-or-losers'
 ###
 GET /stock{{newfmep}}/gainers-or-losers?stockMarket=gainers HTTP/1.1
 Host: localhost:3000
@@ -117,4 +117,4 @@ curl --location '{{rootUrl}}/stock/chartdata/{{timespanpolygon}}?stockTicker=ROK
 curl --location '{{rootUrl}}/stock/chartdata/{{timespanfmp}}?stockTicker=ROKU&range={{fmprange}}&start=2022-01-11&end=2023-02-11&limit=20'
 
 ### get all data daily chart form FMp max 5 year
-curl --location '{{rootUrl}}/stock/daily-chart?stockTicker=ROKU&start=2022-01-11&end=2023-02-11'
+curl --location '{{rootUrl}}/stock/daily-chart?stockTicker=ROKU&start=2022-01-11'

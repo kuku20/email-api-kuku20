@@ -1,4 +1,4 @@
-import { IsDateString, IsEnum, IsString } from 'class-validator';
+import { IsDateString, IsEnum, IsOptional, IsString } from 'class-validator';
 
 export enum TIMESPAN {
   FMP_HC = 'historical-chart',
@@ -15,7 +15,24 @@ export class TimeSpanDto {
   @IsEnum(TIMESPAN)
   timespan: TIMESPAN;
 }
+export class BaseRequire {
 
+  @IsOptional()
+  @IsString({ message: 'stockTicker must be a string' })
+  stockTicker?:string;
+
+  @IsOptional()
+  @IsDateString({ strict: true }, { message: 'start must be in the format YYYY-MM-DD' })
+  start?: string;
+
+  @IsOptional()
+  @IsDateString({ strict: true }, { message: 'end must be in the format YYYY-MM-DD' })
+  end?: string;
+
+}
+
+export class TickerStartEndDTO extends BaseRequire {
+}
 
 export enum TimeRange {
     ONE_MIN = '1min',
@@ -31,21 +48,23 @@ export enum TimeRange {
     FIVETEEN = '15',
     THIRTY = '30',
   }
-  export class TimeRangeDto {
+  export class TimeRangeDto extends TickerStartEndDTO {
     @IsEnum(TimeRange)
     range: TimeRange;
     
-    @IsDateString({ strict: true }, { message: 'start must be in the format YYYY-MM-DD' })
-    start: string;
-
-    @IsDateString({ strict: true }, { message: 'end must be in the format YYYY-MM-DD' })
-    end: string;
-
-    @IsString({ message: 'start must be a string' })
+    @IsString({ message: 'limit must be a string' })
     limit:string;
 
-    @IsString({ message: 'start must be a string' })
-    stockTicker:string;
   }
 
+  export enum StockMaketENUM {
+    LOSERS = 'losers',
+    GAINERS = 'gainers',
+  }
   
+  export class FmpQueryDTO extends BaseRequire {
+
+    @IsOptional()
+    @IsEnum(StockMaketENUM)
+    stockMarket?: StockMaketENUM;
+  }
