@@ -90,6 +90,12 @@ export class StockService {
     return response;
   }
 
+  async getTickerDailyChart_FMP(ticker: string, dateStart:string, dateEnd:string) {
+    const BASE_URL = `https://financialmodelingprep.com/api/v3/historical-price-full/${ticker}?from=${dateStart}&to=${dateEnd}&apikey=`
+    const response = await this.tryCatchF(BASE_URL, 'FMP_STOCK_API_KEY');
+    return plainToClass(DTO.ChartOutFMPDto, response?.historical);
+  }
+
   async fromFMP(type,stockTicker, stockMarket){
     if(type===FMPRType.RTP){
       return this.realTimePrice_FMP(stockTicker)
