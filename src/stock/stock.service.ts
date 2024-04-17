@@ -99,6 +99,12 @@ export class StockService {
     return plainToClass(SearchSymbolOutFMPDto, response?.slice(0, 10));
   }
 
+  async getTickerFullChart_FMP(ticker: string, range:string,timespan:string, dateStart:string, dateEnd:string, limit:string) {
+    const BASE_URL = `https://financialmodelingprep.com/api/v3/${timespan}/${range}/${ticker}?from=${dateStart}&to=${dateEnd}&apikey=`
+    const response = await this.tryCatchF(BASE_URL, 'FMP_STOCK_API_KEY');
+    return response;
+  }
+
   async fromFMP(type,stockTicker, stockMarket){
     if(type===FMPRType.RTP){
       return this.realTimePrice_FMP(stockTicker)

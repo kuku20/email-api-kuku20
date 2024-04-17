@@ -224,7 +224,12 @@ export class StockController {
   @Query('limit') limit: string,
   ) {
     try {
-      const data = await this.stockService.getTickerFullChart_POLYGON(stockTicker, range, timespan,dateStart, dateEnd, limit );
+      let data
+      if(timespan ==='historical-chart'){
+        data = await this.stockService.getTickerFullChart_FMP(stockTicker, range, timespan,dateStart, dateEnd, limit );
+      }else{
+        data = await this.stockService.getTickerFullChart_POLYGON(stockTicker, range, timespan,dateStart, dateEnd, limit );
+      }
       return data;
     } catch (error) {
       // Handle errors here

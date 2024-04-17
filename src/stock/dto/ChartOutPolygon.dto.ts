@@ -6,8 +6,9 @@ export class ChartOutPolygonDto {
   @Expose({name:'v'})
   volume: double
 
-  @Expose({name:'vw'})
-  volume_weighted: double
+  // @Expose({name:'vw'})
+  @Exclude()
+  vw: double
 
   @Expose({name:'o'})
   open: double

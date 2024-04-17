@@ -103,6 +103,14 @@ curl --location '{{rootUrl}}/stock{{newfmep}}/gainers-or-losers?stockMarket=gain
 GET /stock{{newfmep}}/gainers-or-losers?stockMarket=gainers HTTP/1.1
 Host: localhost:3000
 
-### get all data for chart form Polygon
-curl --location '{{rootUrl}}/stock/chartdata/day?stockTicker=ROKU&range=1&start=2023-01-11&end=2023-02-11&limit=20'
+@fmprange =5min
+@timespanfmp = historical-chart
+# 1min, 5min, 15min, 30min, 1hour, 4hour
 
+@timespanpolygon = day
+#  second minute hour day week month quarter year
+### get all data for chart form Polygon max 2 year
+curl --location '{{rootUrl}}/stock/chartdata/{{timespanpolygon}}?stockTicker=ROKU&range=5&start=2022-01-11&end=2023-02-11&limit=20'
+
+### get all data for chart form FMp max 5 year
+curl --location '{{rootUrl}}/stock/chartdata/{{timespanfmp}}?stockTicker=ROKU&range={{fmprange}}&start=2022-01-11&end=2023-02-11&limit=20'
