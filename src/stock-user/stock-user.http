@@ -7,8 +7,8 @@ curl --location 'http://localhost:3000/auth/v2/signin' \
 }'
 
 ###
-@userId = 66dbefd6-ff65-4b33-b2fc-24d0cda67518
-@watchlistID = 0b91cc82-41c6-409b-b25b-4d2504457c22
+@userId = a9d0075b-5270-405c-b76a-e0534319708e
+@watchlistID = e4821bf7-fe3f-4614-b346-eb6d59efc9a2
 ### create user list
 curl --location 'http://localhost:3000/stock-user/user-list' \
 --header 'Content-Type: application/json' \
@@ -79,12 +79,9 @@ curl --location --request DELETE 'http://localhost:3000/stock-user/watchlist/66d
 
 
 ### update watchlist
-curl --location --request PATCH 'http://localhost:3000/stock-user/watchlist/{{userId}}/78a5e1fb-5568-4110-b3c7-684bf9d0cdc9' \
+curl --location --request PATCH 'http://localhost:3000/stock-user/watchlist/{{userId}}/63833584-94d2-49ac-a300-4ea7ac334a46' \
 --header 'Content-Type: application/json' \
 --data '{
-    "dateAdded": "2023-11-09",
-    "pctChangeAtAdded": -1.5981,
-    "priceAtAdded": 62.19,
     "spotline":true
 }'
 

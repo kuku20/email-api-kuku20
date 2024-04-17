@@ -9,12 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { EntityNotFoundError, QueryFailedError, Repository } from 'typeorm';
 import { StockUser } from './entities/stock-user.entity';
 import { WatchList } from './entities/watchlist.entity';
-import {
-  CreateStockUserDto,
-  WatchListDto,
-  UserListOutDto,
-  ListOutDto,ListTickersDto, UpdateWatchListDto
-} from './dto';
+import * as DTO from './dto';
 import { plainToInstance } from 'class-transformer';
 import { UserAuth } from 'src/auth/userAuth.entity';
 
@@ -29,7 +24,7 @@ export class StockUserService {
     private userRepo: Repository<UserAuth>,
   ) {}
   async createStockUser(
-    createStockUserDto: CreateStockUserDto,
+    createStockUserDto: DTO.CreateStockUserDto,
   ): Promise<StockUser> {
     try {
       const user = await this.userRepo.findOneOrFail({
@@ -46,7 +41,7 @@ export class StockUserService {
       // Save the StockUser entity to the database
       const result = await this.stockUserRepo.save(stockUser);
       // return result
-      return plainToInstance(UserListOutDto, result);
+      return plainToInstance(DTO.UserListOutDto, result);
     } catch (error) {
       if (error instanceof EntityNotFoundError) {
         // Handle not found exception as needed
@@ -62,7 +57,7 @@ export class StockUserService {
     }
   }
 
-  async createWatchList(watchListDto: WatchListDto): Promise<WatchList> {
+  async createWatchList(watchListDto: DTO.WatchListDto): Promise<WatchList> {
     try {
       const stockUser = await this.stockUserRepo.findOne({
         where: { userId: { id: watchListDto.id } },
@@ -96,7 +91,7 @@ export class StockUserService {
       });
       const newList = await this.watchListRepo.save(watchlist)
       // return newList;
-      return plainToInstance(ListOutDto, newList);
+      return plainToInstance(DTO.ListOutDto, newList);
     } catch (error) {
       if (error instanceof EntityNotFoundError) {
         // Handle not found exception as needed
@@ -118,14 +113,14 @@ export class StockUserService {
       // relations: ['watchlists'], // Load the associated userId
     });
     return stockUserRepo;
-    return plainToInstance(UserListOutDto, stockUserRepo);
+    return plainToInstance(DTO.UserListOutDto, stockUserRepo);
   }
 
   async findAllUserListTickers() {
     const data = await this.stockUserRepo.find();
     const uniqueTickers = Array.from(new Set(data.flatMap(item => item.listTickers)));
     return uniqueTickers;
-    return plainToInstance(ListTickersDto, data);
+    return plainToInstance(DTO.ListTickersDto, data);
   }
 
 
@@ -140,7 +135,7 @@ export class StockUserService {
         throw new NotFoundException(`You don't have any list`);
       }
       return stockUser;
-      return plainToInstance(UserListOutDto, stockUser);
+      return plainToInstance(DTO.UserListOutDto, stockUser);
     } catch (error) {
       if (error instanceof EntityNotFoundError) {
         // Handle not found exception as needed
@@ -161,10 +156,10 @@ export class StockUserService {
       relations: ['stockUserId'], // Load the associated userId
     });
     return watchListRepo;
-    return plainToInstance(UserListOutDto, watchListRepo);
+    return plainToInstance(DTO.UserListOutDto, watchListRepo);
   }
 
-  async updateUlist(userId: string, updateStockUserDto: Partial<CreateStockUserDto>) {
+  async updateUlist(userId: string, updateStockUserDto: Partial<DTO.CreateStockUserDto>) {
     try {
       const userlist = await this.stockUserRepo.findOne({
         where: { userId: { id: userId } },
@@ -190,7 +185,7 @@ export class StockUserService {
 
   async updatewatchList(
     id: string,
-    watchListDto:UpdateWatchListDto,
+    watchListDto:Partial<DTO.UpdateWatchListDto>,
   ) {
     try {
       const list = await this.watchListRepo.findOne({ where: { id } });
@@ -200,7 +195,7 @@ export class StockUserService {
       Object.assign(list, watchListDto);
       const newList = await this.watchListRepo.save(list)
       // return newList;
-      return plainToInstance(ListOutDto, newList);
+      return plainToInstance(DTO.ListOutDto, newList);
     } catch (error) {
       if (error instanceof EntityNotFoundError) {
         // Handle not found exception as needed

@@ -1,5 +1,5 @@
-# @path=http://localhost:3000
-@path=https://my-api-all.adaptable.app
+@path=http://localhost:3000
+# @path=https://my-api-all.adaptable.app
 
 
 ### get price by day

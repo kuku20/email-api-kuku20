@@ -61,7 +61,7 @@ export class StockUserController {
   @Patch('/watchlist/:userId/:listId')
   updatewatchlist(
     @Param('listId') listId: string,
-    @Body() updateStockUserDto: UpdateWatchListDto,
+    @Body() updateStockUserDto: Partial<UpdateWatchListDto>,
   ) {
     return this.stockUserService.updatewatchList(listId, updateStockUserDto);
   }
