@@ -10,7 +10,7 @@ import {
 import { StockService } from './stock.service';
 import { JwtGuard } from 'src/auth/guard';
 import { AdminUserAuthGuard } from 'src/stock-user/guard';
-import { FinnhubDto, FmpDto, PolygonDto } from './dto/sourceData';
+import * as RequestDTO from './dto/sourceData';
 
 @Controller('stock')
 export class StockController {
@@ -163,7 +163,7 @@ export class StockController {
   //earnings, news, realtimeprice, insider-transactions
   @Get('/fh/:type')
   async fromFinnhub(
-  @Param() params: FinnhubDto,
+  @Param() params: RequestDTO.FinnhubDto,
   @Query('stockTicker') stockTicker: string,
   @Query('start') start: string,
   @Query('end') end: string,
@@ -181,13 +181,11 @@ export class StockController {
   //byday, typeahead, dividends
   @Get('/po/:type')
   async fromPolygon(
-  @Param() params: PolygonDto,
-  @Query('stockTicker') stockTicker: string,
-  @Query('start') start: string,
-  @Query('end') end: string,
+  @Param() params: RequestDTO.PolygonDto,
+  @Query() query:  RequestDTO.BaseRequire,
   ) {
     try {
-      const data = await this.stockService.fromPolygon(params.type,stockTicker, start, end);
+      const data = await this.stockService.fromPolygon(params.type,query.stockTicker, query.start, query.end);
       return data;
     } catch (error) {
       // Handle errors here
@@ -199,14 +197,41 @@ export class StockController {
   //realtimeprice, multiple-company-prices, realtimepriceall ,gainers-or-losers
   @Get('/fm/:type')
   async fromFMP(
-  @Param() params: FmpDto,
-  @Query('stockTicker') stockTicker: string,
-  @Query('stockMarket') stockMarket: string,
-  @Query('start') start: string,
-  @Query('end') end: string,
+  @Param() params: RequestDTO.FmpDto,
+  @Query() query:  RequestDTO.FmpQueryDTO,
   ) {
     try {
-      const data = await this.stockService.fromFMP(params.type,stockTicker, stockMarket);
+      const data = await this.stockService.fromFMP(params.type,query.stockTicker, query.stockMarket);
+      return data;
+    } catch (error) {
+      // Handle errors here
+      throw error;
+    }
+  }
+
+  @Get('/chartdata/:timespan')
+  async getTickerFullChart_POLYGON(
+  @Param() params: RequestDTO.TimeSpanDto,
+  @Query() query:  RequestDTO.TimeRangeDto,
+  ) {
+    try {
+      let data
+      if(params.timespan === RequestDTO.TIMESPAN.FMP_HC){
+        data = await this.stockService.getTickerFullChart_FMP(query.stockTicker, query.range, params.timespan,query.start, query.end, query.limit );
+      }else{
+        data = await this.stockService.getTickerFullChart_POLYGON(query.stockTicker, query.range, params.timespan,query.start, query.end, query.limit );
+      }
+      return data;
+    } catch (error) {
+      // Handle errors here
+      throw error;
+    }
+  }
+
+  @Get('/daily-chart')
+  async getTickerDailyChart_FMP( @Query() query: RequestDTO.TickerStartEndDTO) {
+    try {
+      const data = await this.stockService.getTickerDailyChart_FMP(query.stockTicker, query.start, query.end);
       return data;
     } catch (error) {
       // Handle errors here

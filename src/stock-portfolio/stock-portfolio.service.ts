@@ -7,14 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityNotFoundError, QueryFailedError, Repository } from 'typeorm';
-import {
-  Buy,
-  Sell,
-  Withdraw,
-  Deposit,
-  HoldingAmounts,
-  StockPortfolio,
-} from './entities/index';
+import * as ENTITIES from './entities/index';
 import {
   InBuySellDto,
   InDepositWithDrawDto,
@@ -32,25 +25,25 @@ import { ValidationError, validateSync } from 'class-validator';
 @Injectable()
 export class StockPortfolioService {
   constructor(
-    @InjectRepository(StockPortfolio)
-    private PortfolioRepo: Repository<StockPortfolio>,
-    @InjectRepository(HoldingAmounts)
-    private HoldingRepo: Repository<HoldingAmounts>,
-    @InjectRepository(Deposit)
-    private DepositRepo: Repository<Deposit>,
-    @InjectRepository(Withdraw)
-    private WithdrawRepo: Repository<Withdraw>,
-    @InjectRepository(Sell)
-    private SellRepo: Repository<Sell>,
-    @InjectRepository(Buy)
-    private BuyRepo: Repository<Buy>,
+    @InjectRepository(ENTITIES.StockPortfolio)
+    private PortfolioRepo: Repository<ENTITIES.StockPortfolio>,
+    @InjectRepository(ENTITIES.HoldingAmounts)
+    private HoldingRepo: Repository<ENTITIES.HoldingAmounts>,
+    @InjectRepository(ENTITIES.Deposit)
+    private DepositRepo: Repository<ENTITIES.Deposit>,
+    @InjectRepository(ENTITIES.Withdraw)
+    private WithdrawRepo: Repository<ENTITIES.Withdraw>,
+    @InjectRepository(ENTITIES.Sell)
+    private SellRepo: Repository<ENTITIES.Sell>,
+    @InjectRepository(ENTITIES.Buy)
+    private BuyRepo: Repository<ENTITIES.Buy>,
     @InjectRepository(UserAuth)
     private userRepo: Repository<UserAuth>,
   ) {}
 
   async createPortfolio(
     createPortfolio: CreateStockPortfolioDto,
-  ): Promise<StockPortfolio> {
+  ): Promise<ENTITIES.StockPortfolio> {
     try {
       const user = await this.userRepo.findOneOrFail({
         where: { id: createPortfolio.id },
