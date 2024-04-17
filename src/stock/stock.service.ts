@@ -2,22 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import axios from 'axios';
 import { ConfigService, ConfigModule } from '@nestjs/config';
 import { plainToClass, plainToInstance } from 'class-transformer';
-import {
-  BulkRequestsDto,
-  ChartOutPolygonDto,
-  CompanyProfileDto,
-  DividendOutDto,
-  EarningCalFinnhubOut,
-  GainersOrLosersDto,
-  InsiderTransactionsDto,
-  NewsAlphaVantageOutDto,
-  NewsFinnhubOutDto,
-  NewsStockDataOut,
-  RealTimePriceFinnhubDto,
-  SearchSymbolOutFMPDto,
-  SearchSymbolOutFinnhubDto,
-  SearchSymbolOutPolygonDto,
-} from './dto';
+import * as DTO from './dto';
 import {FMPRType, FhRequestType, PolygonRType} from './dto/sourceData'
 @Injectable()
 export class StockService {
@@ -37,19 +22,19 @@ export class StockService {
   async tickerList_POLYGON(query: string) {
     const BASE_URL = `https://api.polygon.io/v3/reference/tickers?search=${query}&active=true&apiKey=`;
     const response = await this.tryCatchF(BASE_URL, 'POLYGON_STOCK_API_KEY');
-    return plainToClass(SearchSymbolOutPolygonDto, response?.results);
+    return plainToClass(DTO.SearchSymbolOutPolygonDto, response?.results);
   }
   
   async tickerDividends_POLYGON(query: string) {
     const BASE_URL = `https://api.polygon.io/v3/reference/dividends?ticker=${query}&apiKey=`;
     const response = await this.tryCatchF(BASE_URL, 'POLYGON_STOCK_API_KEY');
-    return plainToClass(DividendOutDto, response?.results);
+    return plainToClass(DTO.DividendOutDto, response?.results);
   }
 
   async getTickerFullChart_POLYGON(ticker: string, range:string,timespan:string, dateStart:string, dateEnd:string, limit:string) {
     const BASE_URL = `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${dateStart}/${dateEnd}?adjusted=true&sort=asc&limit=${limit}&apiKey=`;
     const response = await this.tryCatchF(BASE_URL, 'POLYGON_STOCK_API_KEY');
-    return plainToClass(ChartOutPolygonDto, response?.results);
+    return plainToClass(DTO.ChartOutPolygonDto, response?.results);
   }
 
   async fromPolygon(type,stockTicker, start, end){
@@ -81,14 +66,14 @@ export class StockService {
     //AAPL,FB,GOOG
     const BASE_URL = `https://financialmodelingprep.com/api/v3/quote/${query}?apikey=`;
     const response = await this.tryCatchF(BASE_URL, 'FMP_STOCK_API_KEY');
-    return plainToClass(BulkRequestsDto, response);
+    return plainToClass(DTO.BulkRequestsDto, response);
   }
 
   async gainersOrLosers_FMP(query: string) {
     //losers/gainers
     const BASE_URL = `https://financialmodelingprep.com/api/v3/stock_market/${query}?apikey=`;
     const response = await this.tryCatchF(BASE_URL, 'FMP_STOCK_API_KEY');
-    return plainToClass(GainersOrLosersDto, response);
+    return plainToClass(DTO.GainersOrLosersDto, response);
   }
 
 
@@ -96,7 +81,7 @@ export class StockService {
     const BASE_URL = `https://financialmodelingprep.com/api/v3/search?query=${query}&apikey=`;
     const response = await this.tryCatchF(BASE_URL, 'FMP_STOCK_API_KEY');
     // return  response.slice(0, 10);
-    return plainToClass(SearchSymbolOutFMPDto, response?.slice(0, 10));
+    return plainToClass(DTO.SearchSymbolOutFMPDto, response?.slice(0, 10));
   }
 
   async getTickerFullChart_FMP(ticker: string, range:string,timespan:string, dateStart:string, dateEnd:string, limit:string) {
@@ -131,7 +116,7 @@ export class StockService {
     const current = end || today.toISOString().replace(/T.*$/, '');
     const BASE_URL = `https://finnhub.io/api/v1/calendar/earnings?from=${current}&to=${current}&token=`;
     const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
-    return plainToClass(EarningCalFinnhubOut, response?.earningsCalendar);
+    return plainToClass(DTO.EarningCalFinnhubOut, response?.earningsCalendar);
   }
 
   async tickerNews_FINNHUB(query: string, start?: string, end?: string) {
@@ -141,25 +126,25 @@ export class StockService {
     const current = end || new Date().toISOString().replace(/T.*$/, '');
     const BASE_URL = `https://finnhub.io/api/v1/company-news?symbol=${query}&from=${lastFiveDays}&to=${current}&token=`;
     const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
-    return plainToClass(NewsFinnhubOutDto, response);
+    return plainToClass(DTO.NewsFinnhubOutDto, response);
   }
 
   async realTimePrice_FINNHUB(query: string) {
     const BASE_URL = `https://finnhub.io/api/v1/quote?symbol=${query}&token=`;
     const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
-    return plainToClass(RealTimePriceFinnhubDto, response);
+    return plainToClass(DTO.RealTimePriceFinnhubDto, response);
   }
 
   async companyProfile_FINNHUB(query: string) {
     const BASE_URL = `https://finnhub.io/api/v1/stock/profile2?symbol=${query}&token=`;
     const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
-    return plainToClass(CompanyProfileDto, response);
+    return plainToClass(DTO.CompanyProfileDto, response);
   }
   
   async insiderTransactions_FINNHUB(query: string) {
     const BASE_URL = `https://finnhub.io/api/v1/stock/insider-transactions?symbol=${query}&token=`;
     const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
-    return plainToClass(InsiderTransactionsDto, response?.data);
+    return plainToClass(DTO.InsiderTransactionsDto, response?.data);
   }
   
   // search function
@@ -167,7 +152,7 @@ export class StockService {
     const BASE_URL = `https://finnhub.io/api/v1/search?q=${query}&token=`;
     const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
     return plainToClass(
-      SearchSymbolOutFinnhubDto,
+      DTO.SearchSymbolOutFinnhubDto,
       response?.result?.slice(0, 10),
     );
   }
@@ -198,7 +183,7 @@ export class StockService {
   async tickerNews_STOCK_DATA(query: string,date:string) {
     const BASE_URL = `https://api.stockdata.org/v1/news/all?filter_entities=true&language=en&published_on=${date}&symbols=${query}&api_token=`;
     const response = await this.tryCatchF(BASE_URL, 'STOCK_DATA');
-    return  plainToClass(NewsStockDataOut, response?.data);
+    return  plainToClass(DTO.NewsStockDataOut, response?.data);
   }
 
   //hourly
@@ -216,7 +201,7 @@ export class StockService {
     const BASE_URL = `https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=${query}&apikey=`;
     const response = await this.tryCatchF(BASE_URL, 'ALPHA_VANTAGE');
     // return response;
-    return plainToClass(NewsAlphaVantageOutDto, response?.feed);
+    return plainToClass(DTO.NewsAlphaVantageOutDto, response?.feed);
   }
 
   //AAL new form FireBase //stockAVnews | stockSDnews
@@ -226,10 +211,10 @@ export class StockService {
     if (response?.data?.items==='0')
       return [];
     if(db==='stockAVnews'){
-      return plainToClass(NewsAlphaVantageOutDto, response?.data?.feed);
+      return plainToClass(DTO.NewsAlphaVantageOutDto, response?.data?.feed);
     }
     else{
-      return plainToClass(NewsStockDataOut, response?.data?.feed);
+      return plainToClass(DTO.NewsStockDataOut, response?.data?.feed);
     }
   }
 
@@ -329,7 +314,7 @@ export class StockService {
       data.push(...hour)
     }
     // return data
-    return  plainToInstance(NewsStockDataOut, data);
+    return  plainToInstance(DTO.NewsStockDataOut, data);
   }
 
   async tickerNews_STOCK_DATA12(query: string,date:string) {
@@ -352,6 +337,6 @@ export class StockService {
       data.push(...hour)
     }
     // return data
-    return  plainToInstance(NewsStockDataOut, data);
+    return  plainToInstance(DTO.NewsStockDataOut, data);
   }
 }
