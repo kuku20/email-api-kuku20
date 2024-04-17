@@ -213,4 +213,22 @@ export class StockController {
       throw error;
     }
   }
+
+  @Get('/chartdata/:timespan')
+  async getTickerFullChart_POLYGON(
+  @Param('timespan') timespan: string,
+  @Query('stockTicker') stockTicker: string,
+  @Query('range') range: string,
+  @Query('start') dateStart: string,
+  @Query('end') dateEnd: string,
+  @Query('limit') limit: string,
+  ) {
+    try {
+      const data = await this.stockService.getTickerFullChart_POLYGON(stockTicker, range, timespan,dateStart, dateEnd, limit );
+      return data;
+    } catch (error) {
+      // Handle errors here
+      throw error;
+    }
+  }
 }

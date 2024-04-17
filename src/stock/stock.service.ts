@@ -4,6 +4,7 @@ import { ConfigService, ConfigModule } from '@nestjs/config';
 import { plainToClass, plainToInstance } from 'class-transformer';
 import {
   BulkRequestsDto,
+  ChartOutPolygonDto,
   CompanyProfileDto,
   DividendOutDto,
   EarningCalFinnhubOut,
@@ -43,6 +44,12 @@ export class StockService {
     const BASE_URL = `https://api.polygon.io/v3/reference/dividends?ticker=${query}&apiKey=`;
     const response = await this.tryCatchF(BASE_URL, 'POLYGON_STOCK_API_KEY');
     return plainToClass(DividendOutDto, response?.results);
+  }
+
+  async getTickerFullChart_POLYGON(ticker: string, range:string,timespan:string, dateStart:string, dateEnd:string, limit:string) {
+    const BASE_URL = `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${dateStart}/${dateEnd}?adjusted=true&sort=asc&limit=${limit}&apiKey=`;
+    const response = await this.tryCatchF(BASE_URL, 'POLYGON_STOCK_API_KEY');
+    return plainToClass(ChartOutPolygonDto, response?.results);
   }
 
   async fromPolygon(type,stockTicker, start, end){
