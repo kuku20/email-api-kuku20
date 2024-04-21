@@ -12,8 +12,8 @@ export class UserAuth {
   @Column()
   email: string;
 
-  @Column()
-  displayName: string;
+  @Column({ nullable: true })
+  displayName?: string;
   
   @Column({ nullable: true })
   memberShips?: boolean;
