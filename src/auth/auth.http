@@ -15,7 +15,6 @@ curl --location 'http://localhost:3000/auth/v2/signup' \
     "password": "Lock_for123!dotk",
     "displayName":"2Loc",
     "isAdmin": true
-    
 }'
 
 
@@ -23,8 +22,9 @@ curl --location 'http://localhost:3000/auth/v2/signup' \
 curl --location 'http://localhost:3000/auth/v2/signin' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "email": "test@gmail.com",
-    "password": "fadfjloc"
+    "email": "bob2@test.com",
+    "password": "Pa$$w0rd",
+    "isAdmin": true
 }'
 
 ### test with out aaa

@@ -1,0 +1,48 @@
+# @rootUrl = http://localhost:3000
+@rootUrl = https://my-api-all.adaptable.app
+
+### Sign UP  to getand update userID
+curl --location '{{rootUrl}}/auth/v2/signup' \
+--header 'Content-Type: application/json' \
+--data-raw '{"email": "bob@test.com","password": "Pa$$w0rd"}'
+
+### Sign IN  to get userId "id": "cd9378ff-c55d-4734-abff-068801165264"
+curl --location '{{rootUrl}}/auth/v2/signin' \
+--header 'Content-Type: application/json' \
+--data-raw '{"email": "bob@test.com","password": "Pa$$w0rd"}'
+### Check me
+curl --location '{{rootUrl}}/auth/v2/me'
+
+### signout
+curl --location '{{rootUrl}}/auth/v2/signout'
+# ### create user portfolio this auto create when sign up
+# curl --location '{{rootUrl}}/stock-portfolio/wallet' \
+# --header 'Content-Type: application/json' \
+# --data '{
+#     "id": "{{userId}}",
+#     "balance": 0
+# }'
+####
+@userId = cd9378ff-c55d-4734-abff-068801165264
+
+### Get Wallet to get wallet id   "id": "83ba7e82-e810-44c9-b405-561d005ce6d9"
+GET {{rootUrl}}/stock-portfolio/wallet/{{userId}}
+
+### Get user-list  
+GET {{rootUrl}}/stock-user/user-list/{{userId}}
+#####
+@walletId = 83ba7e82-e810-44c9-b405-561d005ce6d9
+
+### post deposit "statusCode": 200
+curl --location '{{rootUrl}}/stock-portfolio/submit' \
+--header 'Content-Type: application/json' \
+--data-raw '{"id": "{{userId}}","sPortfolioId":"{{walletId}}","requestType":"deposit","date": "2024-04-09",
+"amount": 10000,"method": "direct","status":"complete"}'
+
+### post withdraw "statusCode": 200
+curl --location '{{rootUrl}}/stock-portfolio/submit' \
+--header 'Content-Type: application/json' \
+--data-raw '{"id": "{{userId}}","sPortfolioId":"{{walletId}}","requestType":"withdraw","date": "2023-04-10",
+    "amount": 10000,"method": "direct","status":"complete"}'
+
+
