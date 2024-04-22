@@ -75,7 +75,7 @@ curl --location 'http://localhost:3000/stock-portfolio/submit' \
     "amount": 15,
     "matchPrice":7,
     "netvalue":105,
-    "marketCap": 1000000000
+    "marketCap": null
 }'
 
 ### post sell "statusCode": 200

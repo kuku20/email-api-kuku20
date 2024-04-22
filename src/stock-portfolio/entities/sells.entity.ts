@@ -39,7 +39,7 @@ export class Sell {
   @Column({ type: 'double precision',nullable: true })
   netProfit?: number;
 
-  @Column({ type: 'double precision' })
+  @Column({ type: 'double precision',nullable: true })
   marketCap: number;
 
   @ManyToOne(() => StockPortfolio, (sPortfolio) => sPortfolio.sells)

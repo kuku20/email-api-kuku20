@@ -294,7 +294,7 @@ export class StockPortfolioService {
         amount:requestBody.amount,
         matchPrice:requestBody.matchPrice,
         netvalue:requestBody.netvalue,
-        marketCap:requestBody.marketCap,
+        marketCap:requestBody.marketCap?requestBody.marketCap:1,
         atPctChange:requestBody.atPctChange,
         sPortfolioId: userwallet,
       });
@@ -314,7 +314,7 @@ export class StockPortfolioService {
           symbol:requestBody.symbol,
           amount:requestBody.amount,
           matchPrice:requestBody.matchPrice,
-          marketCap:requestBody.marketCap,
+          marketCap:requestBody.marketCap?requestBody.marketCap:1,
           atPctChange:requestBody.atPctChange,
           sPortfolioId: userwallet,
         });
@@ -326,7 +326,7 @@ export class StockPortfolioService {
         const up_H_Symbol = {
           amount: n_Amount,
           matchPrice: n_Price,
-          marketCap: requestBody.marketCap,
+          marketCap: requestBody.marketCap?requestBody.marketCap:1,
         };
         Object.assign(h_Symbol, up_H_Symbol);
         newSymbol = false
@@ -377,7 +377,7 @@ export class StockPortfolioService {
         amount:requestBody.amount,
         matchPrice:requestBody.matchPrice,
         netvalue:requestBody.netvalue,
-        marketCap:requestBody.marketCap,
+        marketCap:requestBody.marketCap?requestBody.marketCap:1,
         avaragePriceB:requestBody.avaragePriceB,
         netProfit:requestBody.netProfit,
         atPctChange:requestBody.atPctChange,
@@ -402,7 +402,7 @@ export class StockPortfolioService {
         }
         const up_H_Symbol = {
           amount: n_Amount,
-          marketCap: requestBody.marketCap,
+          marketCap: requestBody.marketCap?requestBody.marketCap:1,
         };
         Object.assign(h_Symbol, up_H_Symbol);
       }

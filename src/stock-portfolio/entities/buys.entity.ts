@@ -30,7 +30,7 @@ export class Buy {
   @Column({ type: 'double precision',nullable: true})
   netvalue?: number;
 
-  @Column({ type: 'double precision' })
+  @Column({ type: 'double precision',nullable: true })
   marketCap: number;
 
   @ManyToOne(() => StockPortfolio, (sPortfolio) => sPortfolio.buys)

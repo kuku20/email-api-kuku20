@@ -39,10 +39,11 @@ export class InBuySellDto {
   
   @IsOptional()
   @IsNumber()
-  avaragePriceB?: number;
+  avaragePriceB?: number| undefined;
 
   @IsNumber()
-  marketCap: number;
+  @IsOptional()
+  marketCap?: number;
 
   @IsUUID()
   sPortfolioId?: string;
