@@ -13,6 +13,7 @@ import {
   Res,
 } from '@nestjs/common';
 import { ContentfulService } from './contentful.service';
+import { ContentfulDto } from './dto/env.dto';
 
 @Controller('contentful')
 export class ContentfulController {
@@ -32,6 +33,20 @@ export class ContentfulController {
   async leetCodeData(@Param('preview') preview: boolean) {
     try {
       const data = await this.contentfulService.getLeetCode(preview);
+      return data;
+    } catch (error) {
+      // Handle errors here
+      throw error;
+    }
+  }
+
+  @Get('/profolio/:env')
+  async profolioData2(
+    @Param('preview') preview: boolean,
+    @Param() params: ContentfulDto,
+  ) {
+    try {
+      const data = await this.contentfulService.fetchData(preview, params.env);
       return data;
     } catch (error) {
       // Handle errors here

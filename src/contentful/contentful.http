@@ -1,2 +1,14 @@
 ### Get profolio content
 GET http://localhost:3000/contentful/profolio
+
+### Get profolio content
+GET http://localhost:3000/contentful/profolio/dev
+
+### Get profolio content
+GET http://localhost:3000/contentful/profolio/prod
+
+### Get profolio content
+GET http://localhost:3000/contentful/profolio/master
+
+### Get profolio content
+GET http://localhost:3000/contentful/letcode
