@@ -22,6 +22,7 @@ query proFolioCollectionQuery {
       myExpCollection {
         items {
           title
+          client
           details {
             json
           }
