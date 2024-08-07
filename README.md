@@ -37,3 +37,4 @@ need UseGuards @Post('/watchlist') and @Post('/user-list')
 
 
   nest g resource stockPortfolio
+  
