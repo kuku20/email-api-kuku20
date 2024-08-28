@@ -1,6 +1,6 @@
 
 ### Get profolio content
-GET http://localhost:3000/contentful/profolio/dev
+GET http://localhost:3000/contentful/profolio/dev?account=LL
 
 ### Get profolio content
 GET http://localhost:3000/contentful/profolio/prod
@@ -10,3 +10,10 @@ GET http://localhost:3000/contentful/profolio/master
 
 ### Get profolio content
 GET http://localhost:3000/contentful/letcode
+
+### GET from ad
+GET https://my-api-all.adaptable.app/contentful/profolio/master
+
+
+###
+GET https://graphql.contentful.com/content/v1/spaces/9gvoywspr3ip/environments/dev

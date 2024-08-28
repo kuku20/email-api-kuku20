@@ -6,23 +6,25 @@ import { blogPageQuery, leetCodeQuery } from './contenful.constant';
 export class ContentfulService {
   private readonly graphRoot =
     'https://graphql.contentful.com/content/v1/spaces/9gvoywspr3ip/environments';
+  private readonly graphlBase = 'https://graphql.contentful.com/content/v1/spaces';
   private readonly graphqlEndpoint = `${this.graphRoot}/master`;
-  private readonly graphqlEndpointProd = `${this.graphRoot}/prod`;
-  private readonly graphqlEndpointDev = `${this.graphRoot}/dev`;
   constructor(private readonly configService: ConfigService) {}
-  async fetchData(preview: boolean, env: string = 'master') {
-    const token = this.configService.get<string>('CONTENTFUL_TOKEN'); // Retrieve the token from environment variables
+  async fetchData(
+    preview: boolean,
+    env: string = 'master',
+    account: string = 'DB',
+  ) {
+    const token = this.configService.get<string>('CONTENTFUL_TOKEN_' + account); // Retrieve the token from environment variables
+    const spaces = this.configService.get<string>('CONTENTFUL_SPACES_' + account);
+
+    const grahqlUrl = `${this.graphlBase}/${spaces}/environments/${env}`;
     const headers = {
       Authorization: `Bearer ${token}`,
     };
 
     try {
       const response = await axios.post(
-        env === 'master'
-          ? this.graphqlEndpoint
-          : env === 'prod'
-          ? this.graphqlEndpointProd
-          : this.graphqlEndpointDev,
+        grahqlUrl,
         { query: blogPageQuery, variables: { preview } },
         { headers },
       );
@@ -34,7 +36,7 @@ export class ContentfulService {
   }
 
   async getLeetCode(preview: boolean) {
-    const token = this.configService.get<string>('CONTENTFUL_TOKEN'); // Retrieve the token from environment variables
+    const token = this.configService.get<string>('CONTENTFUL_TOKEN_DB'); // Retrieve the token from environment variables
     const headers = {
       Authorization: `Bearer ${token}`,
     };

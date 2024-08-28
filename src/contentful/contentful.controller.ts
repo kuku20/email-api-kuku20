@@ -34,9 +34,10 @@ export class ContentfulController {
   async profolioData2(
     @Param('preview') preview: boolean,
     @Param() params: ContentfulDto,
+    @Query('account') account: string,
   ) {
     try {
-      const data = await this.contentfulService.fetchData(preview, params.env);
+      const data = await this.contentfulService.fetchData(preview, params.env, account);
       return data;
     } catch (error) {
       // Handle errors here
