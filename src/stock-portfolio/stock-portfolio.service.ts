@@ -18,6 +18,7 @@ import {
   BuyOrSellDto,
   DepositOrWithdrawDto,
   UserPortfolioDto,
+  WalletOutPutDto,
 } from './dto/out/index';
 import { UserAuth } from 'src/auth/userAuth.entity';
 import { plainToClass, plainToInstance } from 'class-transformer';
@@ -75,13 +76,11 @@ export class StockPortfolioService {
       throw error;
     }
   }
-  async findAllTypeByUserId(userId: string, queryType:string) {
+  async findAllTypeByUserId(userId: string, queryType: string) {
     try {
       const queryReturnType = await this.PortfolioRepo.findOne({
         where: { userId: { id: userId } },
-        relations: [
-          queryType,
-        ],
+        relations: [queryType],
       });
       if (!queryReturnType) {
         throw new NotFoundException(`You don't have any ${queryType}`);
@@ -96,11 +95,9 @@ export class StockPortfolioService {
 
   async findStockUserByUserId(userId: string) {
     try {
-      const stockUser = await this.PortfolioRepo.findOne({
+      let stockUser = await this.PortfolioRepo.findOne({
         where: { userId: { id: userId } },
-        relations: [
-        'holding_amounts',
-        ],
+        relations: ['holding_amounts'],
       });
       // const walletIdd = '3f9f0167-cac3-4aa5-a2aa-0c7e9ef08d86'
       // await this.HoldingRepo
@@ -141,8 +138,12 @@ export class StockPortfolioService {
       if (!stockUser) {
         throw new NotFoundException(`You don't have any list`);
       }
-
-      return stockUser;
+      stockUser = {
+        ...stockUser,
+        holding_amounts: stockUser.holding_amounts.filter(
+          (stock) => stock.amount > 0,
+        ),
+      };
       return plainToInstance(UserPortfolioDto, stockUser);
     } catch (error) {
       const mes = `StockUser with userId ${userId} not found`;
@@ -166,7 +167,9 @@ export class StockPortfolioService {
   //   // return plainToInstance(WalletOutPutDto, PortfolioRepo);
   // }
 
-  async deposits(requestBody: InDepositWithDrawDto): Promise<DepositOrWithdrawDto> {
+  async deposits(
+    requestBody: InDepositWithDrawDto,
+  ): Promise<DepositOrWithdrawDto> {
     try {
       const stockPortfolio = await this.PortfolioRepo.findOne({
         where: { userId: { id: requestBody.id } },
@@ -200,10 +203,10 @@ export class StockPortfolioService {
         throw new NotAcceptableException('Balance Not Enough');
       }
       const deposit = this.DepositRepo.create({
-        date:requestBody.date,
-        method:requestBody.method,
-        status:requestBody.status,
-        amount:requestBody.amount,
+        date: requestBody.date,
+        method: requestBody.method,
+        status: requestBody.status,
+        amount: requestBody.amount,
         sPortfolioId: userwallet,
       });
       const newDeposit = await this.DepositRepo.save(deposit);
@@ -219,7 +222,9 @@ export class StockPortfolioService {
     }
   }
 
-  async withdraws(requestBody: InDepositWithDrawDto): Promise<DepositOrWithdrawDto> {
+  async withdraws(
+    requestBody: InDepositWithDrawDto,
+  ): Promise<DepositOrWithdrawDto> {
     try {
       const stockPortfolio = await this.PortfolioRepo.findOne({
         where: { userId: { id: requestBody.id } },
@@ -246,10 +251,10 @@ export class StockPortfolioService {
       }
 
       const withdraw = this.WithdrawRepo.create({
-        date:requestBody.date,
-        method:requestBody.method,
-        status:requestBody.status,
-        amount:requestBody.amount,
+        date: requestBody.date,
+        method: requestBody.method,
+        status: requestBody.status,
+        amount: requestBody.amount,
         sPortfolioId: userwallet,
       });
       const newWithdraw = await this.WithdrawRepo.save(withdraw);
@@ -280,7 +285,8 @@ export class StockPortfolioService {
       });
 
       // update balance
-      const newBalance = userwallet.balance - requestBody.amount * requestBody.matchPrice;
+      const newBalance =
+        userwallet.balance - requestBody.amount * requestBody.matchPrice;
       if (newBalance > 0) {
         Object.assign(userwallet, { balance: newBalance });
         this.PortfolioRepo.save(userwallet);
@@ -289,47 +295,54 @@ export class StockPortfolioService {
       }
 
       const buy = this.BuyRepo.create({
-        date:requestBody.date,
-        symbol:requestBody.symbol,
-        amount:requestBody.amount,
-        matchPrice:requestBody.matchPrice,
-        netvalue:requestBody.netvalue,
-        marketCap:requestBody.marketCap?requestBody.marketCap:1,
-        atPctChange:requestBody.atPctChange,
+        date: requestBody.date,
+        symbol: requestBody.symbol,
+        amount: requestBody.amount,
+        matchPrice: requestBody.matchPrice,
+        netvalue: requestBody.netvalue,
+        marketCap: requestBody.marketCap ? requestBody.marketCap : 1,
+        atPctChange: requestBody.atPctChange,
         sPortfolioId: userwallet,
       });
       const newBuy = await this.BuyRepo.save(buy);
       //check in holding
-      const stockInHolding = await this.PortfolioRepo.createQueryBuilder('portfolio',)
+      const stockInHolding = await this.PortfolioRepo.createQueryBuilder(
+        'portfolio',
+      )
         .leftJoinAndSelect('portfolio.holding_amounts', 'holding_amount')
         .where('portfolio.userId = :userId', { userId: requestBody.id })
-        .andWhere('holding_amount.symbol = :symbol', { symbol: requestBody.symbol })
+        .andWhere('holding_amount.symbol = :symbol', {
+          symbol: requestBody.symbol,
+        })
         .getOne();
       let h_Symbol;
       let newSymbol;
       if (!stockInHolding) {
         //set to database in holding
         h_Symbol = this.HoldingRepo.create({
-          date:requestBody.date,
-          symbol:requestBody.symbol,
-          amount:requestBody.amount,
-          matchPrice:requestBody.matchPrice,
-          marketCap:requestBody.marketCap?requestBody.marketCap:1,
-          atPctChange:requestBody.atPctChange,
+          date: requestBody.date,
+          symbol: requestBody.symbol,
+          amount: requestBody.amount,
+          matchPrice: requestBody.matchPrice,
+          marketCap: requestBody.marketCap ? requestBody.marketCap : 1,
+          atPctChange: requestBody.atPctChange,
           sPortfolioId: userwallet,
         });
-        newSymbol = true
+        newSymbol = true;
       } else {
         h_Symbol = stockInHolding.holding_amounts[0];
         const n_Amount = requestBody.amount + h_Symbol.amount;
-        const n_Price =(requestBody.matchPrice * requestBody.amount +h_Symbol.matchPrice * h_Symbol.amount) / n_Amount;
+        const n_Price =
+          (requestBody.matchPrice * requestBody.amount +
+            h_Symbol.matchPrice * h_Symbol.amount) /
+          n_Amount;
         const up_H_Symbol = {
           amount: n_Amount,
           matchPrice: n_Price,
-          marketCap: requestBody.marketCap?requestBody.marketCap:1,
+          marketCap: requestBody.marketCap ? requestBody.marketCap : 1,
         };
         Object.assign(h_Symbol, up_H_Symbol);
-        newSymbol = false
+        newSymbol = false;
       }
       const holdingSymbol = await this.HoldingRepo.save(h_Symbol);
       // Create the response DTO
@@ -339,7 +352,7 @@ export class StockPortfolioService {
         newHolding: holdingSymbol,
         newSymbol,
       };
-      return response
+      return response;
       return plainToClass(BuyOrSellDto, response, {
         // excludeExtraneousValues: true,
       });
@@ -372,23 +385,27 @@ export class StockPortfolioService {
         throw new NotAcceptableException('Balance Not Enough');
       }
       const sell = this.SellRepo.create({
-        date:requestBody.date,
-        symbol:requestBody.symbol,
-        amount:requestBody.amount,
-        matchPrice:requestBody.matchPrice,
-        netvalue:requestBody.netvalue,
-        marketCap:requestBody.marketCap?requestBody.marketCap:1,
-        avaragePriceB:requestBody.avaragePriceB,
-        netProfit:requestBody.netProfit,
-        atPctChange:requestBody.atPctChange,
-        atSellPctChange:requestBody.atSellPctChange,
+        date: requestBody.date,
+        symbol: requestBody.symbol,
+        amount: requestBody.amount,
+        matchPrice: requestBody.matchPrice,
+        netvalue: requestBody.netvalue,
+        marketCap: requestBody.marketCap ? requestBody.marketCap : 1,
+        avaragePriceB: requestBody.avaragePriceB,
+        netProfit: requestBody.netProfit,
+        atPctChange: requestBody.atPctChange,
+        atSellPctChange: requestBody.atSellPctChange,
         sPortfolioId: userwallet,
       });
       //check in holding
-      const stockInHolding = await this.PortfolioRepo.createQueryBuilder('portfolio')
+      const stockInHolding = await this.PortfolioRepo.createQueryBuilder(
+        'portfolio',
+      )
         .leftJoinAndSelect('portfolio.holding_amounts', 'holding_amount')
         .where('portfolio.userId = :userId', { userId: requestBody.id })
-        .andWhere('holding_amount.symbol = :symbol', { symbol: requestBody.symbol })
+        .andWhere('holding_amount.symbol = :symbol', {
+          symbol: requestBody.symbol,
+        })
         .getOne();
       let h_Symbol;
       if (!stockInHolding) {
@@ -402,7 +419,7 @@ export class StockPortfolioService {
         }
         const up_H_Symbol = {
           amount: n_Amount,
-          marketCap: requestBody.marketCap?requestBody.marketCap:1,
+          marketCap: requestBody.marketCap ? requestBody.marketCap : 1,
         };
         Object.assign(h_Symbol, up_H_Symbol);
       }
@@ -414,7 +431,7 @@ export class StockPortfolioService {
         statusCode: 200,
         transaction: newSell,
         newHolding: holdingSymbol,
-        newSymbol:false,
+        newSymbol: false,
       };
       return response;
       return plainToClass(BuyOrSellDto, response, {
