@@ -72,7 +72,11 @@ curl --location '{{rootUrl}}/stock{{newfhep}}/company-profile?stockTicker=aal'
 curl --location '{{rootUrl}}/stock{{newfhep}}/news?stockTicker=AAL'
 ###
 curl --location '{{rootUrl}}/stock{{newfhep}}/news?stockTicker=AAL&start=2024-01-11&end=2024-02-11'
+### PEERS
+curl --location '{{rootUrl}}/stock{{newfhep}}/peers?stockTicker=aal'
 
+### Get recommendation
+curl --location '{{rootUrl}}/stock{{newfhep}}/recommendation?stockTicker=aal'
 ####------------------------------------------------------------------------------------------
 ####POLYGON
 @newpoep = /po

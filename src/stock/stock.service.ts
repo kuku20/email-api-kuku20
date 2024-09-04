@@ -152,7 +152,16 @@ export class StockService {
     const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
     return plainToClass(DTO.InsiderTransactionsDto, response?.data);
   }
-  
+
+  async peers_recommendation_FINNHUB(
+    query: string,
+    endpoint: 'peers' | 'recommendation',
+  ) {
+    const BASE_URL = `https://finnhub.io/api/v1/stock/${endpoint}?symbol=${query}&token=`;
+    const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
+    return response;
+  }
+
   // search function
   async tickerList_FINNHUB(query: string) {
     const BASE_URL = `https://finnhub.io/api/v1/search?q=${query}&token=`;
@@ -181,6 +190,12 @@ export class StockService {
     }
     if(type===FhRequestType.TICKLIST){
       return this.tickerList_FINNHUB(stockTicker)
+    }
+    if(type===FhRequestType.PEERS){
+      return this.peers_recommendation_FINNHUB(stockTicker,'peers')
+    }
+    if(type===FhRequestType.RECOMMENDATION){
+      return this.peers_recommendation_FINNHUB(stockTicker,'recommendation')
     }
     throw new NotFoundException("NOT FOUND");
   }
