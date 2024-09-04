@@ -9,6 +9,8 @@ export enum FhRequestType {
   ComPro = 'company-profile',
   INTRAN = 'insider-transactions',
   TICKLIST = 'ticker-list',
+  PEERS = 'peers',
+  RECOMMENDATION = 'recommendation',
 }
 export class FinnhubDto {
   @IsEnum(FhRequestType)

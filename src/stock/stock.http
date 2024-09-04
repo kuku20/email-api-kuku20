@@ -1,6 +1,9 @@
 ###
 @rootUrl = http://localhost:3000
 
+###Get New form  news-Finhub
+curl --location '{{rootUrl}}/stock/news-v1?stockTicker=BABA'
+
 ###Get New form  news-alpha-vantage
 curl --location '{{rootUrl}}/stock/news-v2?stockTicker=BABA'
 
