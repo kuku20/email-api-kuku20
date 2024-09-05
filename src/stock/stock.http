@@ -1,5 +1,6 @@
 ###
 @rootUrl = http://localhost:3000
+#@rootUrl = https://my-api-all.adaptable.app
 
 ###Get New form  news-Finhub
 curl --location '{{rootUrl}}/stock/news-v1?stockTicker=BABA'
@@ -76,10 +77,14 @@ curl --location '{{rootUrl}}/stock{{newfhep}}/news?stockTicker=AAL'
 ###
 curl --location '{{rootUrl}}/stock{{newfhep}}/news?stockTicker=AAL&start=2024-01-11&end=2024-02-11'
 ### PEERS
-curl --location '{{rootUrl}}/stock{{newfhep}}/peers?stockTicker=aal'
+curl --location '{{rootUrl}}/stock{{newfhep}}/peers?stockTicker=X'
 
 ### Get recommendation
-curl --location '{{rootUrl}}/stock{{newfhep}}/recommendation?stockTicker=aal'
+curl --location '{{rootUrl}}/stock{{newfhep}}/recommendation?stockTicker=X'
+
+### GET multiple-recommendation
+curl --location '{{rootUrl}}/stock{{newfhep}}/multiple-recommendation?stockTicker=LE,AOUT'
+
 ####------------------------------------------------------------------------------------------
 ####POLYGON
 @newpoep = /po
@@ -92,6 +97,9 @@ curl --location '{{rootUrl}}/stock{{newpoep}}/dividends?stockTicker=AAL'
 
 ### get price by day
 curl --location '{{rootUrl}}/stock{{newpoep}}/byday?stockTicker=AAL'
+
+### get open and close
+curl --location '{{rootUrl}}/stock{{newpoep}}/open-close?stockTicker=AAL&start=2023-11-30'
 
 ####------------------------------------------------------------------------------------------
 ####FMP
@@ -118,10 +126,10 @@ Host: localhost:3000
 @timespanpolygon = day
 #  second minute hour day week month quarter year
 ### get all data for chart form Polygon max 2 year
-curl --location '{{rootUrl}}/stock/chartdata/{{timespanpolygon}}?stockTicker=ROKU&range=5&start=2022-01-11&end=2023-02-11&limit=20'
+curl --location '{{rootUrl}}/stock/chartdata/{{timespanpolygon}}?stockTicker=ROKU&range=5&start=2022-02-12&end=2023-02-12&limit=20'
 
 ### get all data for chart form FMp max 5 year
-curl --location '{{rootUrl}}/stock/chartdata/{{timespanfmp}}?stockTicker=ROKU&range={{fmprange}}&start=2022-01-11&end=2023-02-11&limit=20'
+curl --location '{{rootUrl}}/stock/chartdata/{{timespanfmp}}?stockTicker=ROKU&range={{fmprange}}&start=2022-02-11&end=2023-02-12&limit=20'
 
 ### get all data daily chart form FMp max 5 year
 curl --location '{{rootUrl}}/stock/daily-chart?stockTicker=ROKU&start=2022-01-11'

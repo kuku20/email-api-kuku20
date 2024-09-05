@@ -11,6 +11,7 @@ export enum FhRequestType {
   TICKLIST = 'ticker-list',
   PEERS = 'peers',
   RECOMMENDATION = 'recommendation',
+  MULTIPLE_RECOM = 'multiple-recommendation',
 }
 export class FinnhubDto {
   @IsEnum(FhRequestType)

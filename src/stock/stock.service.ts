@@ -30,14 +30,22 @@ export class StockService {
     const response = await this.tryCatchF(BASE_URL, 'POLYGON_STOCK_API_KEY');
     return plainToClass(DTO.DividendOutDto, response?.results);
   }
-
   async getTickerFullChart_POLYGON(ticker: string, range:string,timespan:string, dateStart:string, dateEnd:string, limit:string) {
     const BASE_URL = `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${dateStart}/${dateEnd}?adjusted=true&sort=asc&limit=${limit}&apiKey=`;
     const response = await this.tryCatchF(BASE_URL, 'POLYGON_STOCK_API_KEY');
     return plainToClass(DTO.ChartOutPolygonDto, response?.results);
   }
 
+  async open_close_POLYGON(ticker: string, date:string='2023-01-09') {
+    const BASE_URL = `https://api.polygon.io/v1/open-close/${ticker}/${date}?adjusted=true&apiKey=`;
+    console.log(BASE_URL)
+    const response = await this.tryCatchF(BASE_URL, 'POLYGON_STOCK_API_KEY');
+    return response
+    return plainToClass(DTO.ChartOutPolygonDto, response?.results);
+  }
+
   async fromPolygon(type,stockTicker, start, end){
+    console.log(type)
     if(type===PolygonRType.BYDAY && stockTicker && start){
       return this.search_POLYGON(stockTicker,start, end)
     }
@@ -46,6 +54,9 @@ export class StockService {
     }
     if(type===PolygonRType.DIVIDEND && stockTicker){
       return this.tickerDividends_POLYGON(stockTicker)
+    }
+    if(type===PolygonRType.OPENCLOSE && stockTicker){
+      return this.open_close_POLYGON(stockTicker, start)
     }
     throw new NotFoundException("NOT FOUND");
   }
@@ -161,7 +172,22 @@ export class StockService {
     const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
     return response;
   }
+  async full_recommendation_FINNHUB(
+    query: string,
+  ) {
+    const symbols = query.split(',');
+    const requests = symbols.map(symbol =>
+      this.peers_recommendation_FINNHUB(symbol, 'recommendation')
+    );
+        // Wait for all the API calls to complete
+    const responses = await Promise.all(requests);
 
+    // Return the combined results
+    return symbols.map((symbol, index) => ({
+      symbol,
+      recommendation: responses[index],
+    }));
+  }
   // search function
   async tickerList_FINNHUB(query: string) {
     const BASE_URL = `https://finnhub.io/api/v1/search?q=${query}&token=`;
@@ -196,6 +222,9 @@ export class StockService {
     }
     if(type===FhRequestType.RECOMMENDATION){
       return this.peers_recommendation_FINNHUB(stockTicker,'recommendation')
+    }
+    if(type===FhRequestType.MULTIPLE_RECOM){
+      return this.full_recommendation_FINNHUB(stockTicker)
     }
     throw new NotFoundException("NOT FOUND");
   }
