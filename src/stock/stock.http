@@ -1,6 +1,6 @@
 ###
 @rootUrl = http://localhost:3000
-#@rootUrl = https://my-api-all.adaptable.app
+# @rootUrl = https://my-api-all.adaptable.app
 
 ###Get New form  news-Finhub
 curl --location '{{rootUrl}}/stock/news-v1?stockTicker=BABA'
@@ -99,7 +99,14 @@ curl --location '{{rootUrl}}/stock{{newpoep}}/dividends?stockTicker=AAL'
 curl --location '{{rootUrl}}/stock{{newpoep}}/byday?stockTicker=AAL'
 
 ### get open and close
-curl --location '{{rootUrl}}/stock{{newpoep}}/open-close?stockTicker=AAL&start=2023-11-30'
+curl --location '{{rootUrl}}/stock{{newpoep}}/open-close?stockTicker=ABM&start=2024-09-09'
+
+### get DAILY RANGE PRICE
+curl --location '{{rootUrl}}/stock{{newpoep}}/range-date?stockTicker=ABM&end=2024-09-10&start=2024-09-07'
+
+
+###
+curl --location 'https://seekingalpha.com/api/v3/earnings_calendar/tickers?filter[selected_date]=2024-09-12&filter[with_rating]=false&filter[currency]=USD'
 
 ####------------------------------------------------------------------------------------------
 ####FMP

@@ -1,26 +1,25 @@
-import { double } from 'aws-sdk/clients/lightsail';
 import { Exclude, Expose, Transform } from 'class-transformer';
 
 export class ChartOutPolygonDto {
 
   @Expose({name:'v'})
-  volume: double
+  volume: number
 
   // @Expose({name:'vw'})
   @Exclude()
-  vw: double
+  vw: number
 
   @Expose({name:'o'})
-  open: double
+  open: number
 
   @Expose({name:'c'})
-  close: double
+  close: number
 
   @Expose({name:'l'})
-  low: double
+  low: number
 
   @Expose({name:'h'})
-  high: double
+  high: number
 
   @Expose({ name: 't' })
   @Transform(({ value }) => value ? new Date(value) : null)
@@ -28,4 +27,11 @@ export class ChartOutPolygonDto {
 
   @Exclude()
   n: number
+}
+
+
+export class DatePolygonDto extends ChartOutPolygonDto{
+  @Expose({ name: 'p_o_c' })
+  @Transform(({ value }) => Math.round(value * 100) / 100)
+  pctChange: number;
 }

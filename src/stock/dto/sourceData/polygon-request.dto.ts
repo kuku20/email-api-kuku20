@@ -5,6 +5,7 @@ export enum PolygonRType {
   TYPEAHEAD = 'typeahead',
   DIVIDEND = 'dividends',
   OPENCLOSE = 'open-close',
+  RANGEDAY = 'range-date',
 }
 export class PolygonDto {
   @IsEnum(PolygonRType)

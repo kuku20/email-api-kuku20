@@ -38,14 +38,27 @@ export class StockService {
 
   async open_close_POLYGON(ticker: string, date:string='2023-01-09') {
     const BASE_URL = `https://api.polygon.io/v1/open-close/${ticker}/${date}?adjusted=true&apiKey=`;
-    console.log(BASE_URL)
     const response = await this.tryCatchF(BASE_URL, 'POLYGON_STOCK_API_KEY');
+    // console.log(BASE_URL)
     return response
     return plainToClass(DTO.ChartOutPolygonDto, response?.results);
   }
 
+  async Aggregate_POLYGON(ticker: string, startDate:string='2022-01-01', endDate:string='2023-01-10') {
+    const BASE_URL = `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/1/day/${startDate}/${endDate}?adjusted=true&sort=asc&apiKey=`;
+    const response = await this.tryCatchF(BASE_URL, 'POLYGON_STOCK_API_KEY');
+    const addPercent = response.results.map(each=>{
+      return {
+        ...each,
+        change:+(each.c-each.o).toFixed(2),
+        p_o_c:(each.c-each.o)*100/each.o
+      }
+    })
+    // return addPercent
+    return plainToClass(DTO.DatePolygonDto, addPercent);
+  }
+
   async fromPolygon(type,stockTicker, start, end){
-    console.log(type)
     if(type===PolygonRType.BYDAY && stockTicker && start){
       return this.search_POLYGON(stockTicker,start, end)
     }
@@ -57,6 +70,9 @@ export class StockService {
     }
     if(type===PolygonRType.OPENCLOSE && stockTicker){
       return this.open_close_POLYGON(stockTicker, start)
+    }
+    if(type===PolygonRType.RANGEDAY && stockTicker){
+      return this.Aggregate_POLYGON(stockTicker, start, end)
     }
     throw new NotFoundException("NOT FOUND");
   }
