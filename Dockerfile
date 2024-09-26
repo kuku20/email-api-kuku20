@@ -1,35 +1,41 @@
-# Initiate a container to build the application in.
-FROM node:18-alpine as builder
-ENV NODE_ENV=build
+# Stage 1: Build the application
+FROM node:18-alpine AS build
+
+# Set the working directory inside the container
 WORKDIR /usr/src/app
 
-# Copy the package.json into the container.
+# Copy package.json and package-lock.json files
 COPY package*.json ./
 
-# Install the dependencies required to build the application.
+# Install dependencies
 RUN npm install
 
-# Copy the application source into the container.
+# Copy the rest of the application files
 COPY . .
 
-# Build the application.
+# Build the NestJS application
 RUN npm run build
 
-# Uninstall the dependencies not required to run the built application.
-RUN npm prune --production
+# Stage 2: Run the application
+FROM node:18-alpine
 
-# Initiate a new container to run the application in.
-FROM node:14-alpine
-  ENV NODE_ENV=production
+# Set the working directory inside the container
 WORKDIR /usr/src/app
 
-# Copy everything required to run the built application into the new container.
-COPY --from=builder /usr/src/app/package*.json ./
-COPY --from=builder /usr/src/app/node_modules/ ./node_modules/
-COPY --from=builder /usr/src/app/dist/ ./dist/
+# Copy the package.json and package-lock.json
+COPY package*.json ./
 
-# Expose the web server's port.
+# Install production dependencies only
+RUN npm install --only=production
+
+# Copy built application from the previous stage
+COPY --from=build /usr/src/app/dist ./dist
+
+# Copy any additional necessary files (e.g., public folder)
+# COPY --from=build /usr/src/app/public ./public
+
+# Expose the port the app runs on
 EXPOSE 3000
 
-# Run the application.
+# Set the default command to run the NestJS app
 CMD ["node", "dist/main"]
