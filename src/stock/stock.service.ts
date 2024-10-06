@@ -54,7 +54,9 @@ export class StockService {
         p_o_c:(each.c-each.o)*100/each.o
       }
     })
-    // return addPercent
+    const shapeData = plainToClass(DTO.DatePolygonDto, addPercent)
+    const returndata = {length:addPercent.length,ticker, data:shapeData}
+    return returndata
     return plainToClass(DTO.DatePolygonDto, addPercent);
   }
 
