@@ -22,6 +22,7 @@ import { WatchList } from './stock-user/entities/watchlist.entity';
 import { UserAuth } from './auth/userAuth.entity';
 import { StockPortfolioModule } from './stock-portfolio/stock-portfolio.module';
 import { Buy, Deposit, HoldingAmounts, Sell, StockPortfolio, Withdraw } from './stock-portfolio/entities';
+import { AiToolModule } from './ai-tool/ai-tool.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -82,6 +83,7 @@ import { Buy, Deposit, HoldingAmounts, Sell, StockPortfolio, Withdraw } from './
     AuthModule,
     StockUserModule,
     StockPortfolioModule,
+    AiToolModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,0 +1,30 @@
+###
+@rootUrl = http://localhost:3000
+# @rootUrl = https://my-api-all.adaptable.app
+# @rootUrl = https://email-api-kuku20.onrender.com
+# https://email-api-kuku20.onrender.com
+
+### Sign IN
+curl --location '{{rootUrl}}/ai-tool/gemini' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "message": "I give the data on share prices over today, write a report of no more than 400 words describing the stocks performance and recommending whether to buy, hold or sell:",
+    "data": [
+        {
+            "date": "2024-10-07 10:24:00",
+            "open": 253.04,
+            "low": 252,
+            "high": 253.46,
+            "close": 252.775,
+            "volume": 8569
+        },
+        {
+            "date": "2024-10-07 10:23:00",
+            "open": 253.04,
+            "low": 252,
+            "high": 253.46,
+            "close": 252.775,
+            "volume": 8569
+        }
+    ]
+}'
