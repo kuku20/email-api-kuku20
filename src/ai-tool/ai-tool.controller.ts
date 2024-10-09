@@ -27,4 +27,9 @@ export class AiToolController {
       throw error;
     }
   }
+
+  @Get('/fb/:id')
+  getfb(@Param('id') id: string){
+    return this.aiToolService.getFromFB(id)
+  }
 }

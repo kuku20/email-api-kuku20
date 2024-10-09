@@ -40,3 +40,7 @@ curl --location '{{rootUrl}}/ai-tool/get-advice' \
     "start":"2024-10-07",
     "end":"2024-10-08"
 }'
+
+
+### test with out aaa
+curl --location 'http://localhost:3000/ai-tool/fb/qqq'

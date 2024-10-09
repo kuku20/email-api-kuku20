@@ -47,7 +47,12 @@ export class AiToolService {
     this.postToFirebase(stockTicker, dataout)
     return dataout
   };
-  
+  async getFromFB(ticker:string){
+      const BASE_URL = `${this.configService.get<any>('FIREBASE_DATA')}/ai/${ticker}.json`;
+      const response = await axios.get(BASE_URL);
+      return response.data
+
+  }
   postToFirebase(stockTicker:string, data:any){
     const now = new Date();
     const year = now.getFullYear();
@@ -64,7 +69,7 @@ export class AiToolService {
       headers: { 
         'Content-Type': 'text/plain'
       },
-      data :{ guess:data}
+      data :{ guess:data, time: now}
     };
     axios.request(config)
     .then((response) => {
