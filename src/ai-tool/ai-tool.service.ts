@@ -3,9 +3,11 @@ import { CreateAiToolDto } from './dto/create-ai-tool.dto';
 import { UpdateAiToolDto } from './dto/update-ai-tool.dto';
 import { ConfigService, ConfigModule } from '@nestjs/config';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { StockService } from 'src/stock/stock.service';
+import axios from 'axios';
 @Injectable()
 export class AiToolService {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(private readonly configService: ConfigService, private stockService: StockService) {}
   async postGemini(message:string){
     try {
       const GEMINI_KEY = this.configService.get<any>('GEMINI_API')
@@ -28,5 +30,48 @@ export class AiToolService {
     } catch (error) {
       return new Error(JSON.stringify({error:error}))
     }
+  }
+  async getTickerFullChart_FMP(stockTicker:string, range:string, start:string, end:string, limit:string, message:string ){
+    const data = await this.stockService.getTickerFullChart_FMP(stockTicker, range, "historical-chart",start, end, limit)
+    const datatoString = {
+      symbol:stockTicker,
+      data,
+    }
+    const ask = message+JSON.stringify(datatoString)
+
+    const res = await this.postGemini(ask)
+    const dataout = {
+      res,
+      first:data[0]
+    }
+    this.postToFirebase(stockTicker, dataout)
+    return dataout
+  };
+  
+  postToFirebase(stockTicker:string, data:any){
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0'); // Adding 1 because months are zero-based
+    const day = String(now.getDate()).padStart(2, '0');
+
+    const formattedDate = `${year}-${month}-${day}`;
+    const BASE_URL = `${this.configService.get<any>('FIREBASE_DATA')}/ai/${stockTicker}/${formattedDate}.json`;
+
+    let config = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: BASE_URL,
+      headers: { 
+        'Content-Type': 'text/plain'
+      },
+      data :{ guess:data}
+    };
+    axios.request(config)
+    .then((response) => {
+      console.log(JSON.stringify(response.data));
+    })
+    .catch((error) => {
+      console.log(error);
+    });
   }
 }

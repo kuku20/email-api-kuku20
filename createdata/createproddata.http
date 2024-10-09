@@ -44,5 +44,3 @@ curl --location '{{rootUrl}}/stock-portfolio/submit' \
 --header 'Content-Type: application/json' \
 --data-raw '{"id": "{{userId}}","sPortfolioId":"{{walletId}}","requestType":"withdraw","date": "2023-04-10",
     "amount": 10000,"method": "direct","status":"complete"}'
-
-
