@@ -95,14 +95,15 @@ export class AiToolService {
     await this.postToFirebase(stockTicker, dataout, type);
     return dataout;
   }
-  async getFromFB(ticker: string, type:string='guess') {
+  async getFromFB(ticker: string, type:string) {
     const BASE_URL = `${this.configService.get<any>(
       'FIREBASE_DATA',
     )}/ai/${type}/${ticker.toUpperCase()}.json`;
+    // console.log(BASE_URL)
     const response = await axios.get(BASE_URL);
     return response.data;
   }
-  async postToFirebase(stockTicker: string, data: any, type:string='guess') {
+  async postToFirebase(stockTicker: string, data: any, type:string) {
     const now = new Date();
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, '0'); // Adding 1 because months are zero-based
@@ -112,6 +113,7 @@ export class AiToolService {
     const BASE_URL = `${this.configService.get<any>(
       'FIREBASE_DATA',
     )}/ai/${type}/${stockTicker.toUpperCase()}/${formattedDate}.json`;
+    // console.log(BASE_URL)
     let config = {
       method: 'post',
       maxBodyLength: Infinity,
