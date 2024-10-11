@@ -1,6 +1,10 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
 import { AiToolService } from './ai-tool.service';
+import { JwtGuard } from 'src/auth/guard';
+import { AdminUserAuthGuard } from 'src/stock-user/guard';
 
+@UseGuards(JwtGuard)
+@UseGuards(AdminUserAuthGuard)
 @Controller('ai-tool')
 export class AiToolController {
   constructor(private readonly aiToolService: AiToolService) {}

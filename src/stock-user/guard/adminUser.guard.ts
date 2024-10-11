@@ -7,6 +7,6 @@ export class AdminUserAuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest()
     const token = await this.jwt.decode(request.cookies.token);
-    return token.isAdmin;
+    return token?.isAdmin;
   }
 }
