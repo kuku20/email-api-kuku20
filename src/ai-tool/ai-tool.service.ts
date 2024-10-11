@@ -3,80 +3,130 @@ import { CreateAiToolDto } from './dto/create-ai-tool.dto';
 import { UpdateAiToolDto } from './dto/update-ai-tool.dto';
 import { ConfigService, ConfigModule } from '@nestjs/config';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import OpenAIApi from 'openai';
+
 import { StockService } from 'src/stock/stock.service';
+
 import axios from 'axios';
 @Injectable()
 export class AiToolService {
-  constructor(private readonly configService: ConfigService, private stockService: StockService) {}
-  async postGemini(message:string){
+  constructor(
+    private readonly configService: ConfigService,
+    private stockService: StockService,
+  ) {}
+  async postGemini(message: string) {
     try {
-      const GEMINI_KEY = this.configService.get<any>('GEMINI_API')
+      const GEMINI_KEY = this.configService.get<any>('GEMINI_API');
       const genAI = new GoogleGenerativeAI(GEMINI_KEY);
-      const model = genAI.getGenerativeModel({model: "gemini-1.5-flash",});
+      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
       const generationConfig = {
         temperature: 1.1, // 0-2
         topP: 0.95,
         topK: 64,
         maxOutputTokens: 8192,
-        responseMimeType: "text/plain",
+        responseMimeType: 'text/plain',
       };
       const chatSession = model.startChat({
         generationConfig,
       });
-  
+
       const result = await chatSession.sendMessage(message);
-  
-      return result.response.text()
+
+      return result.response.text();
     } catch (error) {
-      return new Error(JSON.stringify({error:error}))
+      return JSON.stringify(error.statusText)
     }
   }
-  async getTickerFullChart_FMP(stockTicker:string, range:string, start:string, end:string, limit:string, message:string ){
-    const data = await this.stockService.getTickerFullChart_FMP(stockTicker, range, "historical-chart",start, end, limit)
+
+  async posOpenAi(dataIn: any, message:string) {
+    try {
+      const OPENAI_API_KEY = this.configService.get<any>('OPENAI_API_KEY');
+      const openai = new OpenAIApi({
+        apiKey: OPENAI_API_KEY,
+      });
+      const response = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: message },
+          { role: 'user', content: dataIn },
+        ],
+        temperature: 1.1,
+        presence_penalty: 0,
+        frequency_penalty: 0,
+      });
+
+      return response.choices[0].message.content
+    } catch (error) {
+      return JSON.stringify(error.message)
+    }
+  }
+
+  async getTickerFullChart_FMP(
+    stockTicker: string,
+    range: string,
+    start: string,
+    end: string,
+    limit: string,
+    message: string,
+  ) {
+    const data = await this.stockService.getTickerFullChart_FMP(
+      stockTicker,
+      range,
+      'historical-chart',
+      start,
+      end,
+      limit,
+    );
     const datatoString = {
-      symbol:stockTicker,
+      symbol: stockTicker,
       data,
-    }
-    const ask = message+JSON.stringify(datatoString)
+    };
+    const systemContent = message ? message: `I give the data on share prices over in the data, write a report of no more than 400 words describing the stocks performance and recommending whether to buy, hold or sell:`;
+    const askGemini = systemContent + JSON.stringify(datatoString);
 
-    const res = await this.postGemini(ask)
+    const openai = await this.posOpenAi(JSON.stringify(datatoString), systemContent);
+    const res = await this.postGemini(askGemini);
     const dataout = {
+      openai,
       res,
-      first:data[0]
-    }
-    this.postToFirebase(stockTicker, dataout)
-    return dataout
-  };
-  async getFromFB(ticker:string){
-      const BASE_URL = `${this.configService.get<any>('FIREBASE_DATA')}/ai/${ticker}.json`;
-      const response = await axios.get(BASE_URL);
-      return response.data
-
+      first: data[0],
+    };
+    await this.postToFirebase(stockTicker, dataout);
+    return dataout;
   }
-  postToFirebase(stockTicker:string, data:any){
+  async getFromFB(ticker: string) {
+    const BASE_URL = `${this.configService.get<any>(
+      'FIREBASE_DATA',
+    )}/ai/${ticker.toUpperCase()}.json`;
+    const response = await axios.get(BASE_URL);
+    return response.data;
+  }
+  async postToFirebase(stockTicker: string, data: any) {
     const now = new Date();
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, '0'); // Adding 1 because months are zero-based
     const day = String(now.getDate()).padStart(2, '0');
 
     const formattedDate = `${year}-${month}-${day}`;
-    const BASE_URL = `${this.configService.get<any>('FIREBASE_DATA')}/ai/${stockTicker}/${formattedDate}.json`;
-
+    const BASE_URL = `${this.configService.get<any>(
+      'FIREBASE_DATA',
+    )}/ai/${stockTicker.toUpperCase()}/${formattedDate}.json`;
     let config = {
       method: 'post',
       maxBodyLength: Infinity,
       url: BASE_URL,
-      headers: { 
-        'Content-Type': 'text/plain'
+      headers: {
+        'Content-Type': 'text/plain',
       },
-      data :{ guess:data, time: now}
+      data: { guess: data, time: now },
     };
-    axios.request(config)
-    .then((response) => {
-      console.log(JSON.stringify(response.data));
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+    await axios
+      .request(config)
+      .then((response) => {
+        // console.log(JSON.stringify(response.data));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 }

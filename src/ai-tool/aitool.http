@@ -33,14 +33,18 @@ curl --location '{{rootUrl}}/ai-tool/gemini' \
 curl --location '{{rootUrl}}/ai-tool/get-advice' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "message": "I give the data on share prices over today, write a report of no more than 400 words describing the stocks performance and recommending whether to buy, hold or sell:",
+    "message": "I give the data on share prices over today, write a report of no more than 100 words describing the stocks performance and recommending whether to buy, hold or sell:",
     "limit":"5000",
     "ticker":"QQQ",
     "range":"1min",
-    "start":"2024-10-07",
+    "start":"2023-10-07",
     "end":"2024-10-08"
 }'
 
 
 ### test with out aaa
 curl --location 'http://localhost:3000/ai-tool/fb/qqq'
+
+
+### test with out aaa
+curl --location 'http://localhost:3000/ai-tool/melu'
