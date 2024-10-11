@@ -68,6 +68,7 @@ export class AiToolService {
     end: string,
     limit: string,
     message: string,
+    type:string
   ) {
     const data = await this.stockService.getTickerFullChart_FMP(
       stockTicker,
@@ -91,17 +92,17 @@ export class AiToolService {
       res,
       first: data[0],
     };
-    await this.postToFirebase(stockTicker, dataout);
+    await this.postToFirebase(stockTicker, dataout, type);
     return dataout;
   }
-  async getFromFB(ticker: string) {
+  async getFromFB(ticker: string, type:string='guess') {
     const BASE_URL = `${this.configService.get<any>(
       'FIREBASE_DATA',
-    )}/ai/${ticker.toUpperCase()}.json`;
+    )}/ai/${type}/${ticker.toUpperCase()}.json`;
     const response = await axios.get(BASE_URL);
     return response.data;
   }
-  async postToFirebase(stockTicker: string, data: any) {
+  async postToFirebase(stockTicker: string, data: any, type:string='guess') {
     const now = new Date();
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, '0'); // Adding 1 because months are zero-based
@@ -110,7 +111,7 @@ export class AiToolService {
     const formattedDate = `${year}-${month}-${day}`;
     const BASE_URL = `${this.configService.get<any>(
       'FIREBASE_DATA',
-    )}/ai/${stockTicker.toUpperCase()}/${formattedDate}.json`;
+    )}/ai/${type}/${stockTicker.toUpperCase()}/${formattedDate}.json`;
     let config = {
       method: 'post',
       maxBodyLength: Infinity,

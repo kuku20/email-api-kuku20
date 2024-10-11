@@ -18,7 +18,7 @@ export class AiToolController {
 
   @Post('/get-advice')
   async getTickerFullChart_POLYGON(@Body() dataIn: any) {
-    const { ticker, range, start, end, limit, message } = dataIn;
+    const { ticker, range, start, end, limit, message, type } = dataIn;
     try {
       const data = await this.aiToolService.getTickerFullChart_FMP(
         ticker,
@@ -27,6 +27,7 @@ export class AiToolController {
         end,
         limit,
         message,
+        type
       );
       return data;
     } catch (error) {
@@ -35,8 +36,8 @@ export class AiToolController {
     }
   }
 
-  @Get('/fb/:id')
-  getfb(@Param('id') id: string) {
-    return this.aiToolService.getFromFB(id);
+  @Get('/fb/:type/:id')
+  getfb(@Param('id') id: string, @Param('type') type: string) {
+    return this.aiToolService.getFromFB(id, type);
   }
 }

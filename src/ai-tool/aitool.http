@@ -52,8 +52,8 @@ curl --location '{{rootUrl}}/ai-tool/get-advice' \
 }'
 
 
-### test with out aaa
-curl --location 'http://localhost:3000/ai-tool/fb/qqq'
+### test with out aaa guess
+curl --location 'http://localhost:3000/ai-tool/fb/guess/qqq'
 
 
 ### test with out aaa
