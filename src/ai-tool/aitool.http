@@ -4,7 +4,7 @@
 # @rootUrl = https://email-api-kuku20.onrender.com
 # https://email-api-kuku20.onrender.com
 ### Sign IN
-curl --location 'http://localhost:3000/auth/v2/signin' \
+curl --location '{{rootUrl}}/auth/v2/signin' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "email": "locprodstock33@gmail.com",
@@ -12,7 +12,7 @@ curl --location 'http://localhost:3000/auth/v2/signin' \
 }'
 
 ### signout
-curl --location 'http://localhost:3000/auth/v2/signout'
+curl --location '{{rootUrl}}/auth/v2/signout'
 
 ### Sign IN
 curl --location '{{rootUrl}}/ai-tool/gemini' \
