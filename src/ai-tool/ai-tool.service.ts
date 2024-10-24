@@ -92,14 +92,16 @@ export class AiToolService {
       res,
       first: data[0],
     };
-    await this.postToFirebase(stockTicker, dataout, type);
+    // await this.postToFirebase(stockTicker, dataout, type);
     return dataout;
   }
   async getFromFB(ticker: string, type:string) {
-    const BASE_URL = `${this.configService.get<any>(
-      'FIREBASE_DATA',
-    )}/ai/${type}/${ticker.toUpperCase()}.json`;
-    // console.log(BASE_URL)
+    const firebaseRoot = this.configService.get<any>('FIREBASE_DATA')
+    let BASE_URL = `${firebaseRoot}/ai/${type}/${ticker.toUpperCase()}.json`;
+    if ('gainers-losers'.includes(type)){
+      BASE_URL = `${firebaseRoot}/gainers-losers/${type}/${ticker}.json`;
+    }
+        // console.log(BASE_URL)
     const response = await axios.get(BASE_URL);
     return response.data;
   }
@@ -110,9 +112,11 @@ export class AiToolService {
     const day = String(now.getDate()).padStart(2, '0');
 
     const formattedDate = `${year}-${month}-${day}`;
-    const BASE_URL = `${this.configService.get<any>(
-      'FIREBASE_DATA',
-    )}/ai/${type}/${stockTicker.toUpperCase()}/${formattedDate}.json`;
+    const firebaseRoot = this.configService.get<any>('FIREBASE_DATA')
+    let BASE_URL = `${firebaseRoot}/ai/${type}/${stockTicker.toUpperCase()}/${formattedDate}.json`;
+    if ('gainers-losers'.includes(type)){
+      BASE_URL = `${firebaseRoot}/gainers-losers/${type}/${formattedDate}.json`;
+    }
     // console.log(BASE_URL)
     let config = {
       method: 'post',
@@ -121,12 +125,12 @@ export class AiToolService {
       headers: {
         'Content-Type': 'text/plain',
       },
-      data: { guess: data, time: now },
+      data: { data: data, time: now },
     };
-    await axios
+    return await axios
       .request(config)
-      .then((response) => {
-        // console.log(JSON.stringify(response.data));
+      .then(async (response) => {
+        return await JSON.stringify(response.data)
       })
       .catch((error) => {
         console.log(error);

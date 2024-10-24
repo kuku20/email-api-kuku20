@@ -36,6 +36,19 @@ export class AiToolController {
     }
   }
 
+
+  @Post('/post-tofb')
+  async postToFB(@Body() dataIn: any) {
+    const { ticker, dataout, type } = dataIn;
+    try {
+      const datajson = JSON.parse(dataout)
+      const data =  await this.aiToolService.postToFirebase(ticker, datajson, type)
+      return data;
+    } catch (error) {
+      // Handle errors here
+      throw error;
+    }
+  }
   @Get('/fb/:type/:id')
   getfb(@Param('id') id: string, @Param('type') type: string) {
     return this.aiToolService.getFromFB(id, type);
