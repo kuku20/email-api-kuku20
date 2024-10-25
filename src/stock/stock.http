@@ -1,6 +1,6 @@
 ###
 @rootUrl = http://localhost:3000
-# @rootUrl = https://my-api-all.adaptable.app
+# @rootUrl = https://email-api-kuku20.onrender.com
 
 ###Get New form  news-Finhub
 curl --location '{{rootUrl}}/stock/news-v1?stockTicker=BABA'
@@ -133,10 +133,10 @@ Host: localhost:3000
 @timespanpolygon = day
 #  second minute hour day week month quarter year
 ### get all data for chart form Polygon max 2 year
-curl --location '{{rootUrl}}/stock/chartdata/{{timespanpolygon}}?stockTicker=ROKU&range=5&start=2022-02-12&end=2023-02-12&limit=20'
+curl --location '{{rootUrl}}/stock/chartdata/{{timespanpolygon}}?stockTicker=BYON&range=1&start=2023-10-24&end=2024-10-24&limit=50000'
 
-### get all data for chart form FMp max 5 year
-curl --location '{{rootUrl}}/stock/chartdata/{{timespanfmp}}?stockTicker=ROKU&range={{fmprange}}&start=2022-02-11&end=2023-02-12&limit=20'
+### get all data for mprange =5min
+curl --location '{{rootUrl}}/stock/chartdata/{{timespanfmp}}?stockTicker=QQQ&range={{fmprange}}&start=2022-02-11&end=2023-02-12&limit=50000'
 
 ### get all data daily chart form FMp max 5 year
-curl --location '{{rootUrl}}/stock/daily-chart?stockTicker=ROKU&start=2022-01-11'
+curl --location '{{rootUrl}}/stock/daily-chart?stockTicker=BYON&start=2023-10-24&end=2024-10-24'

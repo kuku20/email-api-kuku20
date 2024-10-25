@@ -8,11 +8,13 @@ import OpenAIApi from 'openai';
 import { StockService } from 'src/stock/stock.service';
 
 import axios from 'axios';
+import { StockHelperService } from 'src/stock/stockHelper.service';
 @Injectable()
 export class AiToolService {
   constructor(
     private readonly configService: ConfigService,
     private stockService: StockService,
+    private readonly stockHelperService: StockHelperService
   ) {}
   async postGemini(message: string) {
     try {
@@ -70,7 +72,7 @@ export class AiToolService {
     message: string,
     type:string
   ) {
-    const data = await this.stockService.getTickerFullChart_FMP(
+    const result = await this.stockService.getTickerFullChart_FMP(
       stockTicker,
       range,
       'historical-chart',
@@ -78,6 +80,7 @@ export class AiToolService {
       end,
       limit,
     );
+    const data = await this.stockHelperService.returnNewData(result)
     const datatoString = {
       symbol: stockTicker,
       data,
