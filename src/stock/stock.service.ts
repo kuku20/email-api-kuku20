@@ -33,12 +33,10 @@ export class StockService {
   }
   async getTickerFullChart_POLYGON(
     ticker: string,
-    range: string,
-    timespan: string,
     dateStart: string,
     dateEnd: string,
-    limit: string,
   ) {
+    let range, timespan
     const today = new Date()
     const formattedDate = today.toISOString().split('T')[0];
     const last2Year = await this.stockHelperService.calculateDaysBetween(dateStart, formattedDate)
@@ -72,7 +70,7 @@ export class StockService {
       timespan = 'day'
     }
     const urls = dateRanges.map(({ start, end }) => {
-      return `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${start}/${end}?adjusted=true&sort=desc&limit=${limit}&apiKey=`;
+      return `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${start}/${end}?adjusted=true&sort=desc&limit=50000&apiKey=`;
     });
     // console.log(urls)
     const responsesArray = await Promise.allSettled(
@@ -188,12 +186,10 @@ export class StockService {
 
   async getTickerFullChart_FMP(
     ticker: string,
-    range: string,
-    timespan: string,
     dateStart: string,
     dateEnd: string,
-    limit: string,
   ) {
+    let range
     const daylength = await this.stockHelperService.calculateDaysBetween(dateStart, dateEnd)
     if(daylength<=2){
       range = '1min'
@@ -206,7 +202,7 @@ export class StockService {
     } else  if(daylength>60 && daylength <= 175){
       range = '4hour'
     } 
-    let BASE_URL = `https://financialmodelingprep.com/api/v3/${timespan}/${range}/${ticker}?from=${dateStart}&to=${dateEnd}&apikey=`;
+    let BASE_URL = `https://financialmodelingprep.com/api/v3/historical-chart/${range}/${ticker}?from=${dateStart}&to=${dateEnd}&apikey=`;
     if (daylength > 175) {
       return this.getTickerDailyChart_FMP(ticker,dateStart,dateEnd)
     }
@@ -311,6 +307,12 @@ export class StockService {
       DTO.SearchSymbolOutFinnhubDto,
       response?.result?.slice(0, 10),
     );
+  }
+
+  async getMetric_FINHUB(symbol:string){
+    const BASE_URL = `https://finnhub.io/api/v1/stock/metric?symbol=${symbol}&metric=all&token=`;
+    const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
+    return response.metric
   }
 
   async fromFinnhub(

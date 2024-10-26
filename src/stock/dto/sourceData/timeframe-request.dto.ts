@@ -68,3 +68,13 @@ export enum TimeRange {
     @IsEnum(StockMaketENUM)
     stockMarket?: StockMaketENUM;
   }
+
+  export enum SRC_API {
+    FH = 'fh',
+    FM = 'fm',
+    PO = 'po',
+  }
+  export class SrcApiDto {
+    @IsEnum(SRC_API)
+    src_api: SRC_API;
+  }

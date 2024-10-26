@@ -209,6 +209,7 @@ export class StockController {
     }
   }
 
+  @UseGuards(JwtGuard) 
   @Get('/chartdata/:timespan')
   async getTickerFullChart_POLYGON(
   @Param() params: RequestDTO.TimeSpanDto,
@@ -217,9 +218,9 @@ export class StockController {
     try {
       let data
       if(params.timespan === RequestDTO.TIMESPAN.FMP_HC){
-        data = await this.stockService.getTickerFullChart_FMP(query.stockTicker, query.range, params.timespan,query.start, query.end, query.limit );
+        data = await this.stockService.getTickerFullChart_FMP(query.stockTicker, query.start, query.end );
       }else{
-        data = await this.stockService.getTickerFullChart_POLYGON(query.stockTicker, query.range, params.timespan,query.start, query.end, query.limit );
+        data = await this.stockService.getTickerFullChart_POLYGON(query.stockTicker, query.start, query.end );
       }
       // const result = await this.stockHelperService.returnNewData(data)
       return data;
@@ -228,7 +229,7 @@ export class StockController {
       throw error;
     }
   }
-
+  @UseGuards(JwtGuard) 
   @Get('/daily-chart')
   async getTickerDailyChart_FMP( @Query() query: RequestDTO.TickerStartEndDTO) {
     try {
@@ -236,6 +237,36 @@ export class StockController {
       return data;
     } catch (error) {
       // Handle errors here
+      throw error;
+    }
+  }
+
+  @UseGuards(JwtGuard) 
+  @Get('/chartdata/v2/:src_api')
+  async getChartDataV2(
+  @Param() params: RequestDTO.SrcApiDto,
+  @Query() query:  RequestDTO.BaseRequire,
+  ) {
+    try {
+      let data
+      if(params.src_api === RequestDTO.SRC_API.PO){
+        data = await this.stockService.getTickerFullChart_POLYGON(query.stockTicker,query.start, query.end );
+      }else{
+        data = await this.stockService.getTickerFullChart_FMP(query.stockTicker,query.start, query.end );
+      }
+      return data;
+    } catch (error) {
+      // Handle errors here
+      throw error;
+    }
+  }
+
+  @Get('/metric/:symbol')
+  async getMetric(@Param() params:any) {
+    try {
+      let data = await this.stockService.getMetric_FINHUB(params.symbol);
+      return data;
+    } catch (error) {
       throw error;
     }
   }

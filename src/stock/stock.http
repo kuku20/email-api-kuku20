@@ -139,4 +139,13 @@ curl --location '{{rootUrl}}/stock/chartdata/{{timespanpolygon}}?stockTicker=BYO
 curl --location '{{rootUrl}}/stock/chartdata/{{timespanfmp}}?stockTicker=QQQ&range={{fmprange}}&start=2022-02-11&end=2023-02-12&limit=50000'
 
 ### get all data daily chart form FMp max 5 year
-curl --location '{{rootUrl}}/stock/daily-chart?stockTicker=BYON&start=2023-10-24&end=2024-10-24'
+curl --location '{{rootUrl}}/stock/daily-chart?stockTicker=BYON&start=2024-10-23&end=2024-10-24'
+
+@srcEndPoint = po
+## po, fm
+### get data for chart with start day and end day
+curl --location '{{rootUrl}}/stock/chartdata/v2/{{srcEndPoint}}?stockTicker=BYON&start=2023-10-20&end=2024-10-24'
+
+
+### get metric from finhub
+curl --location '{{rootUrl}}/stock/metric/TSLA'

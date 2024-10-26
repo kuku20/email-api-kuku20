@@ -73,19 +73,13 @@ export class AiToolService {
   ) {
     // const data = await this.stockService.getTickerFullChart_FMP(
     //   stockTicker,
-    //   range,
-    //   'historical-chart',
     //   start,
     //   end,
-    //   limit,
     // );
     const data = await this.stockService.getTickerFullChart_POLYGON(
       stockTicker,
-      range,
-      'minute',
       start,
       end,
-      limit,
     );
     const datatoString = {
       symbol: stockTicker,
