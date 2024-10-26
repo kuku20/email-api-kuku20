@@ -4,9 +4,10 @@ import { ConfigService, ConfigModule } from '@nestjs/config';
 import { plainToClass, plainToInstance } from 'class-transformer';
 import * as DTO from './dto';
 import { FMPRType, FhRequestType, PolygonRType } from './dto/sourceData';
+import { StockHelperService } from './stockHelper.service';
 @Injectable()
 export class StockService {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(private readonly configService: ConfigService, private readonly stockHelperService: StockHelperService) {}
 
   async search_POLYGON(query: string, start?: string, end?: string) {
     const graphqlEndpoint = `https://api.polygon.io/v2/aggs/ticker/AAPL/range/1/day/2023-10-02/2023-10-11?apiKey=GpBhGaI12ENRIUVkDMvDY5spqQR0ptOj`;
@@ -38,12 +39,63 @@ export class StockService {
     dateEnd: string,
     limit: string,
   ) {
-    const BASE_URL = `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${dateStart}/${dateEnd}?adjusted=true&sort=asc&limit=${limit}&apiKey=`;
-    const response = await this.tryCatchF(BASE_URL, 'POLYGON_STOCK_API_KEY');
-    const result = plainToClass(
-      DTO.ChartOutPolygonDto,
-      response?.results.sort((a: { t: number }, b: { t: number }) => b.t - a.t),
+    const today = new Date()
+    const formattedDate = today.toISOString().split('T')[0];
+    const last2Year = await this.stockHelperService.calculateDaysBetween(dateStart, formattedDate)
+    if(last2Year>=730)
+      return [{
+        "error":"Over 2 years"
+      }]
+    const dateRanges = await this.stockHelperService.getDateRanges(dateStart, dateEnd, 85);
+    const daylength = await this.stockHelperService.calculateDaysBetween(dateStart, dateEnd)
+
+    if(daylength<3){
+      range = '1'
+      timespan = 'minute'
+    }else if(daylength>=3 && daylength < 14){
+      range = '5'
+      timespan = 'minute'
+    }else if(daylength>=14 && daylength < 35){
+      range = '30'
+      timespan = 'minute'
+    }else if(daylength>=35 && daylength < 95){
+      range = '1'
+      timespan = 'hour'
+    }else if(daylength>=95 && daylength < 180){
+      range = '3'
+      timespan = 'hour'
+    }else if(daylength>=180 && daylength < 365){
+      range = '4'
+      timespan = 'hour'
+    }else{
+      range = '1'
+      timespan = 'day'
+    }
+    const urls = dateRanges.map(({ start, end }) => {
+      return `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${start}/${end}?adjusted=true&sort=desc&limit=${limit}&apiKey=`;
+    });
+    // console.log(urls)
+    const responsesArray = await Promise.allSettled(
+      urls.map(async url => {
+        // console.log(url)
+        return await this.tryCatchF(url, 'POLYGON_STOCK_API_KEY');
+      })
     );
+    // Combine results into a single array
+    const allResults = responsesArray
+    .filter(result => result.status === 'fulfilled') // Filter only fulfilled results
+    .map((result:any) => result.value.results) // Extract the results array
+    .flat(); // Flatten the array of arrays into a single array
+   
+    // const BASE_URL = `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${dateStart}/${dateEnd}?adjusted=true&sort=desc&limit=${limit}&apiKey=`;
+    // const response = await this.tryCatchF(BASE_URL, 'POLYGON_STOCK_API_KEY');
+    const response = plainToClass(
+      DTO.ChartOutPolygonDto,
+      allResults,
+    );
+    // console.log(BASE_URL, allResults.length)
+    const result = await this.stockHelperService.returnNewData(response)
+
     return result;
   }
 
@@ -142,9 +194,26 @@ export class StockService {
     dateEnd: string,
     limit: string,
   ) {
-    const BASE_URL = `https://financialmodelingprep.com/api/v3/${timespan}/${range}/${ticker}?from=${dateStart}&to=${dateEnd}&apikey=`;
+    const daylength = await this.stockHelperService.calculateDaysBetween(dateStart, dateEnd)
+    if(daylength<=2){
+      range = '1min'
+    } else  if(daylength>2 && daylength <=9){
+      range = '5min'
+    } else  if(daylength>9 && daylength <= 45){
+      range = '15min'
+    } else  if(daylength>45 && daylength <= 60){
+      range = '1hour'
+    } else  if(daylength>60 && daylength <= 175){
+      range = '4hour'
+    } 
+    let BASE_URL = `https://financialmodelingprep.com/api/v3/${timespan}/${range}/${ticker}?from=${dateStart}&to=${dateEnd}&apikey=`;
+    if (daylength > 175) {
+      return this.getTickerDailyChart_FMP(ticker,dateStart,dateEnd)
+    }
+
     const response = await this.tryCatchF(BASE_URL, 'FMP_STOCK_API_KEY');
-    return response;
+    const result = await this.stockHelperService.returnNewData(response)
+    return result;
   }
 
   async getTickerDailyChart_FMP(
@@ -154,7 +223,9 @@ export class StockService {
   ) {
     const BASE_URL = `https://financialmodelingprep.com/api/v3/historical-price-full/${ticker}?from=${dateStart}&to=${dateEnd}&apikey=`;
     const response = await this.tryCatchF(BASE_URL, 'FMP_STOCK_API_KEY');
-    return plainToClass(DTO.ChartOutFMPDto, response?.historical);
+    const data = plainToClass(DTO.ChartOutFMPDto, response?.historical)
+    const result = this.stockHelperService.returnNewData(data)
+    return result;
   }
 
   async fromFMP(type: FMPRType, stockTicker: string, stockMarket: string) {
@@ -377,6 +448,7 @@ export class StockService {
     this.shuffleArray(keys);
     for (const key of keys) {
       const url = `${BASE_URL}${key}`;
+      
       try {
         const response = await axios.get(url);
         return response.data;

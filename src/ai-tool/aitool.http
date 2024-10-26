@@ -42,11 +42,11 @@ curl --location '{{rootUrl}}/ai-tool/gemini' \
 curl --location '{{rootUrl}}/ai-tool/get-advice' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "message": "I give the data bellow, just guess the high, low, and close the next 5 days using teachnical analysis base on your gut, it do NOT need to be accurate JUST GUESS",
-    "limit":"5000",
-    "ticker":"PDD",
-    "range":"5min",
-    "start":"2024-01-07",
+    "message": "I give the data bellow, just guess the high, low, and close the next 1 days using teachnical analysis base on your gut, it do NOT need to be accurate JUST GUESS",
+    "limit":"50000",
+    "ticker":"QQQ",
+    "range":"1",
+    "start":"2024-10-16",
     "end":"2024-10-18",
     "type":"guess"
 }'

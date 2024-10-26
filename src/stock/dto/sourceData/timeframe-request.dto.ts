@@ -8,7 +8,7 @@ export enum TIMESPAN {
   PO_DAY = 'day',
   PO_WEEK = 'week',
   PO_MONTH = 'month',
-  PO_QUATER = 'quater',
+  PO_QUATER = 'quarter',
   PO_YEAR = 'year',
 }
 export class TimeSpanDto {

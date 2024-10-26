@@ -11,11 +11,10 @@ import { StockService } from './stock.service';
 import { JwtGuard } from 'src/auth/guard';
 import { AdminUserAuthGuard } from 'src/stock-user/guard';
 import * as RequestDTO from './dto/sourceData';
-import { StockHelperService } from './stockHelper.service';
 
 @Controller('stock')
 export class StockController {
-  constructor(private readonly stockService: StockService, private readonly stockHelperService: StockHelperService) {}
+  constructor(private readonly stockService: StockService,) {}
 
   @Get('/news-fb/:db') //news-alpha-vantage
   async tickerNews_AV_FirebaseGet(
@@ -222,8 +221,8 @@ export class StockController {
       }else{
         data = await this.stockService.getTickerFullChart_POLYGON(query.stockTicker, query.range, params.timespan,query.start, query.end, query.limit );
       }
-      const result = await this.stockHelperService.returnNewData(data)
-      return result;
+      // const result = await this.stockHelperService.returnNewData(data)
+      return data;
     } catch (error) {
       // Handle errors here
       throw error;
@@ -234,8 +233,7 @@ export class StockController {
   async getTickerDailyChart_FMP( @Query() query: RequestDTO.TickerStartEndDTO) {
     try {
       const data = await this.stockService.getTickerDailyChart_FMP(query.stockTicker, query.start, query.end);
-      const result = this.stockHelperService.returnNewData(data)
-      return result;
+      return data;
     } catch (error) {
       // Handle errors here
       throw error;

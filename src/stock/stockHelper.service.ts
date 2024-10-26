@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotAcceptableException } from '@nestjs/common';
 
 @Injectable()
 export class StockHelperService {
@@ -8,7 +8,11 @@ export class StockHelperService {
     dataIn = await this.calculateMovingAverage(dataIn, 200, 'MA200');
     dataIn = await this.calculateRSI(dataIn);
     dataIn = await this.calculateMACD(dataIn);
-    return dataIn.sort((a: { date: string  }, b: { date: string }) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    return dataIn
+    .sort(
+      (a: { date: string }, b: { date: string }) =>
+        new Date(a.date).getTime() - new Date(b.date).getTime(),
+    );
   }
 
   async calculateMovingAverage(
@@ -136,4 +140,51 @@ export class StockHelperService {
     }
     return emaArray;
   }
+
+  async getDateRanges(startDateStr:string, endDateStr:string, daysPerRange:number) {
+    const startDate = new Date(startDateStr);
+    const endDate = new Date(endDateStr);
+    const ranges = [];
+
+    let currentEndDate = new Date(endDate); // Initialize the end date
+
+    // Loop to generate ranges
+    while (currentEndDate >= startDate) {
+      let currentStartDate = new Date(currentEndDate); // Initialize start date as the current end date
+      currentStartDate.setDate(currentEndDate.getDate() - daysPerRange + 1); // Calculate start date for the range
+
+      // Ensure the currentStartDate doesn't go before the startDate
+      if (currentStartDate < startDate) {
+        currentStartDate = new Date(startDate);
+      }
+
+      // Add the calculated range to the ranges array
+      ranges.push({
+        start: currentStartDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
+        end: currentEndDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
+      });
+
+      // Update currentEndDate to one day before the currentStartDate to avoid overlap
+      currentEndDate = new Date(currentStartDate);
+      currentEndDate.setDate(currentEndDate.getDate() - 1);
+    }
+    return ranges;
+  }
+
+  async calculateDaysBetween(startDateStr:string, endDateStr:string) {
+    // Convert string dates to Date objects
+    const startDate = new Date(startDateStr);
+    const endDate = new Date(endDateStr);
+
+    // Calculate the difference in milliseconds
+    const differenceInMillis = endDate.getTime() - startDate.getTime();
+
+    // Convert milliseconds to days (1 day = 24 hours * 60 minutes * 60 seconds * 1000 milliseconds)
+    const millisecondsPerDay = 24 * 60 * 60 * 1000;
+    const daysBetween = Math.ceil(differenceInMillis / millisecondsPerDay);
+    if(daysBetween<0){
+      throw new NotAcceptableException("Startday should before end day");
+    }
+    return daysBetween;
+}
 }
