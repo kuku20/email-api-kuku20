@@ -20,6 +20,9 @@ export class StockHelperService {
     windowSize: number,
     maLabel: string,
   ) {
+    if(!data?.length){
+      return []
+    }
     for (let i = 0; i < data.length; i++) {
       if (i >= windowSize - 1) {
         let windowData = data.slice(i - windowSize + 1, i + 1);
@@ -37,6 +40,9 @@ export class StockHelperService {
   }
 
   async calculateRSI(data: any[], period = 14) {
+    if(!data?.length){
+      return []
+    }
     let gains = [];
     let losses = [];
     let rsiArray = [];
@@ -59,7 +65,7 @@ export class StockHelperService {
       losses.slice(0, period).reduce((acc, val) => acc + val, 0) / period;
 
     // Calculate the RSI for the rest of the days
-    for (let i = period; i < data.length; i++) {
+    for (let i = period; i < data?.length; i++) {
       // Update the average gain and loss
       avgGain = (avgGain * (period - 1) + gains[i - 1]) / period;
       avgLoss = (avgLoss * (period - 1) + losses[i - 1]) / period;
@@ -86,6 +92,9 @@ export class StockHelperService {
     longPeriod = 26,
     signalPeriod = 9,
   ) {
+    if(!data?.length){
+      return []
+    }
     // Calculate the short and long EMAs
     let shortEMA = await this.calculateEMA(data, shortPeriod);
     let longEMA = await this.calculateEMA(data, longPeriod);
@@ -120,6 +129,9 @@ export class StockHelperService {
   }
 
   async calculateEMA(data: any[], period: number) {
+    if(!data?.length){
+      return []
+    }
     let multiplier = 2 / (period + 1);
     let emaArray = [];
     let sum = 0;

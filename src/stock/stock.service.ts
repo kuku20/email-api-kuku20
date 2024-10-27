@@ -81,8 +81,8 @@ export class StockService {
     );
     // Combine results into a single array
     const allResults = responsesArray
-    .filter(result => result.status === 'fulfilled') // Filter only fulfilled results
-    .map((result:any) => result.value.results) // Extract the results array
+    .filter(result => result?.status === 'fulfilled') // Filter only fulfilled results
+    .map((result:any) => result?.value?.results) // Extract the results array
     .flat(); // Flatten the array of arrays into a single array
    
     // const BASE_URL = `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${dateStart}/${dateEnd}?adjusted=true&sort=desc&limit=${limit}&apiKey=`;
@@ -122,7 +122,7 @@ export class StockService {
       },
     );
     const shapeData = plainToClass(DTO.DatePolygonDto, addPercent);
-    const returndata = { length: addPercent.length, ticker, data: shapeData };
+    const returndata = { length: addPercent?.length, ticker, data: shapeData };
     return returndata;
     return plainToClass(DTO.DatePolygonDto, addPercent);
   }
@@ -463,7 +463,7 @@ export class StockService {
           );
         } else {
           // Handle other errors
-          console.error(`Error with key ${keyDATA}`, error?.message);
+          console.error(`Error with key ${keyDATA}`, error?.response?.status);
         }
       }
     }
