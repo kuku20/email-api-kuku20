@@ -40,7 +40,7 @@ export class StockService {
     const today = new Date()
     const formattedDate = today.toISOString().split('T')[0];
     const last2Year = await this.stockHelperService.calculateDaysBetween(dateStart, formattedDate)
-    if(last2Year>=730)
+    if(last2Year>=731)
       return [{
         "error":"Over 2 years"
       }]
@@ -312,7 +312,7 @@ export class StockService {
   async getMetric_FINHUB(symbol:string){
     const BASE_URL = `https://finnhub.io/api/v1/stock/metric?symbol=${symbol}&metric=all&token=`;
     const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
-    return response.metric
+    return response?.metric
   }
 
   async fromFinnhub(

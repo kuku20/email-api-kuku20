@@ -64,27 +64,33 @@ export class AiToolService {
 
   async getTickerFullChart_FMP(
     stockTicker: string,
-    range: string,
     start: string,
     end: string,
-    limit: string,
     message: string,
+    selectedApi:string,
     type:string
   ) {
-    // const data = await this.stockService.getTickerFullChart_FMP(
-    //   stockTicker,
-    //   start,
-    //   end,
-    // );
-    const data = await this.stockService.getTickerFullChart_POLYGON(
-      stockTicker,
-      start,
-      end,
-    );
+    let data
+    if(selectedApi==='po'){
+      data = await this.stockService.getTickerFullChart_POLYGON(
+        stockTicker,
+        start,
+        end,
+      );
+    }else{
+      data = await this.stockService.getTickerFullChart_FMP(
+        stockTicker,
+        start,
+        end,
+      );
+    }
+
     const datatoString = {
       symbol: stockTicker,
       data,
     };
+    const metric =  await this.stockService.getMetric_FINHUB(stockTicker);
+
     const systemContent = message ? message: `I give the data on share prices over in the data, write a report of no more than 400 words describing the stocks performance and recommending whether to buy, hold or sell:`;
     const askGemini = systemContent + JSON.stringify(datatoString);
 
@@ -93,8 +99,9 @@ export class AiToolService {
     const dataout = {
       openai,
       res,
-      first: data[data.length-1],
-      length: data.length
+      metric,
+      first: data[data?.length-1],
+      length: data?.length
     };
     // await this.postToFirebase(stockTicker, dataout, type);
     return dataout;

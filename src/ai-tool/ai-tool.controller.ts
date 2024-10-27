@@ -18,15 +18,14 @@ export class AiToolController {
 
   @Post('/get-advice')
   async getTickerFullChart_POLYGON(@Body() dataIn: any) {
-    const { ticker, range, start, end, limit, message, type } = dataIn;
+    const { ticker, selectedApi, start, end, message, type } = dataIn;
     try {
       const data = await this.aiToolService.getTickerFullChart_FMP(
         ticker,
-        range,
         start,
         end,
-        limit,
         message,
+        selectedApi,
         type
       );
       return data;
