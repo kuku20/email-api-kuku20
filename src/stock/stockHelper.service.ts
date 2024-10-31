@@ -5,6 +5,7 @@ export class StockHelperService {
   async returnNewData(dataIn: any) {
     dataIn = await this.calculateMovingAverage(dataIn, 20, 'MA20');
     dataIn = await this.calculateMovingAverage(dataIn, 50, 'MA50');
+    dataIn = await this.calculateMovingAverage(dataIn, 100, 'MA100');
     dataIn = await this.calculateMovingAverage(dataIn, 200, 'MA200');
     dataIn = await this.calculateRSI(dataIn);
     dataIn = await this.calculateMACD(dataIn);
