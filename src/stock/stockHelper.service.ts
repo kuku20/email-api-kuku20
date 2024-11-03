@@ -200,4 +200,18 @@ export class StockHelperService {
     }
     return daysBetween;
 }
+
+async transformData(data: any[]) {
+  const transformedData = {};
+
+  data.forEach((entry: { date: string; }) => {
+    const dateKey = entry.date.split(" ")[0]; // Extracting the date part
+    if (!transformedData[dateKey]) {
+      transformedData[dateKey] = []; // Initializing a list for that date
+    }
+    transformedData[dateKey].push(entry); // Appending the entry to the list
+  });
+
+  return transformedData;
+}
 }

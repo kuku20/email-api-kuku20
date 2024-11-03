@@ -92,7 +92,7 @@ export class AiToolService {
     const metric =  await this.stockService.getMetric_FINHUB(stockTicker);
 
     const systemContent = message ? message: `I give the data on share prices over in the data, write a report of no more than 400 words describing the stocks performance and recommending whether to buy, hold or sell:`;
-    const askGemini = systemContent + JSON.stringify(datatoString);
+    const askGemini = systemContent + JSON.stringify(datatoString) + '. And the metric of this: ' + JSON.stringify(metric);
 
     const openai = await this.posOpenAi(JSON.stringify(datatoString), systemContent);
     const res = await this.postGemini(askGemini);

@@ -6,6 +6,7 @@ import {
   Patch,
   Query,
   UseGuards,
+  Post
 } from '@nestjs/common';
 import { StockService } from './stock.service';
 import { JwtGuard } from 'src/auth/guard';
@@ -265,6 +266,19 @@ export class StockController {
   async getMetric(@Param() params:any) {
     try {
       let data = await this.stockService.getMetric_FINHUB(params.symbol);
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @Post('/getfbdata')
+  async getDataTest(@Body() dataIn: any) {
+    const { path, ticker, date } = dataIn;
+    const urlPath = `${path}/${ticker.toUpperCase()}/${date}.json`
+    this.stockService.getFromFB(urlPath)
+    try {
+      let data = await this.stockService.getFromFB(urlPath);
       return data;
     } catch (error) {
       throw error;

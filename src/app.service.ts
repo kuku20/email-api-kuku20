@@ -31,8 +31,9 @@ export class AppService {
     }
   }
 
-  getHello(): string {
-    return 'Hello World Email!';
+  
+  getHello() {
+    return {mess:'Hello World Email!'};
   }
 
   async createEmail(name: string, email: string, message:string): Promise<any> {

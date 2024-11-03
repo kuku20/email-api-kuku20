@@ -44,7 +44,6 @@ export class StockService {
       return [{
         "error":"Over 2 years"
       }]
-    const dateRanges = await this.stockHelperService.getDateRanges(dateStart, dateEnd, 85);
     const daylength = await this.stockHelperService.calculateDaysBetween(dateStart, dateEnd)
 
     if(daylength<3){
@@ -69,6 +68,7 @@ export class StockService {
       range = '1'
       timespan = 'day'
     }
+    const dateRanges = await this.stockHelperService.getDateRanges(dateStart, dateEnd, 85);
     const urls = dateRanges.map(({ start, end }) => {
       return `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${start}/${end}?adjusted=true&sort=desc&limit=50000&apiKey=`;
     });
@@ -561,4 +561,71 @@ export class StockService {
     return plainToInstance(DTO.NewsStockDataOut, data);
   }
 
+  async getFromFB(endpoint:string) {
+    const firebaseRoot = this.configService.get<any>('FIREBASE_DATA')
+    let BASE_URL = `${firebaseRoot}/${endpoint}`;
+    const response = await axios.get(BASE_URL);
+    return response.data?response.data:[];
+  }
+
+  async getfullTopost(
+    ticker: string,
+    dateStart: string,
+    dateEnd: string,
+  ){
+    const timespan = '15min'
+    const dateRanges = await this.stockHelperService.getDateRanges(dateStart, dateEnd, 45);
+    const urls = dateRanges.map(({ start, end }) => {
+      return `https://financialmodelingprep.com/api/v3/historical-chart/${timespan}/${ticker}?from=${start}&to=${end}&apikey=`;
+    });
+    console.log(urls)
+    const responsesArray = await Promise.allSettled(
+      urls.map(async url => {
+        // console.log(url)
+        return await this.tryCatchF(url, 'FMP_STOCK_API_KEY');
+      })
+    );
+    // Combine results into a single array
+    const allResults = responsesArray
+    .filter(result => result?.status === 'fulfilled') // Filter only fulfilled results
+    .map((result:any) => result?.value) // Extract the results array
+    .flat(); // Flatten the array of arrays into a single array
+
+    // // const result = await this.stockHelperService.returnNewData(allResults)
+    // this.postToFirebase(ticker,allResults,timespan, dateStart+'-to-'+dateEnd,).then(data=>{
+    //   // console.log(data)
+    // })
+    // const data = await this.getFromFB(ticker,timespan,dateStart+'-to-'+dateEnd,)
+    const allResults2 = await this.stockHelperService.returnNewData(allResults)
+
+    const newdata = await this.stockHelperService.transformData(allResults2)
+    // const allResults = await this.stockHelperService.returnNewData(data.data)
+    // console.log(data.data)
+    await this.postToFirebase(ticker,newdata,timespan+'-modifire', dateStart+'-to-'+dateEnd,).then(data=>{
+      // console.log(data)
+    })
+    return 'allResults';
+  }
+
+async postToFirebase(stockTicker: string, data: any, type:string ,endpoint:string) {
+  const firebaseRoot = this.configService.get<any>('FIREBASE_DATA')
+  let BASE_URL = `${firebaseRoot}/history2/${type}/${stockTicker.toUpperCase()}.json`;
+  let config = {
+    method: 'patch',
+    maxBodyLength: Infinity,
+    url: BASE_URL,
+    headers: {
+      'Content-Type': 'text/plain',
+    },
+    data: data,
+  };
+  return await axios
+    .request(config)
+    .then(async (response) => {
+      return await JSON.stringify(response.data)
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
 }

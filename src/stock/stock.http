@@ -2,6 +2,9 @@
 @rootUrl = http://localhost:3000
 # @rootUrl = https://email-api-kuku20.onrender.com
 
+###keep awake
+curl --location '{{rootUrl}}'
+
 ###Get New form  news-Finhub
 curl --location '{{rootUrl}}/stock/news-v1?stockTicker=BABA'
 
@@ -148,4 +151,21 @@ curl --location '{{rootUrl}}/stock/chartdata/v2/{{srcEndPoint}}?stockTicker=BYON
 
 
 ### get metric from finhub
-curl --location '{{rootUrl}}/stock/metric/TSLA'
+curl --location '{{rootUrl}}/stock/metric/QQQ'
+
+
+###
+curl 'http://localhost:3000/stock/chartdata/v2/fm?stockTicker=QQQ&start=2023-11-02&end=2024-11-01'
+
+###
+curl 'http://localhost:3000/stock/chartdata/v2/fm?stockTicker=QQQ&start=2024-10-28&end=2024-11-02'
+
+### Getdata daily from firebase
+curl --location '{{rootUrl}}/stock/getfbdata' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "path": "history2/1min-modifire",
+    "ticker":"QQQ",
+    "date":"2024-11-18"
+}'
+# /eyJhbGciOiJSUzI1NiIsImtpZCI6ImE2YzYzNTNm/history2/15min-modifire/QQQ/2024-10-16
