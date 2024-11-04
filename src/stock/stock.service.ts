@@ -191,7 +191,12 @@ export class StockService {
   ) {
     let range
     const daylength = await this.stockHelperService.calculateDaysBetween(dateStart, dateEnd)
+    const abbreviatedDay = await this.stockHelperService.getAbbreviatedDay(dateEnd);
     if(daylength<=2){
+      if(abbreviatedDay==='Sun'){
+        let dateStart3 = await this.stockHelperService.getDateThreeDaysAgo(dateEnd)
+        return await this.getfullTopost(ticker,dateStart3, dateEnd)
+      }
       range = '1min'
     } else  if(daylength>2 && daylength <=9){
       range = '5min'
@@ -573,8 +578,8 @@ export class StockService {
     dateStart: string,
     dateEnd: string,
   ){
-    const timespan = '15min'
-    const dateRanges = await this.stockHelperService.getDateRanges(dateStart, dateEnd, 45);
+    const timespan = '1min'
+    const dateRanges = await this.stockHelperService.getDateRanges(dateStart, dateEnd, 2);
     const urls = dateRanges.map(({ start, end }) => {
       return `https://financialmodelingprep.com/api/v3/historical-chart/${timespan}/${ticker}?from=${start}&to=${end}&apikey=`;
     });
@@ -598,13 +603,13 @@ export class StockService {
     // const data = await this.getFromFB(ticker,timespan,dateStart+'-to-'+dateEnd,)
     const allResults2 = await this.stockHelperService.returnNewData(allResults)
 
-    const newdata = await this.stockHelperService.transformData(allResults2)
+    // const newdata = await this.stockHelperService.transformData(allResults2)
     // const allResults = await this.stockHelperService.returnNewData(data.data)
     // console.log(data.data)
-    await this.postToFirebase(ticker,newdata,timespan+'-modifire', dateStart+'-to-'+dateEnd,).then(data=>{
-      // console.log(data)
-    })
-    return 'allResults';
+    // await this.postToFirebase(ticker,newdata,timespan+'-modifire', dateStart+'-to-'+dateEnd,).then(data=>{
+    //   // console.log(data)
+    // })
+    return allResults2;
   }
 
 async postToFirebase(stockTicker: string, data: any, type:string ,endpoint:string) {

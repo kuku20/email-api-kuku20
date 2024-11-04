@@ -214,4 +214,27 @@ async transformData(data: any[]) {
 
   return transformedData;
 }
+
+async getAbbreviatedDay(dateString: string) {
+  // Split the date string into components
+  const [year, month, day] = dateString.split('-').map(Number);
+  // Create a new Date object using the components, subtracting 1 from the month
+  const date = new Date(Date.UTC(year, month - 1, day));
+  const options: Intl.DateTimeFormatOptions = { weekday: 'short' };
+  return new Intl.DateTimeFormat('en-US', options).format(date);
+}
+
+async getDateThreeDaysAgo(dateString: string) {
+  // Create a new Date object from the input string
+  const date = new Date(dateString);
+  // Subtract 3 days (in milliseconds)
+  date.setDate(date.getDate() - 3);
+  // Format the date back to 'YYYY-MM-DD'
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+  const day = String(date.getDate()).padStart(2, '0');
+  
+  return `${year}-${month}-${day}`;
+}
+
 }
