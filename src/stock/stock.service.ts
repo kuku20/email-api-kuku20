@@ -193,10 +193,10 @@ export class StockService {
     const daylength = await this.stockHelperService.calculateDaysBetween(dateStart, dateEnd)
     const abbreviatedDay = await this.stockHelperService.getAbbreviatedDay(dateEnd);
     if(daylength<=2){
-      if(abbreviatedDay==='Sun'){
-        let dateStart3 = await this.stockHelperService.getDateThreeDaysAgo(dateEnd)
-        return await this.getfullTopost(ticker,dateStart3, dateEnd)
-      }
+      // if(abbreviatedDay==='Sun'){
+      //   let dateStart3 = await this.stockHelperService.getDateThreeDaysAgo(dateEnd)
+      //   return await this.getfullTopost(ticker,dateStart3, dateEnd)
+      // }
       range = '1min'
     } else  if(daylength>2 && daylength <=9){
       range = '5min'
