@@ -45,11 +45,18 @@ Content-Type: application/json
     "email": "aaaa@gmail.com"
 }
 
-### Sent email
-POST  http://localhost:3000/sent
+### Sent email with subject just to me
+POST  http://localhost:3000/sentEmail
+Content-Type: application/json
 
+{
+    "email": "loc.luu.1990@gmail.com",
+    "name":"loc luu",
+    "message":"Hello",
+    "subject":"btc ues"
+}
 
-####
+###
 curl -X 'GET' \
   'http://localhost:3000/shop/products/types' \
   -H 'accept: */*'

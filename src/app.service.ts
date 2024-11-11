@@ -36,12 +36,13 @@ export class AppService {
     return {mess:'Hello World Email!'};
   }
 
-  async createEmail(name: string, email: string, message:string): Promise<any> {
+  async createEmail(name: string, email: string, message:string, subject?:string): Promise<any> {
+    const sub = 'LOC JOB ON MY WEB' 
     try {
       const result = await this.mailerService.sendMail({
-        to: 'loc.luu.1990@gmail.com',
+        to: email,
         from: 'email',
-        subject: 'LOC JOB ON MY WEB',
+        subject: subject?subject:sub,
         text: `\nName: ${name}\nEmail: ${email}\nMessage: ${message}`,
         html: `<p>Name: ${name}</p><p>Email: ${email}</p><p>Message: ${message}</p>`,
       });

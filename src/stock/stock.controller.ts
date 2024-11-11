@@ -276,12 +276,24 @@ export class StockController {
   async getDataTest(@Body() dataIn: any) {
     const { path, ticker, date } = dataIn;
     const urlPath = `${path}/${ticker.toUpperCase()}/${date}.json`
-    this.stockService.getFromFB(urlPath)
     try {
-      let data = await this.stockService.getFromFB(urlPath);
+      let data = await this.stockService.getFromFBDynamic(urlPath);
       return data;
     } catch (error) {
       throw error;
     }
   }
+
+  @Post('/postfbdata')
+  async postDataTest(@Body() dataIn: any) {
+    const { path, ticker, date ,data} = dataIn;
+    const urlPath = `${path}/${ticker.toUpperCase()}.json`
+    try {
+      let result = await this.stockService.putToFBDynamic(urlPath,data);
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
+

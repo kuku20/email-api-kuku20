@@ -20,7 +20,8 @@ export class AppController {
     @Body('name') name: string,
     @Body('email') email: string,
     @Body('message') message: string,
+    @Body('subject') subject: string,
   ) {
-    return this.appService.createEmail(name, email, message);
+    return this.appService.createEmail(name, email, message, subject);
   }
 }

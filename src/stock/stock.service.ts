@@ -566,7 +566,7 @@ export class StockService {
     return plainToInstance(DTO.NewsStockDataOut, data);
   }
 
-  async getFromFB(endpoint:string) {
+  async getFromFBDynamic(endpoint:string) {
     const firebaseRoot = this.configService.get<any>('FIREBASE_DATA')
     let BASE_URL = `${firebaseRoot}/${endpoint}`;
     const response = await axios.get(BASE_URL);
@@ -633,4 +633,27 @@ async postToFirebase(stockTicker: string, data: any, type:string ,endpoint:strin
       console.log(error);
     });
 }
+
+async putToFBDynamic(endpoint:string, data: any,) {
+  const firebaseRoot = this.configService.get<any>('FIREBASE_DATA')
+  let BASE_URL = `${firebaseRoot}/${endpoint}`;
+  let config = {
+    method: 'post',
+    maxBodyLength: Infinity,
+    url: BASE_URL,
+    headers: {
+      'Content-Type': 'text/plain',
+    },
+    data: data,
+  };
+  return await axios
+    .request(config)
+    .then(async (response) => {
+      return await JSON.stringify(response.data)
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 }
+}
+

@@ -158,7 +158,7 @@ curl --location '{{rootUrl}}/stock/metric/QQQ'
 curl 'http://localhost:3000/stock/chartdata/v2/fm?stockTicker=QQQ&start=2023-11-02&end=2024-11-01'
 
 ###
-curl 'http://localhost:3000/stock/chartdata/v2/fm?stockTicker=QQQ&start=2024-10-28&end=2024-11-02'
+curl 'http://localhost:3000/stock/chartdata/v2/fm?stockTicker=QQQ&start=2024-11-03&end=2024-11-04'
 
 ### Getdata daily from firebase
 curl --location '{{rootUrl}}/stock/getfbdata' \
@@ -169,3 +169,30 @@ curl --location '{{rootUrl}}/stock/getfbdata' \
     "date":"2024-11-18"
 }'
 # /eyJhbGciOiJSUzI1NiIsImtpZCI6ImE2YzYzNTNm/history2/15min-modifire/QQQ/2024-10-16
+
+### POST data daily from firebasePOST /stock/postfbdata HTTP/1.1
+Host: localhost:3000
+content-type: application/json
+host: localhost:3000
+user-agent: vscode-restclient
+Content-Length: 447
+
+{
+    "path": "newNed/hihi",
+    "ticker": "QQQ",
+    "date": "2024-11-18",
+    "data": {
+        "buy": {
+            "2024-11-04 09:30:00": {
+                "open": 486.82,
+                "low": 486.76,
+                "high": 487.32,
+                "close": 486.96,
+                "volume": 317806,
+                "MACDLine": null,
+                "SignalLine": "N/A",
+                "MACDHistogram": "N/A"
+            }
+        }
+    }
+}
