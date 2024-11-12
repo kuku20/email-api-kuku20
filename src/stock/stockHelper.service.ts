@@ -3,6 +3,7 @@ import { Injectable, NotAcceptableException } from '@nestjs/common';
 @Injectable()
 export class StockHelperService {
   async returnNewData(dataIn: any) {
+    dataIn = await this.calculateMovingAverage(dataIn, 5, 'MA5');
     dataIn = await this.calculateMovingAverage(dataIn, 10, 'MA10');
     dataIn = await this.calculateMovingAverage(dataIn, 20, 'MA20');
     dataIn = await this.calculateMovingAverage(dataIn, 50, 'MA50');
