@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import axios from 'axios';
 import { ConfigService, ConfigModule } from '@nestjs/config';
 import { plainToClass, plainToInstance } from 'class-transformer';
@@ -45,7 +45,9 @@ export class StockService {
         "error":"Over 2 years"
       }]
     const daylength = await this.stockHelperService.calculateDaysBetween(dateStart, dateEnd)
-
+    if(daylength<0){
+      throw new NotAcceptableException("Start day should before end day");
+    }
     if(daylength<3){
       range = '1'
       timespan = 'minute'
@@ -193,7 +195,7 @@ export class StockService {
     const daylength = await this.stockHelperService.calculateDaysBetween(dateStart, dateEnd)
     const abbreviatedDay = await this.stockHelperService.getAbbreviatedDay(dateEnd);
     if(daylength<=2){
-      // if(abbreviatedDay==='Sun'){
+      // if(abbreviatedDay==='Sun' && !ticker.includes('USD')){
       //   let dateStart3 = await this.stockHelperService.getDateThreeDaysAgo(dateEnd)
       //   return await this.getfullTopost(ticker,dateStart3, dateEnd)
       // }
@@ -211,8 +213,14 @@ export class StockService {
     if (daylength > 175) {
       return this.getTickerDailyChart_FMP(ticker,dateStart,dateEnd)
     }
-
+    const today = new Date().toISOString().replace(/T.*$/, '');
+    const checkToday = await this.stockHelperService.calculateDaysBetween(today, dateEnd)
+    const rtp = await this.RTP_FINNHUB_FOR_CHART(ticker)
     const response = await this.tryCatchF(BASE_URL, 'FMP_STOCK_API_KEY');
+    if(checkToday==0 && !ticker.includes('USD')){
+      response.unshift(rtp);
+    }
+    return response;
     const result = await this.stockHelperService.returnNewData(response)
     return result;
   }
@@ -267,7 +275,13 @@ export class StockService {
   async realTimePrice_FINNHUB(query: string) {
     const BASE_URL = `https://finnhub.io/api/v1/quote?symbol=${query}&token=`;
     const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
-    return plainToClass(DTO.RealTimePriceFinnhubDto, response);
+    return plainToClass(DTO.RealTimePriceFhForChartDto, response);
+  }
+
+  async RTP_FINNHUB_FOR_CHART(query: string) {
+    const BASE_URL = `https://finnhub.io/api/v1/quote?symbol=${query}&token=`;
+    const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
+    return plainToClass(DTO.RealTimePriceFhForChartDto, response);
   }
 
   async companyProfile_FINNHUB(query: string) {

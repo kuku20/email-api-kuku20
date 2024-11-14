@@ -13,3 +13,4 @@ export * from './EarningCalFinnhubOut.dto';
 export * from './NewsStockDataOut.dto';
 export * from './ChartOutPolygon.dto';
 export * from './ChartOutFMP.dto';
+export * from './realtimeFhForChart.dto';

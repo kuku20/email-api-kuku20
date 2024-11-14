@@ -197,9 +197,9 @@ export class StockHelperService {
     // Convert milliseconds to days (1 day = 24 hours * 60 minutes * 60 seconds * 1000 milliseconds)
     const millisecondsPerDay = 24 * 60 * 60 * 1000;
     const daysBetween = Math.ceil(differenceInMillis / millisecondsPerDay);
-    if(daysBetween<0){
-      throw new NotAcceptableException("Startday should before end day");
-    }
+    // if(daysBetween<0){
+    //   throw new NotAcceptableException("Startday should before end day");
+    // }
     return daysBetween;
 }
 
