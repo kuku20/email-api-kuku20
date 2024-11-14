@@ -1,0 +1,25 @@
+@rootUrl = http://localhost:3000
+# @rootUrl = https://my-api-all.adaptable.app
+# @rootUrl = https://email-api-kuku20.onrender.com
+# https://email-api-kuku20.onrender.com
+
+### Sent through Discord
+curl --location '{{rootUrl}}/webhooks/discord' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "message": "BTCUSD: **DOWNTREND10: SELL**, \n      Price: 89888.09, @: 2024-11-13 23:20:00\n      Ma5: stable or fluctuating => down,\n      Ma10: up => down,\n      Ma20: down => stable or fluctuating,\n      Ma50: stable or fluctuating => down,\n      Ma100: stable or fluctuating => up\n      ------------------------------------"
+}'
+
+### Sent through Slack
+curl --location '{{rootUrl}}/webhooks/slack' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "message": "hello"
+}'
+
+### Delete discord mess by api
+curl --location '{{rootUrl}}/webhooks/delete-messages' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "date": "2024-11-14"
+}'

@@ -23,6 +23,7 @@ import { UserAuth } from './auth/userAuth.entity';
 import { StockPortfolioModule } from './stock-portfolio/stock-portfolio.module';
 import { Buy, Deposit, HoldingAmounts, Sell, StockPortfolio, Withdraw } from './stock-portfolio/entities';
 import { AiToolModule } from './ai-tool/ai-tool.module';
+import { WebhooksModule } from './webhooks/webhooks.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -84,6 +85,7 @@ import { AiToolModule } from './ai-tool/ai-tool.module';
     StockUserModule,
     StockPortfolioModule,
     AiToolModule,
+    WebhooksModule,
   ],
   controllers: [AppController],
   providers: [AppService],
