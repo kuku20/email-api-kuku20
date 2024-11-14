@@ -38,10 +38,10 @@ export class WebhooksService {
     }
   }
 
-  async sendDiscordNotification(message?: string) {
+  async sendDiscordNotification(message: string) {
     const current = new Date().toISOString().replace(/T.*$/, '');
     const sentMessage = await this.webhookClient.send({
-      content: message || 'hello',
+      content: message,
       username: 'Bot Alert',
       avatarURL: 'https://i.imgur.com/AfFp7pu.png',
     });
@@ -102,3 +102,4 @@ export class WebhooksService {
       });
   }
 }
+
