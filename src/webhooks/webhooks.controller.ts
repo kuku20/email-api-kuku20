@@ -10,8 +10,8 @@ export class WebhooksController {
   constructor(private readonly webhooksService: WebhooksService) {}
 
   @Post('discord')
-  async sendDiscordNotification(@Body('message') message: string) {
-    const result =  await this.webhooksService.sendDiscordNotification(message);
+  async sendDiscordNotification(@Body('message') message: string, @Body('botname') botname: string) {
+    const result =  await this.webhooksService.sendDiscordNotification(message, botname);
     return result;
   }
 

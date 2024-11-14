@@ -7,6 +7,7 @@
 curl --location '{{rootUrl}}/webhooks/discord' \
 --header 'Content-Type: application/json' \
 --data-raw '{
+    "botname":"Test http",
     "message": "BTCUSD: **DOWNTREND10: SELL**, \n      Price: 89888.09, @: 2024-11-13 23:20:00\n      Ma5: stable or fluctuating => down,\n      Ma10: up => down,\n      Ma20: down => stable or fluctuating,\n      Ma50: stable or fluctuating => down,\n      Ma100: stable or fluctuating => up\n      ------------------------------------"
 }'
 
@@ -16,6 +17,7 @@ curl --location '{{rootUrl}}/webhooks/slack' \
 --data-raw '{
     "message": "hello"
 }'
+
 
 ### Delete discord mess by api
 curl --location '{{rootUrl}}/webhooks/delete-messages' \
