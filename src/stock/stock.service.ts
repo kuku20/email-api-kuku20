@@ -94,6 +94,7 @@ export class StockService {
       allResults,
     );
     // console.log(BASE_URL, allResults.length)
+    return response
     const result = await this.stockHelperService.returnNewData(response)
 
     return result;
@@ -233,6 +234,7 @@ export class StockService {
     const BASE_URL = `https://financialmodelingprep.com/api/v3/historical-price-full/${ticker}?from=${dateStart}&to=${dateEnd}&apikey=`;
     const response = await this.tryCatchF(BASE_URL, 'FMP_STOCK_API_KEY');
     const data = plainToClass(DTO.ChartOutFMPDto, response?.historical)
+    return data;
     const result = this.stockHelperService.returnNewData(data)
     return result;
   }
@@ -615,6 +617,7 @@ export class StockService {
     //   // console.log(data)
     // })
     // const data = await this.getFromFB(ticker,timespan,dateStart+'-to-'+dateEnd,)
+    return allResults
     const allResults2 = await this.stockHelperService.returnNewData(allResults)
 
     // const newdata = await this.stockHelperService.transformData(allResults2)

@@ -12,10 +12,10 @@ export class StockHelperService {
     dataIn = await this.calculateRSI(dataIn);
     dataIn = await this.calculateMACD(dataIn);
     return dataIn
-    .sort(
-      (a: { date: string }, b: { date: string }) =>
-        new Date(a.date).getTime() - new Date(b.date).getTime(),
-    );
+    // .sort(
+    //   (a: { date: string }, b: { date: string }) =>
+    //     new Date(a.date).getTime() - new Date(b.date).getTime(),
+    // );
   }
 
   async calculateMovingAverage(

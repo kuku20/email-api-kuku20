@@ -40,6 +40,9 @@ export class WebhooksService {
 
   async sendDiscordNotification(message: string, botname:string='Bot Alert') {
     const current = new Date().toISOString().replace(/T.*$/, '');
+    this.sentMessages = await this.getFromFBDynamic(
+      `discord_slack_id/discord/${current}.json`,
+    );
     const sentMessage = await this.webhookClient.send({
       content: message,
       username: botname,
