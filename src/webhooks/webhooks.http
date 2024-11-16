@@ -3,17 +3,17 @@
 # @rootUrl = https://my-api-all.adaptable.app
 # @rootUrl = https://email-api-kuku20.onrender.com
 # https://email-api-kuku20.onrender.com
-
+@ticker = TSLA
 
 
 ### Sent through Slack
 curl --location '{{rootUrl}}/webhooks/slack' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "message": "hello"
+    "message": "Based on the provided data and a purely gut feeling using technical analysis principles, here's a guess for the next 4 hours of TSLA's price action:\n\n* **High:** 325.00\n* **Low:** 318.00\n* **Close:** 322.00\n\n**Reasoning (Purely Speculative):**\n\nThe RSI is currently at 69.89, indicating the stock is approaching overbought territory.  This suggests a potential pullback is likely in the short term. However, the recent price action shows a generally upward trend, with several higher highs and higher lows. The MACD is showing bullish signals (positive histogram, MACD line above the signal line).  My gut feeling is that there will be a minor pullback, consolidating the recent gains before a resumption of the upward trend.  This prediction incorporates a mild correction followed by a closing price slightly above the current price to reflect this assumption.\n\n**Important Disclaimer:** This is purely a guess based on limited data and intuition. It is not financial advice and should not be used as a basis for investment decisions.  Real-world price action is influenced by many unpredictable factors.\n"
 }'
 
-@ticker = TSLA
+
 ### Sent through Discord
 curl --location '{{rootUrl}}/webhooks/discord' \
 --header 'Content-Type: application/json' \

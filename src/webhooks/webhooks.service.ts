@@ -5,68 +5,57 @@ import { WebhookClient } from 'discord.js';
 @Injectable()
 export class WebhooksService {
   private webhookClient: WebhookClient;
-  private sentMessages2Slack: string[] = []; 
-
-  constructor(private readonly configService: ConfigService) {
-    this.webhookClient = new WebhookClient({url: this.configService.get<any>('DISCORD_WEBHOOKS')});
-  }
+  private WEBHOOKS_ENV = {
+    TSLA: 'DISCORD_WEBHOOKS_TSLA',
+    Other: `DISCORD_WEBHOOKS`,
+  };
+  constructor(private readonly configService: ConfigService) {}
 
   async sendSlackNotification(message: string) {
     const BASE_URL = `${this.configService.get<any>('SLACK_WEBHOOKS')}`;
+    const nexMsg = `*****************************************
+    ${message.replace(/\*\*/g, '*')}`;
     const payload = {
-      text: message, // Slack expects "text" for the message content
+      type: 'mrkdwn',
+      text: nexMsg,
     };
 
     try {
-      const response = await axios.post(BASE_URL, payload);
-      const current = new Date().toISOString().replace(/T.*$/, '');
-      if (response.data && response.data.ts) {
-        this.sentMessages2Slack.push(response.data.ts);
-        await this.putToFBDynamic(
-          `discord_slack_id/slack/${current}.json`,
-          this.sentMessages2Slack,
-        );
-      }
+      await axios.post(BASE_URL, payload);
       return { msg: 'post to Slack success' };
     } catch (error) {
       return { msg: 'post to Slack fails:', error };
+    }
+  }
 
-    }
-  }
-  createEmbedFields(data, fields) {
-    return fields.map((field) => ({
-      name: field.toUpperCase(), // The key as the field name
-      value: data[field].toString(), // Convert the value to a string
-      inline: true, // Display fields inline for a compact layout
-    }));
-  }
-  
-  async sendDiscordNotification(message: string, botname:string='Bot Alert', lastData:string) {
+  async sendDiscordNotification(
+    message: string,
+    botname: string = 'Bot Alert',
+    lastData: string,
+  ) {
     const current = new Date().toISOString().replace(/T.*$/, '');
-    const ticker = botname.split(' ')[0].toUpperCase()
-    const WEBHOOKS_ENV ={
-      TSLA:'DISCORD_WEBHOOKS_TSLA',
-      Other:`DISCORD_WEBHOOKS`
-    }
-    const WEBHOOKS = WEBHOOKS_ENV[ticker] || WEBHOOKS_ENV.Other;
-    this.webhookClient = new WebhookClient({url: this.configService.get<any>(WEBHOOKS)});
+    const ticker = botname.split(' ')[0].toUpperCase();
+    const WEBHOOKS = this.WEBHOOKS_ENV[ticker] || this.WEBHOOKS_ENV.Other;
+    this.webhookClient = new WebhookClient({
+      url: this.configService.get<any>(WEBHOOKS),
+    });
 
     const sentMessages = await this.getFromFBDynamic(
       `discord_slack_id/discord/${ticker}/${current}.json`,
     );
     // avatarURL: 'https://i.imgur.com/AfFp7pu.png',
-    const botAvatar ={
-      QQQ:'https://image-post-625h.vercel.app/upload/eleceed/discord/QQQ.png',
-      SPY:'https://image-post-625h.vercel.app/upload/eleceed/discord/s&p.png',
-      Other:`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${ticker}.png`
-    }
+    const botAvatar = {
+      QQQ: 'https://image-post-625h.vercel.app/upload/eleceed/discord/QQQ.png',
+      SPY: 'https://image-post-625h.vercel.app/upload/eleceed/discord/s&p.png',
+      Other: `https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${ticker}.png`,
+    };
     // Dynamically select avatarURL based on the ticker, default to 'Other' if ticker not found
     const selectedAvatar = botAvatar[ticker] || botAvatar.Other;
     // Create the embed object
-    const lastDataJson = JSON.parse(lastData)
-    const selectedFields = ["date", "close", "MA200", "RSI"];
+    const lastDataJson = JSON.parse(lastData);
+    const selectedFields = ['date', 'close', 'MA200', 'RSI'];
     const embed = {
-      title: "LATEST DATA",
+      title: 'LATEST DATA',
       color: 0x00ff00, // Green color for the embed
       fields: this.createEmbedFields(lastDataJson, selectedFields),
       // timestamp: new Date().toISOString(), // Convert Date to ISO string
@@ -74,8 +63,8 @@ export class WebhooksService {
     const sentMessage = await this.webhookClient.send({
       username: botname,
       avatarURL: selectedAvatar,
-      embeds: [embed],  // Embed first
-      content: message,  // Content second (below the embed)
+      embeds: [embed], 
+      content: message, 
     });
     sentMessages.push(sentMessage.id);
     await this.putToFBDynamic(
@@ -85,14 +74,12 @@ export class WebhooksService {
     return { msg: 'post to discord success' };
   }
 
-  async deleteMessages(ticker:string, current: string) {
+  async deleteMessages(ticker: string, current: string) {
     // const current = new Date().toISOString().replace(/T.*$/, '');
-    const WEBHOOKS_ENV ={
-      TSLA:'DISCORD_WEBHOOKS_TSLA',
-      Other:`DISCORD_WEBHOOKS`
-    }
-    const WEBHOOKS = WEBHOOKS_ENV[ticker] || WEBHOOKS_ENV.Other;
-    this.webhookClient = new WebhookClient({url: this.configService.get<any>(WEBHOOKS)});
+    const WEBHOOKS = this.WEBHOOKS_ENV[ticker] || this.WEBHOOKS_ENV.Other;
+    this.webhookClient = new WebhookClient({
+      url: this.configService.get<any>(WEBHOOKS),
+    });
     const getIds = await this.getFromFBDynamic(
       `discord_slack_id/discord/${ticker}/${current}.json`,
     );
@@ -103,12 +90,15 @@ export class WebhooksService {
       } catch (error) {
         if (error.code === 'MESSAGE_NOT_FOUND') {
           console.log(`Message ${messageId} does not exist.`);
-      } else {
+        } else {
           console.log(`Error deleting message ${messageId}`);
-      }
+        }
       }
     }
-    await this.putToFBDynamic(`discord_slack_id/discord/${ticker}/${current}.json`,[],);
+    await this.putToFBDynamic(
+      `discord_slack_id/discord/${ticker}/${current}.json`,
+      [],
+    );
     return { msg: 'delete complete' };
   }
 
@@ -138,5 +128,12 @@ export class WebhooksService {
       .catch((error) => {
         console.log(error);
       });
+  }
+  createEmbedFields(data, fields) {
+    return fields.map((field) => ({
+      name: field.toUpperCase(), // The key as the field name
+      value: data[field].toString(), // Convert the value to a string
+      inline: true, // Display fields inline for a compact layout
+    }));
   }
 }
