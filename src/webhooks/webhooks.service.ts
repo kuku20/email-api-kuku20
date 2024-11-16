@@ -5,14 +5,10 @@ import { WebhookClient } from 'discord.js';
 @Injectable()
 export class WebhooksService {
   private webhookClient: WebhookClient;
-  private sentMessages: string[] = [];
   private sentMessages2Slack: string[] = []; 
 
   constructor(private readonly configService: ConfigService) {
-    this.webhookClient = new WebhookClient({
-      id: this.configService.get<any>('DISCORD_ID'),
-      token: this.configService.get<any>('DISCORD_TOKEN'),
-    });
+    this.webhookClient = new WebhookClient({url: this.configService.get<any>('DISCORD_WEBHOOKS')});
   }
 
   async sendSlackNotification(message: string) {
@@ -37,43 +33,82 @@ export class WebhooksService {
 
     }
   }
-
-  async sendDiscordNotification(message: string, botname:string='Bot Alert') {
+  createEmbedFields(data, fields) {
+    return fields.map((field) => ({
+      name: field.toUpperCase(), // The key as the field name
+      value: data[field].toString(), // Convert the value to a string
+      inline: true, // Display fields inline for a compact layout
+    }));
+  }
+  
+  async sendDiscordNotification(message: string, botname:string='Bot Alert', lastData:string) {
     const current = new Date().toISOString().replace(/T.*$/, '');
-    this.sentMessages = await this.getFromFBDynamic(
-      `discord_slack_id/discord/${current}.json`,
+    const ticker = botname.split(' ')[0].toUpperCase()
+    const WEBHOOKS_ENV ={
+      TSLA:'DISCORD_WEBHOOKS_TSLA',
+      Other:`DISCORD_WEBHOOKS`
+    }
+    const WEBHOOKS = WEBHOOKS_ENV[ticker] || WEBHOOKS_ENV.Other;
+    this.webhookClient = new WebhookClient({url: this.configService.get<any>(WEBHOOKS)});
+
+    const sentMessages = await this.getFromFBDynamic(
+      `discord_slack_id/discord/${ticker}/${current}.json`,
     );
+    // avatarURL: 'https://i.imgur.com/AfFp7pu.png',
+    const botAvatar ={
+      QQQ:'https://image-post-625h.vercel.app/upload/eleceed/discord/QQQ.png',
+      SPY:'https://image-post-625h.vercel.app/upload/eleceed/discord/s&p.png',
+      Other:`https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${ticker}.png`
+    }
+    // Dynamically select avatarURL based on the ticker, default to 'Other' if ticker not found
+    const selectedAvatar = botAvatar[ticker] || botAvatar.Other;
+    // Create the embed object
+    const lastDataJson = JSON.parse(lastData)
+    const selectedFields = ["date", "close", "MA200", "RSI"];
+    const embed = {
+      title: "LATEST DATA",
+      color: 0x00ff00, // Green color for the embed
+      fields: this.createEmbedFields(lastDataJson, selectedFields),
+      // timestamp: new Date().toISOString(), // Convert Date to ISO string
+    };
     const sentMessage = await this.webhookClient.send({
-      content: message,
       username: botname,
-      avatarURL: 'https://i.imgur.com/AfFp7pu.png',
+      avatarURL: selectedAvatar,
+      embeds: [embed],  // Embed first
+      content: message,  // Content second (below the embed)
     });
-    this.sentMessages.push(sentMessage.id);
+    sentMessages.push(sentMessage.id);
     await this.putToFBDynamic(
-      `discord_slack_id/discord/${current}.json`,
-      this.sentMessages,
+      `discord_slack_id/discord/${ticker}/${current}.json`,
+      sentMessages,
     );
     return { msg: 'post to discord success' };
   }
 
-  async deleteMessages(current: string) {
+  async deleteMessages(ticker:string, current: string) {
     // const current = new Date().toISOString().replace(/T.*$/, '');
+    const WEBHOOKS_ENV ={
+      TSLA:'DISCORD_WEBHOOKS_TSLA',
+      Other:`DISCORD_WEBHOOKS`
+    }
+    const WEBHOOKS = WEBHOOKS_ENV[ticker] || WEBHOOKS_ENV.Other;
+    this.webhookClient = new WebhookClient({url: this.configService.get<any>(WEBHOOKS)});
     const getIds = await this.getFromFBDynamic(
-      `discord_slack_id/discord/${current}.json`,
+      `discord_slack_id/discord/${ticker}/${current}.json`,
     );
     if (getIds.length === 0) return { msg: 'nothing to delete' };
     for (const messageId of getIds) {
       try {
         await this.webhookClient.deleteMessage(messageId);
       } catch (error) {
-        return { msg: 'delete error' };
+        if (error.code === 'MESSAGE_NOT_FOUND') {
+          console.log(`Message ${messageId} does not exist.`);
+      } else {
+          console.log(`Error deleting message ${messageId}`);
+      }
       }
     }
-    this.sentMessages = []; // Clear the message ID list after deletion
-    await this.putToFBDynamic(
-      `discord_slack_id/discord/${current}.json`,
-      this.sentMessages,
-    );
+    await this.putToFBDynamic(`discord_slack_id/discord/${ticker}/${current}.json`,[],);
     return { msg: 'delete complete' };
   }
 
@@ -105,4 +140,3 @@ export class WebhooksService {
       });
   }
 }
-

@@ -10,8 +10,8 @@ export class WebhooksController {
   constructor(private readonly webhooksService: WebhooksService) {}
 
   @Post('discord')
-  async sendDiscordNotification(@Body('message') message: string, @Body('botname') botname: string) {
-    const result =  await this.webhooksService.sendDiscordNotification(message, botname);
+  async sendDiscordNotification(@Body('message') message: string, @Body('botname') botname: string, @Body('lastdata') lastdata: string) {
+    const result =  await this.webhooksService.sendDiscordNotification(message, botname, lastdata);
     return result;
   }
 
@@ -25,8 +25,9 @@ export class WebhooksController {
   @Post('delete-messages')
   async deleteMessagesByDay(
     @Body('date') date: string,
+    @Body('ticker') ticker: string,
   ) {
-    const result = await this.webhooksService.deleteMessages(date);
+    const result = await this.webhooksService.deleteMessages(ticker,date);
     return result;
   }
 }

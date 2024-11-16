@@ -1,15 +1,10 @@
 @rootUrl = http://localhost:3000
+
 # @rootUrl = https://my-api-all.adaptable.app
 # @rootUrl = https://email-api-kuku20.onrender.com
 # https://email-api-kuku20.onrender.com
 
-### Sent through Discord
-curl --location '{{rootUrl}}/webhooks/discord' \
---header 'Content-Type: application/json' \
---data-raw '{
-    "botname":"Test http",
-    "message": "BTCUSD: **DOWNTREND10: SELL**, \n      Price: 89888.09, @: 2024-11-13 23:20:00\n      Ma5: stable or fluctuating => down,\n      Ma10: up => down,\n      Ma20: down => stable or fluctuating,\n      Ma50: stable or fluctuating => down,\n      Ma100: stable or fluctuating => up\n      ------------------------------------"
-}'
+
 
 ### Sent through Slack
 curl --location '{{rootUrl}}/webhooks/slack' \
@@ -18,10 +13,25 @@ curl --location '{{rootUrl}}/webhooks/slack' \
     "message": "hello"
 }'
 
+@ticker = TSLA
+### Sent through Discord
+curl --location '{{rootUrl}}/webhooks/discord' \
+--header 'Content-Type: application/json' \
+--data-raw '
+{
+    "botname": "{{ticker}} recommending",
+    "message": "Tesla (TSLA) Stock Performance Report - November 14, 2024\n\nDaily Performance:",
+    "lastdata": "{\"date\":\"2024-11-14 15:59:00\",\"open\":311.06,\"low\":310.77,\"high\":311.27,\"close\":311.18,\"volume\":874054,\"MA5\":311.23,\"MA10\":311.17,\"MA20\":311.37,\"MA50\":312.89,\"MA100\":312.96,\"MA200\":313.93,\"RSI\":57.4225703097182,\"MACDLine\":-0.7066025641026386,\"SignalLine\":-1.2308736387888581,\"MACDHistogram\":0.5242710746862196}"
+}'
 
 ### Delete discord mess by api
 curl --location '{{rootUrl}}/webhooks/delete-messages' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "date": "2024-11-14"
+    "ticker":"{{ticker}}",
+    "date": "2024-11-16"
 }'
+
+
+###
+http://localhost:3000/stock/fh/company-profile?stockTicker=AMZN
