@@ -29,7 +29,7 @@ curl --location '{{rootUrl}}/webhooks/delete-messages' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "ticker":"{{ticker}}",
-    "date": "2024-11-16"
+    "date": "2024-11-17"
 }'
 
 

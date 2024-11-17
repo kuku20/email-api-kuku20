@@ -27,7 +27,7 @@ export class WebhooksService {
       return { msg: 'post to Slack fails:', error };
     }
   }
-
+  sentMessages = []
   async sendDiscordNotification(
     message: string,
     botname: string = 'Bot Alert',
@@ -36,13 +36,7 @@ export class WebhooksService {
     const current = new Date().toISOString().replace(/T.*$/, '');
     const ticker = botname.split(' ')[0].toUpperCase();
     const WEBHOOKS = this.WEBHOOKS_ENV[ticker] || this.WEBHOOKS_ENV.Other;
-    this.webhookClient = new WebhookClient({
-      url: this.configService.get<any>(WEBHOOKS),
-    });
-
-    const sentMessages = await this.getFromFBDynamic(
-      `discord_slack_id/discord/${ticker}/${current}.json`,
-    );
+    this.webhookClient = new WebhookClient({url: this.configService.get<any>(WEBHOOKS)});
     // avatarURL: 'https://i.imgur.com/AfFp7pu.png',
     const botAvatar = {
       QQQ: 'https://image-post-625h.vercel.app/upload/eleceed/discord/QQQ.png',
@@ -66,10 +60,9 @@ export class WebhooksService {
       embeds: [embed], 
       content: message, 
     });
-    sentMessages.push(sentMessage.id);
     await this.putToFBDynamic(
-      `discord_slack_id/discord/${ticker}/${current}.json`,
-      sentMessages,
+      `discord_slack_id/discord/${ticker}/${current}/${sentMessage.id}.json`,
+      sentMessage?.id,
     );
     return { msg: 'post to discord success' };
   }
@@ -80,13 +73,16 @@ export class WebhooksService {
     this.webhookClient = new WebhookClient({
       url: this.configService.get<any>(WEBHOOKS),
     });
-    const getIds = await this.getFromFBDynamic(
+    const getIdsOb = await this.getFromFBDynamic(
       `discord_slack_id/discord/${ticker}/${current}.json`,
     );
-    if (getIds.length === 0) return { msg: 'nothing to delete' };
-    for (const messageId of getIds) {
+    const Ids = Object.keys(getIdsOb)
+
+    if (Ids.length === 0) return { msg: 'nothing to delete' };
+    for (const messageId of Ids) {
       try {
         await this.webhookClient.deleteMessage(messageId);
+        await this.deleteInFB(`discord_slack_id/discord/${ticker}/${current}/${messageId}.json`,);
       } catch (error) {
         if (error.code === 'MESSAGE_NOT_FOUND') {
           console.log(`Message ${messageId} does not exist.`);
@@ -95,10 +91,6 @@ export class WebhooksService {
         }
       }
     }
-    await this.putToFBDynamic(
-      `discord_slack_id/discord/${ticker}/${current}.json`,
-      [],
-    );
     return { msg: 'delete complete' };
   }
 
@@ -108,6 +100,18 @@ export class WebhooksService {
     const response = await axios.get(BASE_URL);
     return response.data ? response.data : [];
   }
+
+  async deleteInFB(endpoint: string) {
+    const firebaseRoot = this.configService.get<any>('FIREBASE_DATA');
+    let BASE_URL = `${firebaseRoot}/${endpoint}`;
+    try {
+      const response = await axios.delete(BASE_URL);
+      console.log("Data deleted successfully");
+    } catch (error) {
+      console.log("error", error);
+    }
+  }
+
   async putToFBDynamic(endpoint: string, data: any) {
     const firebaseRoot = this.configService.get<any>('FIREBASE_DATA');
     let BASE_URL = `${firebaseRoot}/${endpoint}`;
@@ -129,11 +133,17 @@ export class WebhooksService {
         console.log(error);
       });
   }
-  createEmbedFields(data, fields) {
-    return fields.map((field) => ({
-      name: field.toUpperCase(), // The key as the field name
-      value: data[field].toString(), // Convert the value to a string
-      inline: true, // Display fields inline for a compact layout
-    }));
+  
+  createEmbedFields(data:unknown, fields) {
+    return fields.map((field) => {
+      if(data[field])
+      return (
+        {
+          name: field?.toUpperCase(), 
+          value: data[field]?.toString(), 
+          inline: true, 
+        }
+      )
+    }).filter((item: any)=>item!== undefined);
   }
 }
