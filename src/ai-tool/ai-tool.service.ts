@@ -64,6 +64,31 @@ export class AiToolService {
     }
   }
 
+  async posXAi(dataIn: any, message:string) {
+    try {
+      const OPENAI_API_KEY = this.configService.get<any>('XAI_OLILUU');
+      const openai = new OpenAIApi({
+        apiKey: OPENAI_API_KEY,
+        baseURL: "https://api.x.ai/v1",
+      });
+      const twoThirdsLength = 159900;
+      const response = await openai.chat.completions.create({
+        model: "grok-beta",
+        messages: [
+          { role: 'system', content: message },
+          { role: 'user', content: dataIn.substring(0, twoThirdsLength) },
+        ],
+        // temperature: 1.1,
+        // presence_penalty: 0,
+        // frequency_penalty: 0,
+      });
+
+      return response.choices[0].message.content
+    } catch (error) {
+      return JSON.stringify(error.message)
+    }
+  }
+
   async getTickerFullChart_FMP(
     stockTicker: string,
     start: string,
@@ -98,11 +123,13 @@ export class AiToolService {
     const metric =  await this.stockService.getMetric_FINHUB(stockTicker);
 
     const systemContent = message ? message: `I give the data on share prices over in the data, write a report of no more than 400 words describing the stocks performance and recommending whether to buy, hold or sell:`;
-    const askGemini = systemContent + JSON.stringify(datatoString) + '. And the metric of this: ' + JSON.stringify(metric);
+    const askGemini ='And the metric of this: ' + JSON.stringify(metric) +  systemContent +  JSON.stringify(datatoString) ;
 
     const openai = await this.posOpenAi(JSON.stringify(datatoString), systemContent);
+    const Xai = await this.posXAi(JSON.stringify(datatoString), systemContent);
     const res = await this.postGemini(askGemini);
     const dataout = {
+      Xai,
       openai,
       res,
       metric,
