@@ -71,13 +71,14 @@ export class AiToolService {
         apiKey: OPENAI_API_KEY,
         baseURL: "https://api.x.ai/v1",
       });
-      const twoThirdsLength = 159900;
+      const twoThirdsLength = 149900;
       const response = await openai.chat.completions.create({
         model: "grok-beta",
         messages: [
           { role: 'system', content: message },
           { role: 'user', content: dataIn.substring(0, twoThirdsLength) },
         ],
+        max_tokens:500
         // temperature: 1.1,
         // presence_penalty: 0,
         // frequency_penalty: 0,
@@ -126,7 +127,10 @@ export class AiToolService {
     const askGemini ='And the metric of this: ' + JSON.stringify(metric) +  systemContent +  JSON.stringify(datatoString) ;
 
     const openai = await this.posOpenAi(JSON.stringify(datatoString), systemContent);
-    const Xai = await this.posXAi(JSON.stringify(datatoString), systemContent);
+    let Xai = 'no xai'
+    if(type=="allow"){
+       Xai = await this.posXAi(JSON.stringify(datatoString), systemContent);
+    }
     const res = await this.postGemini(askGemini);
     const dataout = {
       Xai,
