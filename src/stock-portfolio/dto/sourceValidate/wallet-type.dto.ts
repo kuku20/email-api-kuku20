@@ -5,6 +5,7 @@ export enum WalletProperty {
   SELLS = 'sells',
   DEPOSITS = 'deposits',
   WITHDRAWS = 'withdraws',
+  LOSTDAY = 'lostday'
 }
 export class WalletTypeDto {
   @IsOptional()

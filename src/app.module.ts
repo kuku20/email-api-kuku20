@@ -21,7 +21,7 @@ import { StockUser } from './stock-user/entities/stock-user.entity';
 import { WatchList } from './stock-user/entities/watchlist.entity';
 import { UserAuth } from './auth/userAuth.entity';
 import { StockPortfolioModule } from './stock-portfolio/stock-portfolio.module';
-import { Buy, Deposit, HoldingAmounts, Sell, StockPortfolio, Withdraw } from './stock-portfolio/entities';
+import { Buy, Deposit, HoldingAmounts, Sell, StockPortfolio, Withdraw, LostDay } from './stock-portfolio/entities';
 import { AiToolModule } from './ai-tool/ai-tool.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
 @Module({
@@ -67,7 +67,7 @@ import { WebhooksModule } from './webhooks/webhooks.module';
             StockUser,
             WatchList,
             UserAuth,
-            StockPortfolio,Buy, Sell, Withdraw, Deposit, HoldingAmounts
+            StockPortfolio,Buy, Sell, Withdraw, Deposit, HoldingAmounts, LostDay
           ],
           synchronize: true,
         };

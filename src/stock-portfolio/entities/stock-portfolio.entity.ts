@@ -6,7 +6,7 @@ import {
   OneToOne,
   JoinColumn,
 } from 'typeorm';
-import { Buy, Sell, Withdraw, Deposit, HoldingAmounts } from './index';
+import { Buy, Sell, Withdraw, Deposit, HoldingAmounts,LostDay } from './index';
 import { UserAuth } from 'src/auth/userAuth.entity';
 
 @Entity()
@@ -48,4 +48,10 @@ export class StockPortfolio {
     cascade: true,
   })
   holding_amounts: HoldingAmounts[];
+
+  @OneToMany(() => LostDay, (lostDay) => lostDay.sPortfolioId, {
+    cascade: true,
+  })
+  lostday: LostDay[];
+
 }

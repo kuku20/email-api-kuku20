@@ -7,6 +7,8 @@ export class WebhooksService {
   private webhookClient: WebhookClient;
   private WEBHOOKS_ENV = {
     TSLA: 'DISCORD_WEBHOOKS_TSLA',
+    SMCI: 'DISCORD_WEBHOOKS_SMCI',
+    BUYSELL: 'DISCORD_WEBHOOKS_BUYSELL',
     Other: `DISCORD_WEBHOOKS`,
   };
   constructor(private readonly configService: ConfigService) {}

@@ -3,14 +3,14 @@
 # @rootUrl = https://my-api-all.adaptable.app
 # @rootUrl = https://email-api-kuku20.onrender.com
 # https://email-api-kuku20.onrender.com
-@ticker = TSLA
+@ticker = BUYSELL
 
 
 ### Sent through Slack
 curl --location '{{rootUrl}}/webhooks/slack' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "message": "Based on the provided data and a purely gut feeling using technical analysis principles, here's a guess for the next 4 hours of TSLA's price action:\n\n* **High:** 325.00\n* **Low:** 318.00\n* **Close:** 322.00\n\n**Reasoning (Purely Speculative):**\n\nThe RSI is currently at 69.89, indicating the stock is approaching overbought territory.  This suggests a potential pullback is likely in the short term. However, the recent price action shows a generally upward trend, with several higher highs and higher lows. The MACD is showing bullish signals (positive histogram, MACD line above the signal line).  My gut feeling is that there will be a minor pullback, consolidating the recent gains before a resumption of the upward trend.  This prediction incorporates a mild correction followed by a closing price slightly above the current price to reflect this assumption.\n\n**Important Disclaimer:** This is purely a guess based on limited data and intuition. It is not financial advice and should not be used as a basis for investment decisions.  Real-world price action is influenced by many unpredictable factors.\n"
+    "message": "Based on the data provided and current technical indicators:\n\n- **Moving Averages (MA)**: The stock is currently below its MA5, MA10, MA20, and MA50 but above the MA100 and MA200, suggesting a potential short-term bearish trend but still within a longer-term bullish trend.\n\n- **RSI**: The RSI is around 49.24, which is close to the midpoint, indicating a neutral momentum. However, there's no clear overbought or oversold signal here, which might mean the stock could go either way.\n\n- **MACD**: The MACD line has crossed above the signal line with a positive histogram, which could suggest a bullish momentum might be starting.\n\nGiven these observations:\n\n### Guess for the Next Day:\n- **High**: I'll guess the high might reach **30.80**. This is slightly above today's high, considering the potential for a bullish momentum kickstart from the MACD.\n\n- **Low**: I'll estimate the low could be **26.00**. This reflects a possible support level close to the recent low, accounting for potential bearish pressure.\n\n- **Close**: For the closing price, I'll predict **29.80**, which would be a slight increase from today's close, reflecting a cautious optimism based on the MACD's recent signal.\n\nThese guesses are purely speculative and based on a very simplistic analysis of the technical indicators. Real market conditions can be influenced by many other factors not accounted for here.\n"
 }'
 
 
@@ -29,7 +29,7 @@ curl --location '{{rootUrl}}/webhooks/delete-messages' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "ticker":"{{ticker}}",
-    "date": "2024-11-17"
+    "date": "2025-06-04"
 }'
 
 

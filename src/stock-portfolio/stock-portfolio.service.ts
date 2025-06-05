@@ -32,6 +32,8 @@ export class StockPortfolioService {
     private HoldingRepo: Repository<ENTITIES.HoldingAmounts>,
     @InjectRepository(ENTITIES.Deposit)
     private DepositRepo: Repository<ENTITIES.Deposit>,
+    @InjectRepository(ENTITIES.LostDay)
+    private LostDayRepo: Repository<ENTITIES.LostDay>,
     @InjectRepository(ENTITIES.Withdraw)
     private WithdrawRepo: Repository<ENTITIES.Withdraw>,
     @InjectRepository(ENTITIES.Sell)
@@ -460,6 +462,12 @@ export class StockPortfolioService {
       this.validateRequest(requestBody, InDepositWithDrawDto);
       return this.withdraws(requestBody);
     }
+
+    if (requestBody.requestType === requestType.LOST) {
+      this.validateRequest(requestBody, InBuySellDto);
+      return this.lostday(requestBody);
+    }
+
     throw new NotAcceptableException(
       'Type as: deposit, withdraw, sell, or buy',
     );
@@ -498,6 +506,45 @@ export class StockPortfolioService {
     // Handle other errors or rethrow
     throw error;
   }
+
+
+  async lostday(requestBody: InBuySellDto): Promise<any> {
+    try {
+      const stockPortfolio = await this.PortfolioRepo.findOne({
+        where: { userId: { id: requestBody.id } },
+        relations: ['lostday'], 
+      });
+
+      if (stockPortfolio.id !== requestBody.sPortfolioId) {
+        throw new InternalServerErrorException('Error executing the query');
+      }
+      const userwallet = await this.PortfolioRepo.findOneOrFail({
+        where: { id: requestBody.sPortfolioId },
+      });
+
+
+      const lostDayPost = this.LostDayRepo.create({
+        date: requestBody.date,
+        symbol: requestBody.symbol,
+        matchPrice: requestBody.matchPrice,
+        marketCap: requestBody.marketCap ? requestBody.marketCap : 1,
+        atPctChange: requestBody.atPctChange,
+        sPortfolioId: userwallet,
+      });
+
+      const lostDayPostSuccess = await this.LostDayRepo.save(lostDayPost);
+      // Create the response DTO
+      const response = {
+        statusCode: 200,
+        lostDayPostSuccess: lostDayPostSuccess,
+      };
+      return response;
+    } catch (error) {
+      const mes = `stockPortfolio with userId ${requestBody.sPortfolioId} not found`;
+      this.catchBlock(error, mes);
+    }
+  }
+  
 }
 
 export enum requestType {
@@ -505,4 +552,5 @@ export enum requestType {
   WITHDRAW = 'withdraw',
   SELL = 'sell',
   BUY = 'buy',
+  LOST = 'lostday',
 }

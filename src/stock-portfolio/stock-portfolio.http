@@ -16,6 +16,16 @@ curl --location 'http://localhost:3000/auth/v2/signin' \
 ### signout
 curl --location 'http://localhost:3000/auth/v2/signout'
 
+### Sign IN userId: becf493a-aae2-4d11-879b-8df41c6f27e4
+### walletID: 4e4c1101-9151-45eb-b346-c1f55a384f62
+curl --location 'http://localhost:3000/auth/v2/signin' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "email": "bob@test.com",
+    "password": "Pa$$w0rd",
+    "isAdmin": true
+}'
+
 ###
 # @userId = 66dbefd6-ff65-4b33-b2fc-24d0cda67518
 @userId = a9d0075b-5270-405c-b76a-e0534319708e
@@ -34,8 +44,8 @@ GET http://localhost:3000/stock-portfolio/all
 ### Get Wallet
 GET http://localhost:3000/stock-portfolio/wallet/{{userId}}
 
-### Get Sells
-GET http://localhost:3000/stock-portfolio/wallet/{{userId}}?type=sells
+### Get Sells,deposits,wa
+GET http://localhost:3000/stock-portfolio/wallet/{{userId}}?type=lostday
 
 ### post deposit "statusCode": 200
 curl --location 'http://localhost:3000/stock-portfolio/submit' \
@@ -45,7 +55,7 @@ curl --location 'http://localhost:3000/stock-portfolio/submit' \
     "sPortfolioId":"{{walletId}}",
     "requestType":"deposit",
     "date": "2023-11-09",
-    "amount": 100000,
+    "amount": 10000,
     "method": "direct",
     "status":"complete"
 }'
@@ -71,7 +81,7 @@ curl --location 'http://localhost:3000/stock-portfolio/submit' \
     "sPortfolioId":"{{walletId}}",
     "requestType":"buy",
     "date": "2023-11-09",
-    "symbol":"AALLS",
+    "symbol":"NCLH",
     "amount": 15,
     "matchPrice":7,
     "netvalue":105,
@@ -93,4 +103,19 @@ curl --location 'http://localhost:3000/stock-portfolio/submit' \
     "avaragePriceB":8,
     "netProfit":-15,
     "marketCap": 1000000000
+}'
+
+### post lostday "statusCode": 200
+curl --location 'http://localhost:3000/stock-portfolio/submit' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "id": "{{userId}}",
+    "sPortfolioId":"{{walletId}}",
+    "requestType":"lostday",
+    "date": "2023-11-09",
+    "symbol":"AALLS",
+    "matchPrice":7,
+    "netvalue":105,
+    "atPctChange":-15,
+    "marketCap": null
 }'

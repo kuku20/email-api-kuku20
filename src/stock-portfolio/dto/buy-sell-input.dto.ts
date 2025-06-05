@@ -15,7 +15,8 @@ export class InBuySellDto {
 
   @IsPositive()
   @IsNumber()
-  amount: number;
+  @IsOptional()
+  amount?: number;
 
   @IsPositive()
   @IsNumber()
