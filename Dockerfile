@@ -1,41 +1,31 @@
 # Stage 1: Build the application
 FROM node:18-alpine AS build
 
-# Set the working directory inside the container
-WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json files
+ENV NODE_ENV build
+
+USER node
+WORKDIR /home/node
+
 COPY package*.json ./
+RUN npm ci
 
-# Install dependencies
-RUN npm install
+COPY --chown=node:node . .
+RUN npx prisma generate \
+    && npm run build \
+    && npm prune --omit=dev
 
-# Copy the rest of the application files
-COPY . .
+# ---
 
-# Build the NestJS application
-RUN npm run build
+FROM node:20-alpine
 
-# Stage 2: Run the application
-FROM node:18-alpine
+ENV NODE_ENV production
 
-# Set the working directory inside the container
-WORKDIR /usr/src/app
+USER node
+WORKDIR /home/node
 
-# Copy the package.json and package-lock.json
-COPY package*.json ./
+COPY --from=builder --chown=node:node /home/node/package*.json ./
+COPY --from=builder --chown=node:node /home/node/node_modules/ ./node_modules/
+COPY --from=builder --chown=node:node /home/node/dist/ ./dist/
 
-# Install production dependencies only
-RUN npm install --only=production
-
-# Copy built application from the previous stage
-COPY --from=build /usr/src/app/dist ./dist
-
-# Copy any additional necessary files (e.g., public folder)
-# COPY --from=build /usr/src/app/public ./public
-
-# Expose the port the app runs on
-EXPOSE 3000
-
-# Set the default command to run the NestJS app
-CMD ["node", "dist/main"]
+CMD ["node", "dist/server.js"]
