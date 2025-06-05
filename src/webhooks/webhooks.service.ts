@@ -11,6 +11,13 @@ export class WebhooksService {
     BUYSELL: 'DISCORD_WEBHOOKS_BUYSELL',
     Other: `DISCORD_WEBHOOKS`,
   };
+
+  private WEBHOOKS_CN = {
+    TSLA: 'TSLA',
+    SMCI: 'SMCI',
+    BUYSELL: 'BUYSELL',
+    Other: `Other`,
+  };
   constructor(private readonly configService: ConfigService) {}
 
   async sendSlackNotification(message: string) {
@@ -62,8 +69,9 @@ export class WebhooksService {
       embeds: [embed], 
       content: message, 
     });
+    const WEBHOOKS_CNA = this.WEBHOOKS_CN[ticker] || this.WEBHOOKS_CN.Other;
     await this.putToFBDynamic(
-      `discord_slack_id/discord/${ticker}/${current}/${sentMessage.id}.json`,
+      `discord_slack_id/discord/${WEBHOOKS_CNA}/${current}/${sentMessage.id}.json`,
       sentMessage?.id,
     );
     return { msg: 'post to discord success' };
@@ -75,8 +83,9 @@ export class WebhooksService {
     this.webhookClient = new WebhookClient({
       url: this.configService.get<any>(WEBHOOKS),
     });
+    const WEBHOOKS_CNA = this.WEBHOOKS_CN[ticker] || this.WEBHOOKS_CN.Other;
     const getIdsOb = await this.getFromFBDynamic(
-      `discord_slack_id/discord/${ticker}/${current}.json`,
+      `discord_slack_id/discord/${WEBHOOKS_CNA}/${current}.json`,
     );
     const Ids = Object.keys(getIdsOb)
 
@@ -84,7 +93,8 @@ export class WebhooksService {
     for (const messageId of Ids) {
       try {
         await this.webhookClient.deleteMessage(messageId);
-        await this.deleteInFB(`discord_slack_id/discord/${ticker}/${current}/${messageId}.json`,);
+        const WEBHOOKS_CNA = this.WEBHOOKS_CN[ticker] || this.WEBHOOKS_CN.Other;
+        await this.deleteInFB(`discord_slack_id/discord/${WEBHOOKS_CNA}/${current}/${messageId}.json`,);
       } catch (error) {
         if (error.code === 'MESSAGE_NOT_FOUND') {
           console.log(`Message ${messageId} does not exist.`);
@@ -113,7 +123,7 @@ export class WebhooksService {
       console.log("error", error);
     }
   }
-
+  
   async putToFBDynamic(endpoint: string, data: any) {
     const firebaseRoot = this.configService.get<any>('FIREBASE_DATA');
     let BASE_URL = `${firebaseRoot}/${endpoint}`;
