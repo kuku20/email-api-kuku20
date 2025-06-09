@@ -28,8 +28,8 @@ curl --location 'http://localhost:3000/auth/v2/signin' \
 
 ###
 # @userId = 66dbefd6-ff65-4b33-b2fc-24d0cda67518
-@userId = a9d0075b-5270-405c-b76a-e0534319708e
-@walletId = fdbf6ea1-0bb0-4116-8ddb-1041c28e4e23
+@userId = becf493a-aae2-4d11-879b-8df41c6f27e4
+@walletId = 4e4c1101-9151-45eb-b346-c1f55a384f62
 ### create user portfolio
 curl --location 'http://localhost:3000/stock-portfolio/wallet' \
 --header 'Content-Type: application/json' \
@@ -55,7 +55,7 @@ curl --location 'http://localhost:3000/stock-portfolio/submit' \
     "sPortfolioId":"{{walletId}}",
     "requestType":"deposit",
     "date": "2023-11-09",
-    "amount": 10000,
+    "amount": 100000,
     "method": "direct",
     "status":"complete"
 }'
