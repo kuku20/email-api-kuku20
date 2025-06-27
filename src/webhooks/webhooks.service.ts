@@ -8,6 +8,8 @@ export class WebhooksService {
   private WEBHOOKS_ENV = {
     TSLA: 'DISCORD_WEBHOOKS_TSLA',
     SMCI: 'DISCORD_WEBHOOKS_SMCI',
+    BUY: 'DISCORD_WEBHOOKS_BUYSELL',
+    SELL: 'DISCORD_WEBHOOKS_BUYSELL',
     BUYSELL: 'DISCORD_WEBHOOKS_BUYSELL',
     Other: `DISCORD_WEBHOOKS`,
   };
@@ -15,6 +17,8 @@ export class WebhooksService {
   private WEBHOOKS_CN = {
     TSLA: 'TSLA',
     SMCI: 'SMCI',
+    BUY: 'BUYSELL',
+    SELL: 'BUYSELL',
     BUYSELL: 'BUYSELL',
     Other: `Other`,
   };
