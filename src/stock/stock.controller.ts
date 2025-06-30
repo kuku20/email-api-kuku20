@@ -295,5 +295,17 @@ export class StockController {
       throw error;
     }
   }
+
+  @Post('/firebase-api')
+  async FireBaseApi(@Body() dataIn: any) {
+    const { method, path, data} = dataIn;
+    const urlPath = `${path}.json`
+    try {
+      let result = await this.stockService.FireBaseApi(method,urlPath,data);
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 

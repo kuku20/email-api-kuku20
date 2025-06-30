@@ -671,6 +671,27 @@ async putToFBDynamic(endpoint:string, data: any,) {
     .catch((error) => {
       console.log(error);
     });
-}
+  }
+  async FireBaseApi(method:'post'|'patch'|'put'|'delete'|'get',endpoint:string, data: any,) {
+    const firebaseRoot = this.configService.get<any>('FIREBASE_DATA')
+    let BASE_URL = `${firebaseRoot}/${endpoint}`;
+    let config = {
+      method: method,
+      maxBodyLength: Infinity,
+      url: BASE_URL,
+      headers: {
+        'Content-Type': 'text/plain',
+      },
+      data: data,
+    };
+    return await axios
+      .request(config)
+      .then(async (response) => {
+        return await JSON.stringify(response.data)
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    }
 }
 
