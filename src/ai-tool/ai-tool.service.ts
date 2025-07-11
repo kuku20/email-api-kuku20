@@ -21,7 +21,7 @@ export class AiToolService {
     try {
       const GEMINI_KEY = this.configService.get<any>('GEMINI_API');
       const genAI = new GoogleGenerativeAI(GEMINI_KEY);
-      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
       const generationConfig = {
         temperature: 1.1, // 0-2
         topP: 0.95,
@@ -79,6 +79,30 @@ export class AiToolService {
           { role: 'user', content: dataIn.substring(0, twoThirdsLength) },
         ],
         max_tokens:500
+        // temperature: 1.1,
+        // presence_penalty: 0,
+        // frequency_penalty: 0,
+      });
+
+      return response.choices[0].message.content
+    } catch (error) {
+      return JSON.stringify(error.message)
+    }
+  }
+
+  async postDeepSeek(dataIn: any, message:string){
+    try {
+      const OPENAI_API_KEY = this.configService.get<any>('DEEPSEEK_API_KEY');
+      const openai = new OpenAIApi({
+        baseURL: 'https://api.deepseek.com',
+        apiKey: OPENAI_API_KEY,
+      });
+      const response = await openai.chat.completions.create({
+        model: "deepseek-chat",
+        messages: [
+          { role: 'system', content: message },
+          { role: 'user', content: dataIn },
+        ],
         // temperature: 1.1,
         // presence_penalty: 0,
         // frequency_penalty: 0,

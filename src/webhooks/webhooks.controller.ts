@@ -1,7 +1,8 @@
-import { Controller, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { WebhooksService } from './webhooks.service';
 import { JwtGuard } from 'src/auth/guard';
 import { AdminUserAuthGuard } from 'src/stock-user/guard';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @UseGuards(JwtGuard)
 @Controller('webhooks')
@@ -9,18 +10,26 @@ export class WebhooksController {
   constructor(private readonly webhooksService: WebhooksService) {}
 
   @Post('discord')
+  @UseInterceptors(FileInterceptor('file'))
   async sendDiscordNotification(
+    @UploadedFile() file: import('multer').File,
     @Body('message') message: string,
     @Body('botname') botname: string,
     @Body('lastdata') lastdata: string,
   ) {
-    const result = await this.webhooksService.sendDiscordNotification(
-      message,
-      botname,
-      lastdata,
-    );
-    return result;
+    try {
+      return await this.webhooksService.sendDiscordNotification(
+        message,
+        botname,
+        lastdata,
+        file,
+      );
+    } catch (err) {
+      console.error('❌ Error in controller:', err);
+      throw err;
+    }
   }
+  
 
   @Post('slack')
   async sendSlackNotification(@Body('message') message: string) {

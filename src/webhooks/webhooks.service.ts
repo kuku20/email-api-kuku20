@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
-import { WebhookClient } from 'discord.js';
+import { AttachmentBuilder,EmbedBuilder, WebhookClient } from 'discord.js';
 @Injectable()
 export class WebhooksService {
   private webhookClient: WebhookClient;
@@ -45,6 +45,7 @@ export class WebhooksService {
     message: string,
     botname: string = 'Bot Alert',
     lastData: string,
+    file?:  import('multer').File,
   ) {
     const current = new Date().toISOString().replace(/T.*$/, '');
     const ticker = botname.split(' ')[0].toUpperCase();
@@ -61,18 +62,27 @@ export class WebhooksService {
     // Create the embed object
     const lastDataJson = JSON.parse(lastData);
     const selectedFields = ['date', 'close', 'MA200', 'RSI'];
-    const embed = {
-      title: 'LATEST DATA',
-      color: 0x00ff00, // Green color for the embed
-      fields: this.createEmbedFields(lastDataJson, selectedFields),
-      // timestamp: new Date().toISOString(), // Convert Date to ISO string
-    };
-    const sentMessage = await this.webhookClient.send({
+    const embed = new EmbedBuilder()
+    .setTitle('LATEST DATA')
+    .setColor(0x00ff00)
+    .addFields(...this.createEmbedFields(lastDataJson, selectedFields));
+
+    const options: any = {
       username: botname,
       avatarURL: selectedAvatar,
-      embeds: [embed], 
-      content: message, 
-    });
+      content: message,
+      embeds: [embed],
+    };
+  
+    // ✅ If there's a file (image), attach it
+    if (file) {
+      const filename = 'capture.png';
+      const attachment = new AttachmentBuilder(file.buffer, { name: filename });
+      embed.setImage(`attachment://${filename}`);
+      options.files = [attachment];
+    }
+
+    const sentMessage = await this.webhookClient.send(options);
     const WEBHOOKS_CNA = this.WEBHOOKS_CN[ticker] || this.WEBHOOKS_CN.Other;
     await this.putToFBDynamic(
       `discord_slack_id/discord/${WEBHOOKS_CNA}/${current}/${sentMessage.id}.json`,
