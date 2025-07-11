@@ -35,7 +35,8 @@ COPY --from=build /usr/src/app/dist ./dist
 # COPY --from=build /usr/src/app/public ./public
 
 # Expose the port the app runs on
-EXPOSE 3000
-
+ARG PORT
+EXPOSE ${PORT:-3000}
+ 
 # Set the default command to run the NestJS app
 CMD ["node", "dist/main"]
