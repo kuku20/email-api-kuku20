@@ -48,8 +48,9 @@ export class WebhooksService {
     file?:  import('multer').File,
   ) {
     const current = new Date().toISOString().replace(/T.*$/, '');
-    const ticker = botname.split(' ')[0].toUpperCase();
-    const WEBHOOKS = this.WEBHOOKS_ENV[ticker] || this.WEBHOOKS_ENV.Other;
+    const action = botname.split(' ')[0].toUpperCase();
+    const ticker = botname.split(' ')[1].toUpperCase();
+    const WEBHOOKS = this.WEBHOOKS_ENV[action] || this.WEBHOOKS_ENV.Other;
     this.webhookClient = new WebhookClient({url: this.configService.get<any>(WEBHOOKS)});
     // avatarURL: 'https://i.imgur.com/AfFp7pu.png',
     const botAvatar = {
@@ -60,12 +61,13 @@ export class WebhooksService {
     // Dynamically select avatarURL based on the ticker, default to 'Other' if ticker not found
     const selectedAvatar = botAvatar[ticker] || botAvatar.Other;
     // Create the embed object
-    const lastDataJson = JSON.parse(lastData);
-    const selectedFields = ['date', 'close', 'MA200', 'RSI'];
+    const lastDataJson = await this.StopNTarget(JSON.parse(lastData));
+    const selectedFields = ['date', 'close', 'stop', 'target', 'MA200', 'RSI'];
     const embed = new EmbedBuilder()
     .setTitle('LATEST DATA')
     .setColor(0x00ff00)
-    .addFields(...this.createEmbedFields(lastDataJson, selectedFields));
+    .addFields(...this.createEmbedFields(lastDataJson, selectedFields))
+    .addFields({ name: 'URL', value: `http://localhost:4200/price-prediction/${ticker}`, inline: true });
 
     const options: any = {
       username: botname,
@@ -83,14 +85,30 @@ export class WebhooksService {
     }
 
     const sentMessage = await this.webhookClient.send(options);
-    const WEBHOOKS_CNA = this.WEBHOOKS_CN[ticker] || this.WEBHOOKS_CN.Other;
+    const WEBHOOKS_CNA = this.WEBHOOKS_CN[action] || this.WEBHOOKS_CN.Other;
     await this.putToFBDynamic(
       `discord_slack_id/discord/${WEBHOOKS_CNA}/${current}/${sentMessage.id}.json`,
       sentMessage?.id,
     );
     return { msg: 'post to discord success' };
   }
-
+  async StopNTarget(lastdata: any) {
+    const currClose = lastdata?.close; // or whatever key holds the current price
+    if (currClose == null) return lastdata; // safeguard against missing price
+  
+    const RISK_PERCENT = 0.01;
+    const REWARD_RATIO = 2;
+  
+    const stop = +(currClose * (1 - RISK_PERCENT)).toFixed(2);
+    const target = +(currClose + (currClose - stop) * REWARD_RATIO).toFixed(2);
+  
+    // Update lastdata
+    return {
+      ...lastdata,
+      stop,
+      target,
+    };
+  }
   async deleteMessages(ticker: string, current: string) {
     // const current = new Date().toISOString().replace(/T.*$/, '');
     const WEBHOOKS = this.WEBHOOKS_ENV[ticker] || this.WEBHOOKS_ENV.Other;
