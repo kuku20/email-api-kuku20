@@ -61,7 +61,7 @@ export class WebhooksService {
     const selectedAvatar = botAvatar[ticker] || botAvatar.Other;
     // Create the embed object
     const lastDataJson = await this.StopNTarget(JSON.parse(lastData));
-    const selectedFields = ['date', 'close', 'stop', 'target', 'MA200', 'RSI'];
+    const selectedFields = ['date', 'close', 'stop', 'target', 'MA200', 'RSI', 'price','priceAvg200','dayHigh','yearHigh','eps'];
     const embed = new EmbedBuilder()
     .setTitle('LATEST DATA')
     .setColor(0x00ff00)
@@ -74,7 +74,7 @@ export class WebhooksService {
       content: message,
       embeds: [embed],
     };
-  
+
     // ✅ If there's a file (image), attach it
     if (file) {
       const filename = 'capture.png';
