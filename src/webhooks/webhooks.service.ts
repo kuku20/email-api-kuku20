@@ -48,9 +48,8 @@ export class WebhooksService {
     file?:  import('multer').File,
   ) {
     const current = new Date().toISOString().replace(/T.*$/, '');
-    const action = botname.split(' ')[0].toUpperCase();
-    const ticker = botname.split(' ')[1].toUpperCase();
-    const WEBHOOKS = this.WEBHOOKS_ENV[action] || this.WEBHOOKS_ENV.Other;
+    const ticker = botname.split(' ')[0].toUpperCase();
+    const WEBHOOKS = this.WEBHOOKS_ENV[ticker] || this.WEBHOOKS_ENV.Other;
     this.webhookClient = new WebhookClient({url: this.configService.get<any>(WEBHOOKS)});
     // avatarURL: 'https://i.imgur.com/AfFp7pu.png',
     const botAvatar = {
@@ -62,12 +61,12 @@ export class WebhooksService {
     const selectedAvatar = botAvatar[ticker] || botAvatar.Other;
     // Create the embed object
     const lastDataJson = await this.StopNTarget(JSON.parse(lastData));
-    const selectedFields = ['date', 'close', 'stop', 'target', 'MA200', 'RSI'];
+    const selectedFields = ['date', 'close', 'stop', 'target', 'MA200', 'RSI', 'price','priceAvg200','dayHigh','yearHigh','eps'];
     const embed = new EmbedBuilder()
     .setTitle('LATEST DATA')
     .setColor(0x00ff00)
     .addFields(...this.createEmbedFields(lastDataJson, selectedFields))
-    .addFields({ name: 'URL', value: `http://localhost:4200/price-prediction/${ticker}`, inline: true });
+    // .addFields({ name: 'URL', value: `http://localhost:4200/price-prediction/${ticker}`, inline: true });
 
     const options: any = {
       username: botname,
@@ -75,7 +74,7 @@ export class WebhooksService {
       content: message,
       embeds: [embed],
     };
-  
+
     // ✅ If there's a file (image), attach it
     if (file) {
       const filename = 'capture.png';
@@ -85,7 +84,7 @@ export class WebhooksService {
     }
 
     const sentMessage = await this.webhookClient.send(options);
-    const WEBHOOKS_CNA = this.WEBHOOKS_CN[action] || this.WEBHOOKS_CN.Other;
+    const WEBHOOKS_CNA = this.WEBHOOKS_CN[ticker] || this.WEBHOOKS_CN.Other;
     await this.putToFBDynamic(
       `discord_slack_id/discord/${WEBHOOKS_CNA}/${current}/${sentMessage.id}.json`,
       sentMessage?.id,
