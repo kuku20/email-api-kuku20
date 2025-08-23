@@ -330,10 +330,38 @@ export class StockService {
     );
   }
 
-  async getMetric_FINHUB(symbol:string){
+  transformData(data) {
+    const result = {};
+
+    // Loop over each section (annual, quarterly, etc.)
+    for (const [section, metrics] of Object.entries(data)) {
+      const resultMap = {};
+
+      // Loop through each metric inside the section
+      for (const [metric, values] of Object.entries(metrics)) {
+        values.forEach(({ period, v }) => {
+          if (!resultMap[period]) {
+            resultMap[period] = { period };
+          }
+          resultMap[period][metric] = v;
+        });
+      }
+
+      // Convert object to array and assign to section
+      result[section] = Object.values(resultMap);
+    }
+    return result;
+  }
+
+  async getMetric_FINHUB(symbol: string) {
     const BASE_URL = `https://finnhub.io/api/v1/stock/metric?symbol=${symbol}&metric=all&token=`;
-    const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
-    return response?.metric
+    const response = await this.tryCatchF(BASE_URL, "FINNHUB_STOCK_API_KEY");
+    const series = this.transformData(response?.series);
+    const modifireRes = {
+      metric: { ...response.metric },
+      series: { ...series },
+    };
+    return modifireRes;
   }
 
   async fromFinnhub(
@@ -471,7 +499,7 @@ export class StockService {
     this.shuffleArray(keys);
     for (const key of keys) {
       const url = `${BASE_URL}${key}`;
-      
+      console.log(url)
       try {
         const response = await axios.get(url);
         return response.data;
