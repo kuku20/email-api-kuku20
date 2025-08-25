@@ -1,5 +1,6 @@
 import { Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import axios from 'axios';
+
 import { ConfigService, ConfigModule } from '@nestjs/config';
 import { plainToClass, plainToInstance } from 'class-transformer';
 import * as DTO from './dto';
@@ -164,6 +165,35 @@ export class StockService {
     const BASE_URL = `https://financialmodelingprep.com/api/v3/stock/real-time-price?apikey=`;
     const response = await this.tryCatchF(BASE_URL, 'FMP_STOCK_API_KEY');
     return response;
+  }
+
+  async dowjones() {
+    const BASE_URL = `https://financialmodelingprep.com/api/v3/dowjones_constituent?apikey=`;
+    const response = await this.tryCatchF(BASE_URL, 'FMP_STOCK_API_KEY');
+    return response;
+  }
+  
+  async sp500() {
+    const BASE_URL = 'https://api.api-ninjas.com/v1/sp500';
+    // const apiKey = this.configService.get<string>('NINJA_API_KEY');
+    const apiKey = 'my4IY/HJXZjP4+DSTTj7iw==ghW0rI69JQyah8Zh';
+
+    try {
+      const response = await axios.get(BASE_URL, {
+        headers: { 'X-Api-Key': apiKey },
+      });
+      // Transform response: rename ticker -> symbol
+      const data = response.data.map((item: any) => ({
+        ...item,
+        symbol: item.ticker,
+        ticker: undefined, // optional: remove original "ticker"
+      }));
+
+      return data;
+    } catch (error) {
+      console.error('Error fetching S&P 500:', error.message);
+      throw error;
+    }
   }
 
   async bulkrequestsMulCom_FMP(query: string) {
@@ -360,6 +390,7 @@ export class StockService {
     const modifireRes = {
       metric: { ...response.metric },
       series: { ...series },
+      symbol: response.symbol
     };
     return modifireRes;
   }
