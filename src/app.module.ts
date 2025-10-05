@@ -24,6 +24,7 @@ import { StockPortfolioModule } from './stock-portfolio/stock-portfolio.module';
 import { Buy, Deposit, HoldingAmounts, Sell, StockPortfolio, Withdraw, LostDay } from './stock-portfolio/entities';
 import { AiToolModule } from './ai-tool/ai-tool.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
+import { MegaModule } from './mega/mega.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -86,6 +87,7 @@ import { WebhooksModule } from './webhooks/webhooks.module';
     StockPortfolioModule,
     AiToolModule,
     WebhooksModule,
+    MegaModule,
   ],
   controllers: [AppController],
   providers: [AppService],

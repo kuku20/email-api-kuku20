@@ -1,5 +1,6 @@
 import { Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import axios from 'axios';
+
 import { ConfigService, ConfigModule } from '@nestjs/config';
 import { plainToClass, plainToInstance } from 'class-transformer';
 import * as DTO from './dto';
@@ -166,6 +167,35 @@ export class StockService {
     return response;
   }
 
+  async dowjones() {
+    const BASE_URL = `https://financialmodelingprep.com/api/v3/dowjones_constituent?apikey=`;
+    const response = await this.tryCatchF(BASE_URL, 'FMP_STOCK_API_KEY');
+    return response;
+  }
+  
+  async sp500() {
+    const BASE_URL = 'https://api.api-ninjas.com/v1/sp500';
+    // const apiKey = this.configService.get<string>('NINJA_API_KEY');
+    const apiKey = 'my4IY/HJXZjP4+DSTTj7iw==ghW0rI69JQyah8Zh';
+
+    try {
+      const response = await axios.get(BASE_URL, {
+        headers: { 'X-Api-Key': apiKey },
+      });
+      // Transform response: rename ticker -> symbol
+      const data = response.data.map((item: any) => ({
+        ...item,
+        symbol: item.ticker,
+        ticker: undefined, // optional: remove original "ticker"
+      }));
+
+      return data;
+    } catch (error) {
+      console.error('Error fetching S&P 500:', error.message);
+      throw error;
+    }
+  }
+
   async bulkrequestsMulCom_FMP(query: string) {
     //AAPL,FB,GOOG
     const BASE_URL = `https://financialmodelingprep.com/api/v3/quote/${query}?apikey=`;
@@ -330,10 +360,39 @@ export class StockService {
     );
   }
 
-  async getMetric_FINHUB(symbol:string){
+  transformData(data) {
+    const result = {};
+
+    // Loop over each section (annual, quarterly, etc.)
+    for (const [section, metrics] of Object.entries(data)) {
+      const resultMap = {};
+
+      // Loop through each metric inside the section
+      for (const [metric, values] of Object.entries(metrics)) {
+        values.forEach(({ period, v }) => {
+          if (!resultMap[period]) {
+            resultMap[period] = { period };
+          }
+          resultMap[period][metric] = v;
+        });
+      }
+
+      // Convert object to array and assign to section
+      result[section] = Object.values(resultMap);
+    }
+    return result;
+  }
+
+  async getMetric_FINHUB(symbol: string) {
     const BASE_URL = `https://finnhub.io/api/v1/stock/metric?symbol=${symbol}&metric=all&token=`;
-    const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
-    return response?.metric
+    const response = await this.tryCatchF(BASE_URL, "FINNHUB_STOCK_API_KEY");
+    const series = this.transformData(response?.series);
+    const modifireRes = {
+      metric: { ...response.metric },
+      series: { ...series },
+      symbol: response.symbol
+    };
+    return modifireRes;
   }
 
   async fromFinnhub(
@@ -471,7 +530,7 @@ export class StockService {
     this.shuffleArray(keys);
     for (const key of keys) {
       const url = `${BASE_URL}${key}`;
-      
+      console.log(url)
       try {
         const response = await axios.get(url);
         return response.data;

@@ -145,7 +145,8 @@ export class AiToolService {
       symbol: stockTicker,
       data,
     };
-    const metric =  await this.stockService.getMetric_FINHUB(stockTicker);
+    const fullBasicFinancial = await this.stockService.getMetric_FINHUB(stockTicker);
+    const metric = fullBasicFinancial?.metric 
 
     const systemContent = message ? message: `I give the data on share prices over in the data, write a report of no more than 400 words describing the stocks performance and recommending whether to buy, hold or sell:`;
     const askGemini ='And the metric of this: ' + JSON.stringify(metric) +  systemContent +  JSON.stringify(datatoString) ;

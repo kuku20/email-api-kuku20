@@ -272,6 +272,19 @@ export class StockController {
     }
   }
 
+  @Get('/dowjones')
+  async dowjones(  @Query('source') source: string,) {
+    try {
+      let data
+      if(source==='sp500'){data = await this.stockService.sp500();}else{data =   await this.stockService.dowjones();}
+      return data;
+    } catch (error) {
+      // Handle errors here
+      throw error;
+    }
+  }
+
+
   @Post('/getfbdata')
   async getDataTest(@Body() dataIn: any) {
     const { path, ticker, date } = dataIn;
