@@ -11,9 +11,12 @@ async function bootstrap() {
     // const seedService = app.get(SeedService);
   // await seedService.seedData();
   app.enableCors({
-    origin: ['https://audio-for-you.web.app','https://onlinebuyer.web.app','https://stockmarkets000.web.app','https://lewisluu.web.app','https://locluu.web.app','https://lucasluu.web.app'],
+    origin: ['http://localhost:4200','http://localhost:3001','https://audio-for-you.web.app','https://onlinebuyer.web.app','https://stockmarkets000.web.app','https://lewisluu.web.app','https://locluu.web.app','https://lucasluu.web.app'],
     // origin: '*',
     credentials: true,
+    methods: 'GET,PUT,POST,DELETE,HEAD,OPTIONS',
+    allowedHeaders: ['Content-Type', 'Range'],
+    exposedHeaders: ['Content-Range', 'Accept-Ranges', 'Content-Length'],
   });
   app.use(cookieParser());
   app.use(cookieSession({
