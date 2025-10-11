@@ -61,8 +61,8 @@ curl --location --request GET '{{rootUrl}}/stock/realtimefb-multiple/earncal?dat
 @newfhep = /fh
 # @newfhep = 
 ### Get current price
-# curl --location '{{rootUrl}}/stock/v2/realtimeprice?stockTicker=ROKU'
-curl --location '{{rootUrl}}/stock{{newfhep}}/realtimeprice?stockTicker=ROKU'
+# curl --location '{{rootUrl}}/stock/v2/realtimeprice?stockTicker=TSLA'
+curl --location '{{rootUrl}}/stock{{newfhep}}/realtimeprice?stockTicker=TSLA'
 ### get insider transactions
 curl --location '{{rootUrl}}/stock{{newfhep}}/insider-transactions?stockTicker=ROKU'
 
@@ -96,7 +96,7 @@ curl --location '{{rootUrl}}/stock{{newfhep}}/multiple-recommendation?stockTicke
 curl --location '{{rootUrl}}/stock{{newpoep}}/typeahead?stockTicker=BILL'
 
 ### Get divident
-curl --location '{{rootUrl}}/stock{{newpoep}}/dividends?stockTicker=AAL'
+curl --location '{{rootUrl}}/stock{{newpoep}}/dividends?stockTicker=UNH'
 
 ### get price by day
 curl --location '{{rootUrl}}/stock{{newpoep}}/byday?stockTicker=AAL'
@@ -115,7 +115,7 @@ curl --location 'https://seekingalpha.com/api/v3/earnings_calendar/tickers?filte
 ####FMP
 @newfmep = /fm
 ### Get current price
-curl --location '{{rootUrl}}/stock{{newfmep}}/realtimeprice?stockTicker=ROKU'
+curl --location '{{rootUrl}}/stock{{newfmep}}/realtimeprice?stockTicker=BTCUSD'
 ### get all current price
 curl --location '{{rootUrl}}/stock{{newfmep}}/realtimepriceall'
 ### get multiple-company-prices
@@ -130,32 +130,36 @@ Host: localhost:3000
 
 
 @timespanfmp = historical-chart
-@fmprange =5min
+@fmprange =1min
 # 1min, 5min, 15min, 30min, 1hour, 4hour
 
-@timespanpolygon = day
+@timespanpolygon = minute
 #  second minute hour day week month quarter year
 ### get all data for chart form Polygon max 2 year
-curl --location '{{rootUrl}}/stock/chartdata/{{timespanpolygon}}?stockTicker=BYON&range=1&start=2023-10-24&end=2024-10-24&limit=50000'
+@ticker = QQQ
+curl --location '{{rootUrl}}/stock/chartdata/{{timespanpolygon}}?stockTicker={{ticker}}&range=1&start=2024-10-24&end=2025-10-24&limit=50000'
 
 ### get all data for mprange =5min
-curl --location '{{rootUrl}}/stock/chartdata/{{timespanfmp}}?stockTicker=QQQ&range={{fmprange}}&start=2022-02-11&end=2023-02-12&limit=50000'
+curl --location '{{rootUrl}}/stock/chartdata/{{timespanfmp}}?stockTicker=QQQ&range={{fmprange}}&start=2024-02-11&end=2025-12-12&limit=50000'
 
 ### get all data daily chart form FMp max 5 year
-curl --location '{{rootUrl}}/stock/daily-chart?stockTicker=BYON&start=2024-10-23&end=2024-10-24'
+curl --location '{{rootUrl}}/stock/daily-chart?stockTicker=TSLA&start=2024-10-23&end=2024-10-24'
 
+###
 @srcEndPoint = po
 ## po, fm
 ### get data for chart with start day and end day
-curl --location '{{rootUrl}}/stock/chartdata/v2/{{srcEndPoint}}?stockTicker=BYON&start=2023-10-20&end=2024-10-24'
+curl --location '{{rootUrl}}/stock/chartdata/v2/{{srcEndPoint}}?stockTicker=QQQ&start=2024-01-20&end=2025-10-24'
 
 
 ### get metric from finhub
-curl --location '{{rootUrl}}/stock/metric/QQQ'
+curl --location '{{rootUrl}}/stock/metric/MRK'
 
+### get dowjones list
+curl --location '{{rootUrl}}/stock/dowjones?source=sp500'
 
 ###
-curl 'http://localhost:3000/stock/chartdata/v2/fm?stockTicker=QQQ&start=2023-11-02&end=2024-11-01'
+curl 'http://localhost:3000/stock/chartdata/v2/fm?stockTicker=QQQ&start=2024-11-15&end=2024-11-16'
 
 ###
 curl 'http://localhost:3000/stock/chartdata/v2/fm?stockTicker=QQQ&start=2024-11-03&end=2024-11-04'
@@ -171,28 +175,89 @@ curl --location '{{rootUrl}}/stock/getfbdata' \
 # /eyJhbGciOiJSUzI1NiIsImtpZCI6ImE2YzYzNTNm/history2/15min-modifire/QQQ/2024-10-16
 
 ### POST data daily from firebasePOST /stock/postfbdata HTTP/1.1
-Host: localhost:3000
-content-type: application/json
-host: localhost:3000
-user-agent: vscode-restclient
-Content-Length: 447
-
-{
+curl -X POST http://localhost:3000/stock/postfbdata \
+  -H "Content-Type: application/json" \
+  -H "User-Agent: vscode-restclient" \
+  -d '{
     "path": "newNed/hihi",
     "ticker": "QQQ",
     "date": "2024-11-18",
     "data": {
-        "buy": {
-            "2024-11-04 09:30:00": {
-                "open": 486.82,
-                "low": 486.76,
-                "high": 487.32,
-                "close": 486.96,
-                "volume": 317806,
-                "MACDLine": null,
-                "SignalLine": "N/A",
-                "MACDHistogram": "N/A"
-            }
+      "buy": {
+        "2024-11-04 09:30:00": {
+          "open": 486.82,
+          "low": 486.76,
+          "high": 487.32,
+          "close": 486.96,
+          "volume": 317806,
+          "MACDLine": null,
+          "SignalLine": "N/A",
+          "MACDHistogram": "N/A"
         }
+      }
     }
-}
+  }'
+
+
+###
+http://localhost:3000/stock/chartdata/v2/fm?stockTicker=TSLA&start=2024-11-12&end=2024-11-13
+
+
+###
+
+### POST firebasePOST 
+curl -X POST http://localhost:3000/stock/firebase-api \
+  -H "Content-Type: application/json" \
+  -H "User-Agent: vscode-restclient" \
+  -d '{
+    "path": "history/1min",
+    "method":"put",
+    "data": {
+      "buy": {
+        "2024-11-04 09:30:00": {
+          "open": 486.82,
+          "low": 486.76,
+          "high": 487.32,
+          "close": 486.96,
+          "volume": 317806,
+          "MACDLine": null,
+          "SignalLine": "N/A",
+          "MACDHistogram": "N/A"
+        }
+      }
+    }
+  }'
+
+
+### GET firebasePOST 
+curl -X POST http://localhost:3000/stock/firebase-api \
+  -H "Content-Type: application/json" \
+  -H "User-Agent: vscode-restclient" \
+  -d '{
+    "path": "history",
+    "method":"put",
+    "data": {
+      "buy": {
+        "2024-11-04 09:30:00": {
+          "open": 486.82,
+          "low": 486.76,
+          "high": 487.32,
+          "close": 486.96,
+          "volume": 317806,
+          "MACDLine": null,
+          "SignalLine": "N/A",
+          "MACDHistogram": "N/A"
+        }
+      }
+    }
+  }'
+
+
+@endpoint = po
+@ticker = SMCI
+# @timefame = 1day
+# @timefame = 1hour
+@timefame = 5min
+# @timefame = 15min
+### get local
+curl --location '{{rootUrl}}/stock/local/{{endpoint}}?ticker={{ticker}}&timefame={{timefame}}'

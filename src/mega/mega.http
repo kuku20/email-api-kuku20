@@ -1,0 +1,4 @@
+@path=http://localhost:3000
+# @path=https://my-api-all.adaptable.app
+### signout
+curl --location '{{path}}/stream/audio?url=https%3A%2F%2Fmega.nz%2Ffile%2F9fZxHA4R%23CX_5z1CpEpYnHwPJYN_zEIri3SrQPa_VR_XkmpSUbsw'

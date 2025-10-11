@@ -14,7 +14,7 @@ async function bootstrap() {
     origin: ['http://localhost:4200','http://localhost:3001','https://audio-for-you.web.app','https://onlinebuyer.web.app','https://stockmarkets000.web.app','https://lewisluu.web.app','https://locluu.web.app','https://lucasluu.web.app'],
     // origin: '*',
     credentials: true,
-    methods: 'GET,PUT,POST,DELETE,HEAD,OPTIONS',
+    methods: 'GET,PUT,POST,DELETE,HEAD,OPTIONS,PATCH',
     allowedHeaders: ['Content-Type', 'Range'],
     exposedHeaders: ['Content-Range', 'Accept-Ranges', 'Content-Length'],
   });

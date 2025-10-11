@@ -12,10 +12,11 @@ import { StockService } from './stock.service';
 import { JwtGuard } from 'src/auth/guard';
 import { AdminUserAuthGuard } from 'src/stock-user/guard';
 import * as RequestDTO from './dto/sourceData';
+import { LocalPLWR } from './runlocal.service';
 
 @Controller('stock')
 export class StockController {
-  constructor(private readonly stockService: StockService,) {}
+  constructor(private readonly stockService: StockService, private readonly loacl: LocalPLWR) {}
 
   @Get('/news-fb/:db') //news-alpha-vantage
   async tickerNews_AV_FirebaseGet(
@@ -271,7 +272,7 @@ export class StockController {
       throw error;
     }
   }
-
+  
   @Get('/dowjones')
   async dowjones(  @Query('source') source: string,) {
     try {
@@ -320,5 +321,23 @@ export class StockController {
       throw error;
     }
   }
-}
 
+  @Get('/local/:src_api')
+  async local(
+  @Param() params: RequestDTO.SrcApiDto,
+  @Query('ticker') ticker: string,
+  @Query('timefame') timefame: string,
+  ) {
+    try {
+      let data
+      if(params.src_api === RequestDTO.SRC_API.PO){
+        data =  await this.loacl.getTickerFullChart_POLYGON(ticker,timefame);
+      }else{
+        data =  await this.loacl.getTickerFullChart_FMP(ticker,timefame);
+      }
+      return data;
+    } catch (error) {
+      throw error;
+    }
+    }
+  }
