@@ -21,22 +21,24 @@ export class LocalPLWR {
    * @param timefame  1day, 4hour, 1hour, 15min, 5min
    * @returns
    */
+  
   async getTickerFullChart_POLYGON(ticker: string, timefame: string) {
     let range, timespan;
-    const dayend = this.stockHelperService.getDateNDaysAgo(-1);
+    const daytestBF = 0
+    const dayend = this.stockHelperService.getDateNDaysAgo(-1 + daytestBF);
     let dayStart;
 
     if (timefame.includes('day')) {
       timespan = 'day';
       range = timefame.match(/\d+/)[0];
-      dayStart = this.stockHelperService.getDateNDaysAgo(700);
+      dayStart = this.stockHelperService.getDateNDaysAgo(700 + daytestBF);
     } else if (timefame.includes('hour')) {
       timespan = 'hour';
-      dayStart = this.stockHelperService.getDateNDaysAgo(100);
+      dayStart = this.stockHelperService.getDateNDaysAgo(100 + daytestBF);
       range = timefame.match(/\d+/)[0];
     } else if (timefame.includes('min')) {
       timespan = 'minute';
-      dayStart = this.stockHelperService.getDateNDaysAgo(35);
+      dayStart = this.stockHelperService.getDateNDaysAgo(35 + daytestBF);
       range = timefame.match(/\d+/)[0];
     }
     // return {
@@ -60,21 +62,22 @@ export class LocalPLWR {
    * @returns
    */
   async getTickerFullChart_FMP(ticker: string, timefame: string) {
-    const dayend = this.stockHelperService.getDateNDaysAgo(-1);
+    const daytestBF = 0
+    const dayend = this.stockHelperService.getDateNDaysAgo(-1  + daytestBF);
     let dayStart;
     if (timefame.includes('4hour')) {
-      dayStart = this.stockHelperService.getDateNDaysAgo(120);
+      dayStart = this.stockHelperService.getDateNDaysAgo(120  + daytestBF);
     } else if (timefame.includes('1hour')) {
-      dayStart = this.stockHelperService.getDateNDaysAgo(55);
+      dayStart = this.stockHelperService.getDateNDaysAgo(55  + daytestBF);
     } else if (timefame.includes('15min')) {
-      dayStart = this.stockHelperService.getDateNDaysAgo(20);
+      dayStart = this.stockHelperService.getDateNDaysAgo(20  + daytestBF);
     }else if (timefame.includes('5min')) {
-      dayStart = this.stockHelperService.getDateNDaysAgo(7);
+      dayStart = this.stockHelperService.getDateNDaysAgo(7 + daytestBF);
     }
 
     let BASE_URL = `https://financialmodelingprep.com/api/v3/historical-chart/${timefame}/${ticker}?from=${dayStart}&to=${dayend}&apikey=`;
     if (timefame.includes('day')) {
-      dayStart = this.stockHelperService.getDateNDaysAgo(365);
+      dayStart = this.stockHelperService.getDateNDaysAgo(365  + daytestBF);
       return this.getTickerDailyChart_FMP(ticker, dayStart, dayend);
     }
     const today = new Date().toISOString().replace(/T.*$/, '');
