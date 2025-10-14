@@ -183,6 +183,7 @@ export class StockHelperService {
       currentEndDate = new Date(currentStartDate);
       currentEndDate.setDate(currentEndDate.getDate() - 1);
     }
+    console.log(ranges)
     return ranges;
   }
 
@@ -238,5 +239,16 @@ async getDateThreeDaysAgo(dateString: string) {
   
   return `${year}-${month}-${day}`;
 }
+formatDate(date: any) {
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
 
+getDateNDaysAgo(n: number) {
+  const now = new Date(); // current date and time
+  now.setDate(now.getDate() - n); // subtract n days
+  return this.formatDate(now);
+}
 }
