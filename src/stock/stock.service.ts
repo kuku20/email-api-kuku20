@@ -539,7 +539,7 @@ export class StockService {
           // Handle 500 error
           console.error(
             `Internal Server Error with key `,
-            error?.response?.data,
+            error?.response
           );
         } else {
           // Handle other errors
