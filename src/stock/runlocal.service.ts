@@ -46,7 +46,6 @@ export class LocalPLWR {
     // }
     const urls = `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${dayStart}/${dayend}?adjusted=true&sort=desc&limit=50000&apiKey=`;
 
-    console.log(urls);
     const responsesArray = await this.tryCatchF(urls, 'POLYGON_STOCK_API_KEY');
     const response = plainToClass(DTO.ChartOutPolygonDto, responsesArray.results);
     return response;

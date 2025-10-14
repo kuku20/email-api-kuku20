@@ -14,7 +14,7 @@ async function bootstrap() {
     app.use(express.json({ limit: '10mb' }));
     app.use(express.urlencoded({ limit: '10mb', extended: true }));
   app.enableCors({
-    origin: ['http://localhost:4200','http://localhost:3001','https://audio-for-you.web.app','https://onlinebuyer.web.app','https://stockmarkets000.web.app','https://lewisluu.web.app','https://locluu.web.app','https://lucasluu.web.app'],
+    origin: ['http://localhost:4200','http://localhost:3001','https://stock-chart-abc.web.app','https://audio-for-you.web.app','https://onlinebuyer.web.app','https://stockmarkets000.web.app','https://lewisluu.web.app','https://locluu.web.app','https://lucasluu.web.app'],
     // origin: '*',
     credentials: true,
     methods: 'GET,PUT,POST,DELETE,HEAD,OPTIONS,PATCH',
