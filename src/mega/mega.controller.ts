@@ -2,15 +2,15 @@ import { Controller, Get, Query, Res, HttpStatus, Req } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { File } from 'megajs';
 
-@Controller('mega')
+@Controller('stream')
 export class MegaController {
-  @Get('stream')
+  @Get('audio')
   async stream(@Query('url') megaUrl: string, @Req() req: Request, @Res() res: Response) {
-    const file = File.fromURL(megaUrl);
+    const megaRoot = 'https://mega.nz/file/'
+    const file = File.fromURL(megaRoot+megaUrl);
     await file.loadAttributes();
     const fileSize = file.size;
     const range = req.headers.range;
-  
     if (!range) {
       res.writeHead(200, {
         'Content-Length': fileSize,
