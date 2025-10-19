@@ -6,14 +6,15 @@ import {
   Patch,
   Query,
   UseGuards,
-  Post
+  Post,
+  Req
 } from '@nestjs/common';
 import { StockService } from './stock.service';
 import { JwtGuard } from 'src/auth/guard';
 import { AdminUserAuthGuard } from 'src/stock-user/guard';
 import * as RequestDTO from './dto/sourceData';
 import { LocalPLWR } from './runlocal.service';
-
+import { Request } from 'express';
 @Controller('stock')
 export class StockController {
   constructor(private readonly stockService: StockService, private readonly loacl: LocalPLWR) {}
@@ -327,13 +328,15 @@ export class StockController {
   @Param() params: RequestDTO.SrcApiDto,
   @Query('ticker') ticker: string,
   @Query('timefame') timefame: string,
+  @Req() req: Request, // <--- Import from express
   ) {
     try {
+      const localhost = `${req.get('host')}`.includes('localhost');
       let data
-      if(params.src_api === RequestDTO.SRC_API.PO){
-        data =  await this.loacl.getTickerFullChart_POLYGON(ticker,timefame);
-      }else{
+      if(params.src_api === RequestDTO.SRC_API.FM && localhost){
         data =  await this.loacl.getTickerFullChart_FMP(ticker,timefame);
+      }else{
+        data =  await this.loacl.getTickerFullChart_POLYGON(ticker,timefame);
       }
       return data;
     } catch (error) {

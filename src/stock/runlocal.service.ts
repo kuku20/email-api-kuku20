@@ -72,6 +72,8 @@ export class LocalPLWR {
       dayStart = this.stockHelperService.getDateNDaysAgo(20  + daytestBF);
     }else if (timefame.includes('5min')) {
       dayStart = this.stockHelperService.getDateNDaysAgo(7 + daytestBF);
+    }else if (timefame.includes('1min')) {
+      dayStart = this.stockHelperService.getDateNDaysAgo(7 + daytestBF);
     }
 
     let BASE_URL = `https://financialmodelingprep.com/api/v3/historical-chart/${timefame}/${ticker}?from=${dayStart}&to=${dayend}&apikey=`;

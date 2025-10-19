@@ -11,6 +11,8 @@ export class WebhooksService {
     BUY: 'DISCORD_WEBHOOKS_BUYSELL',
     SELL: 'DISCORD_WEBHOOKS_BUYSELL',
     BUYSELL: 'DISCORD_WEBHOOKS_BUYSELL',
+    RSIALERT: 'DISCORD_WEBHOOKS_RSIALERT',
+    RSI25AL: 'DISCORD_WEBHOOKS_RSI25AL',
     Other: `DISCORD_WEBHOOKS`,
   };
 
@@ -20,6 +22,8 @@ export class WebhooksService {
     BUY: 'BUYSELL',
     SELL: 'BUYSELL',
     BUYSELL: 'BUYSELL',
+    RSIALERT: 'RSIALERT',
+    RSI25AL: 'RSI25AL',
     Other: `Other`,
   };
   constructor(private readonly configService: ConfigService) {}
