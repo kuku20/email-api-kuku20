@@ -60,6 +60,7 @@ export class WebhooksController {
   ) {
     try {
       const stockchartabc = `${req.get('host')}`.includes('stock-chart-abc.web.app');
+      console.log(stockchartabc,`${req.get('host')}`)
       if(!stockchartabc) return null
       return await this.webhooksService.sendDiscordNotification(
         message,
