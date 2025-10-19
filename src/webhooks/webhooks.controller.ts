@@ -1,9 +1,9 @@
-import { Controller, Post, Body, UseGuards, UploadedFile, UseInterceptors, Req } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { WebhooksService } from './webhooks.service';
 import { JwtGuard } from 'src/auth/guard';
 import { AdminUserAuthGuard } from 'src/stock-user/guard';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Request } from 'express';
+
 // @UseGuards(JwtGuard)
 @Controller('webhooks')
 export class WebhooksController {
@@ -30,13 +30,14 @@ export class WebhooksController {
       throw err;
     }
   }
-  
+
   @UseGuards(JwtGuard)
   @Post('slack')
   async sendSlackNotification(@Body('message') message: string) {
     const result = await this.webhooksService.sendSlackNotification(message);
     return result;
   }
+
 
   @UseGuards(JwtGuard)
   @UseGuards(AdminUserAuthGuard)
@@ -49,19 +50,16 @@ export class WebhooksController {
     return result;
   }
 
-  @Post('stockchartabc')
+  @Post('temporary')
   @UseInterceptors(FileInterceptor('file'))
-  async stockchartabc(
+  async temporary(
     @UploadedFile() file: import('multer').File,
     @Body('message') message: string,
     @Body('botname') botname: string,
     @Body('lastdata') lastdata: string,
-    @Req() req: Request, // <--- Import from express
   ) {
     try {
-      const stockchartabc = `${req.get('host')}`.includes('stock-chart-abc.web.app');
-      console.log(stockchartabc,`${req.get('host')}`)
-      if(!stockchartabc) return null
+      if(!botname.includes('RSI')) return null
       return await this.webhooksService.sendDiscordNotification(
         message,
         botname,
@@ -73,4 +71,5 @@ export class WebhooksController {
       throw err;
     }
   }
+
 }
