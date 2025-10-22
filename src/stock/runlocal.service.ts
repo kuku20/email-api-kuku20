@@ -1,19 +1,19 @@
 import {
   Injectable,
-  NotAcceptableException,
-  NotFoundException,
 } from '@nestjs/common';
 import axios from 'axios';
 
-import { ConfigService, ConfigModule } from '@nestjs/config';
-import { plainToClass, plainToInstance } from 'class-transformer';
+import { ConfigService,  } from '@nestjs/config';
+import { plainToClass, } from 'class-transformer';
 import * as DTO from './dto';
 import { StockHelperService } from './stockHelper.service';
+import { AlphavantageService } from 'src/alphavantage/alphavantage.service';
 @Injectable()
 export class LocalPLWR {
   constructor(
     private readonly configService: ConfigService,
     private readonly stockHelperService: StockHelperService,
+    private readonly alphavantageService: AlphavantageService
   ) {}
   /**
    *
@@ -45,8 +45,11 @@ export class LocalPLWR {
     //   dayStart,range,timespan, dayend
     // }
     const urls = `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${dayStart}/${dayend}?adjusted=true&sort=desc&limit=50000&apiKey=`;
-
+    if (timefame.includes('weekly')|| timefame.includes('monthly')) {
+      return this.alphavantageService.weekORmonthly(ticker, timefame);
+    }
     const responsesArray = await this.tryCatchF(urls, 'POLYGON_STOCK_API_KEY');
+    // return responsesArray.results
     const response = plainToClass(DTO.ChartOutPolygonDto, responsesArray.results);
     return response;
     // const result = await this.stockHelperService.returnNewData(response);
@@ -80,6 +83,9 @@ export class LocalPLWR {
     if (timefame.includes('day')) {
       dayStart = this.stockHelperService.getDateNDaysAgo(365  + daytestBF);
       return this.getTickerDailyChart_FMP(ticker, dayStart, dayend);
+    }
+    if (timefame.includes('weekly')|| timefame.includes('monthly')) {
+      return this.alphavantageService.weekORmonthly(ticker, timefame);
     }
     const today = new Date().toISOString().replace(/T.*$/, '');
     const checkToday = await this.stockHelperService.calculateDaysBetween(

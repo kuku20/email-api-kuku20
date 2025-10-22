@@ -6,6 +6,15 @@
 @ticker = BUYSELL
 
 
+### Sign IN
+curl --location 'http://localhost:3000/auth/v2/signin' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "email": "bob@test.com",
+    "password": "Pa$$w0rd",
+    "isAdmin": true
+}'
+
 ### Sent through Slack
 curl --location '{{rootUrl}}/webhooks/slack' \
 --header 'Content-Type: application/json' \
@@ -26,6 +35,14 @@ curl --location '{{rootUrl}}/webhooks/discord' \
 
 ### Delete discord mess by api
 curl --location '{{rootUrl}}/webhooks/delete-messages' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "ticker":"{{ticker}}",
+    "date": "2025-06-04"
+}'
+
+### Delete discord mess by api
+curl --location '{{rootUrl}}/webhooks/delete-messages-all' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "ticker":"{{ticker}}",
