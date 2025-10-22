@@ -13,6 +13,7 @@ export class WebhooksService {
     BUYSELL: 'DISCORD_WEBHOOKS_BUYSELL',
     RSIALERT: 'DISCORD_WEBHOOKS_RSIALERT',
     RSI25AL: 'DISCORD_WEBHOOKS_RSI25AL',
+    WATCHLIST: 'DISCORD_WEBHOOKS_WATCHLIST',
     Other: `DISCORD_WEBHOOKS`,
   };
 
@@ -24,6 +25,7 @@ export class WebhooksService {
     BUYSELL: 'BUYSELL',
     RSIALERT: 'RSIALERT',
     RSI25AL: 'RSI25AL',
+    WATCHLIST: 'WATCHLIST',
     Other: `Other`,
   };
   constructor(private readonly configService: ConfigService) {}
@@ -52,8 +54,9 @@ export class WebhooksService {
     file?:  import('multer').File,
   ) {
     const current = new Date().toISOString().replace(/T.*$/, '');
-    const ticker = botname.split(' ')[0].toUpperCase();
-    const WEBHOOKS = this.WEBHOOKS_ENV[ticker] || this.WEBHOOKS_ENV.Other;
+    const ticker = botname.split(' ')[1].toUpperCase();
+    const webhookCl = botname.split(' ')[0].toUpperCase();
+    const WEBHOOKS = this.WEBHOOKS_ENV[webhookCl] || this.WEBHOOKS_ENV.Other;
     this.webhookClient = new WebhookClient({url: this.configService.get<any>(WEBHOOKS)});
     // avatarURL: 'https://i.imgur.com/AfFp7pu.png',
     const botAvatar = {
@@ -64,20 +67,38 @@ export class WebhooksService {
     // Dynamically select avatarURL based on the ticker, default to 'Other' if ticker not found
     const selectedAvatar = botAvatar[ticker] || botAvatar.Other;
     // Create the embed object
-    const lastDataJson = await this.StopNTarget(JSON.parse(lastData));
-    const selectedFields = ['date', 'close', 'stop', 'target', 'MA200', 'RSI', 'price','priceAvg200','dayHigh','yearHigh','eps'];
-    const embed = new EmbedBuilder()
-    .setTitle('LATEST DATA')
-    .setColor(0x00ff00)
-    .addFields(...this.createEmbedFields(lastDataJson, selectedFields))
-    // .addFields({ name: 'URL', value: `http://localhost:4200/price-prediction/${ticker}`, inline: true });
+    let embed 
+    let options:any
+    const botdt = botname.split(' ').slice(1).join(' ');
+    const color = botdt.includes('DOWN')? 0xff0000 : 0x00ff00 
+    const setmess = `**[localhost:4200](http://localhost:4200/price-log/${ticker})** | **[localhost:3001](http://localhost:3001/?stockTicker=${ticker})** | **[stock-chart-abc.web.app](https://stock-chart-abc.web.app/?stockTicker=${ticker})** | **[stockmarkets000.web.app](https://stockmarkets000.web.app//price-log/${ticker})** | **[TradingView](https://www.tradingview.com/chart/mWoCISmu/?symbol=${ticker})**`
+    if(lastData === '{}'){
+      embed = new EmbedBuilder()
+      .setColor(color)
+      .addFields({ name: botdt, value: setmess, inline: false });
+      options = {
+        username: botdt,
+        avatarURL: selectedAvatar,
+        embeds: [embed],
+      };
+    } else{
+      const lastDataJson = await this.StopNTarget(JSON.parse(lastData));
+      const selectedFields = ['date', 'close', 'stop', 'target', 'MA200', 'RSI', 'price','priceAvg200','dayHigh','yearHigh','eps', 'rsi','ema200'];
+      
+      embed = new EmbedBuilder()
+      .setTitle('LATEST DATA')
+      .setColor(color)
+      .addFields({ name: botdt, value: setmess, inline: false })
+      .addFields(...this.createEmbedFields(lastDataJson, selectedFields))
+      // .addFields({ name: 'URL', value: `http://localhost:4200/price-prediction/${ticker}`, inline: true });
+      options = {
+        username: botdt,
+        avatarURL: selectedAvatar,
+        content: message,
+        embeds: [embed],
+      };
+    }
 
-    const options: any = {
-      username: botname,
-      avatarURL: selectedAvatar,
-      content: message,
-      embeds: [embed],
-    };
 
     // ✅ If there's a file (image), attach it
     if (file) {
@@ -88,12 +109,12 @@ export class WebhooksService {
     }
 
     const sentMessage = await this.webhookClient.send(options);
-    const WEBHOOKS_CNA = this.WEBHOOKS_CN[ticker] || this.WEBHOOKS_CN.Other;
+    const WEBHOOKS_CNA = this.WEBHOOKS_CN[webhookCl] || this.WEBHOOKS_CN.Other;
     await this.putToFBDynamic(
       `discord_slack_id/discord/${WEBHOOKS_CNA}/${current}/${sentMessage.id}.json`,
       sentMessage?.id,
     );
-    return { msg: 'post to discord success' };
+    return { msg: 'post to discord success' ,...sentMessage};
   }
   async StopNTarget(lastdata: any) {
     const currClose = lastdata?.close; // or whatever key holds the current price
@@ -112,23 +133,22 @@ export class WebhooksService {
       target,
     };
   }
-  async deleteMessages(ticker: string, current: string) {
+  async deleteMessages(webhookCl: string, current: string) {
     // const current = new Date().toISOString().replace(/T.*$/, '');
-    const WEBHOOKS = this.WEBHOOKS_ENV[ticker] || this.WEBHOOKS_ENV.Other;
+    const WEBHOOKS = this.WEBHOOKS_ENV[webhookCl] || this.WEBHOOKS_ENV.Other;
     this.webhookClient = new WebhookClient({
       url: this.configService.get<any>(WEBHOOKS),
     });
-    const WEBHOOKS_CNA = this.WEBHOOKS_CN[ticker] || this.WEBHOOKS_CN.Other;
+    const WEBHOOKS_CNA = this.WEBHOOKS_CN[webhookCl] || this.WEBHOOKS_CN.Other;
     const getIdsOb = await this.getFromFBDynamic(
       `discord_slack_id/discord/${WEBHOOKS_CNA}/${current}.json`,
     );
     const Ids = Object.keys(getIdsOb)
-
     if (Ids.length === 0) return { msg: 'nothing to delete' };
     for (const messageId of Ids) {
       try {
         await this.webhookClient.deleteMessage(messageId);
-        const WEBHOOKS_CNA = this.WEBHOOKS_CN[ticker] || this.WEBHOOKS_CN.Other;
+        const WEBHOOKS_CNA = this.WEBHOOKS_CN[webhookCl] || this.WEBHOOKS_CN.Other;
         await this.deleteInFB(`discord_slack_id/discord/${WEBHOOKS_CNA}/${current}/${messageId}.json`,);
       } catch (error) {
         if (error.code === 'MESSAGE_NOT_FOUND') {
@@ -181,16 +201,82 @@ export class WebhooksService {
       });
   }
   
-  createEmbedFields(data:unknown, fields) {
-    return fields.map((field) => {
-      if(data[field])
-      return (
-        {
-          name: field?.toUpperCase(), 
-          value: data[field]?.toString(), 
-          inline: true, 
+  createEmbedFields(data: Record<string, any>, fields: string[]) {
+    return fields
+      .map((field) => {
+        const value = data[field];
+        if (value === undefined || value === null) return;
+        let formattedValue: string;
+        if (typeof value === 'number') {
+          // Format numbers with 2 decimals
+          formattedValue = value.toFixed(2);
+        } else if (field.toLowerCase() === 'date') {
+          // Format ISO date strings to short readable form
+          const date = new Date(value);
+          formattedValue = date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          }); // e.g., "October 20, 2025"
+        } else {
+          formattedValue = value.toString();
         }
-      )
-    }).filter((item: any)=>item!== undefined);
+        return {
+          name: field.toUpperCase(),
+          value: formattedValue,
+          inline: true,
+        };
+      })
+      .filter((item): item is { name: string; value: string; inline: boolean } => item !== undefined);
+  }
+  
+
+  async bulkDelete() {
+
+    const getIds = await this.getFromFBDynamic(
+      `discord_slack_id/discord.json`,
+    );
+    await this.webhookClient.deleteMessage('1427861642263396400');
+
+    
+    // console.log(getIdsOb)
+    const WEBHOOKS_CNA_ALL = Object.keys(getIds)
+    const WEBHOOKS_CNA_ALL_VALUE = Object.values(getIds)
+    // for (let i = 0; i < WEBHOOKS_CNA_ALL.length; i++) {
+    //   try {
+    //     const WEBHOOKS_CNA = WEBHOOKS_CNA_ALL[i]
+    //     const current_date_all = Object.keys(WEBHOOKS_CNA_ALL_VALUE[i])
+    //     console.log(WEBHOOKS_CNA)
+    //     console.log(current_date_all)
+    //     for (let current = 0; current < current_date_all.length; current++) {
+    //       const getIdsOb = await this.getFromFBDynamic(
+    //         `discord_slack_id/discord/${WEBHOOKS_CNA}/${current_date_all[current]}.json`,
+    //       );
+    //       const Ids = Object.keys(getIdsOb)
+    //       // console.log(Ids)
+    //       for (const messageId of Ids) {
+    //         try {
+    //           console.log(messageId)
+    //           console.log(`discord_slack_id/discord/${WEBHOOKS_CNA}/${current_date_all[current]}/${messageId}.json`)
+    //           // await this.webhookClient.deleteMessage(messageId);
+    //           // await this.deleteInFB(`discord_slack_id/discord/${WEBHOOKS_CNA}/${current_date_all[current]}/${messageId}.json`,);
+    //         } catch (error) {
+    //           if (error.code === 'MESSAGE_NOT_FOUND') {
+    //             console.log(`Message ${messageId} does not exist.`);
+    //           } else {
+    //             console.log(`Error deleting message ${messageId},${error}`);
+    //           }
+    //         }
+    //       }
+    //     }
+    //   } catch (error) {
+    //     if (error.code === 'MESSAGE_NOT_FOUND') {
+    //       // console.log(`Message ${messageId} does not exist.`);
+    //     } else {
+    //       // console.log(`Error deleting message ${messageId}`);
+    //     }
+    //   }
+    // }
+    return { msg: 'delete complete' };
   }
 }

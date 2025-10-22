@@ -25,6 +25,7 @@ import { Buy, Deposit, HoldingAmounts, Sell, StockPortfolio, Withdraw, LostDay }
 import { AiToolModule } from './ai-tool/ai-tool.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
 import { MegaModule } from './mega/mega.module';
+import { AlphavantageModule } from './alphavantage/alphavantage.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -88,6 +89,7 @@ import { MegaModule } from './mega/mega.module';
     AiToolModule,
     WebhooksModule,
     MegaModule,
+    AlphavantageModule,
   ],
   controllers: [AppController],
   providers: [AppService],
