@@ -13,6 +13,8 @@ export class WebhooksService {
     BUYSELL: 'DISCORD_WEBHOOKS_BUYSELL',
     RSIALERT: 'DISCORD_WEBHOOKS_RSIALERT',
     RSI25AL: 'DISCORD_WEBHOOKS_RSI25AL',
+    RSI30AL: 'DISCORD_WEBHOOKS_RSI30AL',
+    RSI40_200MAAL: 'DISCORD_WEBHOOKS_RSI40_200MAAL',
     WATCHLIST: 'DISCORD_WEBHOOKS_WATCHLIST',
     Other: `DISCORD_WEBHOOKS`,
   };
@@ -21,6 +23,8 @@ export class WebhooksService {
     TSLA: 'TSLA',
     SMCI: 'SMCI',
     BUY: 'BUYSELL',
+    RSI30AL:'RSI30AL',
+    RSI40_200MAAL:'RSI40_200MAAL',
     SELL: 'BUYSELL',
     BUYSELL: 'BUYSELL',
     RSIALERT: 'RSIALERT',
@@ -71,8 +75,13 @@ export class WebhooksService {
     let options:any
     const botdt = botname.split(' ').slice(1).join(' ');
     const color = botdt.includes('DOWN')? 0xff0000 : 0x00ff00 
-    const setmess = `**[localhost:4200](http://localhost:4200/price-log/${ticker})** | **[localhost:3001](http://localhost:3001/?stockTicker=${ticker})** | **[stock-chart-abc.web.app](https://stock-chart-abc.web.app/?stockTicker=${ticker})** | **[stockmarkets000.web.app](https://stockmarkets000.web.app//price-log/${ticker})** | **[TradingView](https://www.tradingview.com/chart/mWoCISmu/?symbol=${ticker})**`
-    if(lastData === '{}'){
+    const setmess = `**[localhost:4200](http://localhost:4200/price-log/${ticker})** | **[localhost:3001](http://localhost:3001/?stockTicker=${ticker})** | **[stock-chart-abc.web.app](https://stock-chart-abc.web.app/?stockTicker=${ticker})** | **[stockmarkets000.web.app](https://stockmarkets000.web.app//price-log/${ticker})** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`
+    if(botdt.includes('RSIENDBOT')){
+      options = {
+        username: botdt,
+        content: message,
+      };
+    } else if(lastData === '{}'){
       embed = new EmbedBuilder()
       .setColor(color)
       .addFields({ name: botdt, value: setmess, inline: false });
