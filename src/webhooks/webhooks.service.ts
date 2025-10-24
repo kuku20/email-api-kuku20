@@ -56,6 +56,7 @@ export class WebhooksService {
     botname: string = 'Bot Alert',
     lastData: string,
     file?:  import('multer').File,
+    extra?: any
   ) {
     const current = new Date().toISOString().replace(/T.*$/, '');
     const ticker = botname.split(' ')[1].toUpperCase();
@@ -75,7 +76,8 @@ export class WebhooksService {
     let options:any
     const botdt = botname.split(' ').slice(1).join(' ');
     const color = botdt.includes('DOWN')? 0xff0000 : 0x00ff00 
-    const setmess = `**[localhost:4200](http://localhost:4200/price-log/${ticker})** | **[localhost:3001](http://localhost:3001/?stockTicker=${ticker})** | **[stock-chart-abc.web.app](https://stock-chart-abc.web.app/?stockTicker=${ticker})** | **[stockmarkets000.web.app](https://stockmarkets000.web.app//price-log/${ticker})** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`
+    const origin = `**[localhost:4200](http://localhost:4200/price-log/${ticker})** | **[localhost:3001](http://localhost:3001/?stockTicker=${ticker})** | **[stock-chart-abc.web.app](https://stock-chart-abc.web.app/?stockTicker=${ticker})** | **[stockmarkets000.web.app](https://stockmarkets000.web.app//price-log/${ticker})** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`
+    const setmess = extra ? `${origin} | **[ASK GPT](${extra})**`: origin
     if(botdt.includes('RSIENDBOT')){
       options = {
         username: botdt,
@@ -168,6 +170,16 @@ export class WebhooksService {
       }
     }
     return { msg: 'delete complete' };
+  }
+
+  async shortenUrl(url:string) {
+    try {
+      const res = await axios.get(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(url)}`);
+      return res.data;
+    } catch (error) {
+      console.error('❌ Failed to shorten URL:', error.message);
+      return url; // fallback to original if API fails
+    }
   }
 
   async getFromFBDynamic(endpoint: string) {
