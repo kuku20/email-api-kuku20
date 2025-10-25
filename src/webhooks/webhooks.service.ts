@@ -123,10 +123,21 @@ export class WebhooksService {
     const WEBHOOKS_CNA = this.WEBHOOKS_CN[webhookCl] || this.WEBHOOKS_CN.Other;
     await this.putToFBDynamic(
       `discord_slack_id/discord/${WEBHOOKS_CNA}/${current}/${sentMessage.id}.json`,
-      sentMessage?.id,
+      `https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}`
     );
+    if(!botdt.includes('RSIENDBOT')){
+      // store symbol of date
+      await this.RsiToDatabase('RSI/' + WEBHOOKS_CNA, current+`/${ticker}`, `${ticker}`)
+      // store data of the date of sym that sent to discord
+      await this.RsiToDatabase('RSI-DATE-DATA',ticker+`/${current}`,{msglik:`https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}`,...options})
+    }
     return { msg: 'post to discord success' ,...sentMessage};
   }
+  async RsiToDatabase(target: any, current:any, data:any) {
+    const firebaseUrl = `alerts/${target}/${current}.json`
+    await this.putToFBDynamic(firebaseUrl,data,'put');
+  }
+
   async StopNTarget(lastdata: any) {
     const currClose = lastdata?.close; // or whatever key holds the current price
     if (currClose == null) return lastdata; // safeguard against missing price
@@ -200,17 +211,18 @@ export class WebhooksService {
     }
   }
   
-  async putToFBDynamic(endpoint: string, data: any) {
+  async putToFBDynamic(endpoint: string, data: any, method:string= 'put') {
+    console.log(data)
     const firebaseRoot = this.configService.get<any>('FIREBASE_DATA');
     let BASE_URL = `${firebaseRoot}/${endpoint}`;
     let config = {
-      method: 'put',
+      method: method,
       maxBodyLength: Infinity,
       url: BASE_URL,
       headers: {
         'Content-Type': 'text/plain',
       },
-      data: data,
+      data: JSON.stringify(data),
     };
     return await axios
       .request(config)
