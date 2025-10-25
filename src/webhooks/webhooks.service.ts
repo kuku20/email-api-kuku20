@@ -56,6 +56,7 @@ export class WebhooksService {
     botname: string = 'Bot Alert',
     lastData: string,
     file?:  import('multer').File,
+    extra?: any
   ) {
     const current = new Date().toISOString().replace(/T.*$/, '');
     const ticker = botname.split(' ')[1].toUpperCase();
@@ -75,7 +76,8 @@ export class WebhooksService {
     let options:any
     const botdt = botname.split(' ').slice(1).join(' ');
     const color = botdt.includes('DOWN')? 0xff0000 : 0x00ff00 
-    const setmess = `**[localhost:4200](http://localhost:4200/price-log/${ticker})** | **[localhost:3001](http://localhost:3001/?stockTicker=${ticker})** | **[stock-chart-abc.web.app](https://stock-chart-abc.web.app/?stockTicker=${ticker})** | **[stockmarkets000.web.app](https://stockmarkets000.web.app//price-log/${ticker})** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`
+    const origin = `**[localhost:4200](http://localhost:4200/price-log/${ticker})** | **[localhost:3001](http://localhost:3001/?stockTicker=${ticker})** | **[stock-chart-abc.web.app](https://stock-chart-abc.web.app/?stockTicker=${ticker})** | **[stockmarkets000.web.app](https://stockmarkets000.web.app//price-log/${ticker})** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`
+    const setmess = extra ? `${origin} | **[ASK GPT](${extra})**`: origin
     if(botdt.includes('RSIENDBOT')){
       options = {
         username: botdt,
@@ -121,10 +123,21 @@ export class WebhooksService {
     const WEBHOOKS_CNA = this.WEBHOOKS_CN[webhookCl] || this.WEBHOOKS_CN.Other;
     await this.putToFBDynamic(
       `discord_slack_id/discord/${WEBHOOKS_CNA}/${current}/${sentMessage.id}.json`,
-      sentMessage?.id,
+      `https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}`
     );
+    if(!botdt.includes('RSIENDBOT')){
+      // store symbol of date
+      await this.RsiToDatabase('RSI/' + WEBHOOKS_CNA, current+`/${ticker}`, `${ticker}`)
+      // store data of the date of sym that sent to discord
+      await this.RsiToDatabase('RSI-DATE-DATA',ticker+`/${current}`,{msglik:`https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}`,...options})
+    }
     return { msg: 'post to discord success' ,...sentMessage};
   }
+  async RsiToDatabase(target: any, current:any, data:any) {
+    const firebaseUrl = `alerts/${target}/${current}.json`
+    await this.putToFBDynamic(firebaseUrl,data,'put');
+  }
+
   async StopNTarget(lastdata: any) {
     const currClose = lastdata?.close; // or whatever key holds the current price
     if (currClose == null) return lastdata; // safeguard against missing price
@@ -170,6 +183,16 @@ export class WebhooksService {
     return { msg: 'delete complete' };
   }
 
+  async shortenUrl(url:string) {
+    try {
+      const res = await axios.get(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(url)}`);
+      return res.data;
+    } catch (error) {
+      console.error('❌ Failed to shorten URL:', error.message);
+      return url; // fallback to original if API fails
+    }
+  }
+
   async getFromFBDynamic(endpoint: string) {
     const firebaseRoot = this.configService.get<any>('FIREBASE_DATA');
     let BASE_URL = `${firebaseRoot}/${endpoint}`;
@@ -188,17 +211,18 @@ export class WebhooksService {
     }
   }
   
-  async putToFBDynamic(endpoint: string, data: any) {
+  async putToFBDynamic(endpoint: string, data: any, method:string= 'put') {
+    console.log(data)
     const firebaseRoot = this.configService.get<any>('FIREBASE_DATA');
     let BASE_URL = `${firebaseRoot}/${endpoint}`;
     let config = {
-      method: 'put',
+      method: method,
       maxBodyLength: Infinity,
       url: BASE_URL,
       headers: {
         'Content-Type': 'text/plain',
       },
-      data: data,
+      data: JSON.stringify(data),
     };
     return await axios
       .request(config)

@@ -10,12 +10,16 @@ export class AlphavantageService {
     constructor(
       private readonly configService: ConfigService,
     ) {}
+    /**
+     * 
+     * @param ticker 
+     * @param timefame week, day
+     * @returns 
+     */
     async fasfda(ticker: string, timefame: string) {
-      let range, timespan;
-      const daytestBF = 0
 
       try {
-        const urls = `https://api.polygon.io/v1/indicators/rsi/AAPL?timespan=week&adjusted=true&window=14&series_type=close&order=desc&limit=10&apiKey=wZCIxwtp0iTqGO7sFUJi4q7SzShWqLaS`;
+        const urls = `https://api.polygon.io/v1/indicators/rsi/${ticker}?timespan=${timefame}&adjusted=true&window=14&series_type=close&order=desc&limit=10&apiKey=wZCIxwtp0iTqGO7sFUJi4q7SzShWqLaS`;
         const response = await axios.get(urls);
         // const responsesArray = await this.tryCatchF(urls, 'POLYGON_STOCK_API_KEY');
         // // return responsesArray.results?.values
@@ -53,7 +57,6 @@ export class AlphavantageService {
       this.shuffleArray(keys);
       for (const key of keys) {
         const url = `${BASE_URL}${key}`;
-        console.log(url);
         try {
           const response = await axios.get(url);
           // console.log(response)

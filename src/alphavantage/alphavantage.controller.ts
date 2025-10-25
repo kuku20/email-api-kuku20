@@ -9,8 +9,6 @@ export class AlphavantageController {
   async TC_POLYGON(
     @Query('symbol') symbol: string,
     @Query('interval') interval?: string,
-    @Query('timePeriod') timePeriod?: number,
-    @Query('seriesType') seriesType?: string,
   ) {
     return this.alphavantageService.fasfda(symbol, interval);
   }
