@@ -77,7 +77,13 @@ export class WebhooksService {
     const botdt = botname.split(' ').slice(1).join(' ');
     const color = botdt.includes('DOWN')? 0xff0000 : 0x00ff00 
     const origin = `**[localhost:4200](http://localhost:4200/price-log/${ticker})** | **[localhost:3001](http://localhost:3001/?stockTicker=${ticker})** | **[stock-chart-abc.web.app](https://stock-chart-abc.web.app/?stockTicker=${ticker})** | **[stockmarkets000.web.app](https://stockmarkets000.web.app//price-log/${ticker})** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`
-    const setmess = extra ? `${origin} | **[ASK GPT](${extra})**`: origin
+    let gptres
+    if(extra){
+      const parts = extra.split('/');
+      const id =  parts[parts.length - 1];
+      gptres = `**[ASK GPT](${extra})** | **[GPT RES](https://todocalender.web.app/home/stock-track/${id})**`
+    }
+    const setmess = extra ? `${origin} | ${gptres}`: origin
     if(botdt.includes('RSIENDBOT')){
       options = {
         username: botdt,
@@ -212,7 +218,6 @@ export class WebhooksService {
   }
   
   async putToFBDynamic(endpoint: string, data: any, method:string= 'put') {
-    console.log(data)
     const firebaseRoot = this.configService.get<any>('FIREBASE_DATA');
     let BASE_URL = `${firebaseRoot}/${endpoint}`;
     let config = {
