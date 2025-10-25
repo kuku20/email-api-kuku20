@@ -66,12 +66,13 @@ export class WebhooksController {
       if(symbol !== 'RSIENDBOT'){
         const metric = (await this.stockService.getMetric_FINHUB(symbol)).metric
         const metricStr = JSON.stringify(metric);
-        // get current price form fm
-        // const type:any = 'multiple-company-prices'
-        // const currentQuote = await this.stockService.fromFMP(type,symbol, null);
-        // const currentQuoteStr = JSON.stringify(currentQuote);
+        if (lastdata === '{}') {// get current price form fm
+          const type: any = 'multiple-company-prices';
+          const dataArry = await this.stockService.fromFMP(type, symbol, null);
+          lastdata = JSON.stringify(dataArry[0]) 
+        }
         const currentQuoteStr = JSON.stringify(lastdata);
-        const ask = `base on the data: ${currentQuoteStr} and the metric ${metricStr}\n should buy or not`
+        const ask = `base on the latest data of ${symbol}: ${currentQuoteStr} and the metric ${metricStr}\n should buy/hold/sell, stop loss, and target levels`
         const datacode = encodeURIComponent(ask)
         extra = await this.webhooksService.shortenUrl(`https://chat.openai.com?q=${datacode}`);
       }
