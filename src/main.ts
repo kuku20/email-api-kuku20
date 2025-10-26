@@ -8,13 +8,17 @@ import * as express from 'express';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
+  const allowedOrigins = configService
+    .get<string>('ALLOWED_ORIGINS')
+    ?.split(',')
+    .map(o => o.trim()) ?? [];
     // const seedService = app.get(SeedService);
   // await seedService.seedData();
     // 🚀 Allow larger JSON and form payloads (default is 100KB)
     app.use(express.json({ limit: '10mb' }));
     app.use(express.urlencoded({ limit: '10mb', extended: true }));
   app.enableCors({
-    origin: ['http://localhost:4200','http://localhost:3001','https://stock-chart-abc.web.app','https://audio-for-you.web.app','https://onlinebuyer.web.app','https://stockmarkets000.web.app','https://lewisluu.web.app','https://locluu.web.app','https://lucasluu.web.app'],
+    origin: allowedOrigins,
     // origin: '*',
     credentials: true,
     methods: 'GET,PUT,POST,DELETE,HEAD,OPTIONS,PATCH',
