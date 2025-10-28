@@ -87,7 +87,7 @@ export class StockController {
     }
   }
 
-  @UseGuards(JwtGuard) //proteched as well since this is 25/day
+  // @UseGuards(JwtGuard) //proteched as well since this is 25/day
   @UseGuards(AdminUserAuthGuard)
   @Get('/news-v2') //news-alpha-vantage
   async tickers_News_ALPHA_VANTAGE(@Query('stockTicker') stockTicker: string) {
@@ -212,7 +212,7 @@ export class StockController {
     }
   }
 
-  @UseGuards(JwtGuard) 
+  // @UseGuards(JwtGuard) 
   @Get('/chartdata/:timespan')
   async getTickerFullChart_POLYGON(
   @Param() params: RequestDTO.TimeSpanDto,
@@ -232,7 +232,7 @@ export class StockController {
       throw error;
     }
   }
-  @UseGuards(JwtGuard) 
+  // @UseGuards(JwtGuard) 
   @Get('/daily-chart')
   async getTickerDailyChart_FMP( @Query() query: RequestDTO.TickerStartEndDTO) {
     try {
@@ -244,7 +244,7 @@ export class StockController {
     }
   }
 
-  @UseGuards(JwtGuard) 
+  // @UseGuards(JwtGuard) 
   @Get('/chartdata/v2/:src_api')
   async getChartDataV2(
   @Param() params: RequestDTO.SrcApiDto,
@@ -325,22 +325,30 @@ export class StockController {
 
   @Get('/local/:src_api')
   async local(
-  @Param() params: RequestDTO.SrcApiDto,
-  @Query('ticker') ticker: string,
-  @Query('timefame') timefame: string,
-  @Req() req: Request, // <--- Import from express
+    @Param() params: RequestDTO.SrcApiDto,
+    @Query('ticker') ticker: string,
+    @Query('timefame') timefame: string,
+    @Req() req: Request, // <--- Import from express
   ) {
+    const current = new Date().toISOString().replace(/T.*$/, '');
     try {
       const localhost = `${req.get('host')}`.includes('localhost');
-      let data
-      if(params.src_api === RequestDTO.SRC_API.FM && localhost){
-        data =  await this.loacl.getTickerFullChart_FMP(ticker,timefame);
-      }else{
-        data =  await this.loacl.getTickerFullChart_POLYGON(ticker,timefame);
+      // return await this.loacl.getAllData();
+      let data;
+      if (params.src_api === RequestDTO.SRC_API.FM && localhost) {
+        data = await this.loacl.getTickerFullChart_FMP(ticker, timefame);
+        if (timefame.includes('day')) {
+          await this.loacl.storeDataHis(ticker, 'fm', current, data);
+        }
+      } else {
+        data = await this.loacl.getTickerFullChart_POLYGON(ticker, timefame);
+        if (timefame.includes('day')) {
+          await this.loacl.storeDataHis(ticker, 'po', current, data);
+        }
       }
       return data;
     } catch (error) {
       throw error;
     }
-    }
   }
+}

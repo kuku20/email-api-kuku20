@@ -26,6 +26,7 @@ import { AiToolModule } from './ai-tool/ai-tool.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
 import { MegaModule } from './mega/mega.module';
 import { AlphavantageModule } from './alphavantage/alphavantage.module';
+import { DataHistory } from './stock/entities';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -69,7 +70,8 @@ import { AlphavantageModule } from './alphavantage/alphavantage.module';
             StockUser,
             WatchList,
             UserAuth,
-            StockPortfolio,Buy, Sell, Withdraw, Deposit, HoldingAmounts, LostDay
+            StockPortfolio,Buy, Sell, Withdraw, Deposit, HoldingAmounts, LostDay,
+            DataHistory
           ],
           synchronize: true,
         };
