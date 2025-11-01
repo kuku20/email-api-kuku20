@@ -156,12 +156,17 @@ export class LocalPLWR {
       });
       // Save the stockPortfolio entity to the database
       await this.dataHistoryRipo.save(stockPortfolio);
-      // return result;
-      // return plainToInstance(WalletOutPutDto, result);
     } catch (error) {}
   }
   async getAllData(): Promise<DataHistory[]> {
     return await this.dataHistoryRipo.find();
+  }
+
+  async getAllDataBySymbol(symbol): Promise<DataHistory> {
+    const symbolData = await this.dataHistoryRipo.findOneOrFail({
+      where: { symbol: symbol },
+    });
+    return symbolData;
   }
 
   public shuffleArray(array: any[]) {
