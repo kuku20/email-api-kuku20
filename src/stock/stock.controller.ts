@@ -325,22 +325,69 @@ export class StockController {
 
   @Get('/local/:src_api')
   async local(
-  @Param() params: RequestDTO.SrcApiDto,
-  @Query('ticker') ticker: string,
-  @Query('timefame') timefame: string,
-  @Req() req: Request, // <--- Import from express
+    @Param() params: RequestDTO.SrcApiDto,
+    @Query('ticker') ticker: string,
+    @Query('timefame') timefame: string,
+    @Req() req: Request, // <--- Import from express
   ) {
+    const current = new Date().toISOString().replace(/T.*$/, '');
     try {
       const localhost = `${req.get('host')}`.includes('localhost');
-      let data
-      if(params.src_api === RequestDTO.SRC_API.FM && localhost){
-        data =  await this.loacl.getTickerFullChart_FMP(ticker,timefame);
-      }else{
-        data =  await this.loacl.getTickerFullChart_POLYGON(ticker,timefame);
+      console.log(`${req.get('host')}`)
+      // return await this.loacl.getAllDataBySymbol('FI');
+      let data;
+      if (params.src_api === RequestDTO.SRC_API.FM && localhost) {
+        data = await this.loacl.getTickerFullChart_FMP(ticker, timefame);
+        if (timefame.includes('day')) {
+          await this.loacl.storeDataHis(ticker, 'fm', current, data);
+        }
+      } else {
+        data = await this.loacl.getTickerFullChart_POLYGON(ticker, timefame);
+        if (timefame.includes('day')) {
+          await this.loacl.storeDataHis(ticker, 'po', current, data);
+        }
       }
       return data;
     } catch (error) {
       throw error;
     }
+  }
+
+  @Get('/localhis')
+  async localStoreHis(
+    @Query('ticker') ticker: string,
+  ) {
+    try {
+      return await this.loacl.getAllDataBySymbol(ticker);
+    } catch (error) {
+      throw error;
     }
   }
+
+  @Get('/githublocalfm/:src_api')
+  async githublocalfm(
+    @Param() params: RequestDTO.SrcApiDto,
+    @Query('ticker') ticker: string,
+    @Query('timefame') timefame: string,
+  ) {
+    const current = new Date().toISOString().replace(/T.*$/, '');
+    try {
+      let data;
+      if (params.src_api === RequestDTO.SRC_API.FM) {
+        data = await this.loacl.getTickerFullChart_FMP(ticker, timefame);
+        if (timefame.includes('day')) {
+          await this.loacl.storeDataHis(ticker, 'fm', current, data);
+        }
+      } else {
+        data = await this.loacl.getTickerFullChart_POLYGON(ticker, timefame);
+        if (timefame.includes('day')) {
+          await this.loacl.storeDataHis(ticker, 'po', current, data);
+        }
+      }
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+}

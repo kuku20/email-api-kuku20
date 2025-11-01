@@ -8,13 +8,17 @@ import { plainToClass, } from 'class-transformer';
 import * as DTO from './dto';
 import { StockHelperService } from './stockHelper.service';
 import { AlphavantageService } from 'src/alphavantage/alphavantage.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { DataHistory } from './entities';
 @Injectable()
 export class LocalPLWR {
   constructor(
     private readonly configService: ConfigService,
     private readonly stockHelperService: StockHelperService,
-    private readonly alphavantageService: AlphavantageService
-  ) {}
+    private readonly alphavantageService: AlphavantageService,
+    @InjectRepository(DataHistory)
+      private dataHistoryRipo: Repository<DataHistory>) {}
   /**
    *
    * @param ticker : AAL , SMCI
@@ -141,6 +145,28 @@ export class LocalPLWR {
     }
     // If none of the API keys work, throw an error
     return null;
+  }
+
+
+  async storeDataHis(symbol:string,source:string, date:string, data:any){
+    try {
+      // Create the dataHistoryRipo entity
+      const stockPortfolio = this.dataHistoryRipo.create({
+        symbol,source, date, data
+      });
+      // Save the stockPortfolio entity to the database
+      await this.dataHistoryRipo.save(stockPortfolio);
+    } catch (error) {}
+  }
+  async getAllData(): Promise<DataHistory[]> {
+    return await this.dataHistoryRipo.find();
+  }
+
+  async getAllDataBySymbol(symbol): Promise<DataHistory> {
+    const symbolData = await this.dataHistoryRipo.findOneOrFail({
+      where: { symbol: symbol },
+    });
+    return symbolData;
   }
 
   public shuffleArray(array: any[]) {

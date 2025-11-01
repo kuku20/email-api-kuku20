@@ -119,7 +119,7 @@ curl --location '{{rootUrl}}/stock{{newfmep}}/realtimeprice?stockTicker=BTCUSD'
 ### get all current price
 curl --location '{{rootUrl}}/stock{{newfmep}}/realtimepriceall'
 ### get multiple-company-prices
-curl --location '{{rootUrl}}/stock{{newfmep}}/multiple-company-prices?stockTicker=ROKU,AAL,bill'
+curl --location '{{rootUrl}}/stock{{newfmep}}/multiple-company-prices?stockTicker=ROKU'
 ### Get losers
 curl --location '{{rootUrl}}/stock{{newfmep}}/gainers-or-losers?stockMarket=losers'
 ### Get gainers
@@ -164,7 +164,7 @@ curl 'http://localhost:3000/stock/chartdata/v2/fm?stockTicker=QQQ&start=2024-11-
 ###
 curl 'http://localhost:3000/stock/chartdata/v2/fm?stockTicker=QQQ&start=2024-11-03&end=2024-11-04'
 
-### Getdata daily from firebase
+### Getdata daily from firebase     const urlPath = `${path}/${ticker.toUpperCase()}/${date}.json`
 curl --location '{{rootUrl}}/stock/getfbdata' \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -253,11 +253,23 @@ curl -X POST http://localhost:3000/stock/firebase-api \
   }'
 
 
-@endpoint = po
-@ticker = SMCI
-# @timefame = 1day
+@endpoint = fm
+@ticker = INTC
+@timefame = 1day
 # @timefame = 1hour
-@timefame = 5min
+# @timefame = 5min
 # @timefame = 15min
 ### get local
 curl --location '{{rootUrl}}/stock/local/{{endpoint}}?ticker={{ticker}}&timefame={{timefame}}'
+
+### local
+curl --location '{{rootUrl}}/stock/localhis/?ticker={{ticker}}'
+
+### Getdata daily from firebase     const urlPath = `${path}/${ticker.toUpperCase()}/${date}.json`
+curl --location '{{rootUrl}}/stock/getfbdata' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "path": "alerts",
+    "ticker":"RSI",
+    "date":"RSI25AL/2025-10-25"
+}'
