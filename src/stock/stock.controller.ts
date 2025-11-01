@@ -87,7 +87,7 @@ export class StockController {
     }
   }
 
-  // @UseGuards(JwtGuard) //proteched as well since this is 25/day
+  @UseGuards(JwtGuard) //proteched as well since this is 25/day
   @UseGuards(AdminUserAuthGuard)
   @Get('/news-v2') //news-alpha-vantage
   async tickers_News_ALPHA_VANTAGE(@Query('stockTicker') stockTicker: string) {
@@ -212,7 +212,7 @@ export class StockController {
     }
   }
 
-  // @UseGuards(JwtGuard) 
+  @UseGuards(JwtGuard) 
   @Get('/chartdata/:timespan')
   async getTickerFullChart_POLYGON(
   @Param() params: RequestDTO.TimeSpanDto,
@@ -232,7 +232,7 @@ export class StockController {
       throw error;
     }
   }
-  // @UseGuards(JwtGuard) 
+  @UseGuards(JwtGuard) 
   @Get('/daily-chart')
   async getTickerDailyChart_FMP( @Query() query: RequestDTO.TickerStartEndDTO) {
     try {
@@ -244,7 +244,7 @@ export class StockController {
     }
   }
 
-  // @UseGuards(JwtGuard) 
+  @UseGuards(JwtGuard) 
   @Get('/chartdata/v2/:src_api')
   async getChartDataV2(
   @Param() params: RequestDTO.SrcApiDto,
