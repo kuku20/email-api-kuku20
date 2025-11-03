@@ -9,7 +9,7 @@ import * as DTO from './dto';
 import { StockHelperService } from './stockHelper.service';
 import { AlphavantageService } from 'src/alphavantage/alphavantage.service';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { DataHistory } from './entities';
 @Injectable()
 export class LocalPLWR {
@@ -158,15 +158,22 @@ export class LocalPLWR {
       await this.dataHistoryRipo.save(stockPortfolio);
     } catch (error) {}
   }
-  async getAllData(): Promise<DataHistory[]> {
-    return await this.dataHistoryRipo.find();
-  }
+  
+  async getAllData(symbols: string[]): Promise<DataHistory[]> {
+    // Query to get the filtered data by symbols
+    const symbolData = await this.dataHistoryRipo.find({
+      where: {
+        symbol: In(symbols), // Filter based on the passed symbols
+      },
+    });
 
+    return symbolData;
+  }
   async getAllDataBySymbol(symbol): Promise<DataHistory> {
     const symbolData = await this.dataHistoryRipo.findOneOrFail({
       where: { symbol: symbol },
     });
-    return symbolData;
+    return symbolData.data;
   }
 
   public shuffleArray(array: any[]) {

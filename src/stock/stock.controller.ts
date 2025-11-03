@@ -333,10 +333,11 @@ export class StockController {
     const current = new Date().toISOString().replace(/T.*$/, '');
     try {
       const localhost = `${req.get('host')}`.includes('localhost');
-      console.log(`${req.get('host')}`)
-      // return await this.loacl.getAllDataBySymbol('FI');
       let data;
       if (params.src_api === RequestDTO.SRC_API.FM) {
+        if(localhost){
+          return this.loacl.getTickerFullChart_FMP(ticker, timefame);
+        }
         return await this.loacl.getAllDataBySymbol(ticker);
       } else {
         return await this.loacl.getTickerFullChart_POLYGON(ticker, timefame);
@@ -360,9 +361,11 @@ export class StockController {
 
   @Get('/hisall')
   async hisall(
+    @Query('tickers') tickers: string,
   ) {
     try {
-      return await this.loacl.getAllData();
+      const symbols = tickers.split(',');
+      return await this.loacl.getAllData(symbols);
     } catch (error) {
       throw error;
     }
@@ -383,9 +386,9 @@ export class StockController {
         }
       } else {
         data = await this.loacl.getTickerFullChart_POLYGON(ticker, timefame);
-        if (timefame.includes('day')) {
-          await this.loacl.storeDataHis(ticker, 'po', current, data);
-        }
+        // if (timefame.includes('day')) {
+        //   await this.loacl.storeDataHis(ticker, 'po', current, data);
+        // }
       }
       return data;
     } catch (error) {
