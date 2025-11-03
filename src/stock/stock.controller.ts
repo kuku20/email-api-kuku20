@@ -87,7 +87,7 @@ export class StockController {
     }
   }
 
-  @UseGuards(JwtGuard) //proteched as well since this is 25/day
+ @UseGuards(JwtGuard) //proteched as well since this is 25/day
   @UseGuards(AdminUserAuthGuard)
   @Get('/news-v2') //news-alpha-vantage
   async tickers_News_ALPHA_VANTAGE(@Query('stockTicker') stockTicker: string) {
@@ -212,7 +212,7 @@ export class StockController {
     }
   }
 
-  @UseGuards(JwtGuard) 
+ @UseGuards(JwtGuard) 
   @Get('/chartdata/:timespan')
   async getTickerFullChart_POLYGON(
   @Param() params: RequestDTO.TimeSpanDto,
@@ -232,7 +232,7 @@ export class StockController {
       throw error;
     }
   }
-  @UseGuards(JwtGuard) 
+ @UseGuards(JwtGuard) 
   @Get('/daily-chart')
   async getTickerDailyChart_FMP( @Query() query: RequestDTO.TickerStartEndDTO) {
     try {
@@ -244,7 +244,7 @@ export class StockController {
     }
   }
 
-  @UseGuards(JwtGuard) 
+ @UseGuards(JwtGuard) 
   @Get('/chartdata/v2/:src_api')
   async getChartDataV2(
   @Param() params: RequestDTO.SrcApiDto,
@@ -336,18 +336,12 @@ export class StockController {
       console.log(`${req.get('host')}`)
       // return await this.loacl.getAllDataBySymbol('FI');
       let data;
-      if (params.src_api === RequestDTO.SRC_API.FM && localhost) {
-        data = await this.loacl.getTickerFullChart_FMP(ticker, timefame);
-        if (timefame.includes('day')) {
-          await this.loacl.storeDataHis(ticker, 'fm', current, data);
-        }
+      if (params.src_api === RequestDTO.SRC_API.FM) {
+        return await this.loacl.getAllDataBySymbol(ticker);
       } else {
-        data = await this.loacl.getTickerFullChart_POLYGON(ticker, timefame);
-        if (timefame.includes('day')) {
-          await this.loacl.storeDataHis(ticker, 'po', current, data);
-        }
+        return await this.loacl.getTickerFullChart_POLYGON(ticker, timefame);
       }
-      return data;
+      // return data;
     } catch (error) {
       throw error;
     }
@@ -364,6 +358,15 @@ export class StockController {
     }
   }
 
+  @Get('/hisall')
+  async hisall(
+  ) {
+    try {
+      return await this.loacl.getAllData();
+    } catch (error) {
+      throw error;
+    }
+  }
   @Get('/githublocalfm/:src_api')
   async githublocalfm(
     @Param() params: RequestDTO.SrcApiDto,
