@@ -5,36 +5,19 @@ import { AttachmentBuilder,EmbedBuilder, WebhookClient } from 'discord.js';
 @Injectable()
 export class WebhooksService {
   private webhookClient: WebhookClient;
-  private WEBHOOKS_ENV = {
-    TSLA: 'DISCORD_WEBHOOKS_TSLA',
-    SMCI: 'DISCORD_WEBHOOKS_SMCI',
-    BUY: 'DISCORD_WEBHOOKS_BUYSELL',
-    SELL: 'DISCORD_WEBHOOKS_BUYSELL',
-    BUYSELL: 'DISCORD_WEBHOOKS_BUYSELL',
-    RSIALERT: 'DISCORD_WEBHOOKS_RSIALERT',
-    RSI15AL: 'DISCORD_WEBHOOKS_RSI15AL',
-    RSI25AL: 'DISCORD_WEBHOOKS_RSI25AL',
-    RSI30AL: 'DISCORD_WEBHOOKS_RSI30AL',
-    RSI40_200MAAL: 'DISCORD_WEBHOOKS_RSI40_200MAAL',
-    WATCHLIST: 'DISCORD_WEBHOOKS_WATCHLIST',
-    Other: `DISCORD_WEBHOOKS`,
-  };
-
-  private WEBHOOKS_CN = {
-    TSLA: 'TSLA',
-    SMCI: 'SMCI',
-    BUY: 'BUYSELL',
-    RSI30AL:'RSI30AL',
-    RSI40_200MAAL:'RSI40_200MAAL',
-    SELL: 'BUYSELL',
-    BUYSELL: 'BUYSELL',
-    RSIALERT: 'RSIALERT',
-    RSI25AL: 'RSI25AL',
-    RSI15AL: 'RSI15AL',
-    WATCHLIST: 'WATCHLIST',
-    Other: `Other`,
-  };
-  constructor(private readonly configService: ConfigService) {}
+  private WEBHOOKS_ENV: Record<string, string>;
+  private WEBHOOKS_CN: Record<string, string>;
+  constructor(private readonly configService: ConfigService) {
+     // Parse JSON from env vars
+     this.WEBHOOKS_ENV = JSON.parse(
+      this.configService.get<string>('WEBHOOKS_ENV_MAP') ||
+      '{"Other":"DISCORD_WEBHOOKS"}'
+    );
+    this.WEBHOOKS_CN = JSON.parse(
+      this.configService.get<string>('WEBHOOKS_CN_MAP') ||
+      '{"Other":"Other"}'
+    );
+  }
 
   async sendSlackNotification(message: string) {
     const BASE_URL = `${this.configService.get<any>('SLACK_WEBHOOKS')}`;
