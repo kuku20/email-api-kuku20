@@ -12,6 +12,7 @@ export class WebhooksService {
     SELL: 'DISCORD_WEBHOOKS_BUYSELL',
     BUYSELL: 'DISCORD_WEBHOOKS_BUYSELL',
     RSIALERT: 'DISCORD_WEBHOOKS_RSIALERT',
+    RSI15AL: 'DISCORD_WEBHOOKS_RSI15AL',
     RSI25AL: 'DISCORD_WEBHOOKS_RSI25AL',
     RSI30AL: 'DISCORD_WEBHOOKS_RSI30AL',
     RSI40_200MAAL: 'DISCORD_WEBHOOKS_RSI40_200MAAL',
@@ -29,6 +30,7 @@ export class WebhooksService {
     BUYSELL: 'BUYSELL',
     RSIALERT: 'RSIALERT',
     RSI25AL: 'RSI25AL',
+    RSI15AL: 'RSI15AL',
     WATCHLIST: 'WATCHLIST',
     Other: `Other`,
   };
@@ -81,7 +83,7 @@ export class WebhooksService {
     if(extra){
       const parts = extra.split('/');
       const id =  parts[parts.length - 1];
-      gptres = `**[ASK GPT](${extra})** | **[GPT RES](https://todocalender.web.app/home/stock-track/${id})**`
+      gptres = `**[ASK GPT](${extra})** | **[GPT RES](https://todocalender.web.app/home/stock-track/${id}?sym=${ticker}&date=${current})**`
     }
     const setmess = extra ? `${origin} | ${gptres}`: origin
     if(botdt.includes('RSIENDBOT')){
