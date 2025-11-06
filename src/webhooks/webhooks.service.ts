@@ -7,6 +7,7 @@ export class WebhooksService {
   private webhookClient: WebhookClient;
   private WEBHOOKS_ENV: Record<string, string>;
   private WEBHOOKS_CN: Record<string, string>;
+  private rsiChannels: string[];
   constructor(private readonly configService: ConfigService) {
      // Parse JSON from env vars
      this.WEBHOOKS_ENV = JSON.parse(
@@ -17,6 +18,8 @@ export class WebhooksService {
       this.configService.get<string>('WEBHOOKS_CN_MAP') ||
       '{"Other":"Other"}'
     );
+    const channelsStr = this.configService.get<string>('RSI_CHANNELS') || '';
+    this.rsiChannels = channelsStr.split(',').map(c => c.trim());
   }
 
   async sendSlackNotification(message: string) {
@@ -116,7 +119,7 @@ export class WebhooksService {
       `discord_slack_id/discord/${WEBHOOKS_CNA}/${current}/${sentMessage.id}.json`,
       `https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}`
     );
-    if(!botdt.includes('RSIENDBOT')){
+    if (this.rsiChannels.some(channel => WEBHOOKS_CNA.includes(channel)) && !botdt.includes('RSIENDBOT')) {
       // store symbol of date
       await this.RsiToDatabase('RSI/' + WEBHOOKS_CNA, current+`/${ticker}`, `${ticker}`)
       // store data of the date of sym that sent to discord
