@@ -530,7 +530,7 @@ export class StockService {
     this.shuffleArray(keys);
     for (const key of keys) {
       const url = `${BASE_URL}${key}`;
-      console.log(url)
+      // console.log(url)
       try {
         const response = await axios.get(url);
         return response.data;
@@ -543,7 +543,7 @@ export class StockService {
           );
         } else {
           // Handle other errors
-          console.error(`Error with key ${keyDATA}`, error?.response?.status);
+          // console.error(`Error with key ${keyDATA}`, error?.response?.status);
         }
       }
     }
@@ -644,6 +644,7 @@ export class StockService {
   async getFromFBDynamic(endpoint:string) {
     const firebaseRoot = this.configService.get<any>('FIREBASE_DATA')
     let BASE_URL = `${firebaseRoot}/${endpoint}`;
+    console.log(BASE_URL)
     const response = await axios.get(BASE_URL);
     return response.data?response.data:[];
   }

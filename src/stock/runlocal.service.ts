@@ -132,7 +132,7 @@ export class LocalPLWR {
     this.shuffleArray(keys);
     for (const key of keys) {
       const url = `${BASE_URL}${key}`;
-      console.log(url);
+      // console.log(url);
       try {
         const response = await axios.get(url);
         return response.data;
@@ -263,7 +263,7 @@ export class LocalPLWR {
     const nextKey = this.nextKey(this.keys);
     // const nextKey = `be92826664f94df091ec3ea0560cf552`;
     const url = `${BASE_URL}${nextKey}`;
-    console.log(url);
+    // console.log(url);
     try {
       const response = await axios.get(url);
       return response.data;
