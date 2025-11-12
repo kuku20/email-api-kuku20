@@ -51,7 +51,8 @@ export class LocalPLWR {
     if (timefame.includes('weekly') || timefame.includes('monthly')) {
       return this.alphavantageService.weekORmonthly(ticker, timefame);
     }
-    const responsesArray = await this.tryCatchF(urls, 'POLYGON_STOCK_API_KEY');
+    // const responsesArray = await this.tryCatchF(urls, 'POLYGON_STOCK_API_KEY');
+    const responsesArray = await this.tryCatchtPO(urls);
     // return responsesArray.results
     const response = plainToClass(
       DTO.ChartOutPolygonDto,
@@ -132,7 +133,7 @@ export class LocalPLWR {
     this.shuffleArray(keys);
     for (const key of keys) {
       const url = `${BASE_URL}${key}`;
-      // console.log(url);
+      console.log(url);
       try {
         const response = await axios.get(url);
         return response.data;
@@ -201,7 +202,7 @@ export class LocalPLWR {
     console.log(urls);
     const responsesArray = await Promise.allSettled(
       urls.map(async (url) => {
-        // console.log(url)
+        console.log(url)
         return await this.tryCatchF(url, 'FMP_STOCK_API_KEY');
       }),
     );
@@ -251,7 +252,7 @@ export class LocalPLWR {
   nextKey(keys) {
     const key = keys[this.index];
     this.repeat++;
-    if (this.repeat === 4) {
+    if (this.repeat === 3) {
       this.repeat = 0;
       this.index = (this.index + 1) % keys.length; // loop back to start
     }
@@ -263,7 +264,44 @@ export class LocalPLWR {
     const nextKey = this.nextKey(this.keys);
     // const nextKey = `be92826664f94df091ec3ea0560cf552`;
     const url = `${BASE_URL}${nextKey}`;
-    // console.log(url);
+    console.log(url);
+    try {
+      const response = await axios.get(url);
+      return response.data;
+    } catch (error) {
+      if (error?.response && error?.response?.status === 500) {
+        // Handle 500 error
+        console.error(`Internal Server Error with key `, error?.response);
+      } else {
+        // Handle other errors
+        console.error(`Error with key ${nextKey}`, error?.response?.status);
+      }
+    }
+    // If none of the API keys work, throw an error
+  }
+
+  indexPo = 0; // which key we're on
+  repeatPo = 0; // 0 or 1 (since each key repeats twice)
+
+  nextKeyPo(keys) {
+    // console.log(keys.length)
+    const key = keys[this.indexPo];
+    this.repeatPo++;
+    if (this.repeatPo === 2) {
+      this.repeatPo = 0;
+      this.indexPo = (this.indexPo + 1) % keys.length; // loop back to start
+      console.log(this.indexPo)
+    }
+    return key;
+  }
+
+  keysPo = this.configService.get<any>('POLYGON_STOCK_API_KEY').split(',');
+  // keysPo =['7bn8ZZK_pmpnvxRrAJ2tBzQc73g20NnX','7bn8ZZK_pmpnvxRrAJ2tBzQc73g20NnX'];
+  async tryCatchtPO(BASE_URL: string) {
+    const nextKey = this.nextKeyPo(this.keysPo);
+    // const nextKey = `be92826664f94df091ec3ea0560cf552`;
+    const url = `${BASE_URL}${nextKey}`;
+    console.log(url);
     try {
       const response = await axios.get(url);
       return response.data;

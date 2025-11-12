@@ -60,22 +60,35 @@ export class WebhooksController {
     @Body('lastdata') lastdata: string,
   ) {
     try {
-      if(!botname.includes('RSI')) return null
+      if (!botname.includes('RSI')) return null;
+    
       const symbol = botname.split(' ')[1].toUpperCase();
-      let extra
-      if(symbol !== 'RSIENDBOT'){
-        const metric = (await this.stockService.getMetric_FINHUB(symbol)).metric
+      let extra;
+    
+      if (symbol !== 'RSIENDBOT') {
+        const metric = (await this.stockService.getMetric_FINHUB(symbol)).metric;
         const metricStr = JSON.stringify(metric);
-        if (lastdata === '{}') {// get current price form fm
-          const type: any = 'multiple-company-prices';
-          const dataArry = await this.stockService.fromFMP(type, symbol, null);
-          lastdata = JSON.stringify(dataArry[0]) 
+    
+        if (lastdata === '{}') {
+          // const type: any = 'multiple-company-prices';
+          // const dataArry = await this.stockService.fromFMP(type, symbol, null);
+          // lastdata = JSON.stringify(dataArry[0]) 
+          const type: any = 'realtimeprice';
+          const dataArry = await this.stockService.fromFinnhub(type, symbol, null, null);
+          lastdata = JSON.stringify(dataArry);
         }
+    
         const currentQuoteStr = JSON.stringify(lastdata);
-        const ask = `base on the latest data of ${symbol}: ${currentQuoteStr} and the metric ${metricStr}\n should buy/hold/sell, stop loss, and target levels`
-        const datacode = encodeURIComponent(ask)
-        extra = await this.webhooksService.shortenUrl(`https://chat.openai.com?q=${datacode}`);
+        const ask = `base on the latest data of ${symbol}: ${currentQuoteStr} and the metric ${metricStr}\n should buy/hold/sell, stop loss, and target levels`;
+    
+        // prevent massive query strings
+        const datacode = encodeURIComponent(ask.length > 1800 ? ask.slice(0, 1800) + '...' : ask);
+        const longUrl = `https://chat.openai.com?q=${datacode}`;
+    
+        // ✅ retry up to 3 times before giving up
+        extra = await this.retryShortenUrl(this.webhooksService, longUrl, 3, 1500);
       }
+    
       return await this.webhooksService.sendDiscordNotification(
         message,
         botname,
@@ -99,6 +112,30 @@ export class WebhooksController {
     const result = await this.webhooksService.bulkDelete();
     return result;
   }
-
-  
+  // nothing
+  async retryShortenUrl(
+    webhooksService: any,
+    url: string,
+    maxRetries = 3,
+    delayMs = 1000
+  ): Promise<string> {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const shortUrl = await webhooksService.shortenUrl(url);
+        if (shortUrl && shortUrl !== url) {
+          return shortUrl;
+        }
+        throw new Error('Empty or invalid shortened URL');
+      } catch (err) {
+        console.warn(`❌ Shorten URL failed (attempt ${attempt}/${maxRetries}):`, err.message);
+        if (attempt < maxRetries) {
+          await new Promise(res => setTimeout(res, delayMs));
+        } else {
+          console.error('🚨 All shorten attempts failed, using original URL.');
+          return url; // fallback
+        }
+      }
+    }
+    return url;
+  }
 }
