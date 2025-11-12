@@ -7,6 +7,10 @@ export class ChartOutPolygonDto {
   value: number
 
   @Expose({ name: 'timestamp' })
-  @Transform(({ value }) => value ? new Date(value) : null)
-  date: Date;
+  @Transform(({ value }) => {
+    if (!value) return null;
+    const date = new Date(value);
+    return date.toLocaleString('en-CA', { hour12: false }).replace(',', '');
+  })
+  date: string;
 }
