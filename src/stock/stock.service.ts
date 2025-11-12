@@ -226,34 +226,39 @@ export class StockService {
     const daylength = await this.stockHelperService.calculateDaysBetween(dateStart, dateEnd)
     const abbreviatedDay = await this.stockHelperService.getAbbreviatedDay(dateEnd);
     if(daylength<=2){
-      if(abbreviatedDay==='Sun' && !ticker.includes('USD')){
-        let dateStart3 = await this.stockHelperService.getDateThreeDaysAgo(dateEnd)
-        return await this.getfullTopost(ticker,dateStart3, dateEnd)
-      }
+      // if(abbreviatedDay==='Sun' && !ticker.includes('USD')){
+      //   let dateStart3 = await this.stockHelperService.getDateThreeDaysAgo(dateEnd)
+      //   return await this.getfullTopost(ticker,dateStart3, dateEnd)
+      // }
       range = '1min'
     } else  if(daylength>2 && daylength <=9){
       range = '5min'
     } else  if(daylength>9 && daylength <= 45){
       range = '15min'
     } else  if(daylength>45 && daylength <= 60){
-      range = '1hour'
+      // range = '1hour'
+      range = '1h'
     } else  if(daylength>60 && daylength <= 175){
-      range = '4hour'
+      // range = '4hour'
+      range = '4h'
     } 
-    let BASE_URL = `https://financialmodelingprep.com/api/v3/historical-chart/${range}/${ticker}?from=${dateStart}&to=${dateEnd}&apikey=`;
+    // let BASE_URL = `https://financialmodelingprep.com/api/v3/historical-chart/${range}/${ticker}?from=${dateStart}&to=${dateEnd}&apikey=`;
     if (daylength > 175) {
-      return this.getTickerDailyChart_FMP(ticker,dateStart,dateEnd)
+      // return  this.twelvedata(ticker, range);
+      // return this.getTickerDailyChart_FMP(ticker,dateStart,dateEnd)
+      range = '1day'
     }
-    const today = new Date().toISOString().replace(/T.*$/, '');
-    const checkToday = await this.stockHelperService.calculateDaysBetween(today, dateEnd)
-    const rtp = await this.RTP_FINNHUB_FOR_CHART(ticker)
-    const response = await this.tryCatchF(BASE_URL, 'FMP_STOCK_API_KEY');
-    if(checkToday==0 && !ticker.includes('USD')){
-      response.unshift(rtp);
-    }
-    return response;
-    const result = await this.stockHelperService.returnNewData(response)
-    return result;
+    return  this.twelvedata(ticker, range);
+    // const today = new Date().toISOString().replace(/T.*$/, '');
+    // const checkToday = await this.stockHelperService.calculateDaysBetween(today, dateEnd)
+    // const rtp = await this.RTP_FINNHUB_FOR_CHART(ticker)
+    // const response = await this.tryCatchF(BASE_URL, 'FMP_STOCK_API_KEY');
+    // if(checkToday==0 && !ticker.includes('USD')){
+    //   response.unshift(rtp);
+    // }
+    // return response;
+    // const result = await this.stockHelperService.returnNewData(response)
+    // return result;
   }
 
   async getTickerDailyChart_FMP(
@@ -530,7 +535,7 @@ export class StockService {
     this.shuffleArray(keys);
     for (const key of keys) {
       const url = `${BASE_URL}${key}`;
-      // console.log(url)
+      console.log(url)
       try {
         const response = await axios.get(url);
         return response.data;
@@ -543,7 +548,7 @@ export class StockService {
           );
         } else {
           // Handle other errors
-          // console.error(`Error with key ${keyDATA}`, error?.response?.status);
+          console.error(`Error with key ${keyDATA}`, error?.response?.status);
         }
       }
     }
@@ -662,7 +667,7 @@ export class StockService {
     console.log(urls)
     const responsesArray = await Promise.allSettled(
       urls.map(async url => {
-        // console.log(url)
+        console.log(url)
         return await this.tryCatchF(url, 'FMP_STOCK_API_KEY');
       })
     );
@@ -752,6 +757,58 @@ async putToFBDynamic(endpoint:string, data: any,) {
       .catch((error) => {
         console.log(error);
       });
+    }
+
+    async twelvedata(ticker: string, timefame: string) {
+      let tem = timefame;
+      if (timefame.includes('hour')) {
+        tem = timefame.slice(0, 2);
+      } else if (timefame.includes('weekly')) {
+        tem = '1week';
+      } else if (timefame.includes('monthly')) {
+        tem = '1month';
+      }
+      let BASE_URL = `https://api.twelvedata.com/time_series?symbol=${ticker}&interval=${tem}&outputsize=700&dp=2&apikey=`;
+      const response = await this.tryCatchtwelvedata(BASE_URL);
+      if (response.status == 'ok') {
+        const responseRe = plainToClass(DTO.ChartOutTwelveData, response.values);
+        return responseRe;
+      }
+      return response;
+    }
+  
+    index = 0; // which key we're on
+    repeat = 0; // 0 or 1 (since each key repeats twice)
+  
+    nextKey(keys) {
+      const key = keys[this.index];
+      this.repeat++;
+      if (this.repeat === 4) {
+        this.repeat = 0;
+        this.index = (this.index + 1) % keys.length; // loop back to start
+      }
+      return key;
+    }
+  
+    keys = this.configService.get<any>('twelvedata').split(',');
+    async tryCatchtwelvedata(BASE_URL: string) {
+      const nextKey = this.nextKey(this.keys);
+      // const nextKey = `be92826664f94df091ec3ea0560cf552`;
+      const url = `${BASE_URL}${nextKey}`;
+      console.log(url);
+      try {
+        const response = await axios.get(url);
+        return response.data;
+      } catch (error) {
+        if (error?.response && error?.response?.status === 500) {
+          // Handle 500 error
+          console.error(`Internal Server Error with key `, error?.response);
+        } else {
+          // Handle other errors
+          console.error(`Error with key ${nextKey}`, error?.response?.status);
+        }
+      }
+      // If none of the API keys work, throw an error
     }
 }
 
