@@ -768,7 +768,7 @@ async putToFBDynamic(endpoint:string, data: any,) {
       } else if (timefame.includes('monthly')) {
         tem = '1month';
       }
-      let BASE_URL = `https://api.twelvedata.com/time_series?symbol=${ticker}&interval=${tem}&outputsize=700&dp=2&apikey=`;
+      let BASE_URL = `https://api.twelvedata.com/time_series?symbol=${ticker}&interval=${tem}&outputsize=400&dp=2&apikey=`;
       const response = await this.tryCatchtwelvedata(BASE_URL);
       if (response.status == 'ok') {
         const responseRe = plainToClass(DTO.ChartOutTwelveData, response.values);
