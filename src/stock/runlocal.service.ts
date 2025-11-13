@@ -133,7 +133,7 @@ export class LocalPLWR {
     this.shuffleArray(keys);
     for (const key of keys) {
       const url = `${BASE_URL}${key}`;
-      console.log(url);
+      //console.log(url);
       try {
         const response = await axios.get(url);
         return response.data;
@@ -143,7 +143,7 @@ export class LocalPLWR {
           console.error(`Internal Server Error with key `, error?.response);
         } else {
           // Handle other errors
-          console.error(`Error with key ${keyDATA}`, error?.response?.status);
+          console.error(`Error with key ${keyDATA.substring(0, 4)} `, error?.response?.status);
         }
       }
     }
@@ -202,7 +202,7 @@ export class LocalPLWR {
     console.log(urls);
     const responsesArray = await Promise.allSettled(
       urls.map(async (url) => {
-        console.log(url)
+       // console.log(url)
         return await this.tryCatchF(url, 'FMP_STOCK_API_KEY');
       }),
     );
@@ -228,6 +228,7 @@ export class LocalPLWR {
     // })
     return allResults2;
   }
+
   async twelvedata(ticker: string, timefame: string) {
     let tem = timefame;
     if (timefame.includes('hour')) {
@@ -270,7 +271,7 @@ export class LocalPLWR {
     while (attempt < maxRetries) {
       const nextKey = this.nextKey(this.keys);
       const url = `${BASE_URL}${nextKey}`;
-      console.log(`Trying Key: ${nextKey}`);
+      console.log(`Trying Key: ${nextKey.slice(0, 4)}...`);
   
       try {
         const response = await axios.get(url);
@@ -280,7 +281,7 @@ export class LocalPLWR {
         return response.data; // success!
       } catch (error: any) {
         attempt++;
-        console.error(`Error with key ${nextKey}:`, error?.response?.status || error.message);
+        console.error(`Error with key ${nextKey.slice(0, 4)}...:`, error?.response?.status || error.message);
   
         // Only retry if we haven't exhausted all keys
         if (attempt >= maxRetries) {
@@ -290,7 +291,6 @@ export class LocalPLWR {
     }
     // If none of the API keys work, throw an error
   }
-
 
   // keysPo =['7bn8ZZK_pmpnvxRrAJ2tBzQc73g20NnX','c3wb6rjDqh_k6odbauYqyfgoL32258Uk'];
   keysPo = this.configService.get<any>('POLYGON_STOCK_API_KEY').split(',');
@@ -312,14 +312,14 @@ export class LocalPLWR {
     while (attempt < maxRetries) {
       const nextKey = this.nextKeyPo(this.keysPo);
       const url = `${BASE_URL}${nextKey}`;
-      console.log(`Trying key: ${nextKey}`);
+      console.log(`Trying key: ${nextKey.slice(0, 4)}...`);
   
       try {
         const response = await axios.get(url);
         return response.data; // success!
       } catch (error: any) {
         attempt++;
-        console.error(`Error with key ${nextKey}:`, error?.response?.status || error.message);
+        console.error(`Error with key ${nextKey.slice(0, 4)}...:`, error?.response?.status || error.message);
   
         // Only retry if we haven't exhausted all keys
         if (attempt >= maxRetries) {
