@@ -1,0 +1,36 @@
+name: Deploy to Koyeb
+
+on:
+  push:
+    branches:
+      - koyeb   # or the branch you want to deploy on PR merge
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20 # or your Node version
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Deploy to Koyeb
+        env:
+          KOYEB_TOKEN: ${{ secrets.KOYEB_API_TOKEN }}
+          KOYEB_APP_ID: ${{ secrets.KOYEB_APP_ID }}
+        run: |
+          echo "Deploying to Koyeb..."
+          curl -X POST "https://api.koyeb.com/v1/apps/${KOYEB_APP_ID}/deployments" \
+            -H "Authorization: Bearer $KOYEB_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{}'
