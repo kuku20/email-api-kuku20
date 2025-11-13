@@ -249,8 +249,8 @@ export class LocalPLWR {
     return Math.floor(Math.random() * (x + 1));
   }
 
-  // keys = this.configService.get<any>('twelvedata').split(',');
-  keys =['1f978ae4f4d74a7aa2ad9259dcd9ed54','3168052d38164f3abcb7aff8ab98d806']
+  keys = this.configService.get<any>('twelvedata').split(',');
+  // keys =['1f978ae4f4d74a7aa2ad9259dcd9ed54','3168052d38164f3abcb7aff8ab98d806']
   repeat =   0; // which key we're on
   index = this.getRandomNumber(this.keys.length-1)
 
@@ -270,7 +270,7 @@ export class LocalPLWR {
     while (attempt < maxRetries) {
       const nextKey = this.nextKey(this.keys);
       const url = `${BASE_URL}${nextKey}`;
-      console.log(`Trying URL: ${url}`);
+      console.log(`Trying Key: ${nextKey}`);
   
       try {
         const response = await axios.get(url);
@@ -292,8 +292,8 @@ export class LocalPLWR {
   }
 
 
-  keysPo =['7bn8ZZK_pmpnvxRrAJ2tBzQc73g20NnX','c3wb6rjDqh_k6odbauYqyfgoL32258Uk'];
-  // keysPo = this.configService.get<any>('POLYGON_STOCK_API_KEY').split(',');
+  // keysPo =['7bn8ZZK_pmpnvxRrAJ2tBzQc73g20NnX','c3wb6rjDqh_k6odbauYqyfgoL32258Uk'];
+  keysPo = this.configService.get<any>('POLYGON_STOCK_API_KEY').split(',');
   repeatPo = 0
   indexPo = this.getRandomNumber(this.keysPo.length-1)
   nextKeyPo(keys) {
@@ -312,7 +312,7 @@ export class LocalPLWR {
     while (attempt < maxRetries) {
       const nextKey = this.nextKeyPo(this.keysPo);
       const url = `${BASE_URL}${nextKey}`;
-      console.log(`Trying URL: ${url}`);
+      console.log(`Trying key: ${nextKey}`);
   
       try {
         const response = await axios.get(url);
