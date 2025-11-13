@@ -536,7 +536,7 @@ export class StockService {
     this.shuffleArray(keys);
     for (const key of keys) {
       const url = `${BASE_URL}${key}`;
-      console.log(url)
+      //console.log(url)
       try {
         const response = await axios.get(url);
         return response.data;
@@ -668,7 +668,7 @@ export class StockService {
     console.log(urls)
     const responsesArray = await Promise.allSettled(
       urls.map(async url => {
-        console.log(url)
+        //console.log(url)
         return await this.tryCatchF(url, 'FMP_STOCK_API_KEY');
       })
     );
@@ -802,7 +802,7 @@ async putToFBDynamic(endpoint:string, data: any,) {
       while (attempt < maxRetries) {
         const nextKey = this.nextKey(this.keys);
         const url = `${BASE_URL}${nextKey}`;
-        console.log(`Trying Key: ${nextKey}`);
+        console.log(`Trying Key: ${nextKey.slice(0, 4)}...`);
     
         try {
           const response = await axios.get(url);
@@ -812,7 +812,7 @@ async putToFBDynamic(endpoint:string, data: any,) {
           return response.data; // success!
         } catch (error: any) {
           attempt++;
-          console.error(`Error with key ${nextKey}:`, error?.response?.status || error.message);
+          console.error(`Error with key ${nextKey.slice(0, 4)}...:`, error?.response?.status || error.message);
     
           // Only retry if we haven't exhausted all keys
           if (attempt >= maxRetries) {
@@ -844,14 +844,14 @@ async putToFBDynamic(endpoint:string, data: any,) {
     while (attempt < maxRetries) {
       const nextKey = this.nextKeyPo(this.keysPo);
       const url = `${BASE_URL}${nextKey}`;
-      console.log(`Trying key: ${nextKey}`);
+      console.log(`Trying key: ${nextKey.slice(0, 4)}...`);
   
       try {
         const response = await axios.get(url);
         return response.data; // success!
       } catch (error: any) {
         attempt++;
-        console.error(`Error with key ${nextKey}:`, error?.response?.status || error.message);
+        console.error(`Error with key ${nextKey.slice(0, 4)}...:`, error?.response?.status || error.message);
   
         // Only retry if we haven't exhausted all keys
         if (attempt >= maxRetries) {
