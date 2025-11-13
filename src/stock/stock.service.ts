@@ -17,19 +17,20 @@ export class StockService {
     const lastFiveDays = start || today.toISOString().replace(/T.*$/, '');
     const current = end || new Date().toISOString().replace(/T.*$/, '');
     const BASE_URL = `https://api.polygon.io/v2/aggs/ticker/${query}/range/1/day/${lastFiveDays}/${current}?apiKey=`;
-    const response = await this.tryCatchF(BASE_URL, 'POLYGON_STOCK_API_KEY');
+    // const response = await this.tryCatchF(BASE_URL, 'POLYGON_STOCK_API_KEY'); 
+    const response = await this.tryCatchtPO(BASE_URL);; 
     return response;
   }
 
   async tickerList_POLYGON(query: string) {
     const BASE_URL = `https://api.polygon.io/v3/reference/tickers?search=${query}&active=true&apiKey=`;
-    const response = await this.tryCatchF(BASE_URL, 'POLYGON_STOCK_API_KEY');
+    const response = await this.tryCatchtPO(BASE_URL);
     return plainToClass(DTO.SearchSymbolOutPolygonDto, response?.results);
   }
 
   async tickerDividends_POLYGON(query: string) {
     const BASE_URL = `https://api.polygon.io/v3/reference/dividends?ticker=${query}&apiKey=`;
-    const response = await this.tryCatchF(BASE_URL, 'POLYGON_STOCK_API_KEY');
+    const response = await this.tryCatchtPO(BASE_URL);
     return plainToClass(DTO.DividendOutDto, response?.results);
   }
   async getTickerFullChart_POLYGON(
@@ -79,7 +80,7 @@ export class StockService {
     const responsesArray = await Promise.allSettled(
       urls.map(async url => {
         // console.log(url)
-        return await this.tryCatchF(url, 'POLYGON_STOCK_API_KEY');
+        return await this.tryCatchtPO(url);
       })
     );
     // Combine results into a single array
@@ -103,7 +104,7 @@ export class StockService {
 
   async open_close_POLYGON(ticker: string, date: string = '2023-01-09') {
     const BASE_URL = `https://api.polygon.io/v1/open-close/${ticker}/${date}?adjusted=true&apiKey=`;
-    const response = await this.tryCatchF(BASE_URL, 'POLYGON_STOCK_API_KEY');
+    const response = await this.tryCatchtPO(BASE_URL);
     // console.log(BASE_URL)
     return response;
     return plainToClass(DTO.ChartOutPolygonDto, response?.results);
@@ -115,7 +116,7 @@ export class StockService {
     endDate: string = '2023-01-10',
   ) {
     const BASE_URL = `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/1/day/${startDate}/${endDate}?adjusted=true&sort=asc&apiKey=`;
-    const response = await this.tryCatchF(BASE_URL, 'POLYGON_STOCK_API_KEY');
+    const response =await this.tryCatchtPO(BASE_URL);
     const addPercent = response.results.map(
       (each: { c: number; o: number }) => {
         return {
@@ -776,39 +777,88 @@ async putToFBDynamic(endpoint:string, data: any,) {
       }
       return response;
     }
+    getRandomNumber(x: number): number {
+      return Math.floor(Math.random() * (x + 1));
+    }
   
-    index = 0; // which key we're on
-    repeat = 0; // 0 or 1 (since each key repeats twice)
+    keys = this.configService.get<any>('twelvedata').split(',');
+    // keys =['1f978ae4f4d74a7aa2ad9259dcd9ed54','3168052d38164f3abcb7aff8ab98d806']
+    repeat =   0; // which key we're on
+    index = this.getRandomNumber(this.keys.length-1)
   
     nextKey(keys) {
       const key = keys[this.index];
       this.repeat++;
-      if (this.repeat === 4) {
+      if (this.repeat === 3) {
         this.repeat = 0;
         this.index = (this.index + 1) % keys.length; // loop back to start
+        console.log(this.index)
       }
       return key;
     }
   
-    keys = this.configService.get<any>('twelvedata').split(',');
-    async tryCatchtwelvedata(BASE_URL: string) {
-      const nextKey = this.nextKey(this.keys);
-      // const nextKey = `be92826664f94df091ec3ea0560cf552`;
-      const url = `${BASE_URL}${nextKey}`;
-      console.log(url);
-      try {
-        const response = await axios.get(url);
-        return response.data;
-      } catch (error) {
-        if (error?.response && error?.response?.status === 500) {
-          // Handle 500 error
-          console.error(`Internal Server Error with key `, error?.response);
-        } else {
-          // Handle other errors
-          console.error(`Error with key ${nextKey}`, error?.response?.status);
+    async tryCatchtwelvedata(BASE_URL: string, maxRetries = this.keys.length) {
+      let attempt = 0;
+      while (attempt < maxRetries) {
+        const nextKey = this.nextKey(this.keys);
+        const url = `${BASE_URL}${nextKey}`;
+        console.log(`Trying Key: ${nextKey}`);
+    
+        try {
+          const response = await axios.get(url);
+          if (response.data.status === 'error') {
+            throw new Error('API returned error status');
+          }
+          return response.data; // success!
+        } catch (error: any) {
+          attempt++;
+          console.error(`Error with key ${nextKey}:`, error?.response?.status || error.message);
+    
+          // Only retry if we haven't exhausted all keys
+          if (attempt >= maxRetries) {
+            throw new Error('All API keys failed.');
+          }
         }
       }
       // If none of the API keys work, throw an error
     }
+
+
+  // keysPo =['7bn8ZZK_pmpnvxRrAJ2tBzQc73g20NnX','c3wb6rjDqh_k6odbauYqyfgoL32258Uk'];
+  keysPo = this.configService.get<any>('POLYGON_STOCK_API_KEY').split(',');
+  repeatPo = 0
+  indexPo = this.getRandomNumber(this.keysPo.length-1)
+  nextKeyPo(keys) {
+    const key = keys[this.indexPo];
+    this.repeatPo++;
+    if (this.repeatPo === 2) {
+      console.log(this.indexPo)
+      this.repeatPo = 0;
+      this.indexPo = (this.indexPo + 1) % keys.length; // loop back to start
+    }
+    return key;
+  }
+
+  async tryCatchtPO(BASE_URL: string, maxRetries = this.keysPo.length) {
+    let attempt = 0;
+    while (attempt < maxRetries) {
+      const nextKey = this.nextKeyPo(this.keysPo);
+      const url = `${BASE_URL}${nextKey}`;
+      console.log(`Trying key: ${nextKey}`);
+  
+      try {
+        const response = await axios.get(url);
+        return response.data; // success!
+      } catch (error: any) {
+        attempt++;
+        console.error(`Error with key ${nextKey}:`, error?.response?.status || error.message);
+  
+        // Only retry if we haven't exhausted all keys
+        if (attempt >= maxRetries) {
+          throw new Error('All API keys failed.');
+        }
+      }
+    }
+  }
 }
 
