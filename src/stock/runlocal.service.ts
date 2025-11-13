@@ -245,9 +245,13 @@ export class LocalPLWR {
     }
     return response;
   }
+  getRandomNumber(x: number): number {
+    return Math.floor(Math.random() * (x + 1));
+  }
 
-  index = 0; // which key we're on
-  repeat = 0; // 0 or 1 (since each key repeats twice)
+  keys = this.configService.get<any>('twelvedata').split(',');
+  repeat =   0; // which key we're on
+  index = this.getRandomNumber(this.keys.length-1)
 
   nextKey(keys) {
     const key = keys[this.index];
@@ -255,11 +259,11 @@ export class LocalPLWR {
     if (this.repeat === 3) {
       this.repeat = 0;
       this.index = (this.index + 1) % keys.length; // loop back to start
+      console.log(this.index)
     }
     return key;
   }
 
-  keys = this.configService.get<any>('twelvedata').split(',');
   async tryCatchtwelvedata(BASE_URL: string) {
     const nextKey = this.nextKey(this.keys);
     // const nextKey = `be92826664f94df091ec3ea0560cf552`;
@@ -280,22 +284,21 @@ export class LocalPLWR {
     // If none of the API keys work, throw an error
   }
 
-  indexPo = 0; // which key we're on
-  repeatPo = 0; // 0 or 1 (since each key repeats twice)
-
+  keysPo = this.configService.get<any>('POLYGON_STOCK_API_KEY').split(',');
+  repeatPo = 0
+  indexPo = this.getRandomNumber(this.keysPo.length-2)
   nextKeyPo(keys) {
-    // console.log(keys.length)
     const key = keys[this.indexPo];
     this.repeatPo++;
     if (this.repeatPo === 2) {
+      console.log(this.indexPo,this.indexPo)
       this.repeatPo = 0;
       this.indexPo = (this.indexPo + 1) % keys.length; // loop back to start
-      console.log(this.indexPo)
     }
     return key;
   }
 
-  keysPo = this.configService.get<any>('POLYGON_STOCK_API_KEY').split(',');
+
   // keysPo =['7bn8ZZK_pmpnvxRrAJ2tBzQc73g20NnX','7bn8ZZK_pmpnvxRrAJ2tBzQc73g20NnX'];
   async tryCatchtPO(BASE_URL: string) {
     const nextKey = this.nextKeyPo(this.keysPo);
