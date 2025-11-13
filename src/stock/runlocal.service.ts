@@ -245,9 +245,14 @@ export class LocalPLWR {
     }
     return response;
   }
+  getRandomNumber(x: number): number {
+    return Math.floor(Math.random() * (x + 1));
+  }
 
-  index = 0; // which key we're on
-  repeat = 0; // 0 or 1 (since each key repeats twice)
+  keys = this.configService.get<any>('twelvedata').split(',');
+  // keys =['1f978ae4f4d74a7aa2ad9259dcd9ed54','3168052d38164f3abcb7aff8ab98d806']
+  repeat =   0; // which key we're on
+  index = this.getRandomNumber(this.keys.length-1)
 
   nextKey(keys) {
     const key = keys[this.index];
@@ -255,65 +260,72 @@ export class LocalPLWR {
     if (this.repeat === 3) {
       this.repeat = 0;
       this.index = (this.index + 1) % keys.length; // loop back to start
+      console.log(this.index)
     }
     return key;
   }
 
-  keys = this.configService.get<any>('twelvedata').split(',');
-  async tryCatchtwelvedata(BASE_URL: string) {
-    const nextKey = this.nextKey(this.keys);
-    // const nextKey = `be92826664f94df091ec3ea0560cf552`;
-    const url = `${BASE_URL}${nextKey}`;
-    console.log(url);
-    try {
-      const response = await axios.get(url);
-      return response.data;
-    } catch (error) {
-      if (error?.response && error?.response?.status === 500) {
-        // Handle 500 error
-        console.error(`Internal Server Error with key `, error?.response);
-      } else {
-        // Handle other errors
-        console.error(`Error with key ${nextKey}`, error?.response?.status);
+  async tryCatchtwelvedata(BASE_URL: string, maxRetries = this.keys.length) {
+    let attempt = 0;
+    while (attempt < maxRetries) {
+      const nextKey = this.nextKey(this.keys);
+      const url = `${BASE_URL}${nextKey}`;
+      console.log(`Trying Key: ${nextKey}`);
+  
+      try {
+        const response = await axios.get(url);
+        if (response.data.status === 'error') {
+          throw new Error('API returned error status');
+        }
+        return response.data; // success!
+      } catch (error: any) {
+        attempt++;
+        console.error(`Error with key ${nextKey}:`, error?.response?.status || error.message);
+  
+        // Only retry if we haven't exhausted all keys
+        if (attempt >= maxRetries) {
+          throw new Error('All API keys failed.');
+        }
       }
     }
     // If none of the API keys work, throw an error
   }
 
-  indexPo = 0; // which key we're on
-  repeatPo = 0; // 0 or 1 (since each key repeats twice)
 
+  // keysPo =['7bn8ZZK_pmpnvxRrAJ2tBzQc73g20NnX','c3wb6rjDqh_k6odbauYqyfgoL32258Uk'];
+  keysPo = this.configService.get<any>('POLYGON_STOCK_API_KEY').split(',');
+  repeatPo = 0
+  indexPo = this.getRandomNumber(this.keysPo.length-1)
   nextKeyPo(keys) {
-    // console.log(keys.length)
     const key = keys[this.indexPo];
     this.repeatPo++;
     if (this.repeatPo === 2) {
+      console.log(this.indexPo)
       this.repeatPo = 0;
       this.indexPo = (this.indexPo + 1) % keys.length; // loop back to start
-      console.log(this.indexPo)
     }
     return key;
   }
 
-  keysPo = this.configService.get<any>('POLYGON_STOCK_API_KEY').split(',');
-  // keysPo =['7bn8ZZK_pmpnvxRrAJ2tBzQc73g20NnX','7bn8ZZK_pmpnvxRrAJ2tBzQc73g20NnX'];
-  async tryCatchtPO(BASE_URL: string) {
-    const nextKey = this.nextKeyPo(this.keysPo);
-    // const nextKey = `be92826664f94df091ec3ea0560cf552`;
-    const url = `${BASE_URL}${nextKey}`;
-    console.log(url);
-    try {
-      const response = await axios.get(url);
-      return response.data;
-    } catch (error) {
-      if (error?.response && error?.response?.status === 500) {
-        // Handle 500 error
-        console.error(`Internal Server Error with key `, error?.response);
-      } else {
-        // Handle other errors
-        console.error(`Error with key ${nextKey}`, error?.response?.status);
+  async tryCatchtPO(BASE_URL: string, maxRetries = this.keysPo.length) {
+    let attempt = 0;
+    while (attempt < maxRetries) {
+      const nextKey = this.nextKeyPo(this.keysPo);
+      const url = `${BASE_URL}${nextKey}`;
+      console.log(`Trying key: ${nextKey}`);
+  
+      try {
+        const response = await axios.get(url);
+        return response.data; // success!
+      } catch (error: any) {
+        attempt++;
+        console.error(`Error with key ${nextKey}:`, error?.response?.status || error.message);
+  
+        // Only retry if we haven't exhausted all keys
+        if (attempt >= maxRetries) {
+          throw new Error('All API keys failed.');
+        }
       }
     }
-    // If none of the API keys work, throw an error
   }
 }
