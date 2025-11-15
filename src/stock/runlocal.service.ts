@@ -47,6 +47,9 @@ export class LocalPLWR {
     // return {
     //   dayStart,range,timespan, dayend
     // }
+    if(ticker.includes('USD')){
+      return
+    }
     const urls = `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${dayStart}/${dayend}?adjusted=true&sort=desc&limit=50000&apiKey=`;
     if (timefame.includes('weekly') || timefame.includes('monthly')) {
       return this.alphavantageService.weekORmonthly(ticker, timefame);

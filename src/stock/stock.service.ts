@@ -843,6 +843,9 @@ async putToFBDynamic(endpoint:string, data: any,) {
   }
 
   async tryCatchtPO(BASE_URL: string, maxRetries = this.keysPo.length) {
+    if(BASE_URL.includes('USD')){
+      return
+    }
     let attempt = 0;
     while (attempt < maxRetries) {
       const nextKey = this.nextKeyPo(this.keysPo);
