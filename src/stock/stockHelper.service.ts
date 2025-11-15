@@ -251,4 +251,8 @@ getDateNDaysAgo(n: number) {
   now.setDate(now.getDate() - n); // subtract n days
   return this.formatDate(now);
 }
+formatSymbol(symbol: string) {
+  const match = symbol.match(/^([A-Z]+?)(USD|USDT|BTC|ETH|EUR|JPY)$/);
+  return match ? `${match[1]}/${match[2]}` : symbol;
+}
 }

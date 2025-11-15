@@ -238,6 +238,9 @@ export class LocalPLWR {
     } else if (timefame.includes('monthly')) {
       tem = '1month';
     }
+    if(ticker.includes('USD')){
+      ticker = this.stockHelperService.formatSymbol(ticker)
+    }
     let BASE_URL = `https://api.twelvedata.com/time_series?symbol=${ticker}&interval=${tem}&outputsize=400&dp=2&apikey=`;
     const response = await this.tryCatchtwelvedata(BASE_URL);
     if (response.status == 'ok') {
