@@ -122,8 +122,8 @@ export class LocalPLWR {
     const response = await this.tryCatchF(BASE_URL, 'FMP_STOCK_API_KEY');
     const data = plainToClass(DTO.ChartOutFMPDto, response?.historical);
     return data;
-    const result = this.stockHelperService.returnNewData(data);
-    return result;
+    // const result = this.stockHelperService.returnNewData(data);
+    // return result;
   }
 
   async RTP_FINNHUB_FOR_CHART(query: string) {
@@ -420,14 +420,20 @@ export class LocalPLWR {
       }
 
       // Transform to DTO
-      const reversedData = [...allData].reverse(); // clone + reverse
+      const reversedData = [...allData]; // clone + reverse
       const date = new Date()
-      console.log(code,date)
+      console.log('runlocal.service.ts-425',code,date)
       const dataOut = plainToInstance(DTO.CoinHistoryDto, reversedData, {
         excludeExtraneousValues: true,
-      });
-
-      return dataOut;
+      })
+        // 2️⃣ Process data with your helper
+      const newData = await this.stockHelperService.returnNewData(dataOut);
+        //         // 3️⃣ Get the last two data points
+      const returndata = newData.reverse();
+                // const lastData = newData[0];
+                // const secondLastData = newData[1];
+                // console.log('runlocal.service.ts-434',lastData,secondLastData)
+      return returndata
     } catch (error: any) {
       throw new HttpException(
         error.response?.data || error.message,

@@ -271,8 +271,8 @@ export class StockService {
     const response = await this.tryCatchF(BASE_URL, 'FMP_STOCK_API_KEY');
     const data = plainToClass(DTO.ChartOutFMPDto, response?.historical)
     return data;
-    const result = this.stockHelperService.returnNewData(data)
-    return result;
+    // const result = this.stockHelperService.returnNewData(data)
+    // return result;
   }
 
   async fromFMP(type: FMPRType, stockTicker: string, stockMarket: string) {
@@ -771,8 +771,8 @@ async putToFBDynamic(endpoint:string, data: any,) {
       }
       if(ticker.includes('USD')){
         // return with 
-        ticker = this.stockHelperService.getmatch1only(ticker)
-        return this.getCoinHistory(ticker, '5m')
+        // ticker = this.stockHelperService.getmatch1only(ticker)
+        // return this.getCoinHistory(ticker, '5m')
         ticker = this.stockHelperService.formatSymbol(ticker)
       }
       let BASE_URL = `https://api.twelvedata.com/time_series?symbol=${ticker}&interval=${tem}&outputsize=400&dp=2&apikey=`;
@@ -934,15 +934,18 @@ async putToFBDynamic(endpoint:string, data: any,) {
         // Prepare next batch
         endTimestamp = startTimestamp;
       }
-      const date = new Date()
-      console.log(code,date)
+
       // Transform to DTO
-      const reversedData = [...allData].reverse(); // clone + reverse
+      const reversedData = [...allData]; // clone + reverse
       const dataOut = plainToInstance(DTO.CoinHistoryDto, reversedData, {
         excludeExtraneousValues: true,
-      });
+      })
+        // 2️⃣ Process data with your helper
+      const newData = await this.stockHelperService.returnNewData(dataOut);
+        //         // 3️⃣ Get the last two data points
+      const returndata = newData.reverse();
 
-      return dataOut;
+      return returndata
     } catch (error: any) {
       throw new HttpException(
         error.response?.data || error.message,
