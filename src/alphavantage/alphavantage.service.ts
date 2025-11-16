@@ -77,7 +77,7 @@ export class AlphavantageService {
             console.error(`Internal Server Error with key `, error?.response);
           } else {
             // Handle other errors
-            console.error(`${keyDATA} Error with key ${key}`, error?.response?.status);
+            console.error(`${keyDATA} Error with key ${key.slice(0, 4)}...`, error?.response?.status);
             // update Proxy
           }
         }

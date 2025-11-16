@@ -12,10 +12,10 @@ export class StockHelperService {
     dataIn = await this.calculateRSI(dataIn);
     dataIn = await this.calculateMACD(dataIn);
     return dataIn
-    // .sort(
-    //   (a: { date: string }, b: { date: string }) =>
-    //     new Date(a.date).getTime() - new Date(b.date).getTime(),
-    // );
+    .sort(
+      (a: { date: string }, b: { date: string }) =>
+        new Date(a.date).getTime() - new Date(b.date).getTime(),
+    );
   }
 
   async calculateMovingAverage(
@@ -250,5 +250,13 @@ getDateNDaysAgo(n: number) {
   const now = new Date(); // current date and time
   now.setDate(now.getDate() - n); // subtract n days
   return this.formatDate(now);
+}
+formatSymbol(symbol: string) {
+  const match = symbol.match(/^([A-Z]+?)(USD|USDT|BTC|ETH|EUR|JPY)$/);
+  return match ? `${match[1]}/${match[2]}` : symbol;
+}
+getmatch1only(symbol: string) {
+  const match = symbol.match(/^([A-Z]+?)(USD|USDT|BTC|ETH|EUR|JPY)$/);
+  return match ? `${match[1]}` : symbol;
 }
 }

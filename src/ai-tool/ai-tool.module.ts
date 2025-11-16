@@ -6,7 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { StockHelperService } from 'src/stock/stockHelper.service';
 @Module({
   controllers: [AiToolController],
-  providers: [AiToolService,StockService, StockHelperService],
+  providers: [AiToolService,StockService, StockHelperService,],
   imports:[JwtModule.register({})]
 })
 export class AiToolModule {}

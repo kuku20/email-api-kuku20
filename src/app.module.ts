@@ -27,8 +27,15 @@ import { WebhooksModule } from './webhooks/webhooks.module';
 import { MegaModule } from './mega/mega.module';
 import { AlphavantageModule } from './alphavantage/alphavantage.module';
 import { DataHistory } from './stock/entities';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TasksService } from './stock/tasks.service';
+import { StockHelperService } from './stock/stockHelper.service';
+import { WebhooksService } from './webhooks/webhooks.service';
+import { LocalPLWR } from './stock/runlocal.service';
+import { AlphavantageService } from './alphavantage/alphavantage.service';
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: `.env.${process.env.NODE_ENV}`,
@@ -79,6 +86,7 @@ import { DataHistory } from './stock/entities';
     }),
     UserModule,
     ShopModule,
+    TypeOrmModule.forFeature([DataHistory]),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '/src/assets/images'), // Specify the path to the assets directory
       serveRoot: '/images', // The URL path to access the assets
@@ -94,6 +102,6 @@ import { DataHistory } from './stock/entities';
     AlphavantageModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, TasksService,StockHelperService, WebhooksService, LocalPLWR, AlphavantageService],
 })
 export class AppModule {}
