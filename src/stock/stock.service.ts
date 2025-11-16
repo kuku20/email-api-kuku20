@@ -667,7 +667,7 @@ export class StockService {
     const urls = dateRanges.map(({ start, end }) => {
       return `https://financialmodelingprep.com/api/v3/historical-chart/${timespan}/${ticker}?from=${start}&to=${end}&apikey=`;
     });
-    console.log(urls)
+    // console.log(urls)
     const responsesArray = await Promise.allSettled(
       urls.map(async url => {
         //console.log(url)
