@@ -76,7 +76,7 @@ export class StockService {
     const urls = dateRanges.map(({ start, end }) => {
       return `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${start}/${end}?adjusted=true&sort=desc&limit=50000&apiKey=`;
     });
-    console.log(urls)
+    // console.log(urls)
     const responsesArray = await Promise.allSettled(
       urls.map(async url => {
         // console.log(url)
