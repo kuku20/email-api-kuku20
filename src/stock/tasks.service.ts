@@ -12,12 +12,15 @@ export class TasksService {
     private readonly webhooksService: WebhooksService,
     private readonly LocalPLWR: LocalPLWR,
   ) {}
-  // @Cron(CronExpression.EVERY_30_SECONDS)
-  // async wakeupcall() {
-  //   const { data } = await axios.get(`https://nestjs-api.koyeb.app`);
-  //   console.log(data)
-  //   return data;
-  // }
+  @Cron('*/2 * * * *')
+  async wakeupcall() {
+    try {
+      const { data } = await axios.get('https://nestjs-api.koyeb.app/health');
+      this.logger.log('⏱️ Keep-alive ping success:', data.status);
+    } catch (err) {
+      this.logger.error(`❌ Keep-alive failed: ${err.message}`);
+    }
+  }
   // Runs every 5 minutes
     // @Cron(CronExpression.EVERY_30_SECONDS)
   @Cron(CronExpression.EVERY_5_MINUTES)

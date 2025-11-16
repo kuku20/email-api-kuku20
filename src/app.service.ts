@@ -33,7 +33,7 @@ export class AppService {
 
   
   getHello() {
-    return {mess:'Hello World Email!'};
+    return {mess:'Hello World Email!',status: 'ok', time: new Date().toISOString() };
   }
 
   async createEmail(name: string, email: string, message:string, subject?:string): Promise<any> {
