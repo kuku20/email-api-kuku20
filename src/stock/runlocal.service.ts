@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import axios from 'axios';
-
+import * as fs from 'fs'; 
 import { ConfigService } from '@nestjs/config';
-import { plainToClass } from 'class-transformer';
+import { plainToClass, plainToInstance } from 'class-transformer';
 import * as DTO from './dto';
 import { StockHelperService } from './stockHelper.service';
 import { AlphavantageService } from 'src/alphavantage/alphavantage.service';
@@ -131,7 +131,7 @@ export class LocalPLWR {
     const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
     return plainToClass(DTO.RealTimePriceFhForChartDto, response);
   }
-  async tryCatchF(BASE_URL: string, keyDATA: string) {
+  async tryCatchF(BASE_URL: string, keyDATA: string, ticker?:any) {
     const keys = this.configService.get<any>(keyDATA).split(',');
     this.shuffleArray(keys);
     for (const key of keys) {
@@ -139,14 +139,33 @@ export class LocalPLWR {
       //console.log(url);
       try {
         const response = await axios.get(url);
+        // console.log(`✅ Success: ${ticker}`);
+
+        // // Log successful tickers
+        // const dir = './logs';
+        // if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+
+        // const successPath = `${dir}/success_tickers.txt`;
+        // fs.appendFileSync(successPath, ` | http://localhost:3001/?stockTicker=${ticker}&endpoint=fmp-eod  |\n`, 'utf8');
+
         return response.data;
       } catch (error) {
         if (error?.response && error?.response?.status === 500) {
+
           // Handle 500 error
           console.error(`Internal Server Error with key `, error?.response);
         } else {
-          // Handle other errors
-          console.error(`Error with key ${keyDATA.substring(0, 4)} `, error?.response?.status);
+          if(error?.response?.status === 402){
+                      // Handle other errors
+          // console.log('I want to store in file',ticker)
+          // const dir = './logs';
+          // if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+          //       // ✅ Append or create file automatically
+          // const filePath = `${dir}/failed_tickers.txt`;
+          // fs.appendFileSync(filePath, ` | http://localhost:3001/?stockTicker=${ticker}&endpoint=fmp-eod  |\n`, 'utf8');
+          console.error(`Error with key ${key.substring(0, 4)} `, error?.response?.status);
+          break
+          }
         }
       }
     }
@@ -242,6 +261,8 @@ export class LocalPLWR {
       tem = '1month';
     }
     if(ticker.includes('USD')){
+      // ticker = this.stockHelperService.getmatch1only(ticker)
+      // return this.getCoinHistory(ticker, '5m')
       ticker = this.stockHelperService.formatSymbol(ticker)
     }
     let BASE_URL = `https://api.twelvedata.com/time_series?symbol=${ticker}&interval=${tem}&outputsize=400&dp=2&apikey=`;
@@ -288,7 +309,6 @@ export class LocalPLWR {
       } catch (error: any) {
         attempt++;
         console.error(`Error with key ${nextKey.slice(0, 4)}...:`, error?.response?.status || error.message);
-  
         // Only retry if we haven't exhausted all keys
         if (attempt >= maxRetries) {
           throw new Error('All API keys failed.');
@@ -333,5 +353,98 @@ export class LocalPLWR {
         }
       }
     }
+  }
+  private readonly apiUrl = 'https://api.livecoinwatch.com/coins/single/history';
+  private readonly apiKey = '66f75cb5-17b5-4cf7-bb09-9e161fde19fc';
+  async getCoinHistory(
+    code: string,
+    interval: string,
+    currency = 'USD',
+    meta = true,
+    totalCandles = 300, // desired number of candles
+  ) {
+    try {
+      // 1️⃣ Define interval in minutes
+      let intervalMinutes = 1;
+      switch (interval) {
+        case '5m':
+          intervalMinutes = 5;
+          break;
+        case '15m':
+          intervalMinutes = 15;
+          break;
+        case '30m':
+          intervalMinutes = 30;
+          break;
+        default:
+          intervalMinutes = 1;
+      }
+
+      const intervalMs = intervalMinutes * 60 * 1000;
+      const maxCandlesPerRequest = 100; // LiveCoinWatch max per request
+      const allData = [];
+
+      let endTimestamp = Date.now();
+
+      while (allData.length < totalCandles) {
+        const remainingCandles = totalCandles - allData.length;
+        const candlesThisRequest = Math.min(maxCandlesPerRequest, remainingCandles);
+        const startTimestamp = endTimestamp - intervalMs * candlesThisRequest;
+
+        // Fetch batch
+        const response = await axios.post(
+          this.apiUrl,
+          {
+            currency,
+            code,
+            start: startTimestamp,
+            end: endTimestamp,
+            meta,
+          },
+          {
+            headers: {
+              'content-type': 'application/json',
+              'x-api-key': this.apiKey,
+            },
+          },
+        );
+
+        const data = response.data?.history || [];
+        if (data.length === 0) break; // stop if no more data
+
+        // Prepend to maintain chronological order
+        allData.unshift(...data);
+
+        // Prepare next batch
+        endTimestamp = startTimestamp;
+      }
+
+      // Transform to DTO
+      const reversedData = [...allData].reverse(); // clone + reverse
+      const date = new Date()
+      console.log(code,date)
+      const dataOut = plainToInstance(DTO.CoinHistoryDto, reversedData, {
+        excludeExtraneousValues: true,
+      });
+
+      return dataOut;
+    } catch (error: any) {
+      throw new HttpException(
+        error.response?.data || error.message,
+        error.response?.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+  async FMP_EOD_FULL(ticker: string) {
+    const daytestBF = 0;
+    const dayend = this.stockHelperService.getDateNDaysAgo(-1 + daytestBF);
+    console.log(ticker)
+    const dayStart = this.stockHelperService.getDateNDaysAgo(700 + daytestBF);
+    let BASE_URL = `https://financialmodelingprep.com/stable/historical-price-eod/full?symbol=${ticker}&from=${dayStart}&to=${dayend}&apikey=`;
+
+    const response = await this.tryCatchF(BASE_URL, 'FMP_STOCK_API_KEY',ticker);
+    return response;
+    const result = await this.stockHelperService.returnNewData(response);
+    return result;
   }
 }

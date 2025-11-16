@@ -7,7 +7,8 @@ import {
   Query,
   UseGuards,
   Post,
-  Req
+  Req,
+  BadRequestException
 } from '@nestjs/common';
 import { StockService } from './stock.service';
 import { JwtGuard } from 'src/auth/guard';
@@ -55,7 +56,7 @@ export class StockController {
     }
   }
 
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard)  
   @UseGuards(AdminUserAuthGuard)
   @Patch('/news-fb/:db')
   updateNewsAV2FB(
@@ -87,7 +88,7 @@ export class StockController {
     }
   }
 
- @UseGuards(JwtGuard) //proteched as well since this is 25/day
+ @UseGuards(JwtGuard)   //proteched as well since this is 25/day
   @UseGuards(AdminUserAuthGuard)
   @Get('/news-v2') //news-alpha-vantage
   async tickers_News_ALPHA_VANTAGE(@Query('stockTicker') stockTicker: string) {
@@ -151,7 +152,7 @@ export class StockController {
     }
   }
 
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard)  
   @UseGuards(AdminUserAuthGuard)
   @Patch('/realtimefb-multiple/:db')
   lists_FirebasePut(
@@ -212,7 +213,7 @@ export class StockController {
     }
   }
 
- @UseGuards(JwtGuard) 
+ @UseGuards(JwtGuard)   
   @Get('/chartdata/:timespan')
   async getTickerFullChart_POLYGON(
   @Param() params: RequestDTO.TimeSpanDto,
@@ -232,7 +233,7 @@ export class StockController {
       throw error;
     }
   }
- @UseGuards(JwtGuard) 
+ @UseGuards(JwtGuard)   
   @Get('/daily-chart')
   async getTickerDailyChart_FMP( @Query() query: RequestDTO.TickerStartEndDTO) {
     try {
@@ -244,7 +245,7 @@ export class StockController {
     }
   }
 
- @UseGuards(JwtGuard) 
+ @UseGuards(JwtGuard)   
   @Get('/chartdata/v2/:src_api')
   async getChartDataV2(
   @Param() params: RequestDTO.SrcApiDto,
@@ -311,6 +312,7 @@ export class StockController {
     }
   }
 
+  @UseGuards(JwtGuard)
   @Post('/firebase-api')
   async FireBaseApi(@Body() dataIn: any) {
     const { method, path, data} = dataIn;
@@ -384,6 +386,8 @@ export class StockController {
         if (timefame.includes('day')) {
           await this.loacl.storeDataHis(ticker, 'fm', current, data);
         }
+      } else if (params.src_api === RequestDTO.SRC_API.FMP_EOD) {
+        data = await this.loacl.FMP_EOD_FULL(ticker);
       } else {
         data = await this.loacl.getTickerFullChart_POLYGON(ticker, timefame);
         // if (timefame.includes('day')) {
@@ -395,5 +399,25 @@ export class StockController {
       throw error;
     }
   }
-
+  @Get('history-coinwatch')
+  async getHistory(
+    @Query('ticker') ticker: string,
+    @Query('interval') interval: string, // '1m' | '5m' | optional
+  ) {
+    if (!ticker) throw new BadRequestException('Missing query param: ticker');
+  
+    // Just pass code + interval to the service
+    return this.loacl.getCoinHistory(ticker, interval);
+  }
+  
+  
+  @Get('fmp-eod')
+  async FMP_EOD_FULL(
+    @Query('ticker') ticker: string,
+  ) {
+    if (!ticker) throw new BadRequestException('Missing query param: code');
+  
+    // Just pass code + interval to the service
+    return this.loacl.FMP_EOD_FULL(ticker);
+  }
 }

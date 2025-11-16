@@ -70,6 +70,7 @@ export enum TimeRange {
   }
 
   export enum SRC_API {
+    FMP_EOD = 'fmp-eod',
     FH = 'fh',
     FM = 'fm',
     PO = 'po',
