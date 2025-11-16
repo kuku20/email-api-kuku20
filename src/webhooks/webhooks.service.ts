@@ -64,7 +64,7 @@ export class WebhooksService {
     let options:any
     const botdt = botname.split(' ').slice(1).join(' ');
     const color = botdt.includes('DOWN')? 0xff0000 : 0x00ff00 
-    const origin = `**[4200-on1m](http://localhost:4200/price-log/${ticker})** | **[4200-on5m](http://localhost:4200/price-log/${ticker}?daysRange=7)** | **[4200-on15m](http://localhost:4200/price-log/${ticker}?daysRange=30)** \n **[sMarkets000-on1m](https://stockmarkets000.web.app//price-log/${ticker})** | **[sMarkets000-on5m](https://stockmarkets000.web.app//price-log/${ticker}?daysRange=7)** | **[sMarkets000-on15m](https://stockmarkets000.web.app//price-log/${ticker}?daysRange=30)** \n **[localhost:3001](http://localhost:3001/?stockTicker=${ticker})** | **[stock-chart-abc.web.app](https://stock-chart-abc.web.app/?stockTicker=${ticker})** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`
+    const origin = `**[4200-on1m](http://localhost:4200/price-log/${ticker})** | **[4200-on5m](http://localhost:4200/price-log/${ticker}?daysRange=5)** | **[4200-on15m](http://localhost:4200/price-log/${ticker}?daysRange=15)** \n **[sMarkets000-on1m](https://stockmarkets000.web.app//price-log/${ticker})** | **[sMarkets000-on5m](https://stockmarkets000.web.app//price-log/${ticker}?daysRange=5)** | **[sMarkets000-on15m](https://stockmarkets000.web.app//price-log/${ticker}?daysRange=15)** \n **[localhost:3001](http://localhost:3001/?stockTicker=${ticker})** | **[stock-chart-abc.web.app](https://stock-chart-abc.web.app/?stockTicker=${ticker})** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`
     let gptres
     if(extra){
       const parts = extra.split('/');

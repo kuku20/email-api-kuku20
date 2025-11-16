@@ -53,19 +53,19 @@ export class StockService {
     if(daylength<3){
       range = '1'
       timespan = 'minute'
-    }else if(daylength>=3 && daylength < 14){
+    }else if(daylength>=3 && daylength < 9){
       range = '5'
       timespan = 'minute'
-    }else if(daylength>=14 && daylength < 35){
+    }else if(daylength>=9 && daylength < 16){
+      range = '15'
+      timespan = 'minute'
+    }else if(daylength>=16 && daylength < 50){
       range = '30'
       timespan = 'minute'
-    }else if(daylength>=35 && daylength < 95){
+    }else if(daylength>=50 && daylength < 70){
       range = '1'
       timespan = 'hour'
-    }else if(daylength>=95 && daylength < 180){
-      range = '3'
-      timespan = 'hour'
-    }else if(daylength>=180 && daylength < 365){
+    }else if(daylength>=70 && daylength < 240){
       range = '4'
       timespan = 'hour'
     }else{
@@ -234,17 +234,19 @@ export class StockService {
       range = '1min'
     } else  if(daylength>2 && daylength <=9){
       range = '5min'
-    } else  if(daylength>9 && daylength <= 45){
+    } else  if(daylength>9 && daylength <= 16){
       range = '15min'
-    } else  if(daylength>45 && daylength <= 60){
+    }else  if(daylength>16 && daylength <= 50){
+      range = '30min'
+    }  else  if(daylength>50 && daylength <= 70){
       // range = '1hour'
       range = '1h'
-    } else  if(daylength>60 && daylength <= 175){
+    } else  if(daylength>70 && daylength <= 240){
       // range = '4hour'
       range = '4h'
     } 
     // let BASE_URL = `https://financialmodelingprep.com/api/v3/historical-chart/${range}/${ticker}?from=${dateStart}&to=${dateEnd}&apikey=`;
-    if (daylength > 175) {
+    if (daylength > 240) {
       // return  this.twelvedata(ticker, range);
       // return this.getTickerDailyChart_FMP(ticker,dateStart,dateEnd)
       range = '1day'
@@ -665,7 +667,7 @@ export class StockService {
     const urls = dateRanges.map(({ start, end }) => {
       return `https://financialmodelingprep.com/api/v3/historical-chart/${timespan}/${ticker}?from=${start}&to=${end}&apikey=`;
     });
-    console.log(urls)
+    // console.log(urls)
     const responsesArray = await Promise.allSettled(
       urls.map(async url => {
         //console.log(url)
