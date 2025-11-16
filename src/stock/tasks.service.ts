@@ -3,14 +3,16 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { WebhooksService } from 'src/webhooks/webhooks.service';
 import { LocalPLWR } from './runlocal.service';
 import axios from 'axios';
+import { StockHelperService } from './stockHelper.service';
 @Injectable()
 export class TasksService {
   private readonly logger = new Logger(TasksService.name);
   constructor(
     private readonly webhooksService: WebhooksService,
+    private readonly stockHelperService: StockHelperService,
     private readonly LocalPLWR: LocalPLWR,
   ) {}
-    // @Cron(CronExpression.EVERY_30_SECONDS)
+
   @Cron('*/3 * * * *')
   async wakeupcall() {
     try {
@@ -21,57 +23,79 @@ export class TasksService {
     }
   }
   // Runs every 5 minutes
-    // @Cron(CronExpression.EVERY_5_SECONDS)
   @Cron(CronExpression.EVERY_5_MINUTES)
   async handleCronCrypto() {
     this.logger.log('Running scheduled task for all tickers...');
     const date = new Date()
-    this.sendDiscord('CHECKBOT Crypto 5min RUN AT:'+date, 'RSIENDBOT', 'Nono','CRON_CHECK');
+    const timefame = '5m'
+    this.sendDiscord('CHECKBOT Crypto 5min RUN AT:'+date, 'RSIENDBOT 5MIN', 'Nono','CRON_CHECK');
     const tickers = ['BTC', 'BCH', 'LTC', 'ETH', 'DASH', 'ZEC', 'XMR'];
     // const tickers = ['BTC'];
-
+    await new Promise((resolve) => setTimeout(resolve, 2 * 60 * 1000)); // 2-minute delay
     for (const ticker of tickers) {
       try {
         // 1️⃣ Get historical data for the ticker
-        const data = await this.LocalPLWR.getCoinHistory(ticker, '5m');
+        const data = await this.LocalPLWR.getCoinHistory(ticker, timefame);
 
-        // 2️⃣ Process data with your helper
-        // const newData = await this.stockHelperService.returnNewData(data);
-
-        // 3️⃣ Get the last two data points
         const lastData = data[0];
         const secondLastData = data[1];
 
         // 4️⃣ Compare and send alert if condition is met
-        await this.compareAndSend(lastData, secondLastData, ticker);
+        await this.compareAndSend(lastData, secondLastData, ticker+'USD', timefame);
 
         this.logger.log(`${ticker} processed successfully.`);
       } catch (error) {
-        this.sendDiscord('BUY ERORR_CALL', ticker, {}, 'ERORR_CALL');
+        this.sendDiscord(`ERROR ON API AT: ${timefame} On ${date}`, `RSIENDBOT ${ticker}USD at ${timefame}`, 'Nono','ERORR_CALL');
         this.logger.error(`Error processing ${ticker}: ${error.message}`);
       }
     }
   }
 
-  async compareAndSend(lastdata, Secondlastdata, ticker) {
+  @Cron('*/15 * * * *') // every 15 minutes
+  async handle15Min() {
+    this.logger.log('Running scheduled task for all tickers...');
+    const date = new Date()
+    this.sendDiscord('CHECKBOT Crypto 15MIN RUN AT:'+date, 'RSIENDBOT 15MIN', 'Nono','CRON_CHECK');
+    const timefame = '15min'
+    const tickers = ['BTCUSD','BCHUSD',"LTCUSD",'ETHUSD','DASHUSD','ZECUSD','XMRUSD'];
+    // const tickers = ['BTCUSD']; // alanwork1234@hotmail.co
+    const apikey = 'd3058ae5683b4fc19a787ceb21a87f67'
+    await new Promise((resolve) => setTimeout(resolve, 2 * 60 * 1000)); // 2-minute delay
+    for (const ticker of tickers) {
+      try {
+        // Get historical data for the ticker
+        const data = await this.LocalPLWR.get12for(ticker, timefame, apikey);
+        const lastData = data[data.length-1];
+        const secondLastData = data[data.length-2];
+        // Compare and send alert if condition is met
+        await this.compareAndSend(lastData, secondLastData, ticker, timefame);
+        this.logger.log(`${ticker} processed successfully.`);
+      } catch (error) {
+        this.sendDiscord(`ERROR ON API AT: ${timefame} On ${date}`, `RSIENDBOT ${ticker}USD at ${timefame}`, 'Nono','ERORR_CALL');
+        this.logger.error(`Error processing ${ticker}: ${error.message}`);
+      }
+    }
+  }
+
+  async compareAndSend(lastdata, Secondlastdata, ticker, timefame) {
     if (
       lastdata?.close < lastdata?.MA200 &&
       lastdata?.MA20 > lastdata?.MA50 &&
       Secondlastdata?.MA20 < Secondlastdata?.MA50
     ) {
-      this.sendDiscord('BUY ERALLY', ticker, lastdata,'BUYSELL');
+      this.sendDiscord(`BUY ERALLY ON-${timefame}: ${lastdata?.date}` , `${ticker} -ON- ${timefame}`, lastdata,'BUYSELL');
     }
     // else{
     //   // this.sendDiscord('BUY ERALLY', ticker, {}, 'ERORR_CALL');
     //   console.log(lastdata)
     //   console.log(Secondlastdata)
-    //   this.sendDiscord('BUY ERALLY', ticker, lastdata,'BUYSELL');
+    //   this.sendDiscord(`BUY ERALLY ON-${timefame}: ${lastdata?.date}` , `${ticker} -ON- ${timefame}`, lastdata,'BUYSELL');
     // }
     if (
       lastdata?.close > lastdata?.MA200 &&
       Secondlastdata?.close < Secondlastdata?.MA200
     ) {
-      this.sendDiscord('bullish buy now check me', ticker, lastdata, 'BUYSELL');
+      this.sendDiscord(`BUY now:check me-${timefame}: ${lastdata?.date}`, `${ticker} -ON- ${timefame}`, lastdata,'BUYSELL');
     }
   }
 
@@ -79,7 +103,7 @@ export class TasksService {
     try {
       return await this.webhooksService.sendDiscordNotification(
         message,
-        `${channel} ${ticker}USD`,
+        `${channel} ${ticker}`,
         JSON.stringify(lastdata),
       );
     } catch (err) {
