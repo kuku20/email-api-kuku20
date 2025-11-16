@@ -3,6 +3,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { StockHelperService } from './stockHelper.service';
 import { WebhooksService } from 'src/webhooks/webhooks.service';
 import { LocalPLWR } from './runlocal.service';
+import axios from 'axios';
 @Injectable()
 export class TasksService {
   private readonly logger = new Logger(TasksService.name);
@@ -11,6 +12,12 @@ export class TasksService {
     private readonly webhooksService: WebhooksService,
     private readonly LocalPLWR: LocalPLWR,
   ) {}
+  @Cron(CronExpression.EVERY_30_SECONDS)
+  async wakeupcall() {
+    const { data } = await axios.get(`https://nestjs-api.koyeb.app`);
+    console.log(data)
+    return data;
+  }
   // Runs every 5 minutes
     // @Cron(CronExpression.EVERY_30_SECONDS)
   @Cron(CronExpression.EVERY_5_MINUTES)
