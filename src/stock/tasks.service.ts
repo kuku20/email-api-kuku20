@@ -12,10 +12,11 @@ export class TasksService {
     private readonly webhooksService: WebhooksService,
     private readonly LocalPLWR: LocalPLWR,
   ) {}
-  @Cron('*/2 * * * *')
+    // @Cron(CronExpression.EVERY_30_SECONDS)
+  @Cron('*/3 * * * *')
   async wakeupcall() {
     try {
-      const { data } = await axios.get('https://nestjs-api.koyeb.app/health');
+      const { data } = await axios.get('https://nestjs-api.koyeb.app');
       this.logger.log('⏱️ Keep-alive ping success:', data.status);
     } catch (err) {
       this.logger.error(`❌ Keep-alive failed: ${err.message}`);
