@@ -234,17 +234,19 @@ export class StockService {
       range = '1min'
     } else  if(daylength>2 && daylength <=9){
       range = '5min'
-    } else  if(daylength>9 && daylength <= 45){
+    } else  if(daylength>9 && daylength <= 16){
       range = '15min'
-    } else  if(daylength>45 && daylength <= 60){
+    }else  if(daylength>16 && daylength <= 50){
+      range = '30min'
+    }  else  if(daylength>50 && daylength <= 70){
       // range = '1hour'
       range = '1h'
-    } else  if(daylength>60 && daylength <= 175){
+    } else  if(daylength>70 && daylength <= 240){
       // range = '4hour'
       range = '4h'
     } 
     // let BASE_URL = `https://financialmodelingprep.com/api/v3/historical-chart/${range}/${ticker}?from=${dateStart}&to=${dateEnd}&apikey=`;
-    if (daylength > 175) {
+    if (daylength > 240) {
       // return  this.twelvedata(ticker, range);
       // return this.getTickerDailyChart_FMP(ticker,dateStart,dateEnd)
       range = '1day'
