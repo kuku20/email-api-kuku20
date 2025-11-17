@@ -41,7 +41,7 @@ export class TasksService {
         const secondLastData = data[1];
 
         // 4️⃣ Compare and send alert if condition is met
-        await this.compareAndSend(lastData, secondLastData, ticker+'USD', timefame);
+        await this.compareAndSend(lastData, secondLastData, ticker+'USD', timefame, 'CRYPTO_WATCH');
 
         this.logger.log(`${ticker} processed successfully.`);
       } catch (error) {
@@ -68,7 +68,7 @@ export class TasksService {
         const lastData = data[data.length-1];
         const secondLastData = data[data.length-2];
         // Compare and send alert if condition is met
-        await this.compareAndSend(lastData, secondLastData, ticker, timefame);
+        await this.compareAndSend(lastData, secondLastData, ticker, timefame, 'CRYPTO_WATCH');
         this.logger.log(`${ticker} processed successfully.`);
       } catch (error) {
         this.sendDiscord(`ERROR ON API AT: ${timefame} On ${date}`, `RSIENDBOT ${ticker}USD at ${timefame}`, 'Nono','ERORR_CALL');
@@ -77,25 +77,25 @@ export class TasksService {
     }
   }
 
-  async compareAndSend(lastdata, Secondlastdata, ticker, timefame) {
+  async compareAndSend(lastdata, Secondlastdata, ticker, timefame, channel='BUYSELL') {
     if (
       lastdata?.close < lastdata?.MA200 &&
       lastdata?.MA20 > lastdata?.MA50 &&
       Secondlastdata?.MA20 < Secondlastdata?.MA50
     ) {
-      this.sendDiscord(`BUY ERALLY ON-${timefame}: ${lastdata?.date}` , `${ticker} -ON- ${timefame}`, lastdata,'BUYSELL');
+      this.sendDiscord(`BUY ERALLY ON-${timefame}: ${lastdata?.date}` , `${ticker} -ON- ${timefame}`, lastdata,channel);
     }
     // else{
     //   // this.sendDiscord('BUY ERALLY', ticker, {}, 'ERORR_CALL');
     //   console.log(lastdata)
     //   console.log(Secondlastdata)
-    //   this.sendDiscord(`BUY ERALLY ON-${timefame}: ${lastdata?.date}` , `${ticker} -ON- ${timefame}`, lastdata,'BUYSELL');
+    //   this.sendDiscord(`BUY ERALLY ON-${timefame}: ${lastdata?.date}` , `${ticker} -ON- ${timefame}`, lastdata,channel);
     // }
     if (
       lastdata?.close > lastdata?.MA200 &&
       Secondlastdata?.close < Secondlastdata?.MA200
     ) {
-      this.sendDiscord(`BUY now:check me-${timefame}: ${lastdata?.date}`, `${ticker} -ON- ${timefame}`, lastdata,'BUYSELL');
+      this.sendDiscord(`BUY now:check me-${timefame}: ${lastdata?.date}`, `${ticker} -ON- ${timefame}`, lastdata,channel);
     }
   }
 
