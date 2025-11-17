@@ -29,7 +29,7 @@ export class TasksService {
     const date = new Date()
     const timefame = '5m'
     this.sendDiscord('CHECKBOT Crypto 5min RUN AT:'+date, 'RSIENDBOT 5MIN', 'Nono','CRON_CHECK');
-    const tickers = ['BTC', 'BCH', 'LTC', 'ETH', 'DASH', 'ZEC', 'XMR'];
+    const tickers = ['BTC', 'BCH', 'LTC', 'ETH','ETC', 'DASH', 'ZEC', 'XMR'];
     // const tickers = ['BTC'];
     await new Promise((resolve) => setTimeout(resolve, 2 * 60 * 1000)); // 2-minute delay
     for (const ticker of tickers) {
@@ -57,7 +57,7 @@ export class TasksService {
     const date = new Date()
     this.sendDiscord('CHECKBOT Crypto 15MIN RUN AT:'+date, 'RSIENDBOT 15MIN', 'Nono','CRON_CHECK');
     const timefame = '15min'
-    const tickers = ['BTCUSD','BCHUSD',"LTCUSD",'ETHUSD','DASHUSD','ZECUSD','XMRUSD'];
+    const tickers = ['BTCUSD','BCHUSD',"LTCUSD",'ETHUSD','ETCUSD','DASHUSD','ZECUSD','XMRUSD'];
     // const tickers = ['BTCUSD']; // alanwork1234@hotmail.co
     const apikey = 'd3058ae5683b4fc19a787ceb21a87f67'
     await new Promise((resolve) => setTimeout(resolve, 2 * 60 * 1000)); // 2-minute delay
