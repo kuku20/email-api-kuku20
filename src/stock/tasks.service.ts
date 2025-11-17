@@ -54,8 +54,10 @@ export class TasksService {
   @Cron('*/15 * * * *') // every 15 minutes
   async handle15Min() {
     const tickers = ['BTCUSD', 'BCHUSD', 'LTCUSD', 'ETHUSD', 'ETCUSD', 'DASHUSD', 'ZECUSD', 'XMRUSD'];
-    // const apikey = 'd3058ae5683b4fc19a787ceb21a87f67___';
+    // const tickers = ['BTCUSD'];
+    // const apikey = '2bbd0d305edb404aac2e2de5cc1311af'; // test
     const apikey = 'd3058ae5683b4fc19a787ceb21a87f67';
+    this.logger.log('Running scheduled task for all tickers...');
     await this.processTickers(tickers, '15min', apikey, 'CRYPTO_WATCH');
   }
 
@@ -66,9 +68,10 @@ export class TasksService {
       this.logger.log(`🕒 Market closed — skipping 5-min stock watcher (${now} ET)`);
       return;
     }
-
+    this.logger.log('Running scheduled task for all tickers...');
     const tickers = ['NVDA', 'MDB', 'UNH', 'INTC', 'XOM', 'AMZN', 'AAPL', 'SOXX'];
-    const apikey = '2ff722044c8c4342938d5f10943dc754'; // alexangderwang@hotmail.com
+    const apikey = '2ff722044c8c4342938d5f10943dc754'; // alexangderwang@hotmail.com 
+    // const apikey = '2bbd0d305edb404aac2e2de5cc1311af'; // test
     await this.processTickers(tickers, '5min', apikey, 'USSTOCK_WATCH');
   }
 
@@ -109,21 +112,32 @@ export class TasksService {
     if (
       lastdata?.close < lastdata?.MA200 &&
       lastdata?.MA20 > lastdata?.MA50 &&
-      Secondlastdata?.MA20 < Secondlastdata?.MA50
+      Secondlastdata?.MA20 < Secondlastdata?.MA50 &&
+      (lastdata?.MACDLine > lastdata?.SignalLine && Secondlastdata?.MACDLine < Secondlastdata?.SignalLine 
+      || lastdata?.MACDLine > lastdata?.SignalLine && Secondlastdata?.MACDLine > Secondlastdata?.SignalLine)
     ) {
-      this.sendDiscord(`BUY ERALLY ON-${timefame}: ${lastdata?.date}` , `${ticker} -ON- ${timefame}`, lastdata,channel);
+      this.sendDiscord(`BUY ERALLY ON-${timefame}(MACD:${lastdata?.MACDDivergence}): ${lastdata?.date}` , `${ticker} -ON- ${timefame}`, lastdata,channel);
+    }
+
+    if (
+      lastdata?.MACDLine > lastdata?.SignalLine &&
+      Secondlastdata?.MACDLine < Secondlastdata?.SignalLine
+    ) {
+      this.sendDiscord(`BUY ON MACDCROSS-${timefame}(MACD:${lastdata?.MACDDivergence}): ${lastdata?.date}` , `${ticker} -ON- ${timefame}`, lastdata,channel);
     }
     // else{
     //   // this.sendDiscord('BUY ERALLY', ticker, {}, 'ERORR_CALL');
     //   console.log(lastdata)
     //   console.log(Secondlastdata)
-    //   this.sendDiscord(`BUY ERALLY ON-${timefame}: ${lastdata?.date}` , `${ticker} -ON- ${timefame}`, lastdata,channel);
+    //   // this.sendDiscord(`BUY ERALLY ON-${timefame}(MACD:${lastdata?.MACDDivergence}): ${lastdata?.date}` , `${ticker} -ON- ${timefame}`, lastdata,channel);
     // }
     if (
       lastdata?.close > lastdata?.MA200 &&
-      Secondlastdata?.close < Secondlastdata?.MA200
+      Secondlastdata?.close < Secondlastdata?.MA200 &&
+      (lastdata?.MACDLine > lastdata?.SignalLine && Secondlastdata?.MACDLine < Secondlastdata?.SignalLine 
+      || lastdata?.MACDLine > lastdata?.SignalLine && Secondlastdata?.MACDLine > Secondlastdata?.SignalLine)
     ) {
-      this.sendDiscord(`BUY now:check me-${timefame}: ${lastdata?.date}`, `${ticker} -ON- ${timefame}`, lastdata,channel);
+      this.sendDiscord(`BUY now:check me-${timefame}(MACD:${lastdata?.MACDDivergence}): ${lastdata?.date}` , `${ticker} -ON- ${timefame}`, lastdata,channel);
     }
   }
 
