@@ -172,7 +172,7 @@ export class LocalPLWR {
     // If none of the API keys work, throw an error
     return null;
   }
-
+  // post to database
   async storeDataHis(symbol: string, source: string, date: string, data: any) {
     try {
       // Create the dataHistoryRipo entity
@@ -298,20 +298,20 @@ export class LocalPLWR {
     while (attempt < maxRetries) {
       const nextKey = this.nextKey(this.keys);
       const url = `${BASE_URL}${nextKey}`;
-      console.log(`Trying Key: ${nextKey.slice(0, 4)}...`);
+      console.log(`:12:Trying Key :12: ${nextKey.slice(0, 4)}...`);
   
       try {
         const response = await axios.get(url);
         if (response.data.status === 'error') {
-          throw new Error('API returned error status');
+          throw new Error(':12:API returned error status: 12');
         }
         return response.data; // success!
       } catch (error: any) {
         attempt++;
-        console.error(`Error with key ${nextKey.slice(0, 4)}...:`, error?.response?.status || error.message);
+        console.error(`:12:Error with key ${nextKey.slice(0, 4)}...:`, error?.response || error);
         // Only retry if we haven't exhausted all keys
         if (attempt >= maxRetries) {
-          throw new Error('All API keys failed.');
+          throw new Error(':12:All API keys failed: 12');
         }
       }
     }
@@ -338,18 +338,18 @@ export class LocalPLWR {
     while (attempt < maxRetries) {
       const nextKey = this.nextKeyPo(this.keysPo);
       const url = `${BASE_URL}${nextKey}`;
-      console.log(`Trying key: ${nextKey.slice(0, 4)}...`);
+      console.log(`:PO:Trying key: ${nextKey.slice(0, 4)}...`);
   
       try {
         const response = await axios.get(url);
         return response.data; // success!
       } catch (error: any) {
         attempt++;
-        console.error(`Error with key ${nextKey.slice(0, 4)}...:`, error?.response?.status || error.message);
+        console.error(`:PO:Error with key ${nextKey.slice(0, 4)}...:`, error?.response || error.message);
   
         // Only retry if we haven't exhausted all keys
         if (attempt >= maxRetries) {
-          throw new Error('All API keys failed.');
+          throw new Error(':PO: All API keys failed');
         }
       }
     }
