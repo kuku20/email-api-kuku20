@@ -53,25 +53,53 @@ export class TasksService {
 
   @Cron('*/15 * * * *') // every 15 minutes
   async handle15Min() {
-    this.logger.log('Running scheduled task for all tickers...');
-    const date = new Date()
-    this.sendDiscord('CHECKBOT Crypto 15MIN RUN AT:'+date, 'RSIENDBOT 15MIN', 'Nono','CRON_CHECK');
-    const timefame = '15min'
-    const tickers = ['BTCUSD','BCHUSD',"LTCUSD",'ETHUSD','ETCUSD','DASHUSD','ZECUSD','XMRUSD'];
-    // const tickers = ['BTCUSD']; // alanwork1234@hotmail.co
-    const apikey = 'd3058ae5683b4fc19a787ceb21a87f67'
-    await new Promise((resolve) => setTimeout(resolve, 2 * 60 * 1000)); // 2-minute delay
+    const tickers = ['BTCUSD', 'BCHUSD', 'LTCUSD', 'ETHUSD', 'ETCUSD', 'DASHUSD', 'ZECUSD', 'XMRUSD'];
+    // const apikey = 'd3058ae5683b4fc19a787ceb21a87f67___';
+    const apikey = 'd3058ae5683b4fc19a787ceb21a87f67';
+    await this.processTickers(tickers, '15min', apikey, 'CRYPTO_WATCH');
+  }
+
+  @Cron(CronExpression.EVERY_5_MINUTES)
+  async watchmeUStime() {
+    if (!this.stockHelperService.isMarketOpen()) {
+      const now = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
+      this.logger.log(`🕒 Market closed — skipping 5-min stock watcher (${now} ET)`);
+      return;
+    }
+
+    const tickers = ['NVDA', 'MDB', 'UNH', 'INTC', 'XOM', 'AMZN', 'AAPL', 'SOXX'];
+    const apikey = '2ff722044c8c4342938d5f10943dc754'; // alexangderwang@hotmail.com
+    await this.processTickers(tickers, '5min', apikey, 'USSTOCK_WATCH');
+  }
+
+
+  private async processTickers(
+    tickers: string[],
+    timeframe: string,
+    apikey: string,
+    category: 'CRYPTO_WATCH' | 'USSTOCK_WATCH'
+  ) {
+    const date = new Date();
+    // this.sendDiscord(`CHECKBOT ${category} ${timeframe} RUN AT: ${date}`, `RSIENDBOT ${category} ${timeframe}`, 'Nono', 'CRON_CHECK');
+
+    // Delay 2 minutes before processing
+    await new Promise((resolve) => setTimeout(resolve, 2 * 60 * 1000));
+
     for (const ticker of tickers) {
       try {
-        // Get historical data for the ticker
-        const data = await this.LocalPLWR.get12for(ticker, timefame, apikey);
-        const lastData = data[data.length-1];
-        const secondLastData = data[data.length-2];
-        // Compare and send alert if condition is met
-        await this.compareAndSend(lastData, secondLastData, ticker, timefame, 'CRYPTO_WATCH');
+        const data = await this.LocalPLWR.get12for(ticker, timeframe, apikey);
+        const lastData = data[data.length - 1];
+        const secondLastData = data[data.length - 2];
+
+        await this.compareAndSend(lastData, secondLastData, ticker, timeframe, category);
         this.logger.log(`${ticker} processed successfully.`);
       } catch (error) {
-        this.sendDiscord(`ERROR ON API AT: ${timefame} On ${date}`, `RSIENDBOT ${ticker}USD at ${timefame}`, 'Nono','ERORR_CALL');
+        this.sendDiscord(
+          `ERROR ON API AT: ${timeframe} On ${date}`,
+          `RSIENDBOT ${ticker} at ${timeframe}`,
+          'Nono',
+          'ERORR_CALL'
+        );
         this.logger.error(`Error processing ${ticker}: ${error.message}`);
       }
     }

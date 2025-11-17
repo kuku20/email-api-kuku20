@@ -262,4 +262,25 @@ getmatch1only(symbol: string) {
   const match = symbol.match(/^([A-Z]+?)(USD|USDT|BTC|ETH|EUR|JPY)$/);
   return match ? `${match[1]}` : symbol;
 }
+
+isMarketOpen = () => {
+  const now = new Date();
+
+  // Convert to New York time
+  const options = { timeZone: 'America/New_York', hour12: false };
+  const nyDate = new Date(now.toLocaleString('en-US', options));
+  return this.isWeekday(nyDate) && this.isWithinTimeRange(nyDate, 9 * 60 + 30, 16 * 60);
+};
+
+isWeekday(date: Date) {
+  const day = date.getDay();
+  return day >= 1 && day <= 5; // Monday–Friday
+}
+
+isWithinTimeRange(date: Date, startTime: number, endTime: number) {
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const time = hours * 60 + minutes;
+  return time >= startTime && time <= endTime;
+}
 }
