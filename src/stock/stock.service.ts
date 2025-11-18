@@ -549,7 +549,7 @@ export class StockService {
     this.shuffleArray(keys);
     for (const key of keys) {
       const url = `${BASE_URL}${key}`;
-      //console.log(url)
+      // console.log(url)
       try {
         const response = await axios.get(url);
         return response.data;
@@ -557,8 +557,7 @@ export class StockService {
         if (error?.response && error?.response?.status === 500) {
           // Handle 500 error
           console.error(
-            `Internal Server Error with key `,
-            error?.response
+            `Internal Server Error with key `,keyDATA
           );
         } else {
           // Handle other errors
