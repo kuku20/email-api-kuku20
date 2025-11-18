@@ -16,7 +16,7 @@ export class TasksService {
   // Runs every 5 minutes
   @Cron(CronExpression.EVERY_5_MINUTES)
   async handleCronCrypto() {
-    this.wakeupcall()
+    // this.wakeupcall()
     this.logger.log('Running scheduled task for all tickers...');
     const date = new Date()
     const timefame = '5m'
