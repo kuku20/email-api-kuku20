@@ -152,7 +152,7 @@ export class LocalPLWR {
         if (error?.response && error?.response?.status === 500) {
 
           // Handle 500 error
-          console.error(`Internal Server Error with key `, error?.response);
+          console.error(`Internal Server Error with key `);
         } else {
           if(error?.response?.status === 402){
                       // Handle other errors
@@ -162,7 +162,7 @@ export class LocalPLWR {
           //       // ✅ Append or create file automatically
           // const filePath = `${dir}/failed_tickers.txt`;
           // fs.appendFileSync(filePath, ` | http://localhost:3001/?stockTicker=${ticker}&endpoint=fmp-eod  |\n`, 'utf8');
-          console.error(`Error with key ${key.substring(0, 4)} `, error?.response?.status);
+          console.error(`Error with key ${key.substring(0, 4)} `);
           break
           }
         }
