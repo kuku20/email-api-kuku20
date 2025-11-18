@@ -13,18 +13,10 @@ export class TasksService {
     private readonly LocalPLWR: LocalPLWR,
   ) {}
 
-  @Cron('*/3 * * * *')
-  async wakeupcall() {
-    try {
-      const { data } = await axios.get('https://nestjs-api.koyeb.app');
-      this.logger.log('⏱️ Keep-alive ping success:', data.status);
-    } catch (err) {
-      this.logger.error(`❌ Keep-alive failed: ${err.message}`);
-    }
-  }
   // Runs every 5 minutes
   @Cron(CronExpression.EVERY_5_MINUTES)
   async handleCronCrypto() {
+    this.wakeupcall()
     this.logger.log('Running scheduled task for all tickers...');
     const date = new Date()
     const timefame = '5m'
@@ -61,15 +53,17 @@ export class TasksService {
     await this.processTickers(tickers, '15min', apikey, 'CRYPTO_WATCH');
   }
 
-  @Cron(CronExpression.EVERY_5_MINUTES)
+  @Cron('*/5 14-21 * * 1-5') // 9:30 AM – 4:00 PM ET (14:30–21:00 UTC)
   async watchmeUStime() {
+    const now = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
+
     if (!this.stockHelperService.isMarketOpen()) {
-      const now = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
-      this.logger.log(`🕒 Market closed — skipping 5-min stock watcher (${now} ET)`);
+      this.logger.log(`🕒 Market closed — skipping 5-min check (${now} ET)`);
       return;
     }
-    this.logger.log('Running scheduled task for all tickers...');
-    const tickers = ['NVDA', 'MDB', 'UNH', 'INTC', 'XOM', 'AMZN', 'AAPL', 'SOXX'];
+    this.logger.log(`✅ Market open — running 5-min trading logic (${now} ET)`);
+
+    const tickers = ['NVDA', 'HE', 'UNH', 'INTC', 'XOM', 'AMZN', 'AAPL', 'SNAP'];
     const apikey = '2ff722044c8c4342938d5f10943dc754'; // alexangderwang@hotmail.com 
     // const apikey = '2bbd0d305edb404aac2e2de5cc1311af'; // test
     await this.processTickers(tickers, '5min', apikey, 'USSTOCK_WATCH');
@@ -116,7 +110,7 @@ export class TasksService {
       (lastdata?.MACDLine > lastdata?.SignalLine && Secondlastdata?.MACDLine < Secondlastdata?.SignalLine 
       || lastdata?.MACDLine > lastdata?.SignalLine && Secondlastdata?.MACDLine > Secondlastdata?.SignalLine)
     ) {
-      this.sendDiscord(`BUY ERALLY ON-${timefame}(MACD:${lastdata?.MACDDivergence}): ${lastdata?.date}` , `${ticker} -ON- ${timefame}`, lastdata,channel);
+      this.sendDiscord(`BUY EARLY ON-${timefame}(MACD:${lastdata?.MACDDivergence}): ${lastdata?.date}` , `${ticker} -ON- ${timefame}`, lastdata,channel);
     }
 
     if (
@@ -153,4 +147,20 @@ export class TasksService {
       throw err;
     }
   }
+
+  async wakeupcall() {
+    try {
+      const { data } = await axios.get('https://nestjs-api.koyeb.app');
+      this.logger.log('⏱️ Keep-alive ping success:', data.status);
+    } catch (err) {
+      this.logger.error(`❌ Keep-alive failed: ${err.message}`);
+      this.sendDiscord(
+        `❌ Keep-alive failed:`,
+        `RSIENDBOT BOTBOT`,
+        'Nono',
+        'ERORR_CALL'
+      );
+    }
+  }
+  
 }
