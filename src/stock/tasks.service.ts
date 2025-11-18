@@ -14,7 +14,7 @@ export class TasksService {
   ) {}
 
   // Runs every 5 minutes
-  @Cron(CronExpression.EVERY_5_MINUTES)
+  // @Cron(CronExpression.EVERY_5_MINUTES)
   async handleCronCrypto() {
     this.wakeupcall()
     this.logger.log('Running scheduled task for all tickers...');
@@ -43,7 +43,7 @@ export class TasksService {
     }
   }
 
-  @Cron('*/15 * * * *') // every 15 minutes
+  // @Cron('*/15 * * * *') // every 15 minutes
   async handle15Min() {
     const tickers = ['BTCUSD', 'BCHUSD', 'LTCUSD', 'ETHUSD', 'ETCUSD', 'DASHUSD', 'ZECUSD', 'XMRUSD'];
     // const tickers = ['BTCUSD'];
@@ -53,7 +53,7 @@ export class TasksService {
     await this.processTickers(tickers, '15min', apikey, 'CRYPTO_WATCH');
   }
 
-  @Cron('*/5 14-21 * * 1-5') // 9:30 AM – 4:00 PM ET (14:30–21:00 UTC)
+  // @Cron('*/5 14-21 * * 1-5') // 9:30 AM – 4:00 PM ET (14:30–21:00 UTC)
   async watchmeUStime() {
     const now = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
 
