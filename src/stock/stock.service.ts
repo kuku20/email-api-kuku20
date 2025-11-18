@@ -236,20 +236,31 @@ export class StockService {
       range = '5min'
     } else  if(daylength>9 && daylength <= 16){
       range = '15min'
-    }else  if(daylength>16 && daylength <= 50){
+    }else  if(daylength>16 && daylength <= 40){
       range = '30min'
+    } else  if(daylength>40 && daylength <= 50){
+      range = '45min'
     }  else  if(daylength>50 && daylength <= 70){
       // range = '1hour'
       range = '1h'
-    } else  if(daylength>70 && daylength <= 240){
+    } else  if(daylength>70 && daylength <= 130){
+      range = '2h'
+    } 
+    else  if(daylength>130 && daylength <= 240){
       // range = '4hour'
       range = '4h'
+    }  else  if(daylength>240 && daylength <= 480){
+      range = '8h'
+    } else  if(daylength>480 && daylength <= 500){
+      range = '1day'
+    } else  if(daylength>500 && daylength <= 550){
+      range = '1week'
     } 
     // let BASE_URL = `https://financialmodelingprep.com/api/v3/historical-chart/${range}/${ticker}?from=${dateStart}&to=${dateEnd}&apikey=`;
-    if (daylength > 240) {
+    if (daylength > 550) {
       // return  this.twelvedata(ticker, range);
       // return this.getTickerDailyChart_FMP(ticker,dateStart,dateEnd)
-      range = '1day'
+      range = '1month'
     }
     return  this.twelvedata(ticker, range);
     // const today = new Date().toISOString().replace(/T.*$/, '');
