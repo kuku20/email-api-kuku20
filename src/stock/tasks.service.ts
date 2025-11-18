@@ -77,7 +77,7 @@ export class TasksService {
     category: 'CRYPTO_WATCH' | 'USSTOCK_WATCH'
   ) {
     const date = new Date();
-    // this.sendDiscord(`CHECKBOT ${category} ${timeframe} RUN AT: ${date}`, `RSIENDBOT ${category} ${timeframe}`, 'Nono', 'CRON_CHECK');
+    this.sendDiscord(`CHECKBOT ${category} ${timeframe} RUN AT: ${date}`, `RSIENDBOT ${category} ${timeframe}`, 'Nono', 'CRON_CHECK');
 
     // Delay 2 minutes before processing
     await new Promise((resolve) => setTimeout(resolve, 2 * 60 * 1000));
