@@ -33,7 +33,7 @@ export class TasksService {
         const secondLastData = data[1];
 
         // 4️⃣ Compare and send alert if condition is met
-        await this.compareAndSend(lastData, secondLastData, ticker+'USD', timefame, 'CRYPTO_WATCH');
+        await this.compareAndSend(data, lastData, secondLastData, ticker+'USD', timefame+'in', 'CRYPTO_WATCH');
 
         this.logger.log(`${ticker} processed successfully.`);
       } catch (error) {
@@ -88,7 +88,7 @@ export class TasksService {
         const lastData = data[data.length - 1];
         const secondLastData = data[data.length - 2];
 
-        await this.compareAndSend(lastData, secondLastData, ticker, timeframe, category);
+        await this.compareAndSend(data, lastData, secondLastData, ticker, timeframe, category);
         this.logger.log(`${ticker} processed successfully.`);
       } catch (error) {
         this.sendDiscord(
@@ -102,7 +102,7 @@ export class TasksService {
     }
   }
 
-  async compareAndSend(lastdata, Secondlastdata, ticker, timefame, channel='BUYSELL') {
+  async compareAndSend(data, lastdata, Secondlastdata, ticker, timefame, channel='BUYSELL') {
     if (
       lastdata?.close < lastdata?.MA200 &&
       lastdata?.MA20 > lastdata?.MA50 &&
@@ -119,12 +119,6 @@ export class TasksService {
     ) {
       this.sendDiscord(`BUY ON MACDCROSS-${timefame}(MACD:${lastdata?.MACDDivergence}): ${lastdata?.date}` , `${ticker} -ON- ${timefame}`, lastdata,channel);
     }
-    // else{
-    //   // this.sendDiscord('BUY ERALLY', ticker, {}, 'ERORR_CALL');
-    //   console.log(lastdata)
-    //   console.log(Secondlastdata)
-    //   // this.sendDiscord(`BUY ERALLY ON-${timefame}(MACD:${lastdata?.MACDDivergence}): ${lastdata?.date}` , `${ticker} -ON- ${timefame}`, lastdata,channel);
-    // }
     if (
       lastdata?.close > lastdata?.MA200 &&
       Secondlastdata?.close < Secondlastdata?.MA200 &&
@@ -133,6 +127,14 @@ export class TasksService {
     ) {
       this.sendDiscord(`BUY now:check me-${timefame}(MACD:${lastdata?.MACDDivergence}): ${lastdata?.date}` , `${ticker} -ON- ${timefame}`, lastdata,channel);
     }
+    // else{
+    //   // this.sendDiscord('BUY ERALLY', ticker, {}, 'ERORR_CALL');
+    //   console.log(lastdata)
+    //   console.log(Secondlastdata)
+    //   // this.sendDiscord(`BUY ERALLY ON-${timefame}(MACD:${lastdata?.MACDDivergence}): ${lastdata?.date}` , `${ticker} -ON- ${timefame}`, lastdata,channel);
+    // }
+    const latest = await this.getLatest(data);
+    await this.LocalPLWR.saveData(ticker, timefame, latest.date, data);
   }
 
   async sendDiscord(message:string, ticker:string, lastdata:any, channel:string) {
@@ -162,5 +164,11 @@ export class TasksService {
       );
     }
   }
-  
+
+  async getLatest<T extends { date: string }>(data: T[]): Promise<T> {
+    if (!data.length) return null;
+    return data.reduce((latest, current) =>
+      new Date(current.date) > new Date(latest.date) ? current : latest
+    );
+  }  
 }

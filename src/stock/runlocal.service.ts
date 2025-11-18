@@ -250,12 +250,17 @@ export class LocalPLWR {
         return; // do nothing
       }
       // Fetch all records for this symbol, ordered by date descending
-      const data = await repo.find({
+      const result = await repo.find({
         where: { symbol },
         order: { date: 'DESC' },
       });
-  
-      return data;
+      if (result[0]?.data && Array.isArray(result[0].data)) {
+        result[0].data.sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
+      }
+      
+      return result;
     } catch (error) {
       return; 
     }
