@@ -8,16 +8,32 @@ import { StockHelperService } from './stockHelper.service';
 import { AlphavantageService } from 'src/alphavantage/alphavantage.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
-import { DataHistory } from './entities';
+import { DataHistory1d,DataHistory4h,DataHistory1h,DataHistory30m,DataHistory15m,DataHistory5m  } from './entities';
 @Injectable()
 export class LocalPLWR {
   constructor(
     private readonly configService: ConfigService,
     private readonly stockHelperService: StockHelperService,
     private readonly alphavantageService: AlphavantageService,
-    @InjectRepository(DataHistory)
-    private dataHistoryRipo: Repository<DataHistory>,
+    @InjectRepository(DataHistory1d)
+    private dataHistory1dRepo: Repository<DataHistory1d>,
+
+    @InjectRepository(DataHistory4h)
+    private readonly dataHistory4hRepo: Repository<DataHistory4h>,
+
+    @InjectRepository(DataHistory1h)
+    private readonly dataHistory1hRepo: Repository<DataHistory1h>,
+
+    @InjectRepository(DataHistory30m)
+    private readonly dataHistory30mRepo: Repository<DataHistory30m>,
+
+    @InjectRepository(DataHistory15m)
+    private readonly dataHistory15mRepo: Repository<DataHistory15m>,
+
+    @InjectRepository(DataHistory5m)
+    private readonly dataHistory5mRepo: Repository<DataHistory5m>,
   ) {}
+  
   /**
    *
    * @param ticker : AAL , SMCI
@@ -42,6 +58,16 @@ export class LocalPLWR {
       timespan = 'minute';
       dayStart = this.stockHelperService.getDateNDaysAgo(35 + daytestBF);
       range = timefame.match(/\d+/)[0];
+    } else if (timefame.includes('week')) {
+      timespan = 'week';
+      dayStart = this.stockHelperService.getDateNDaysAgo(720 + daytestBF);
+      range = 1;
+    } else if (timefame.includes('month')) {
+      timespan = 'month';
+      dayStart = this.stockHelperService.getDateNDaysAgo(720 + daytestBF);
+      range = 1;
+    } else{
+      return null
     }
     // return {
     //   dayStart,range,timespan, dayend
@@ -50,10 +76,11 @@ export class LocalPLWR {
       return
     }
     const urls = `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${dayStart}/${dayend}?adjusted=true&sort=desc&limit=50000&apiKey=`;
-    if (timefame.includes('weekly') || timefame.includes('monthly')) {
-      return this.alphavantageService.weekORmonthly(ticker, timefame);
-    }
+    // if (timefame.includes('weekly') || timefame.includes('monthly')) {
+    //   return this.alphavantageService.weekORmonthly(ticker, timefame);
+    // }
     // const responsesArray = await this.tryCatchF(urls, 'POLYGON_STOCK_API_KEY');
+    console.log(urls)
     const responsesArray = await this.tryCatchtPO(urls);
     // return responsesArray.results
     const response = plainToClass(
@@ -172,37 +199,68 @@ export class LocalPLWR {
     return null;
   }
   // post to database
-  async storeDataHis(symbol: string, source: string, date: string, data: any) {
+  async saveData(
+    symbol: string,
+    timeframe: string,
+    date: string,
+    data: any,
+    source = 'llcone'
+  ) {
     try {
-      // Create the dataHistoryRipo entity
-      const stockPortfolio = this.dataHistoryRipo.create({
+      // Get the repository for the timeframe
+      const repo = this.getRepository(timeframe);
+      if (!repo) {
+        console.warn(`Skipping unsupported timeframe: ${timeframe}`);
+        return; // do nothing
+      }
+      // Save (insert or update automatically based on primary key)
+      await repo.save({
         symbol,
         source,
         date,
         data,
       });
-      // Save the stockPortfolio entity to the database
-      await this.dataHistoryRipo.save(stockPortfolio);
-    } catch (error) {}
+    } catch (error) {
+      console.error(`Error saving data for ${symbol} [${timeframe}]:`, error);
+      throw error;
+    }
+  }
+  
+  // Map timeframe to repository
+  private getRepository(timeframe: string): Repository<any> {
+    switch (timeframe) {
+      case '1day': return this.dataHistory1dRepo;
+      case '4hour': return this.dataHistory4hRepo;
+      case '1hour': return this.dataHistory1hRepo;
+      case '30min': return this.dataHistory30mRepo;
+      case '15min': return this.dataHistory15mRepo;
+      case '5min': return this.dataHistory5mRepo;
+      default:
+            // silently skip
+      return null;
+    }
   }
 
-  async getAllData(symbols: string[]): Promise<DataHistory[]> {
-    // Query to get the filtered data by symbols
-    const symbolData = await this.dataHistoryRipo.find({
-      where: {
-        symbol: In(symbols), // Filter based on the passed symbols
-      },
-    });
-
-    return symbolData;
+  async getData(symbol: string, timeframe: string) {
+    try {
+      // Get the repository for the requested timeframe
+      const repo = this.getRepository(timeframe);
+      if (!repo) {
+        console.warn(`Skipping unsupported timeframe: ${timeframe}`);
+        return; // do nothing
+      }
+      // Fetch all records for this symbol, ordered by date descending
+      const data = await repo.find({
+        where: { symbol },
+        order: { date: 'DESC' },
+      });
+  
+      return data;
+    } catch (error) {
+      return; 
+    }
   }
-  async getAllDataBySymbol(symbol): Promise<DataHistory> {
-    const symbolData = await this.dataHistoryRipo.findOneOrFail({
-      where: { symbol: symbol },
-    });
-    return symbolData.data;
-  }
-
+  
   public shuffleArray(array: any[]) {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -254,9 +312,9 @@ export class LocalPLWR {
     let tem = timefame;
     if (timefame.includes('hour')) {
       tem = timefame.slice(0, 2);
-    } else if (timefame.includes('weekly')) {
+    } else if (timefame.includes('week')) {
       tem = '1week';
-    } else if (timefame.includes('monthly')) {
+    } else if (timefame.includes('month')) {
       tem = '1month';
     }
     if(ticker.includes('USD')){

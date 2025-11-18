@@ -26,7 +26,7 @@ import { AiToolModule } from './ai-tool/ai-tool.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
 import { MegaModule } from './mega/mega.module';
 import { AlphavantageModule } from './alphavantage/alphavantage.module';
-import { DataHistory } from './stock/entities';
+import { DataHistory1d,DataHistory4h,DataHistory1h,DataHistory30m,DataHistory15m,DataHistory5m } from './stock/entities';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TasksService } from './stock/tasks.service';
 import { StockHelperService } from './stock/stockHelper.service';
@@ -78,7 +78,7 @@ import { AlphavantageService } from './alphavantage/alphavantage.service';
             WatchList,
             UserAuth,
             StockPortfolio,Buy, Sell, Withdraw, Deposit, HoldingAmounts, LostDay,
-            DataHistory
+            DataHistory4h,DataHistory1h,DataHistory30m,DataHistory15m,DataHistory5m,DataHistory1d
           ],
           synchronize: true,
         };
@@ -86,7 +86,7 @@ import { AlphavantageService } from './alphavantage/alphavantage.service';
     }),
     UserModule,
     ShopModule,
-    TypeOrmModule.forFeature([DataHistory]),
+    TypeOrmModule.forFeature([DataHistory1d,DataHistory4h,DataHistory1h,DataHistory30m,DataHistory15m,DataHistory5m ]),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '/src/assets/images'), // Specify the path to the assets directory
       serveRoot: '/images', // The URL path to access the assets

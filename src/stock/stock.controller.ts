@@ -56,7 +56,7 @@ export class StockController {
     }
   }
 
-  @UseGuards(JwtGuard)  
+  @UseGuards(JwtGuard)   
   @UseGuards(AdminUserAuthGuard)
   @Patch('/news-fb/:db')
   updateNewsAV2FB(
@@ -88,7 +88,7 @@ export class StockController {
     }
   }
 
- @UseGuards(JwtGuard)   //proteched as well since this is 25/day
+ @UseGuards(JwtGuard)    //proteched as well since this is 25/day
   @UseGuards(AdminUserAuthGuard)
   @Get('/news-v2') //news-alpha-vantage
   async tickers_News_ALPHA_VANTAGE(@Query('stockTicker') stockTicker: string) {
@@ -152,7 +152,7 @@ export class StockController {
     }
   }
 
-  @UseGuards(JwtGuard)  
+  @UseGuards(JwtGuard)   
   @UseGuards(AdminUserAuthGuard)
   @Patch('/realtimefb-multiple/:db')
   lists_FirebasePut(
@@ -213,7 +213,7 @@ export class StockController {
     }
   }
 
- @UseGuards(JwtGuard)   
+ @UseGuards(JwtGuard)    
   @Get('/chartdata/:timespan')
   async getTickerFullChart_POLYGON(
   @Param() params: RequestDTO.TimeSpanDto,
@@ -233,7 +233,7 @@ export class StockController {
       throw error;
     }
   }
- @UseGuards(JwtGuard)   
+ @UseGuards(JwtGuard)    
   @Get('/daily-chart')
   async getTickerDailyChart_FMP( @Query() query: RequestDTO.TickerStartEndDTO) {
     try {
@@ -245,7 +245,7 @@ export class StockController {
     }
   }
 
- @UseGuards(JwtGuard)   
+ @UseGuards(JwtGuard)    
   @Get('/chartdata/v2/:src_api')
   async getChartDataV2(
   @Param() params: RequestDTO.SrcApiDto,
@@ -312,7 +312,7 @@ export class StockController {
     }
   }
 
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard) 
   @Post('/firebase-api')
   async FireBaseApi(@Body() dataIn: any) {
     const { method, path, data} = dataIn;
@@ -328,8 +328,7 @@ export class StockController {
   @Get('/local/:src_api')
   async local(
     @Param() params: RequestDTO.SrcApiDto,
-    @Query('ticker') ticker: string,
-    @Query('timefame') timefame: string,
+    @Query() Query: RequestDTO.TIMEFRAME_SYMBOL,
     @Req() req: Request, // <--- Import from express
   ) {
     const current = new Date().toISOString().replace(/T.*$/, '');
@@ -338,11 +337,11 @@ export class StockController {
       let data;
       if (params.src_api === RequestDTO.SRC_API.FM) {
         if(localhost){
-          return this.loacl.getTickerFullChart_FMP(ticker, timefame);
+          return this.loacl.getTickerFullChart_FMP(Query.ticker, Query.timeframe);
         }
-        return await this.loacl.getAllDataBySymbol(ticker);
+        return await this.loacl.getData(Query.ticker,Query.timeframe);
       } else {
-        return await this.loacl.getTickerFullChart_POLYGON(ticker, timefame);
+        return await this.loacl.getTickerFullChart_POLYGON(Query.ticker, Query.timeframe);
       }
       // return data;
     } catch (error) {
@@ -352,47 +351,41 @@ export class StockController {
 
   @Get('/localhis')
   async localStoreHis(
-    @Query('ticker') ticker: string,
+    @Query() Query: RequestDTO.TIMEFRAME_SYMBOL,
   ) {
     try {
-      return await this.loacl.getAllDataBySymbol(ticker);
+      return await this.loacl.getData(Query.ticker, Query.timeframe);
     } catch (error) {
       throw error;
     }
   }
 
-  @Get('/hisall')
-  async hisall(
-    @Query('tickers') tickers: string,
-  ) {
-    try {
-      const symbols = tickers.split(',');
-      return await this.loacl.getAllData(symbols);
-    } catch (error) {
-      throw error;
-    }
-  }
+  // @Get('/hisall')
+  // async hisall(
+  //   @Query('tickers') tickers: string,
+  // ) {
+  //   try {
+  //     const symbols = tickers.split(',');
+  //     return await this.loacl.getAllData(symbols);
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
   @Get('/githublocalfm/:src_api')
   async githublocalfm(
     @Param() params: RequestDTO.SrcApiDto,
-    @Query('ticker') ticker: string,
-    @Query('timefame') timefame: string,
+    @Query() Query: RequestDTO.TIMEFRAME_SYMBOL,
   ) {
     const current = new Date().toISOString().replace(/T.*$/, '');
     try {
       let data;
       if (params.src_api === RequestDTO.SRC_API.FM) {
-        data = await this.loacl.getTickerFullChart_FMP(ticker, timefame);
-        if (timefame.includes('day')) {
-          await this.loacl.storeDataHis(ticker, 'fm', current, data);
-        }
+        data = await this.loacl.getTickerFullChart_FMP(Query.ticker, Query.timeframe);
+        await this.loacl.saveData(Query.ticker, Query.timeframe,data[0]?.date, data);
       } else if (params.src_api === RequestDTO.SRC_API.FMP_EOD) {
-        data = await this.loacl.FMP_EOD_FULL(ticker);
+        data = await this.loacl.FMP_EOD_FULL(Query.ticker);
       } else {
-        data = await this.loacl.getTickerFullChart_POLYGON(ticker, timefame);
-        // if (timefame.includes('day')) {
-        //   await this.loacl.storeDataHis(ticker, 'po', current, data);
-        // }
+        data = await this.loacl.getTickerFullChart_POLYGON(Query.ticker, Query.timeframe);
       }
       return data;
     } catch (error) {

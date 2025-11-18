@@ -79,3 +79,32 @@ export enum TimeRange {
     @IsEnum(SRC_API)
     src_api: SRC_API;
   }
+
+  export enum TIMEFRAME {
+    '1min' = '1min',
+    '5min' = '5min',
+    '15min' = '15min',
+    '30min' = '30min',
+    '1hour' = '1hour',
+    '4hour' = '4hour',
+    '1day' = '1day',
+    'weekly' = 'weekly',
+    'monthly' = 'monthly',
+  }
+  export class TIMEFRAMEDTO {
+    @IsEnum(TIMEFRAME, {
+      message: `timeframe must be one of: ${Object.values(TIMEFRAME).join(', ')}`,
+    })
+    timeframe: TIMEFRAME;
+  }
+
+  export class TIMEFRAME_SYMBOL extends TIMEFRAMEDTO {
+    @IsOptional()
+    @IsString({ message: 'ticker must be a string' })
+    ticker?:string;
+  }
+
+  // export class SrcApiDto {
+  //   @IsEnum(SRC_API)
+  //   src_api: SRC_API;
+  // }
