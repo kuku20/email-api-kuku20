@@ -263,24 +263,40 @@ getmatch1only(symbol: string) {
   return match ? `${match[1]}` : symbol;
 }
 
-isMarketOpen = () => {
+ // Common NYSE holidays (update annually)
+ private readonly holidays = [
+  '2025-01-01', // New Year’s Day
+  '2025-01-20', // Martin Luther King Jr. Day
+  '2025-02-17', // Presidents’ Day
+  '2025-04-18', // Good Friday
+  '2025-05-26', // Memorial Day
+  '2025-06-19', // Juneteenth
+  '2025-07-04', // Independence Day
+  '2025-09-01', // Labor Day
+  '2025-11-27', // Thanksgiving
+  '2025-12-25', // Christmas
+];
+
+// Half trading days (market closes at 1:00 PM ET)
+private readonly halfDays = [
+  '2025-11-28', // Day after Thanksgiving
+  '2025-12-24', // Christmas Eve
+];
+
+isMarketOpen(): boolean {
   const now = new Date();
+  const nyTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
 
-  // Convert to New York time
-  const options = { timeZone: 'America/New_York', hour12: false };
-  const nyDate = new Date(now.toLocaleString('en-US', options));
-  return this.isWeekday(nyDate) && this.isWithinTimeRange(nyDate, 9 * 60 + 30, 16 * 60);
-};
+  const day = nyTime.getDay(); // 0=Sun, 6=Sat
+  if (day === 0 || day === 6) return false; // weekend
 
-isWeekday(date: Date) {
-  const day = date.getDay();
-  return day >= 1 && day <= 5; // Monday–Friday
-}
+  const dateStr = nyTime.toISOString().split('T')[0];
+  if (this.holidays.includes(dateStr)) return false;
 
-isWithinTimeRange(date: Date, startTime: number, endTime: number) {
-  const hours = date.getHours();
-  const minutes = date.getMinutes();
-  const time = hours * 60 + minutes;
-  return time >= startTime && time <= endTime;
+  const minutes = nyTime.getHours() * 60 + nyTime.getMinutes();
+  const marketOpen = 9 * 60 + 30; // 9:30 AM
+  const marketClose = this.halfDays.includes(dateStr) ? 13 * 60 : 16 * 60; // 1:00 PM or 4:00 PM
+
+  return minutes >= marketOpen && minutes <= marketClose;
 }
 }
