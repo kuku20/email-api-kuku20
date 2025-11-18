@@ -46,7 +46,7 @@ export class LocalPLWR {
     // return {
     //   dayStart,range,timespan, dayend
     // }
-    if(ticker.includes('USD')){
+    if(ticker.includes('USD') && ticker.length>3){
       return
     }
     const urls = `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${dayStart}/${dayend}?adjusted=true&sort=desc&limit=50000&apiKey=`;
@@ -297,23 +297,26 @@ export class LocalPLWR {
     while (attempt < maxRetries) {
       const nextKey = this.nextKey(this.keys);
       const url = `${BASE_URL}${nextKey}`;
-      console.log(`:12:Trying Key :12: ${nextKey.slice(0, 4)}...`);
+      console.log(`:12:Trying Key: 12: ${nextKey.slice(0, 4)}...`);
   
       try {
         const response = await axios.get(url);
+        if (response.data?.code === 404) {
+          console.warn(':12: Received 404 code in response, breaking...');
+          return null; 
+        }
         if (response.data.status === 'error') {
           throw new Error(':12:API returned error status: 12');
         }
         return response.data; // success!
       } catch (error: any) {
         attempt++;
-        console.error(`:12:Error with key ${nextKey.slice(0, 4)}...:`, error?.response || error);
-        // const dir = './logs';
-        // if (!fs.existsSync(dir)) fs.mkdirSync(dir);
-
-        // const successPath = `${dir}/error_tickers.txt`;
-        // fs.appendFileSync(successPath, `| :PO: | ${url}  |\n`, 'utf8');
-        // Only retry if we haven't exhausted all keys
+              // Detect 404 from Axios response
+        if (error.response?.status === 404) {
+          console.warn(':12: Received HTTP 404 from TwelveData, breaking...');
+          return null; 
+        }
+        console.error(`:12:Error with key ${nextKey.slice(0, 4)}...:`, error?.message || error);
         if (attempt >= maxRetries) {
           throw new Error(':12:All API keys failed: 12');
         }
@@ -321,6 +324,7 @@ export class LocalPLWR {
     }
     // If none of the API keys work, throw an error
   }
+
 
   // keysPo =['7bn8ZZK_pmpnvxRrAJ2tBzQc73g20NnX','c3wb6rjDqh_k6odbauYqyfgoL32258Uk'];
   keysPo = this.configService.get<any>('POLYGON_STOCK_API_KEY').split(',');
