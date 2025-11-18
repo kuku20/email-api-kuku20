@@ -6,10 +6,10 @@ import { StockHelperService } from './stockHelper.service';
 import { LocalPLWR } from './runlocal.service';
 import { AlphavantageService } from 'src/alphavantage/alphavantage.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DataHistory } from './entities';
+import { DataHistory1d,DataHistory4h,DataHistory1h,DataHistory30m,DataHistory15m,DataHistory5m  } from './entities';
 
 @Module({
-  imports:[JwtModule.register({}),TypeOrmModule.forFeature([DataHistory])],
+  imports:[JwtModule.register({}),TypeOrmModule.forFeature([DataHistory1d,DataHistory4h,DataHistory1h,DataHistory30m,DataHistory15m,DataHistory5m ])],
   controllers: [StockController],
   providers: [StockService, StockHelperService, LocalPLWR,AlphavantageService]
 })
