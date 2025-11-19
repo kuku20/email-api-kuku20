@@ -56,7 +56,7 @@ export class StockController {
     }
   }
 
-  @UseGuards(JwtGuard)   
+  // @UseGuards(JwtGuard)   
   @UseGuards(AdminUserAuthGuard)
   @Patch('/news-fb/:db')
   updateNewsAV2FB(
@@ -88,7 +88,7 @@ export class StockController {
     }
   }
 
- @UseGuards(JwtGuard)    //proteched as well since this is 25/day
+ // @UseGuards(JwtGuard)    //proteched as well since this is 25/day
   @UseGuards(AdminUserAuthGuard)
   @Get('/news-v2') //news-alpha-vantage
   async tickers_News_ALPHA_VANTAGE(@Query('stockTicker') stockTicker: string) {
@@ -152,7 +152,7 @@ export class StockController {
     }
   }
 
-  @UseGuards(JwtGuard)   
+  // @UseGuards(JwtGuard)   
   @UseGuards(AdminUserAuthGuard)
   @Patch('/realtimefb-multiple/:db')
   lists_FirebasePut(
@@ -213,12 +213,15 @@ export class StockController {
     }
   }
 
- @UseGuards(JwtGuard)    
+ // @UseGuards(JwtGuard)    
   @Get('/chartdata/:timespan')
   async getTickerFullChart_POLYGON(
   @Param() params: RequestDTO.TimeSpanDto,
   @Query() query:  RequestDTO.TimeRangeDto,
   ) {
+    if(this.loacl.washSell30.includes(query.stockTicker)) return [    {
+      "error": " in wash sell list",
+  } ]
     try {
       let data
       if(params.timespan === RequestDTO.TIMESPAN.FMP_HC){
@@ -233,7 +236,7 @@ export class StockController {
       throw error;
     }
   }
- @UseGuards(JwtGuard)    
+ // @UseGuards(JwtGuard)    
   @Get('/daily-chart')
   async getTickerDailyChart_FMP( @Query() query: RequestDTO.TickerStartEndDTO) {
     try {
@@ -245,12 +248,15 @@ export class StockController {
     }
   }
 
- @UseGuards(JwtGuard)    
+ // @UseGuards(JwtGuard)    
   @Get('/chartdata/v2/:src_api')
   async getChartDataV2(
   @Param() params: RequestDTO.SrcApiDto,
   @Query() query:  RequestDTO.BaseRequire,
   ) {
+    if(this.loacl.washSell30.includes(query.stockTicker)) return [    {
+      "error": " in wash sell list",
+  } ]
     try {
       let data
       if(params.src_api === RequestDTO.SRC_API.PO){
@@ -313,7 +319,7 @@ export class StockController {
     }
   }
 
-  @UseGuards(JwtGuard) 
+  // @UseGuards(JwtGuard) 
   @Post('/firebase-api')
   async FireBaseApi(@Body() dataIn: any) {
     const { method, path, data} = dataIn;
@@ -333,6 +339,9 @@ export class StockController {
     @Req() req: Request, // <--- Import from express
   ) {
     const current = new Date().toISOString().replace(/T.*$/, '');
+    if(this.loacl.washSell30.includes(Query.ticker)) return [    {
+      "error": " in wash sell list",
+  } ]
     try {
       const localhost = `${req.get('host')}`.includes('localhost');
       let data;
@@ -359,6 +368,9 @@ export class StockController {
   async localStoreHis(
     @Query() Query: RequestDTO.TIMEFRAME_SYMBOL,
   ) {
+    if(this.loacl.washSell30.includes(Query.ticker)) return [    {
+      "error": " in wash sell list",
+  } ]
     try {
       return await this.loacl.getData(Query.ticker, Query.timeframe);
     } catch (error) {
@@ -382,6 +394,9 @@ export class StockController {
     @Param() params: RequestDTO.SrcApiDto,
     @Query() Query: RequestDTO.TIMEFRAME_SYMBOL,
   ) {
+    if(this.loacl.washSell30.includes(Query.ticker)) return [    {
+      "error": " in wash sell list",
+  } ]
     const current = new Date().toISOString().replace(/T.*$/, '');
     try {
       let data;
@@ -416,6 +431,9 @@ export class StockController {
   async FMP_EOD_FULL(
     @Query('ticker') ticker: string,
   ) {
+    if(this.loacl.washSell30.includes(ticker)) return [    {
+      "error": " in wash sell list",
+  } ]
     if (!ticker) throw new BadRequestException('Missing query param: code');
   
     // Just pass code + interval to the service
