@@ -9,6 +9,7 @@ import { AlphavantageService } from 'src/alphavantage/alphavantage.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { DataHistory1d,DataHistory4h,DataHistory1h,DataHistory30m,DataHistory15m,DataHistory5m ,DataHistory1m } from './entities';
+import * as dbrs from './database.api';
 @Injectable()
 export class LocalPLWR {
   constructor(
@@ -612,5 +613,23 @@ export class LocalPLWR {
       console.error('❌ Error sending webhook:', error.response?.data || error.message);
       throw error;
     }
+  }
+  washSell30: any[] = [];
+
+  async onModuleInit() {
+    // This runs ONCE when the app starts
+    await this.loadWashSellList();
+  }
+
+  async loadWashSellList() {
+    const data = await dbrs.getData('post-wash-sell');
+    const getwashsell30 = await dbrs.getwashsell30(data);
+    this.washSell30 = getwashsell30;
+    console.log(`✅ Loaded ${this.washSell30.length} wash-sell symbols`);
+    return getwashsell30
+  }
+
+  getWashSellList() {
+    return this.washSell30;
   }
 }
