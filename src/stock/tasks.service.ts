@@ -143,11 +143,11 @@ export class TasksService {
   wtchUsapikey = '2ff722044c8c4342938d5f10943dc754'; // alexangderwang@hotmail.com 
 
   
-  // @Cron(CronExpression.EVERY_MINUTE)
-  @Cron('*/1 14-21 * * 1-5')
+  // // @Cron(CronExpression.EVERY_MINUTE)
+  @Cron('*/5 14-21 * * 1-5')
   async runAllWatchLists() {
     await Promise.all([
-      // this.USTIMERUN(this.uswtlists, this.wtchUsapikey),
+      this.USTIMERUN(this.uswtlists, this.wtchUsapikey),
       this.USTIMERUN(this.tickersAB, this.allkeys),
       // this.USTIMERUN(this.tickersBL, this.allkeys),
     ]);
@@ -162,7 +162,7 @@ export class TasksService {
     this.logger.log(`✅ Market open — running 5-min trading logic (${now} ET)`);
 
     const tickers = intickers;
-    await this.processTickers(tickers, '1min', api, 'us_');
+    await this.processTickers(tickers, '5min', api, 'us_');
   }
 
 
@@ -205,15 +205,15 @@ export class TasksService {
   }
 
   async compareAndSend(data, lastdata, Secondlastdata, ticker, timeframe, channel) {
-    if (
-      lastdata?.close < lastdata?.MA200 &&
-      lastdata?.MA20 > lastdata?.MA50 &&
-      Secondlastdata?.MA20 < Secondlastdata?.MA50 &&
-      (lastdata?.MACDLine > lastdata?.SignalLine && Secondlastdata?.MACDLine < Secondlastdata?.SignalLine 
-      || lastdata?.MACDLine > lastdata?.SignalLine && Secondlastdata?.MACDLine > Secondlastdata?.SignalLine)
-    ) {
-      await this.sendDiscord(`BUY EARLY ON-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'early_'+timeframe);
-    }
+    // if (
+    //   lastdata?.close < lastdata?.MA200 &&
+    //   lastdata?.MA20 > lastdata?.MA50 &&
+    //   Secondlastdata?.MA20 < Secondlastdata?.MA50 &&
+    //   (lastdata?.MACDLine > lastdata?.SignalLine && Secondlastdata?.MACDLine < Secondlastdata?.SignalLine 
+    //   || lastdata?.MACDLine > lastdata?.SignalLine && Secondlastdata?.MACDLine > Secondlastdata?.SignalLine)
+    // ) {
+    //   await this.sendDiscord(`BUY EARLY ON-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'early_'+timeframe);
+    // }
 
     if (
       lastdata?.MACDLine > lastdata?.SignalLine &&
@@ -221,14 +221,14 @@ export class TasksService {
     ) {
       await this.sendDiscord(`BUY ON MACDCROSS-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'all');
     }
-    if (
-      lastdata?.close > lastdata?.MA200 &&
-      Secondlastdata?.close < Secondlastdata?.MA200 &&
-      (lastdata?.MACDLine > lastdata?.SignalLine && Secondlastdata?.MACDLine < Secondlastdata?.SignalLine 
-      || lastdata?.MACDLine > lastdata?.SignalLine && Secondlastdata?.MACDLine > Secondlastdata?.SignalLine)
-    ) {
-      await this.sendDiscord(`BUY now:check me-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'all');
-    }
+    // if (
+    //   lastdata?.close > lastdata?.MA200 &&
+    //   Secondlastdata?.close < Secondlastdata?.MA200 &&
+    //   (lastdata?.MACDLine > lastdata?.SignalLine && Secondlastdata?.MACDLine < Secondlastdata?.SignalLine 
+    //   || lastdata?.MACDLine > lastdata?.SignalLine && Secondlastdata?.MACDLine > Secondlastdata?.SignalLine)
+    // ) {
+    //   await this.sendDiscord(`BUY now:check me-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'all');
+    // }
     else{
       // this.sendDiscord('BUY ERALLY', ticker, {}, 'ERORR_CALL');
       // await this.sendDiscord(`BUY now:check me-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'all');
