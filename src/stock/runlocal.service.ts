@@ -546,6 +546,36 @@ export class LocalPLWR {
     }
   }
 
+  async TwReveseNOAPI(ticker: string, timefame: string) {
+    let tem = timefame;
+    if (timefame.includes('hour')) {
+      tem = timefame.slice(0, 2);
+    } else if (timefame.includes('week')) {
+      tem = '1week';
+    } else if (timefame.includes('month')) {
+      tem = '1month';
+    }
+    if(ticker.includes('USD')){
+      // ticker = this.stockHelperService.getmatch1only(ticker)
+      // return this.getCoinHistory(ticker, '5m')
+      ticker = this.stockHelperService.formatSymbol(ticker)
+    }
+    let BASE_URL = `https://api.twelvedata.com/time_series?symbol=${ticker}&interval=${tem}&outputsize=400&dp=2&apikey=`;
+    console.log(BASE_URL)
+    const response = await this.tryCatchtwelvedata(BASE_URL);
+    if (response?.status == 'ok') {
+      const responseRe =  response.values;
+      const reversedData = [...responseRe].reverse(); // clone + reverse
+      const dataOut = plainToInstance(DTO.ChartOutTwelveData, reversedData, {
+        excludeExtraneousValues: true,
+      })
+      const newData = await this.stockHelperService.returnNewData(dataOut);
+      return newData;
+    }
+    // return null;
+  }
+
+
   async FMP_EOD_FULL(ticker: string) {
     const daytestBF = 0;
     const dayend = this.stockHelperService.getDateNDaysAgo(-1 + daytestBF);
