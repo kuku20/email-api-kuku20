@@ -8,7 +8,7 @@ import { StockHelperService } from './stockHelper.service';
 import { AlphavantageService } from 'src/alphavantage/alphavantage.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
-import { DataHistory1d,DataHistory4h,DataHistory1h,DataHistory30m,DataHistory15m,DataHistory5m  } from './entities';
+import { DataHistory1d,DataHistory4h,DataHistory1h,DataHistory30m,DataHistory15m,DataHistory5m ,DataHistory1m } from './entities';
 @Injectable()
 export class LocalPLWR {
   constructor(
@@ -32,6 +32,9 @@ export class LocalPLWR {
 
     @InjectRepository(DataHistory5m)
     private readonly dataHistory5mRepo: Repository<DataHistory5m>,
+
+    @InjectRepository(DataHistory1m)
+    private readonly DataHistory1mRepo: Repository<DataHistory1m>,
   ) {}
   
   /**
@@ -235,6 +238,7 @@ export class LocalPLWR {
       case '30min': return this.dataHistory30mRepo;
       case '15min': return this.dataHistory15mRepo;
       case '5min': return this.dataHistory5mRepo;
+      case '1min': return this.DataHistory1mRepo;
       default:
             // silently skip
       return null;
