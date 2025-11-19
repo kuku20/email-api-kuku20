@@ -67,36 +67,6 @@ export class TasksService {
  "CDZI",
  "STTK"
   ]
-
-  tickersBL =[
-    "O",
-    "KMB",
-    "CPRT",
-    "DXCM",
-    "BAX",
-    "KNSL",
-    "MUSA",
-    "SOC",
-    "APOG",
-    "ARCT",
-    "DJCO",
-    "GIC",
-    "CATX",
-    "PTLO",
-    "FLWS",
-    "CRMT",
-    "RMAX",
-    "WEST",
-    "NXDT",
-    "HRTX",
-    "OPAL",
-    "ERIE",
-    "MGNX",
-    "ADSE",
-    "AIFU",
-    "DMLP",
-    "RSVR"
-  ]
   // Runs every 5 minutes
   @Cron(CronExpression.EVERY_5_MINUTES)
   async handleCronCrypto() {
@@ -149,20 +119,19 @@ export class TasksService {
     await Promise.all([
       this.USTIMERUN(this.uswtlists, this.wtchUsapikey),
       this.USTIMERUN(this.tickersAB, this.allkeys),
-      // this.USTIMERUN(this.tickersBL, this.allkeys),
     ]);
   }
 
-  async USTIMERUN(intickers:any, api:any) {
+  async USTIMERUN(intickers:any, api:any, timeframe = '5min') {
     const now = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
-    if (!this.stockHelperService.isMarketOpen()) {
-      this.logger.log(`🕒 Market closed — skipping 5-min check (${now} ET)`);
+    if (this.stockHelperService.isMarketOpen()) {
+      this.logger.log(`🕒 Market closed — skipping ${timeframe} check (${now} ET)`);
       return;
     }
-    this.logger.log(`✅ Market open — running 5-min trading logic (${now} ET)`);
+    this.logger.log(`✅ Market open — running ${timeframe} trading logic (${now} ET)`);
 
     const tickers = intickers;
-    await this.processTickers(tickers, '5min', api, 'us_');
+    await this.processTickers(tickers, timeframe, api, 'us_');
   }
 
 
@@ -176,9 +145,14 @@ export class TasksService {
     // this.sendDiscord(`CHECKBOT ${category} ${timeframe} RUN AT: ${date}`, `RSIENDBOT ${category} ${timeframe}`, 'Nono', 'CRON_CHECK');
 
     // Delay 2 minutes before processing
+    const washselllists = await this.LocalPLWR.loadWashSellList() || []
     await new Promise((resolve) => setTimeout(resolve, 2 * 60 * 1000));
 
     for (const ticker of tickers) {
+      if (washselllists.includes(ticker)) {
+        console.log(`⏭️ Skipping ${ticker} — in wash sell list`);
+        continue; // ✅ Skip this ticker and move on
+      }
       try {
         let data
         if(apikey === 'all'){
