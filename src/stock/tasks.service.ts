@@ -124,7 +124,7 @@ export class TasksService {
 
   async USTIMERUN(intickers:any, api:any, timeframe = '5min') {
     const now = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
-    if (this.stockHelperService.isMarketOpen()) {
+    if (!this.stockHelperService.isMarketOpen()) {
       this.logger.log(`🕒 Market closed — skipping ${timeframe} check (${now} ET)`);
       return;
     }
