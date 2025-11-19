@@ -19,7 +19,7 @@ export class TasksService {
     // this.wakeupcall()
     this.logger.log('Running scheduled task for all tickers...');
     const date = new Date()
-    const timefame = '5m'
+    const timeframe = '5m'
     this.sendDiscord('CHECKBOT Crypto 5min RUN AT:'+date, 'RSIENDBOT 5MIN', 'Nono','CRON_CHECK');
     const tickers = ['BTC', 'BCH', 'LTC', 'ETH','ETC', 'DASH', 'ZEC', 'XMR'];
     // const tickers = ['BTC'];
@@ -27,17 +27,17 @@ export class TasksService {
     for (const ticker of tickers) {
       try {
         // 1️⃣ Get historical data for the ticker
-        const data = await this.LocalPLWR.getCoinHistory(ticker, timefame);
+        const data = await this.LocalPLWR.getCoinHistory(ticker, timeframe);
 
         const lastData = data[0];
         const secondLastData = data[1];
 
         // 4️⃣ Compare and send alert if condition is met
-        await this.compareAndSend(data, lastData, secondLastData, ticker+'USD', timefame+'in', 'CRYPTO_WATCH');
+        await this.compareAndSend(data, lastData, secondLastData, ticker+'USD', timeframe+'in', 'crypto_');
 
         this.logger.log(`${ticker} processed successfully.`);
       } catch (error) {
-        this.sendDiscord(`ERROR ON API AT: ${timefame} On ${date}`, `RSIENDBOT ${ticker}USD at ${timefame}`, 'Nono','ERORR_CALL');
+        this.sendDiscord(`ERROR ON API AT: ${timeframe} On ${date}`, `RSIENDBOT ${ticker}USD at ${timeframe}`, 'Nono','ERORR_CALL');
         this.logger.error(`Error processing ${ticker}: ${error.message}`);
       }
     }
@@ -50,7 +50,7 @@ export class TasksService {
     // const apikey = '2bbd0d305edb404aac2e2de5cc1311af'; // test
     const apikey = 'd3058ae5683b4fc19a787ceb21a87f67';
     this.logger.log('Running scheduled task for all tickers...');
-    await this.processTickers(tickers, '15min', apikey, 'CRYPTO_WATCH');
+    await this.processTickers(tickers, '15min', apikey, 'crypto_');
   }
 
   @Cron('*/5 14-21 * * 1-5') // 9:30 AM – 4:00 PM ET (14:30–21:00 UTC)
@@ -66,7 +66,7 @@ export class TasksService {
     const tickers = ['NVDA', 'HE', 'UNH', 'INTC', 'XOM', 'AMZN', 'AAPL', 'SNAP'];
     const apikey = '2ff722044c8c4342938d5f10943dc754'; // alexangderwang@hotmail.com 
     // const apikey = '2bbd0d305edb404aac2e2de5cc1311af'; // test
-    await this.processTickers(tickers, '5min', apikey, 'USSTOCK_WATCH');
+    await this.processTickers(tickers, '5min', apikey, 'us_');
   }
 
 
@@ -74,7 +74,7 @@ export class TasksService {
     tickers: string[],
     timeframe: string,
     apikey: string,
-    category: 'CRYPTO_WATCH' | 'USSTOCK_WATCH'
+    category: 'crypto_' | 'us_'
   ) {
     const date = new Date();
     this.sendDiscord(`CHECKBOT ${category} ${timeframe} RUN AT: ${date}`, `RSIENDBOT ${category} ${timeframe}`, 'Nono', 'CRON_CHECK');
@@ -102,7 +102,7 @@ export class TasksService {
     }
   }
 
-  async compareAndSend(data, lastdata, Secondlastdata, ticker, timefame, channel='BUYSELL') {
+  async compareAndSend(data, lastdata, Secondlastdata, ticker, timeframe, channel) {
     if (
       lastdata?.close < lastdata?.MA200 &&
       lastdata?.MA20 > lastdata?.MA50 &&
@@ -110,14 +110,14 @@ export class TasksService {
       (lastdata?.MACDLine > lastdata?.SignalLine && Secondlastdata?.MACDLine < Secondlastdata?.SignalLine 
       || lastdata?.MACDLine > lastdata?.SignalLine && Secondlastdata?.MACDLine > Secondlastdata?.SignalLine)
     ) {
-      this.sendDiscord(`BUY EARLY ON-${timefame}(MACD:${lastdata?.MACDDivergence}): ${lastdata?.date}` , `${ticker} -ON- ${timefame}`, lastdata,channel);
+      this.sendDiscord(`BUY EARLY ON-${timeframe}(MACD:${lastdata?.MACDDivergence}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'early_'+timeframe);
     }
 
     if (
       lastdata?.MACDLine > lastdata?.SignalLine &&
       Secondlastdata?.MACDLine < Secondlastdata?.SignalLine
     ) {
-      this.sendDiscord(`BUY ON MACDCROSS-${timefame}(MACD:${lastdata?.MACDDivergence}): ${lastdata?.date}` , `${ticker} -ON- ${timefame}`, lastdata,channel);
+      this.sendDiscord(`BUY ON MACDCROSS-${timeframe}(MACD:${lastdata?.MACDDivergence}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'all');
     }
     if (
       lastdata?.close > lastdata?.MA200 &&
@@ -125,16 +125,16 @@ export class TasksService {
       (lastdata?.MACDLine > lastdata?.SignalLine && Secondlastdata?.MACDLine < Secondlastdata?.SignalLine 
       || lastdata?.MACDLine > lastdata?.SignalLine && Secondlastdata?.MACDLine > Secondlastdata?.SignalLine)
     ) {
-      this.sendDiscord(`BUY now:check me-${timefame}(MACD:${lastdata?.MACDDivergence}): ${lastdata?.date}` , `${ticker} -ON- ${timefame}`, lastdata,channel);
+      this.sendDiscord(`BUY now:check me-${timeframe}(MACD:${lastdata?.MACDDivergence}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'all');
     }
     // else{
     //   // this.sendDiscord('BUY ERALLY', ticker, {}, 'ERORR_CALL');
     //   console.log(lastdata)
     //   console.log(Secondlastdata)
-    //   // this.sendDiscord(`BUY ERALLY ON-${timefame}(MACD:${lastdata?.MACDDivergence}): ${lastdata?.date}` , `${ticker} -ON- ${timefame}`, lastdata,channel);
+    //   // this.sendDiscord(`BUY ERALLY ON-${timeframe}(MACD:${lastdata?.MACDDivergence}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel);
     // }
     const latest = await this.getLatest(data);
-    await this.LocalPLWR.saveData(ticker, timefame, latest.date, data);
+    await this.LocalPLWR.saveData(ticker, timeframe, latest.date, data);
   }
 
   async sendDiscord(message:string, ticker:string, lastdata:any, channel:string) {
