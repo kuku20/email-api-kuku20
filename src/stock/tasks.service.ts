@@ -14,58 +14,7 @@ export class TasksService {
   ) {}
   tickersAB = [
  'HE', 'UNH', 'INTC', 'XOM', 'AMZN', 'AAPL', 'SNAP','RDW', "O",
- "KMB",
- "CPRT",
- "DXCM",
- "BAX",
- "KNSL",
- "MUSA",
- "SOC",
- "APOG",
- "ARCT",
- "DJCO",
- "GIC",
- "CATX",
- "PTLO",
- "FLWS",
- "CRMT",
- "RMAX",
- "WEST",
- "NXDT",
- "HRTX",
- "OPAL",
- "ERIE",
- "MGNX",
- "ADSE",
- "AIFU",
- "DMLP",
- "RSVR",
- "ADM",
- "NTRA",
- "ROL",
- "LNT",
- "MP",
- "ADC",
- "ACLX",
- "INDV",
- "KAR",
- "MPW",
- "UPWK",
- "PAGS",
- "SBH",
- "STOK",
- "FIHL",
- "CPS",
- "XNCR",
- "OLMA",
- "VNDA",
- "HDB",
- "SA",
- "SIFY",
- "RNW",
- "ACRS",
- "CDZI",
- "STTK"
+ 
   ]
   // Runs every 5 minutes
   @Cron(CronExpression.EVERY_5_MINUTES)
@@ -124,7 +73,7 @@ export class TasksService {
 
   async USTIMERUN(intickers:any, api:any, timeframe = '5min') {
     const now = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
-    if (this.stockHelperService.isMarketOpen()) {
+    if (!this.stockHelperService.isMarketOpen()) {
       this.logger.log(`🕒 Market closed — skipping ${timeframe} check (${now} ET)`);
       return;
     }
