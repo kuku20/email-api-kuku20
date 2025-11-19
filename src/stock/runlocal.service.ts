@@ -329,11 +329,11 @@ export class LocalPLWR {
     }
     let BASE_URL = `https://api.twelvedata.com/time_series?symbol=${ticker}&interval=${tem}&outputsize=400&dp=2&apikey=`;
     const response = await this.tryCatchtwelvedata(BASE_URL);
-    if (response.status == 'ok') {
+    if (response?.status == 'ok') {
       const responseRe = plainToClass(DTO.ChartOutTwelveData, response.values);
       return responseRe;
     }
-    return response;
+    return null;
   }
   getRandomNumber(x: number): number {
     return Math.floor(Math.random() * (x + 1));
@@ -368,7 +368,7 @@ export class LocalPLWR {
           console.warn(':12: Received 404 code in response, breaking...');
           return null; 
         }
-        if (response.data.status === 'error') {
+        if (response.data?.status === 'error') {
           throw new Error(':12:API returned error status: 12');
         }
         return response.data; // success!
@@ -557,5 +557,26 @@ export class LocalPLWR {
     return response;
     const result = await this.stockHelperService.returnNewData(response);
     return result;
+  }
+
+  async sendTemporaryWebhook(ticker: any, errror:any, discordChanel: string='ERORR_CALL',) {
+    console.log(123)
+    const botname = `${discordChanel} RSIENDBOT ${ticker}`;
+    const payload = {
+      message:'❌ API ERROR:'+errror,
+      botname,
+    };
+    // const rootapi  = `https://nestjs-api.koyeb.app`
+    const rootapi  =  "http://localhost:3000"
+    try {
+      const res = await axios.post(`${rootapi}/webhooks/temporary`, payload, {
+        headers: { 'Content-Type': 'application/json' },
+      });
+  
+      return res.data; // same as await res.json()
+    } catch (error) {
+      console.error('❌ Error sending webhook:', error.response?.data || error.message);
+      throw error;
+    }
   }
 }
