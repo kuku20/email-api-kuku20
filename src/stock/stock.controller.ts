@@ -261,6 +261,7 @@ export class StockController {
       return data;
     } catch (error) {
       // Handle errors here
+      this.loacl.sendTemporaryWebhook(query.stockTicker, JSON.stringify(params)+'/chartdata/v2')
       throw error;
     }
   }
@@ -345,6 +346,7 @@ export class StockController {
       }
       // return data;
     } catch (error) {
+      this.loacl.sendTemporaryWebhook(Query.ticker, JSON.stringify(params)+'/local/:src_api')
       throw error;
     }
   }
@@ -389,6 +391,7 @@ export class StockController {
       }
       return data;
     } catch (error) {
+      this.loacl.sendTemporaryWebhook(Query.ticker, JSON.stringify(params)+'/githublocalfm/:src_api')
       throw error;
     }
   }
