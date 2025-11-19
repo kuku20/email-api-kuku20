@@ -16,7 +16,7 @@ export class TasksService {
   // Runs every 5 minutes
   @Cron(CronExpression.EVERY_5_MINUTES)
   async handleCronCrypto() {
-    // this.wakeupcall()
+    this.wakeupcall()
     this.logger.log('Running scheduled task for all tickers...');
     const date = new Date()
     const timeframe = '5m'
@@ -77,7 +77,7 @@ export class TasksService {
     category: 'crypto_' | 'us_'
   ) {
     const date = new Date();
-    this.sendDiscord(`CHECKBOT ${category} ${timeframe} RUN AT: ${date}`, `RSIENDBOT ${category} ${timeframe}`, 'Nono', 'CRON_CHECK');
+    // this.sendDiscord(`CHECKBOT ${category} ${timeframe} RUN AT: ${date}`, `RSIENDBOT ${category} ${timeframe}`, 'Nono', 'CRON_CHECK');
 
     // Delay 2 minutes before processing
     await new Promise((resolve) => setTimeout(resolve, 2 * 60 * 1000));

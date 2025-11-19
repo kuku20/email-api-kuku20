@@ -340,9 +340,13 @@ export class StockController {
         if(localhost){
           return this.loacl.getTickerFullChart_FMP(Query.ticker, Query.timeframe);
         }
-        return await this.loacl.getData(Query.ticker,Query.timeframe);
-      } else {
+        const olddata = await this.loacl.getData(Query.ticker, Query.timeframe);
+        return olddata[0]?.data
+      }else if (params.src_api === RequestDTO.SRC_API.PO) {
         return await this.loacl.getTickerFullChart_POLYGON(Query.ticker, Query.timeframe);
+      } else {
+        const olddata = await this.loacl.getData(Query.ticker, Query.timeframe);
+        return olddata[0]?.data
       }
       // return data;
     } catch (error) {
@@ -385,7 +389,8 @@ export class StockController {
         data = await this.loacl.getTickerFullChart_FMP(Query.ticker, Query.timeframe);
         await this.loacl.saveData(Query.ticker, Query.timeframe,data[0]?.date, data);
       } else if (params.src_api === RequestDTO.SRC_API.FMP_EOD) {
-        data = await this.loacl.FMP_EOD_FULL(Query.ticker);
+        const olddata = await this.loacl.getData(Query.ticker, Query.timeframe);
+        data = olddata[0]?.data
       } else {
         data = await this.loacl.getTickerFullChart_POLYGON(Query.ticker, Query.timeframe);
       }
