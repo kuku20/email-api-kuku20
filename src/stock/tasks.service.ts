@@ -12,7 +12,91 @@ export class TasksService {
     private readonly stockHelperService: StockHelperService,
     private readonly LocalPLWR: LocalPLWR,
   ) {}
+  tickersAB = [
+ 'HE', 'UNH', 'INTC', 'XOM', 'AMZN', 'AAPL', 'SNAP','RDW', "O",
+ "KMB",
+ "CPRT",
+ "DXCM",
+ "BAX",
+ "KNSL",
+ "MUSA",
+ "SOC",
+ "APOG",
+ "ARCT",
+ "DJCO",
+ "GIC",
+ "CATX",
+ "PTLO",
+ "FLWS",
+ "CRMT",
+ "RMAX",
+ "WEST",
+ "NXDT",
+ "HRTX",
+ "OPAL",
+ "ERIE",
+ "MGNX",
+ "ADSE",
+ "AIFU",
+ "DMLP",
+ "RSVR",
+ "ADM",
+ "NTRA",
+ "ROL",
+ "LNT",
+ "MP",
+ "ADC",
+ "ACLX",
+ "INDV",
+ "KAR",
+ "MPW",
+ "UPWK",
+ "PAGS",
+ "SBH",
+ "STOK",
+ "FIHL",
+ "CPS",
+ "XNCR",
+ "OLMA",
+ "VNDA",
+ "HDB",
+ "SA",
+ "SIFY",
+ "RNW",
+ "ACRS",
+ "CDZI",
+ "STTK"
+  ]
 
+  tickersBL =[
+    "O",
+    "KMB",
+    "CPRT",
+    "DXCM",
+    "BAX",
+    "KNSL",
+    "MUSA",
+    "SOC",
+    "APOG",
+    "ARCT",
+    "DJCO",
+    "GIC",
+    "CATX",
+    "PTLO",
+    "FLWS",
+    "CRMT",
+    "RMAX",
+    "WEST",
+    "NXDT",
+    "HRTX",
+    "OPAL",
+    "ERIE",
+    "MGNX",
+    "ADSE",
+    "AIFU",
+    "DMLP",
+    "RSVR"
+  ]
   // Runs every 5 minutes
   @Cron(CronExpression.EVERY_5_MINUTES)
   async handleCronCrypto() {
@@ -53,20 +137,32 @@ export class TasksService {
     await this.processTickers(tickers, '15min', apikey, 'crypto_');
   }
 
-  @Cron('*/5 14-21 * * 1-5') // 9:30 AM – 4:00 PM ET (14:30–21:00 UTC)
-  async watchmeUStime() {
-    const now = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
+  uswtlists = ['NVDA', 'HE', 'UNH', 'INTC', 'XOM', 'AMZN', 'AAPL', 'SNAP'];
+  testapikey = '2bbd0d305edb404aac2e2de5cc1311af'; // test
+  allkeys = 'all'; // test
+  wtchUsapikey = '2ff722044c8c4342938d5f10943dc754'; // alexangderwang@hotmail.com 
 
+  
+  // @Cron(CronExpression.EVERY_MINUTE)
+  @Cron('*/1 14-21 * * 1-5')
+  async runAllWatchLists() {
+    await Promise.all([
+      // this.USTIMERUN(this.uswtlists, this.wtchUsapikey),
+      this.USTIMERUN(this.tickersAB, this.allkeys),
+      // this.USTIMERUN(this.tickersBL, this.allkeys),
+    ]);
+  }
+
+  async USTIMERUN(intickers:any, api:any) {
+    const now = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
     if (!this.stockHelperService.isMarketOpen()) {
       this.logger.log(`🕒 Market closed — skipping 5-min check (${now} ET)`);
       return;
     }
     this.logger.log(`✅ Market open — running 5-min trading logic (${now} ET)`);
 
-    const tickers = ['NVDA', 'HE', 'UNH', 'INTC', 'XOM', 'AMZN', 'AAPL', 'SNAP'];
-    const apikey = '2ff722044c8c4342938d5f10943dc754'; // alexangderwang@hotmail.com 
-    // const apikey = '2bbd0d305edb404aac2e2de5cc1311af'; // test
-    await this.processTickers(tickers, '5min', apikey, 'us_');
+    const tickers = intickers;
+    await this.processTickers(tickers, '1min', api, 'us_');
   }
 
 
@@ -80,11 +176,17 @@ export class TasksService {
     // this.sendDiscord(`CHECKBOT ${category} ${timeframe} RUN AT: ${date}`, `RSIENDBOT ${category} ${timeframe}`, 'Nono', 'CRON_CHECK');
 
     // Delay 2 minutes before processing
-    await new Promise((resolve) => setTimeout(resolve, 2 * 60 * 1000));
+    // await new Promise((resolve) => setTimeout(resolve, 2 * 60 * 1000));
 
     for (const ticker of tickers) {
       try {
-        const data = await this.LocalPLWR.get12for(ticker, timeframe, apikey);
+        let data
+        if(apikey === 'all'){
+          data = await this.LocalPLWR.TwReveseNOAPI(ticker, timeframe);
+        }else{
+          data = await this.LocalPLWR.get12for(ticker, timeframe, apikey);
+        }
+        
         const lastData = data[data.length - 1];
         const secondLastData = data[data.length - 2];
 
@@ -110,14 +212,14 @@ export class TasksService {
       (lastdata?.MACDLine > lastdata?.SignalLine && Secondlastdata?.MACDLine < Secondlastdata?.SignalLine 
       || lastdata?.MACDLine > lastdata?.SignalLine && Secondlastdata?.MACDLine > Secondlastdata?.SignalLine)
     ) {
-      await this.sendDiscord(`BUY EARLY ON-${timeframe}(MACD:${lastdata?.MACDDivergence}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'early_'+timeframe);
+      await this.sendDiscord(`BUY EARLY ON-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'early_'+timeframe);
     }
 
     if (
       lastdata?.MACDLine > lastdata?.SignalLine &&
       Secondlastdata?.MACDLine < Secondlastdata?.SignalLine
     ) {
-      await this.sendDiscord(`BUY ON MACDCROSS-${timeframe}(MACD:${lastdata?.MACDDivergence}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'all');
+      await this.sendDiscord(`BUY ON MACDCROSS-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'all');
     }
     if (
       lastdata?.close > lastdata?.MA200 &&
@@ -125,14 +227,14 @@ export class TasksService {
       (lastdata?.MACDLine > lastdata?.SignalLine && Secondlastdata?.MACDLine < Secondlastdata?.SignalLine 
       || lastdata?.MACDLine > lastdata?.SignalLine && Secondlastdata?.MACDLine > Secondlastdata?.SignalLine)
     ) {
-      await this.sendDiscord(`BUY now:check me-${timeframe}(MACD:${lastdata?.MACDDivergence}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'all');
+      await this.sendDiscord(`BUY now:check me-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'all');
     }
     else{
       // this.sendDiscord('BUY ERALLY', ticker, {}, 'ERORR_CALL');
-      // await this.sendDiscord(`BUY now:check me-${timeframe}(MACD:${lastdata?.MACDDivergence}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'all');
+      // await this.sendDiscord(`BUY now:check me-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'all');
       // console.log(lastdata)
       // console.log(Secondlastdata)
-      // this.sendDiscord(`BUY ERALLY ON-${timeframe}(MACD:${lastdata?.MACDDivergence}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel);
+      // this.sendDiscord(`BUY ERALLY ON-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel);
     }
     const latest = await this.getLatest(data);
     await this.LocalPLWR.saveData(ticker, timeframe, latest.date, data);
@@ -167,7 +269,7 @@ export class TasksService {
   }
 
   async getLatest<T extends { date: string }>(data: T[]): Promise<T> {
-    if (!data.length) return null;
+    if (!data?.length) return null;
     return data.reduce((latest, current) =>
       new Date(current.date) > new Date(latest.date) ? current : latest
     );
