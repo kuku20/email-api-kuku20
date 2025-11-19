@@ -622,8 +622,9 @@ export class LocalPLWR {
   }
 
   async loadWashSellList() {
-    const data = await dbrs.getData('post-wash-sell');
-    const getwashsell30 = await dbrs.getwashsell30(data);
+    // const data = await dbrs.getData('post-wash-sell');
+    const data = await this.FireBaseApi('get','stock-related/post-wash-sell.json','')
+    const getwashsell30 = dbrs.getwashsell30(data);
     this.washSell30 = getwashsell30;
     console.log(`✅ Loaded ${this.washSell30.length} wash-sell symbols`);
     return getwashsell30
@@ -631,5 +632,32 @@ export class LocalPLWR {
 
   getWashSellList() {
     return this.washSell30;
+  }
+  async FireBaseApi(method:'post'|'patch'|'put'|'delete'|'get',endpoint:string, data: any,) {
+    const firebaseRoot = this.configService.get<any>('FIREBASE_DATA')
+    let BASE_URL = `${firebaseRoot}/${endpoint}`;
+    try {
+      const response = await axios.request({
+        method: method || 'get',
+        url: BASE_URL,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        data: data,
+        maxBodyLength: Infinity,
+      });
+    
+      // Axios automatically parses JSON, so just return response.data
+      return response.data;
+    
+    } catch (error) {
+      // Match fetch's "return 'skipped'" behavior
+      if (error.response) {
+        console.error(`❌ Failed request. Status: ${error.response.status}`);
+      } else {
+        console.error(`❌ Network or Axios error: ${error.message}`);
+      }
+      return 'skipped';
+    }
   }
 }
