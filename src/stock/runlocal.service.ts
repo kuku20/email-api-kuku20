@@ -9,6 +9,7 @@ import { AlphavantageService } from 'src/alphavantage/alphavantage.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { DataHistory1d,DataHistory4h,DataHistory1h,DataHistory30m,DataHistory15m,DataHistory5m ,DataHistory1m } from './entities';
+import * as dbrs from './database.api';
 @Injectable()
 export class LocalPLWR {
   constructor(
@@ -611,6 +612,52 @@ export class LocalPLWR {
     } catch (error) {
       console.error('❌ Error sending webhook:', error.response?.data || error.message);
       throw error;
+    }
+  }
+  washSell30: any[] = [];
+
+  async onModuleInit() {
+    // This runs ONCE when the app starts
+    await this.loadWashSellList();
+  }
+
+  async loadWashSellList() {
+    // const data = await dbrs.getData('post-wash-sell');
+    const data = await this.FireBaseApi('get','stock-related/post-wash-sell.json','')
+    const getwashsell30 = dbrs.getwashsell30(data);
+    this.washSell30 = getwashsell30;
+    console.log(`✅ Loaded ${this.washSell30.length} wash-sell symbols`);
+    return getwashsell30
+  }
+
+  getWashSellList() {
+    return this.washSell30;
+  }
+  async FireBaseApi(method:'post'|'patch'|'put'|'delete'|'get',endpoint:string, data: any,) {
+    const firebaseRoot = this.configService.get<any>('FIREBASE_DATA')
+    let BASE_URL = `${firebaseRoot}/${endpoint}`;
+    try {
+      const response = await axios.request({
+        method: method || 'get',
+        url: BASE_URL,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        data: data,
+        maxBodyLength: Infinity,
+      });
+    
+      // Axios automatically parses JSON, so just return response.data
+      return response.data;
+    
+    } catch (error) {
+      // Match fetch's "return 'skipped'" behavior
+      if (error.response) {
+        console.error(`❌ Failed request. Status: ${error.response.status}`);
+      } else {
+        console.error(`❌ Network or Axios error: ${error.message}`);
+      }
+      return 'skipped';
     }
   }
 }
