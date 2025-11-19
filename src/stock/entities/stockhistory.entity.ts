@@ -24,6 +24,8 @@ export class BaseDataHistory {
   })
   data: any;
 }
+@Entity({ name: 'data_history_1m' })
+export class DataHistory1m extends BaseDataHistory {}
 
 @Entity({ name: 'data_history_5m' })
 export class DataHistory5m extends BaseDataHistory {}
