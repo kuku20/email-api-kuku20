@@ -110,14 +110,14 @@ export class TasksService {
       (lastdata?.MACDLine > lastdata?.SignalLine && Secondlastdata?.MACDLine < Secondlastdata?.SignalLine 
       || lastdata?.MACDLine > lastdata?.SignalLine && Secondlastdata?.MACDLine > Secondlastdata?.SignalLine)
     ) {
-      this.sendDiscord(`BUY EARLY ON-${timeframe}(MACD:${lastdata?.MACDDivergence}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'early_'+timeframe);
+      await this.sendDiscord(`BUY EARLY ON-${timeframe}(MACD:${lastdata?.MACDDivergence}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'early_'+timeframe);
     }
 
     if (
       lastdata?.MACDLine > lastdata?.SignalLine &&
       Secondlastdata?.MACDLine < Secondlastdata?.SignalLine
     ) {
-      this.sendDiscord(`BUY ON MACDCROSS-${timeframe}(MACD:${lastdata?.MACDDivergence}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'all');
+      await this.sendDiscord(`BUY ON MACDCROSS-${timeframe}(MACD:${lastdata?.MACDDivergence}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'all');
     }
     if (
       lastdata?.close > lastdata?.MA200 &&
@@ -125,14 +125,15 @@ export class TasksService {
       (lastdata?.MACDLine > lastdata?.SignalLine && Secondlastdata?.MACDLine < Secondlastdata?.SignalLine 
       || lastdata?.MACDLine > lastdata?.SignalLine && Secondlastdata?.MACDLine > Secondlastdata?.SignalLine)
     ) {
-      this.sendDiscord(`BUY now:check me-${timeframe}(MACD:${lastdata?.MACDDivergence}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'all');
+      await this.sendDiscord(`BUY now:check me-${timeframe}(MACD:${lastdata?.MACDDivergence}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'all');
     }
-    // else{
-    //   // this.sendDiscord('BUY ERALLY', ticker, {}, 'ERORR_CALL');
-    //   console.log(lastdata)
-    //   console.log(Secondlastdata)
-    //   // this.sendDiscord(`BUY ERALLY ON-${timeframe}(MACD:${lastdata?.MACDDivergence}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel);
-    // }
+    else{
+      // this.sendDiscord('BUY ERALLY', ticker, {}, 'ERORR_CALL');
+      // await this.sendDiscord(`BUY now:check me-${timeframe}(MACD:${lastdata?.MACDDivergence}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'all');
+      // console.log(lastdata)
+      // console.log(Secondlastdata)
+      // this.sendDiscord(`BUY ERALLY ON-${timeframe}(MACD:${lastdata?.MACDDivergence}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel);
+    }
     const latest = await this.getLatest(data);
     await this.LocalPLWR.saveData(ticker, timeframe, latest.date, data);
   }
