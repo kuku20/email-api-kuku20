@@ -11,25 +11,25 @@ export class StockService {
   constructor(private readonly configService: ConfigService, private readonly stockHelperService: StockHelperService) {}
 
   async search_POLYGON(query: string, start?: string, end?: string) {
-    const graphqlEndpoint = `https://api.polygon.io/v2/aggs/ticker/AAPL/range/1/day/2023-10-02/2023-10-11?apiKey=GpBhGaI12ENRIUVkDMvDY5spqQR0ptOj`;
+    const graphqlEndpoint = `https://api.massive.com/v2/aggs/ticker/AAPL/range/1/day/2023-10-02/2023-10-11?apiKey=GpBhGaI12ENRIUVkDMvDY5spqQR0ptOj`;
     const today = new Date();
     today.setDate(today.getDate() - 5);
     const lastFiveDays = start || today.toISOString().replace(/T.*$/, '');
     const current = end || new Date().toISOString().replace(/T.*$/, '');
-    const BASE_URL = `https://api.polygon.io/v2/aggs/ticker/${query}/range/1/day/${lastFiveDays}/${current}?apiKey=`;
+    const BASE_URL = `https://api.massive.com/v2/aggs/ticker/${query}/range/1/day/${lastFiveDays}/${current}?apiKey=`;
     // const response = await this.tryCatchF(BASE_URL, 'POLYGON_STOCK_API_KEY'); 
     const response = await this.tryCatchtPO(BASE_URL);; 
     return response;
   }
 
   async tickerList_POLYGON(query: string) {
-    const BASE_URL = `https://api.polygon.io/v3/reference/tickers?search=${query}&active=true&apiKey=`;
+    const BASE_URL = `https://api.massive.com/v3/reference/tickers?search=${query}&active=true&apiKey=`;
     const response = await this.tryCatchtPO(BASE_URL);
     return plainToClass(DTO.SearchSymbolOutPolygonDto, response?.results);
   }
 
   async tickerDividends_POLYGON(query: string) {
-    const BASE_URL = `https://api.polygon.io/v3/reference/dividends?ticker=${query}&apiKey=`;
+    const BASE_URL = `https://api.massive.com/v3/reference/dividends?ticker=${query}&apiKey=`;
     const response = await this.tryCatchtPO(BASE_URL);
     return plainToClass(DTO.DividendOutDto, response?.results);
   }
@@ -74,7 +74,7 @@ export class StockService {
     }
     const dateRanges = await this.stockHelperService.getDateRanges(dateStart, dateEnd, 85);
     const urls = dateRanges.map(({ start, end }) => {
-      return `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${start}/${end}?adjusted=true&sort=desc&limit=50000&apiKey=`;
+      return `https://api.massive.com/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${start}/${end}?adjusted=true&sort=desc&limit=50000&apiKey=`;
     });
     // console.log(urls)
     const responsesArray = await Promise.allSettled(
@@ -89,7 +89,7 @@ export class StockService {
     .map((result:any) => result?.value?.results) // Extract the results array
     .flat(); // Flatten the array of arrays into a single array
    
-    // const BASE_URL = `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${dateStart}/${dateEnd}?adjusted=true&sort=desc&limit=${limit}&apiKey=`;
+    // const BASE_URL = `https://api.massive.com/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${dateStart}/${dateEnd}?adjusted=true&sort=desc&limit=${limit}&apiKey=`;
     // const response = await this.tryCatchF(BASE_URL, 'POLYGON_STOCK_API_KEY');
     const response = plainToClass(
       DTO.ChartOutPolygonDto,
@@ -103,7 +103,7 @@ export class StockService {
   }
 
   async open_close_POLYGON(ticker: string, date: string = '2023-01-09') {
-    const BASE_URL = `https://api.polygon.io/v1/open-close/${ticker}/${date}?adjusted=true&apiKey=`;
+    const BASE_URL = `https://api.massive.com/v1/open-close/${ticker}/${date}?adjusted=true&apiKey=`;
     const response = await this.tryCatchtPO(BASE_URL);
     // console.log(BASE_URL)
     return response;
@@ -115,7 +115,7 @@ export class StockService {
     startDate: string = '2022-01-01',
     endDate: string = '2023-01-10',
   ) {
-    const BASE_URL = `https://api.polygon.io/v2/aggs/ticker/${ticker}/range/1/day/${startDate}/${endDate}?adjusted=true&sort=asc&apiKey=`;
+    const BASE_URL = `https://api.massive.com/v2/aggs/ticker/${ticker}/range/1/day/${startDate}/${endDate}?adjusted=true&sort=asc&apiKey=`;
     const response =await this.tryCatchtPO(BASE_URL);
     const addPercent = response.results.map(
       (each: { c: number; o: number }) => {
