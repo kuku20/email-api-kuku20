@@ -334,10 +334,18 @@ export class LocalPLWR {
     }
     let BASE_URL = `https://api.twelvedata.com/time_series?symbol=${ticker}&interval=${tem}&outputsize=400&dp=2&apikey=`;
     const response = await this.tryCatchtwelvedata(BASE_URL);
-    if (response?.status == 'ok') {
-      const responseRe = plainToClass(DTO.ChartOutTwelveData, response.values);
-      return responseRe;
-    }
+      if (response?.status == 'ok') {
+        // us stock     "exchange_timezone": "America/New_York", ChartOutTwelveData
+        // btc don't turn to ChartOutTwelveDataUTC
+        const meta_timezone = response.meta.exchange_timezone
+        let responseRe
+        if(meta_timezone){
+          responseRe = plainToClass(DTO.ChartOutTwelveData, response.values);
+        }else if(!meta_timezone){
+          responseRe = plainToClass(DTO.ChartOutTwelveDataUTC, response.values);
+        }
+        return responseRe;
+      }
     return null;
   }
   getRandomNumber(x: number): number {
@@ -537,12 +545,22 @@ export class LocalPLWR {
       if (response.data.status === 'error') {
         throw new Error('API returned error status');
       }
-      else if (response.data.status == 'ok') {
+      else if (response.data?.status == 'ok') {
+        // us stock     "exchange_timezone": "America/New_York", ChartOutTwelveData
+        // btc don't turn to ChartOutTwelveDataUTC
+        const meta_timezone = response.data.meta.exchange_timezone
         const responseRe =  response.data.values;
         const reversedData = [...responseRe].reverse(); // clone + reverse
-        const dataOut = plainToInstance(DTO.ChartOutTwelveData, reversedData, {
-          excludeExtraneousValues: true,
-        })
+        let dataOut
+        if(meta_timezone){
+          dataOut = plainToInstance(DTO.ChartOutTwelveData, reversedData, {
+            excludeExtraneousValues: true,
+          })
+        } else if(!meta_timezone){
+          dataOut = plainToInstance(DTO.ChartOutTwelveDataUTC, reversedData, {
+            excludeExtraneousValues: true,
+          })
+        }
         const newData = await this.stockHelperService.returnNewData(dataOut);
         return newData;
       }
@@ -569,11 +587,19 @@ export class LocalPLWR {
     console.log(BASE_URL)
     const response = await this.tryCatchtwelvedata(BASE_URL);
     if (response?.status == 'ok') {
+      // us stock     "exchange_timezone": "America/New_York", ChartOutTwelveData
+      // btc don't turn to ChartOutTwelveDataUTC
+      const meta_timezone = response.meta.exchange_timezone
       const responseRe =  response.values;
       const reversedData = [...responseRe].reverse(); // clone + reverse
-      const dataOut = plainToInstance(DTO.ChartOutTwelveData, reversedData, {
-        excludeExtraneousValues: true,
-      })
+      let dataOut
+      if(meta_timezone){
+        dataOut = plainToClass(DTO.ChartOutTwelveData, response.values);
+      } else if(!meta_timezone){
+        dataOut = plainToInstance(DTO.ChartOutTwelveDataUTC, reversedData, {
+          excludeExtraneousValues: true,
+        })
+      }
       const newData = await this.stockHelperService.returnNewData(dataOut);
       return newData;
     }
