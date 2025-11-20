@@ -18,43 +18,43 @@ export class TasksService {
   ]
   // Runs every 5 minutes
   // @Cron(CronExpression.EVERY_5_MINUTES)
-  async handleCronCrypto() {
-    this.wakeupcall()
-    this.logger.log('Running scheduled task for all tickers...');
-    const date = new Date()
-    const timeframe = '5m'
-    this.sendDiscord('CHECKBOT Crypto 5min RUN AT:'+date, 'RSIENDBOT 5MIN', 'Nono','CRON_CHECK');
-    const tickers = ['BTC', 'BCH', 'LTC', 'ETH','ETC', 'DASH', 'ZEC', 'XMR'];
-    // const tickers = ['BTC'];
-    await new Promise((resolve) => setTimeout(resolve, 2 * 60 * 1000)); // 2-minute delay
-    for (const ticker of tickers) {
-      try {
-        // 1️⃣ Get historical data for the ticker
-        const data = await this.LocalPLWR.getCoinHistory(ticker, timeframe);
+  // async handleCronCrypto() {
+  //   this.wakeupcall()
+  //   this.logger.log('Running scheduled task for all tickers...');
+  //   const date = new Date()
+  //   const timeframe = '5m'
+  //   this.sendDiscord('CHECKBOT Crypto 5min RUN AT:'+date, 'RSIENDBOT 5MIN', 'Nono','CRON_CHECK');
+  //   const tickers = ['BTC', 'BCH', 'LTC', 'ETH','ETC', 'DASH', 'ZEC', 'XMR'];
+  //   // const tickers = ['BTC'];
+  //   await new Promise((resolve) => setTimeout(resolve, 2 * 60 * 1000)); // 2-minute delay
+  //   for (const ticker of tickers) {
+  //     try {
+  //       // 1️⃣ Get historical data for the ticker
+  //       const data = await this.LocalPLWR.getCoinHistory(ticker, timeframe);
 
-        const lastData = data[0];
-        const secondLastData = data[1];
+  //       const lastData = data[0];
+  //       const secondLastData = data[1];
 
-        // 4️⃣ Compare and send alert if condition is met
-        await this.compareAndSend(data, lastData, secondLastData, ticker+'USD', timeframe+'in', 'crypto_');
+  //       // 4️⃣ Compare and send alert if condition is met
+  //       await this.compareAndSend(data, lastData, secondLastData, ticker+'USD', timeframe+'in', 'crypto_');
 
-        this.logger.log(`${ticker} processed successfully.`);
-      } catch (error) {
-        this.sendDiscord(`ERROR ON API AT: ${timeframe} On ${date}`, `RSIENDBOT ${ticker}USD at ${timeframe}`, 'Nono','ERORR_CALL');
-        this.logger.error(`Error processing ${ticker}: ${error.message}`);
-      }
-    }
-  }
+  //       this.logger.log(`${ticker} processed successfully.`);
+  //     } catch (error) {
+  //       this.sendDiscord(`ERROR ON API AT: ${timeframe} On ${date}`, `RSIENDBOT ${ticker}USD at ${timeframe}`, 'Nono','ERORR_CALL');
+  //       this.logger.error(`Error processing ${ticker}: ${error.message}`);
+  //     }
+  //   }
+  // }
 
   // @Cron('*/15 * * * *') // every 15 minutes
-  async handle15Min() {
-    const tickers = ['BTCUSD', 'BCHUSD', 'LTCUSD', 'ETHUSD', 'ETCUSD', 'DASHUSD', 'ZECUSD', 'XMRUSD'];
-    // const tickers = ['BTCUSD'];
-    // const apikey = '2bbd0d305edb404aac2e2de5cc1311af'; // test
-    const apikey = 'd3058ae5683b4fc19a787ceb21a87f67';
-    this.logger.log('Running scheduled task for all tickers...');
-    await this.processTickers(tickers, '15min', apikey, 'crypto_');
-  }
+  // async handle15Min() {
+  //   const tickers = ['BTCUSD', 'BCHUSD', 'LTCUSD', 'ETHUSD', 'ETCUSD', 'DASHUSD', 'ZECUSD', 'XMRUSD'];
+  //   // const tickers = ['BTCUSD'];
+  //   // const apikey = '2bbd0d305edb404aac2e2de5cc1311af'; // test
+  //   const apikey = 'd3058ae5683b4fc19a787ceb21a87f67';
+  //   this.logger.log('Running scheduled task for all tickers...');
+  //   await this.processTickers(tickers, '15min', apikey, 'crypto_');
+  // }
 
   uswtlists = ['NVDA', 'HE', 'UNH', 'INTC', 'XOM', 'AMZN', 'AAPL', 'SNAP'];
   testapikey = '2bbd0d305edb404aac2e2de5cc1311af'; // test
@@ -68,6 +68,14 @@ export class TasksService {
     const symbols =  await this.LocalPLWR.getDolist() ||[]
     await Promise.all([
       this.USTIMERUN(symbols,this.allkeys,'US_EARLY_5MIN', 2,'5min'),
+    ]);
+  }
+
+  @Cron('*/15 14-21 * * 1-5')
+  async runAllWatL15min() {
+    this.sendDiscord(`CHECKBOT RUN AT`, `RSIENDBOT US ALL 15MIn}`, 'Nono', 'CRON_CHECK');
+    const symbols =  await this.LocalPLWR.getDolist() ||[]
+    await Promise.all([
       this.USTIMERUN(symbols, this.allkeys,'US_EARLY_15MIN', 3, '15min'),
     ]);
   }

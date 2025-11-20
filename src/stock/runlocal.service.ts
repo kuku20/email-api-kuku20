@@ -352,7 +352,7 @@ export class LocalPLWR {
   nextKey(keys) {
     const key = keys[this.index];
     this.repeat++;
-    if (this.repeat === 3) {
+    if (this.repeat === 1) {
       this.repeat = 0;
       this.index = (this.index + 1) % keys.length; // loop back to start
       console.log(this.index)
@@ -401,7 +401,7 @@ export class LocalPLWR {
   nextKeyPo(keys) {
     const key = keys[this.indexPo];
     this.repeatPo++;
-    if (this.repeatPo === 2) {
+    if (this.repeatPo === 1) {
       console.log(this.indexPo)
       this.repeatPo = 0;
       this.indexPo = (this.indexPo + 1) % keys.length; // loop back to start
