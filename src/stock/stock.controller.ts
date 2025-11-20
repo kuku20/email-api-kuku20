@@ -408,6 +408,7 @@ export class StockController {
         data = olddata[0]?.data
       } else {
         data = await this.loacl.getTickerFullChart_POLYGON(Query.ticker, Query.timeframe);
+        await this.loacl.saveData(Query.ticker, Query.timeframe,data[0]?.date, data);
       }
       return data;
     } catch (error) {
