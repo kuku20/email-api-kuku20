@@ -615,10 +615,16 @@ export class LocalPLWR {
     }
   }
   washSell30: any[] = [];
+  dolist: any[] = [];
 
   async onModuleInit() {
     // This runs ONCE when the app starts
     await this.loadWashSellList();
+    await this.getRsilist('rsiD-0-15', 7)
+    await this.getRsilist('MACD_AB_POS',20)
+    await this.getRsilist('MACD_BL_POS',5)
+    await this.getRsilist('MACD_AB_NEG',25)
+    // await this.getRsilist('MACD_BL_NEG') // run on rail
   }
 
   async loadWashSellList() {
@@ -626,12 +632,23 @@ export class LocalPLWR {
     const data = await this.FireBaseApi('get','stock-related/post-wash-sell.json','')
     const getwashsell30 = dbrs.getwashsell30(data);
     this.washSell30 = getwashsell30;
+    // console.table(this.washSell30)
     console.log(`✅ Loaded ${this.washSell30.length} wash-sell symbols`);
     return getwashsell30
   }
 
+  async getRsilist(path:string,limit:number = 100,dayrange:number = 7) {
+    const data = await this.FireBaseApi('get',`stock-related/${path}.json`,'')
+    const symbolLists = dbrs.getlastXdays(data,dayrange, limit);
+    this.dolist = [... this.dolist,...symbolLists]
+    console.log(`✅ Loaded: ${path} : ${symbolLists.length} symbols`);
+    return symbolLists
+  }
   getWashSellList() {
     return this.washSell30;
+  }
+  getDolist() {
+    return this.dolist;
   }
   async FireBaseApi(method:'post'|'patch'|'put'|'delete'|'get',endpoint:string, data: any,) {
     const firebaseRoot = this.configService.get<any>('FIREBASE_DATA')
