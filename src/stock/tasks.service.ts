@@ -4,6 +4,7 @@ import { WebhooksService } from 'src/webhooks/webhooks.service';
 import { LocalPLWR } from './runlocal.service';
 import axios from 'axios';
 import { StockHelperService } from './stockHelper.service';
+import * as Timer from './compareTime'
 @Injectable()
 export class TasksService {
   private readonly logger = new Logger(TasksService.name);
@@ -17,7 +18,7 @@ export class TasksService {
  
   ]
   // Runs every 5 minutes
-  // @Cron(CronExpression.EVERY_5_MINUTES)
+  //// @Cron((CronExpression.EVERY_5_MINUTES)
   // async handleCronCrypto() {
   //   this.wakeupcall()
   //   this.logger.log('Running scheduled task for all tickers...');
@@ -46,7 +47,7 @@ export class TasksService {
   //   }
   // }
 
-  // @Cron('*/15 * * * *') // every 15 minutes
+  //// @Cron(('*/15 * * * *') // every 15 minutes
   // async handle15Min() {
   //   const tickers = ['BTCUSD', 'BCHUSD', 'LTCUSD', 'ETHUSD', 'ETCUSD', 'DASHUSD', 'ZECUSD', 'XMRUSD'];
   //   // const tickers = ['BTCUSD'];
@@ -56,7 +57,7 @@ export class TasksService {
   //   await this.processTickers(tickers, '15min', apikey, 'crypto_');
   // }
 
-  uswtlists = ['NVDA', 'HE', 'UNH', 'INTC', 'XOM', 'AMZN', 'AAPL', 'SNAP'];
+  uswtlists = ['NVDA', 'HE', 'UNH', 'INTC', 'XOM', 'AMZN', 'AAPL', 'TRX'];
   testapikey = '2bbd0d305edb404aac2e2de5cc1311af'; // test
   allkeys = 'all'; // test
   wtchUsapikey = '2ff722044c8c4342938d5f10943dc754'; // alexangderwang@hotmail.com 
@@ -151,6 +152,13 @@ export class TasksService {
     // ) {
     //   await this.sendDiscord(`BUY EARLY ON-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'early_'+timeframe);
     // }
+    const isWithinRange = Timer.checkIfWithin5MinutesEST(lastdata?.date);
+    if (isWithinRange) {
+      console.log(ticker,'✅ Within ±5 minutes of EST time');
+    } else {
+      console.log(ticker,'❌ Outside ±5 minutes of EST time');
+      return
+    }
     if (
       lastdata?.MACDLine > lastdata?.SignalLine &&
       Secondlastdata?.MACDLine < Secondlastdata?.SignalLine
