@@ -19,7 +19,7 @@ export class AlphavantageService {
     async fasfda(ticker: string, timefame: string) {
 
       try {
-        const urls = `https://api.polygon.io/v1/indicators/rsi/${ticker}?timespan=${timefame}&adjusted=true&window=14&series_type=close&order=desc&limit=10&apiKey=wZCIxwtp0iTqGO7sFUJi4q7SzShWqLaS`;
+        const urls = `https://api.massive.com/v1/indicators/rsi/${ticker}?timespan=${timefame}&adjusted=true&window=14&series_type=close&order=desc&limit=10&apiKey=wZCIxwtp0iTqGO7sFUJi4q7SzShWqLaS`;
         const response = await axios.get(urls);
         // const responsesArray = await this.tryCatchF(urls, 'POLYGON_STOCK_API_KEY');
         // // return responsesArray.results?.values
