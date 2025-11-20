@@ -80,10 +80,10 @@ export class TasksService {
     const date = new Date();
     // this.sendDiscord(`CHECKBOT ${category} ${timeframe} RUN AT: ${date}`, `RSIENDBOT ${category} ${timeframe}`, 'Nono', 'CRON_CHECK');
 
-    // Delay 2 minutes before processing
     const washselllists =
       (await this.LocalPLWR.loadWashSellList()) ||
       this.LocalPLWR.getWashSellList();
+    // Delay 2 minutes before processing
     await new Promise((resolve) => setTimeout(resolve, delay * 60 * 1000));
 
     for (const ticker of tickers) {
@@ -151,8 +151,17 @@ export class TasksService {
       lastdata?.MACDLine > lastdata?.SignalLine &&
       Secondlastdata?.MACDLine < Secondlastdata?.SignalLine
     ) {
-      await this.run15Min5signal(ticker, lastdata, channel);
-      // await this.sendDiscord(`BUY ON MACDCROSS-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel);
+      if (timeframe === '5min') {
+        // check on 15min to see bullish or bearish macd
+        await this.run15Min5signal(ticker, lastdata, channel);
+      } else {
+        await this.sendDiscord(
+          `BUY ON MACDCROSS-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+          `${ticker} -ON- ${timeframe}`,
+          lastdata,
+          channel,
+        );
+      }
     }
     // if (
     //   lastdata?.close > lastdata?.MA200 &&
@@ -174,13 +183,8 @@ export class TasksService {
   }
 
   async run15Min5signal(ticker, lastdata5min, channel) {
-    const date = new Date();
-    await this.sendDiscord(
-      '5MIN PASS:' + date,
-      'RSIENDBOT RUNNING 15MIN OVER 5MINPASS',
-      'Nono',
-      'US_ALL',
-    );
+    this.logger.log(`${ticker} run15Min5signal.`);
+
     const data = await this.LocalPLWR.TwReveseNOAPI(ticker, '15min');
 
     const lastData = data[data.length - 1];
@@ -197,7 +201,7 @@ export class TasksService {
         `5MIN CROSS, BUT 15 RED!!!! (MACD:${lastdata5min?.MACDLine}): ${lastdata5min?.date}`,
         `${ticker} -ON- 5min`,
         lastdata5min,
-        channel,
+        channel.includes('US')?'US_ALL':"CRYPTO_ALL",
       );
     }
   }
