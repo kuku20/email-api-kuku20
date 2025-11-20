@@ -21,26 +21,37 @@ export function getDateNDaysAgo(n: number) {
   now.setDate(now.getDate() - n); // subtract n days
   return formatDateUnder(now);
 }
-function getRecentWashSellSymbols(list: { [x: string]: any }, days = 32) {
+function getRecentWashSellSymbols(list: { [x: string]: any }, days = 32, limit = 3000) {
   const now = new Date();
   const cutoff = new Date(now);
   cutoff.setDate(now.getDate() - days);
 
-  const recentSymbols = [];
+  const symbolsSet = new Set<string>();
 
-  for (const key in list) {
-    // Extract date part from key, e.g., "list_day_2025_10_19"
-    const match = key.match(/list_day_(\d{4})_(\d{2})_(\d{2})/);
-    if (!match) continue;
+  // Extract and sort keys by date descending
+  const sortedKeys = Object.keys(list)
+    .map((key) => {
+      const match = key.match(/list_day_(\d{4})_(\d{2})_(\d{2})/);
+      if (!match) return null;
+      const [, year, month, day] = match;
+      return { key, date: new Date(`${year}-${month}-${day}T00:00:00Z`) };
+    })
+    .filter(Boolean)
+    .sort((a, b) => b!.date.getTime() - a!.date.getTime()); // newest first
 
-    const [, year, month, day] = match;
-    const listDate = new Date(`${year}-${month}-${day}T00:00:00Z`);
+  for (const item of sortedKeys) {
+    if (!item) continue;
+    const { key, date } = item;
+    if (date < cutoff || date > now) continue;
 
-    if (listDate >= cutoff && listDate <= now) {
-      recentSymbols.push(...list[key]);
+    for (const symbol of list[key]) {
+      symbolsSet.add(symbol);
+      if (symbolsSet.size >= limit) break; // stop when 20 unique symbols
     }
+    if (symbolsSet.size >= limit) break;
   }
-  return recentSymbols;
+
+  return Array.from(symbolsSet);
 }
 
 function turnto(firebaseData: Record<string, Record<string, string>>) {
@@ -59,13 +70,13 @@ export function getwashsell30(data: Record<string, Record<string, string>>) {
   return getRecentWashSellSymbols(list);
 }
 
-export function getlast10days(data: Record<string, Record<string, string>>) {
-  const list = turnto(data);
-  return getRecentWashSellSymbols(list,2);
-}
+// export function getlast10days(data: Record<string, Record<string, string>>) {
+//   const list = turnto(data);
+//   return getRecentWashSellSymbols(list,10);
+// }
 
-export function getlast5days(data: Record<string, Record<string, string>>) {
+export function getlastXdays(data: Record<string, Record<string, string>>, XDAY=5, limit = 50) {
   const list = turnto(data);
-  return getRecentWashSellSymbols(list, 5);
+  return getRecentWashSellSymbols(list, XDAY,limit);
 }
 

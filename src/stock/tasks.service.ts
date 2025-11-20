@@ -17,7 +17,7 @@ export class TasksService {
  
   ]
   // Runs every 5 minutes
-  @Cron(CronExpression.EVERY_5_MINUTES)
+  // @Cron(CronExpression.EVERY_5_MINUTES)
   async handleCronCrypto() {
     this.wakeupcall()
     this.logger.log('Running scheduled task for all tickers...');
@@ -46,7 +46,7 @@ export class TasksService {
     }
   }
 
-  @Cron('*/15 * * * *') // every 15 minutes
+  // @Cron('*/15 * * * *') // every 15 minutes
   async handle15Min() {
     const tickers = ['BTCUSD', 'BCHUSD', 'LTCUSD', 'ETHUSD', 'ETCUSD', 'DASHUSD', 'ZECUSD', 'XMRUSD'];
     // const tickers = ['BTCUSD'];
@@ -94,7 +94,7 @@ export class TasksService {
     // this.sendDiscord(`CHECKBOT ${category} ${timeframe} RUN AT: ${date}`, `RSIENDBOT ${category} ${timeframe}`, 'Nono', 'CRON_CHECK');
 
     // Delay 2 minutes before processing
-    const washselllists = await this.LocalPLWR.loadWashSellList() || []
+    const washselllists = this.LocalPLWR.getWashSellList() || []
     await new Promise((resolve) => setTimeout(resolve, 2 * 60 * 1000));
 
     for (const ticker of tickers) {
