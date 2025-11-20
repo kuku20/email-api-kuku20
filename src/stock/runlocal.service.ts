@@ -540,7 +540,6 @@ export class LocalPLWR {
         ticker = this.stockHelperService.formatSymbol(ticker)
       }
       let BASE_URL = `https://api.twelvedata.com/time_series?symbol=${ticker}&interval=${timefame}&outputsize=400&dp=2&apikey=${apikey}`;
-      console.log(BASE_URL)
       const response = await axios.get(BASE_URL);
       if (response.data.status === 'error') {
         throw new Error('API returned error status');
