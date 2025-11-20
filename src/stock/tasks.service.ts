@@ -61,18 +61,23 @@ export class TasksService {
   allkeys = 'all'; // test
   wtchUsapikey = '2ff722044c8c4342938d5f10943dc754'; // alexangderwang@hotmail.com 
 
-  
-  // // @Cron(CronExpression.EVERY_MINUTE)
+  // @Cron(CronExpression.EVERY_10_SECONDS)
   @Cron('*/5 14-21 * * 1-5')
   async runAllWatchLists() {
+    this.wakeupcall()
+    const symbols =  await this.LocalPLWR.getDolist() ||[]
     await Promise.all([
-      this.USTIMERUN(this.uswtlists, this.wtchUsapikey),
-      this.USTIMERUN(this.tickersAB, this.allkeys),
+      this.USTIMERUN(symbols,this.allkeys,'US_EARLY_5MIN', 2,'5min'),
+      this.USTIMERUN(symbols, this.allkeys,'US_EARLY_15MIN', 3, '15min'),
     ]);
   }
 
-  async USTIMERUN(intickers:any, api:any, timeframe = '5min') {
+  async USTIMERUN(intickers:string[], api:any,channel, delay, timeframe = '5min') {
     const now = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
+    if(intickers.length < 1 ){
+      this.logger.log(`Don't have symbol ${timeframe} check (${now} ET)`);
+      return
+    }
     if (!this.stockHelperService.isMarketOpen()) {
       this.logger.log(`🕒 Market closed — skipping ${timeframe} check (${now} ET)`);
       return;
@@ -80,7 +85,7 @@ export class TasksService {
     this.logger.log(`✅ Market open — running ${timeframe} trading logic (${now} ET)`);
 
     const tickers = intickers;
-    await this.processTickers(tickers, timeframe, api, 'us_');
+    await this.processTickers(tickers, timeframe, api, channel, delay);
   }
 
 
@@ -88,14 +93,15 @@ export class TasksService {
     tickers: string[],
     timeframe: string,
     apikey: string,
-    category: 'crypto_' | 'us_'
-  ) {
+    channel: string,
+    delay = 2
+  ){
     const date = new Date();
     // this.sendDiscord(`CHECKBOT ${category} ${timeframe} RUN AT: ${date}`, `RSIENDBOT ${category} ${timeframe}`, 'Nono', 'CRON_CHECK');
 
     // Delay 2 minutes before processing
-    const washselllists = this.LocalPLWR.getWashSellList() || []
-    await new Promise((resolve) => setTimeout(resolve, 2 * 60 * 1000));
+    const washselllists = await this.LocalPLWR.loadWashSellList() || this.LocalPLWR.getWashSellList()
+    await new Promise((resolve) => setTimeout(resolve, delay * 60 * 1000));
 
     for (const ticker of tickers) {
       if (washselllists.includes(ticker)) {
@@ -113,7 +119,7 @@ export class TasksService {
         const lastData = data[data.length - 1];
         const secondLastData = data[data.length - 2];
 
-        await this.compareAndSend(data, lastData, secondLastData, ticker, timeframe, category);
+        await this.compareAndSend(data,lastData, secondLastData, ticker, timeframe, channel);
         this.logger.log(`${ticker} processed successfully.`);
       } catch (error) {
         this.sendDiscord(
@@ -137,12 +143,11 @@ export class TasksService {
     // ) {
     //   await this.sendDiscord(`BUY EARLY ON-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'early_'+timeframe);
     // }
-
     if (
       lastdata?.MACDLine > lastdata?.SignalLine &&
       Secondlastdata?.MACDLine < Secondlastdata?.SignalLine
     ) {
-      await this.sendDiscord(`BUY ON MACDCROSS-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'all');
+      await this.sendDiscord(`BUY ON MACDCROSS-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel);
     }
     // if (
     //   lastdata?.close > lastdata?.MA200 &&
@@ -152,13 +157,13 @@ export class TasksService {
     // ) {
     //   await this.sendDiscord(`BUY now:check me-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'all');
     // }
-    else{
-      // this.sendDiscord('BUY ERALLY', ticker, {}, 'ERORR_CALL');
-      // await this.sendDiscord(`BUY now:check me-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'all');
-      // console.log(lastdata)
-      // console.log(Secondlastdata)
-      // this.sendDiscord(`BUY ERALLY ON-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel);
-    }
+    // else{
+    //   // this.sendDiscord('BUY ERALLY', ticker, {}, 'ERORR_CALL');
+    //   await this.sendDiscord(`BUY now:check me-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'all');
+    //   // console.log(lastdata)
+    //   // console.log(Secondlastdata)
+    //   // await this.sendDiscord(`BUY ERALLY ON-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel);
+    // }
     const latest = await this.getLatest(data);
     await this.LocalPLWR.saveData(ticker, timeframe, latest.date, data);
   }
@@ -179,11 +184,11 @@ export class TasksService {
   async wakeupcall() {
     try {
       const { data } = await axios.get('https://nestjs-api.koyeb.app');
-      this.logger.log('⏱️ Keep-alive ping success:', data.status);
+      this.logger.log('⏱️ koyeb Keep-alive ping success:', data.status);
     } catch (err) {
       this.logger.error(`❌ Keep-alive failed: ${err.message}`);
       this.sendDiscord(
-        `❌ Keep-alive failed:`,
+        `❌ koyeb Keep-alive failed:`,
         `RSIENDBOT BOTBOT`,
         'Nono',
         'ERORR_CALL'
