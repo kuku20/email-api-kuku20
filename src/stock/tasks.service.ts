@@ -57,27 +57,19 @@ export class TasksService {
   //   await this.processTickers(tickers, '15min', apikey, 'crypto_');
   // }
 
-  uswtlists = ['NVDA', 'HE', 'UNH', 'INTC', 'XOM', 'AMZN', 'AAPL', 'TRX'];
+  uswtlists = ['NVDA', 'HE', 'UNH', 'INTC', 'XOM', 'AMZN', 'AAPL', 'SNAP'];
   testapikey = '2bbd0d305edb404aac2e2de5cc1311af'; // test
   allkeys = 'all'; // test
   wtchUsapikey = '2ff722044c8c4342938d5f10943dc754'; // alexangderwang@hotmail.com 
 
   // @Cron(CronExpression.EVERY_10_SECONDS)
+  // @Cron(CronExpression.EVERY_5_MINUTES)
   @Cron('*/5 14-21 * * 1-5')
   async runAllWatchLists() {
-    this.wakeupcall()
+    // this.wakeupcall()
     const symbols =  await this.LocalPLWR.getDolist() ||[]
     await Promise.all([
       this.USTIMERUN(symbols,this.allkeys,'US_EARLY_5MIN', 2,'5min'),
-    ]);
-  }
-
-  @Cron('*/15 14-21 * * 1-5')
-  async runAllWatL15min() {
-    this.sendDiscord(`CHECKBOT RUN AT`, `RSIENDBOT US ALL 15MIn}`, 'Nono', 'CRON_CHECK');
-    const symbols =  await this.LocalPLWR.getDolist() ||[]
-    await Promise.all([
-      this.USTIMERUN(symbols, this.allkeys,'US_EARLY_15MIN', 3, '15min'),
     ]);
   }
 
@@ -163,7 +155,8 @@ export class TasksService {
       lastdata?.MACDLine > lastdata?.SignalLine &&
       Secondlastdata?.MACDLine < Secondlastdata?.SignalLine
     ) {
-      await this.sendDiscord(`BUY ON MACDCROSS-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel);
+      await this.run15Min5signal(ticker, lastdata, channel)
+      // await this.sendDiscord(`BUY ON MACDCROSS-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel);
     }
     // if (
     //   lastdata?.close > lastdata?.MA200 &&
@@ -175,7 +168,7 @@ export class TasksService {
     // }
     // else{
     //   // this.sendDiscord('BUY ERALLY', ticker, {}, 'ERORR_CALL');
-    //   await this.sendDiscord(`BUY now:check me-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'all');
+    //   await this.sendDiscord(`TEST IF IT SENT-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'all');
     //   // console.log(lastdata)
     //   // console.log(Secondlastdata)
     //   // await this.sendDiscord(`BUY ERALLY ON-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel);
@@ -184,6 +177,17 @@ export class TasksService {
     await this.LocalPLWR.saveData(ticker, timeframe, latest.date, data);
   }
 
+  async run15Min5signal(ticker, lastdata5min, channel){
+    const date = new Date();
+    await this.sendDiscord('5MIN PASS:'+date, 'RSIENDBOT RUNNING 15MIN OVER 5MINPASS', 'Nono','US_ALL');
+    const  data = await this.LocalPLWR.TwReveseNOAPI(ticker, '15min');
+
+    const lastData = data[data.length - 1];
+    if(lastData?.MACDLine > lastData?.SignalLine){
+      // 5min cross, 15 allway buy buy
+      await this.sendDiscord(`BUY ON MACDCROSS-5min (MACD:${lastdata5min?.MACDLine}): ${lastdata5min?.date}` , `${ticker} -ON- 5min`, lastdata5min,channel);
+    }
+  }
   async sendDiscord(message:string, ticker:string, lastdata:any, channel:string) {
     try {
       return await this.webhooksService.sendDiscordNotification(
