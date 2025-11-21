@@ -42,19 +42,19 @@ export class TasksService {
     ]);
   }
 
-  @Cron('30 14-20 * * 1-5', { timeZone: 'UTC' })
-  async runAllWatL1hour() {
-    await this.sendDiscord(
-      'WAKEUPCALL:1hour',
-      'RWBOT 1hour',
-      'US',
-      'CRON_CHECK',
-    );
-    const symbols = (await this.LocalPLWR.getDolist()) || [];
-    await Promise.all([
-      this.USTIMERUN(symbols, this.allkeys, 'USSTOCK_WATCH', 4, '1hour'),
-    ]);
-  }
+  // @Cron('30 14-20 * * 1-5', { timeZone: 'UTC' })
+  // async runAllWatL1hour() {
+  //   await this.sendDiscord(
+  //     'WAKEUPCALL:1hour',
+  //     'RWBOT 1hour',
+  //     'US',
+  //     'CRON_CHECK',
+  //   );
+  //   const symbols = (await this.LocalPLWR.getDolist()) || [];
+  //   await Promise.all([
+  //     this.USTIMERUN(symbols, this.allkeys, 'USSTOCK_WATCH', 4, '1hour'),
+  //   ]);
+  // }
   async USTIMERUN(
     intickers: string[],
     api: any,
