@@ -11,7 +11,9 @@ export class StockHelperService {
     // );
 
     dataIn = await this.calculateMovingAverage(dataIn, 5, 'MA5');
+    dataIn = await this.calculateMovingAverage(dataIn, 9, 'MA9');
     dataIn = await this.calculateMovingAverage(dataIn, 10, 'MA10');
+    dataIn = await this.calculateMovingAverage(dataIn, 15, 'MA15');
     dataIn = await this.calculateMovingAverage(dataIn, 20, 'MA20');
     dataIn = await this.calculateMovingAverage(dataIn, 50, 'MA50');
     dataIn = await this.calculateMovingAverage(dataIn, 100, 'MA100');

@@ -593,7 +593,7 @@ export class LocalPLWR {
       const reversedData = [...responseRe].reverse(); // clone + reverse
       let dataOut
       if(meta_timezone){
-        dataOut = plainToClass(DTO.ChartOutTwelveData, response.values);
+        dataOut = plainToInstance(DTO.ChartOutTwelveData, reversedData);
       } else if(!meta_timezone){
         dataOut = plainToInstance(DTO.ChartOutTwelveDataUTC, reversedData, {
           excludeExtraneousValues: true,
