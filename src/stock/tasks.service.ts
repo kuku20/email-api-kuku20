@@ -42,19 +42,19 @@ export class TasksService {
     ]);
   }
 
-  @Cron('30 14-20 * * 1-5', { timeZone: 'UTC' })
-  async runAllWatL1hour() {
-    await this.sendDiscord(
-      'WAKEUPCALL:1hour',
-      'RWBOT 1hour',
-      'US',
-      'CRON_CHECK',
-    );
-    const symbols = (await this.LocalPLWR.getDolist()) || [];
-    await Promise.all([
-      this.USTIMERUN(symbols, this.allkeys, 'USSTOCK_WATCH', 4, '1hour'),
-    ]);
-  }
+  // @Cron('30 14-20 * * 1-5', { timeZone: 'UTC' })
+  // async runAllWatL1hour() {
+  //   await this.sendDiscord(
+  //     'WAKEUPCALL:1hour',
+  //     'RWBOT 1hour',
+  //     'US',
+  //     'CRON_CHECK',
+  //   );
+  //   const symbols = (await this.LocalPLWR.getDolist()) || [];
+  //   await Promise.all([
+  //     this.USTIMERUN(symbols, this.allkeys, 'USSTOCK_WATCH', 4, '1hour'),
+  //   ]);
+  // }
   async USTIMERUN(
     intickers: string[],
     api: any,
@@ -155,11 +155,11 @@ export class TasksService {
     // }
     const isWithinRange = Timer.checkIfWithin5MinutesEST(lastdata?.date);
     if (isWithinRange) {
-      console.log(ticker, '✅ Within ±6 minutes of EST time');
+      console.log(ticker, '✅ Within ±30 minutes of EST time');
     } else {
       console.log(
         ticker,
-        '❌ Outside ±6 minutes of EST time: ',
+        '❌ Outside ±30 minutes of EST time: ',
         lastdata?.date,
       );
       return;
