@@ -155,11 +155,11 @@ export class TasksService {
     // }
     const isWithinRange = Timer.checkIfWithin5MinutesEST(lastdata?.date);
     if (isWithinRange) {
-      console.log(ticker, '✅ Within ±6 minutes of EST time');
+      console.log(ticker, '✅ Within ±30 minutes of EST time');
     } else {
       console.log(
         ticker,
-        '❌ Outside ±6 minutes of EST time: ',
+        '❌ Outside ±30 minutes of EST time: ',
         lastdata?.date,
       );
       return;
