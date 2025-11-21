@@ -645,10 +645,10 @@ export class LocalPLWR {
   async onModuleInit() {
     // This runs ONCE when the app starts
     await this.loadWashSellList();
-    await this.getRsilist('rsiD-0-15', 7)
-    await this.getRsilist('MACD_AB_POS',20)
+    await this.getRsilist('rsiD-0-15', 8)
+    await this.getRsilist('MACD_AB_POS',10)
     await this.getRsilist('MACD_BL_POS',5)
-    await this.getRsilist('MACD_AB_NEG',25)
+    await this.getRsilist('MACD_AB_NEG',40)
     // await this.getRsilist('MACD_BL_NEG') // run on rail
   }
 
