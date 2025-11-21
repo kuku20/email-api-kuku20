@@ -42,6 +42,19 @@ export class TasksService {
     ]);
   }
 
+  @Cron('30 14-20 * * 1-5', { timeZone: 'UTC' })
+  async runAllWatL1hour() {
+    await this.sendDiscord(
+      'WAKEUPCALL:1hour',
+      'RWBOT 1hour',
+      'US',
+      'CRON_CHECK',
+    );
+    const symbols = (await this.LocalPLWR.getDolist()) || [];
+    await Promise.all([
+      this.USTIMERUN(symbols, this.allkeys, 'USSTOCK_WATCH', 4, '1hour'),
+    ]);
+  }
   async USTIMERUN(
     intickers: string[],
     api: any,
@@ -142,9 +155,13 @@ export class TasksService {
     // }
     const isWithinRange = Timer.checkIfWithin5MinutesEST(lastdata?.date);
     if (isWithinRange) {
-      console.log(ticker, '✅ Within ±5 minutes of EST time');
+      console.log(ticker, '✅ Within ±6 minutes of EST time');
     } else {
-      console.log(ticker, '❌ Outside ±5 minutes of EST time: ',lastdata?.date);
+      console.log(
+        ticker,
+        '❌ Outside ±6 minutes of EST time: ',
+        lastdata?.date,
+      );
       return;
     }
     if (
@@ -162,6 +179,16 @@ export class TasksService {
           channel,
         );
       }
+    } else if (
+      lastdata?.MACDLine < lastdata?.SignalLine &&
+      Secondlastdata?.MACDLine > Secondlastdata?.SignalLine
+    ) {
+      await this.sendDiscord(
+        `SELLLLLLLL ON-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker} -ON- ${timeframe}`,
+        lastdata,
+        'CRYPTO_WATCH',
+      );
     }
     // if (
     //   lastdata?.close > lastdata?.MA200 &&
@@ -201,7 +228,7 @@ export class TasksService {
         `5MIN CROSS, BUT 15 RED!!!! (MACD:${lastdata5min?.MACDLine}): ${lastdata5min?.date}`,
         `${ticker} -ON- 5min`,
         lastdata5min,
-        channel.includes('US')?'US_ALL':"CRYPTO_ALL",
+        channel.includes('US') ? 'US_ALL' : 'CRYPTO_ALL',
       );
     }
   }
