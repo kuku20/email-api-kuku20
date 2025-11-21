@@ -144,7 +144,7 @@ export class TasksService {
     if (isWithinRange) {
       console.log(ticker, '✅ Within ±5 minutes of EST time');
     } else {
-      console.log(ticker, '❌ Outside ±5 minutes of EST time');
+      console.log(ticker, '❌ Outside ±5 minutes of EST time: ',lastdata?.date);
       return;
     }
     if (
