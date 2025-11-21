@@ -790,10 +790,18 @@ async putToFBDynamic(endpoint:string, data: any,) {
       let BASE_URL = `https://api.twelvedata.com/time_series?symbol=${ticker}&interval=${tem}&outputsize=400&dp=2&apikey=`;
       const response = await this.tryCatchtwelvedata(BASE_URL);
       if (response.status == 'ok') {
-        const responseRe = plainToClass(DTO.ChartOutTwelveData, response.values);
+        // us stock     "exchange_timezone": "America/New_York", ChartOutTwelveData
+        // btc don't turn to ChartOutTwelveDataUTC
+        const meta_timezone = response.meta.exchange_timezone
+        let responseRe = plainToClass(DTO.ChartOutTwelveData, response.values);
+        if(meta_timezone){
+          responseRe = plainToClass(DTO.ChartOutTwelveData, response.values);
+        }else if(!meta_timezone){
+          responseRe = plainToClass(DTO.ChartOutTwelveDataUTC, response.values);
+        }
         return responseRe;
       }
-      return response;
+      return null;
     }
     getRandomNumber(x: number): number {
       return Math.floor(Math.random() * (x + 1));
