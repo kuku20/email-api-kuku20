@@ -8,7 +8,7 @@ import { StockHelperService } from './stockHelper.service';
 import { AlphavantageService } from 'src/alphavantage/alphavantage.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
-import { DataHistory1d,DataHistory4h,DataHistory1h,DataHistory30m,DataHistory15m,DataHistory5m ,DataHistory1m } from './entities';
+import { DataHistory1mo,DataHistory1d,DataHistory4h,DataHistory1h,DataHistory30m,DataHistory15m,DataHistory5m ,DataHistory1m } from './entities';
 import * as dbrs from './database.api';
 @Injectable()
 export class LocalPLWR {
@@ -36,6 +36,9 @@ export class LocalPLWR {
 
     @InjectRepository(DataHistory1m)
     private readonly DataHistory1mRepo: Repository<DataHistory1m>,
+
+    @InjectRepository(DataHistory1mo)
+    private readonly DataHistory1moRepo: Repository<DataHistory1mo>,
   ) {}
   
   /**
@@ -233,6 +236,7 @@ export class LocalPLWR {
   // Map timeframe to repository
   private getRepository(timeframe: string): Repository<any> {
     switch (timeframe) {
+      case 'weekly': return this.DataHistory1moRepo;
       case '1day': return this.dataHistory1dRepo;
       case '4hour': return this.dataHistory4hRepo;
       case '1hour': return this.dataHistory1hRepo;
@@ -667,12 +671,14 @@ export class LocalPLWR {
     const symbolLists = dbrs.getlastXdays(data,dayrange, limit);
     this.dolist = [... this.dolist,...symbolLists]
     console.log(`✅ Loaded: ${path} : ${symbolLists.length} symbols`);
+    
     return symbolLists
   }
   getWashSellList() {
     return this.washSell30;
   }
   getDolist() {
+    console.log(this.dolist)
     return this.dolist;
   }
   async FireBaseApi(method:'post'|'patch'|'put'|'delete'|'get',endpoint:string, data: any,) {

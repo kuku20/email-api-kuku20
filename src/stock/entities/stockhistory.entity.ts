@@ -49,3 +49,7 @@ export class DataHistory4h extends BaseDataHistory {}
 // data-history-1d.entity.ts
 @Entity({ name: 'data_history_1d' })
 export class DataHistory1d extends BaseDataHistory {}
+
+// data-history-1d.entity.ts
+@Entity({ name: 'data_history_1mo' })
+export class DataHistory1mo extends BaseDataHistory {}
