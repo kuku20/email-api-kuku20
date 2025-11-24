@@ -53,6 +53,7 @@ export class StockService {
     if(daylength<3){
       range = '1'
       timespan = 'minute'
+      dateStart = this.stockHelperService.getDateNDaysAgo(3)
     }else if(daylength>=3 && daylength < 9){
       range = '5'
       timespan = 'minute'
@@ -74,7 +75,7 @@ export class StockService {
     }
     const dateRanges = await this.stockHelperService.getDateRanges(dateStart, dateEnd, 85);
     const urls = dateRanges.map(({ start, end }) => {
-      return `https://api.massive.com/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${start}/${end}?adjusted=true&sort=desc&limit=50000&apiKey=`;
+      return `https://api.massive.com/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${start}/${end}?adjusted=true&sort=desc&limit=400&apiKey=`;
     });
     // console.log(urls)
     const responsesArray = await Promise.allSettled(

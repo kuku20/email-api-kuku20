@@ -405,10 +405,13 @@ export class StockController {
         await this.loacl.saveData(Query.ticker, Query.timeframe,data[0]?.date, data);
       } else if (params.src_api === RequestDTO.SRC_API.FMP_EOD) {
         const olddata = await this.loacl.getData(Query.ticker, Query.timeframe);
+        if(olddata)
         data = olddata[0]?.data
       } else {
         data = await this.loacl.getTickerFullChart_POLYGON(Query.ticker, Query.timeframe);
-        await this.loacl.saveData(Query.ticker, Query.timeframe,data[0]?.date, data);
+        if(data){
+          await this.loacl.saveData(Query.ticker, Query.timeframe,data[0]?.date, data);
+        }
       }
       return data;
     } catch (error) {
