@@ -302,6 +302,7 @@ export class TasksService {
     }
   }
 
+  @Cron(CronExpression.EVERY_5_MINUTES)
   async wakeupcall() {
     try {
       const { data } = await axios.get('https://nestjs-api.koyeb.app');
