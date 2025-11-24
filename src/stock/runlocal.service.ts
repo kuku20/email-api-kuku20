@@ -649,10 +649,10 @@ export class LocalPLWR {
   async onModuleInit() {
     // This runs ONCE when the app starts
     await this.loadWashSellList();
-    // await this.getRsilist('rsiD-0-15', 8)
-    await this.getRsilist('1day-early-buy',300)
-    // await this.getRsilist('MACD_BL_POS',5)
-    // await this.getRsilist('MACD_AB_NEG',40)
+    await this.getRsilist('rsiD-0-15', 8)
+    await this.getRsilist('MACD_AB_POS',10)
+    await this.getRsilist('MACD_BL_POS',5)
+    await this.getRsilist('MACD_AB_NEG',40)
     // await this.getRsilist('MACD_BL_NEG') // run on rail
   }
 
@@ -671,13 +671,14 @@ export class LocalPLWR {
     const symbolLists = dbrs.getlastXdays(data,dayrange, limit);
     this.dolist = [... this.dolist,...symbolLists]
     console.log(`✅ Loaded: ${path} : ${symbolLists.length} symbols`);
-    // console.log(this.dolist.toString())
+    
     return symbolLists
   }
   getWashSellList() {
     return this.washSell30;
   }
   getDolist() {
+    console.log(this.dolist)
     return this.dolist;
   }
   async FireBaseApi(method:'post'|'patch'|'put'|'delete'|'get',endpoint:string, data: any,) {

@@ -13,8 +13,7 @@ export class TasksService {
     private readonly stockHelperService: StockHelperService,
     private readonly LocalPLWR: LocalPLWR,
   ) {}
-  tickersAB = ['HE', 'UNH', 'INTC', 'XOM', 'AMZN', 'AAPL', 'SNAP', 'RDW', 'O'];
-  uswtlists = ['NVDA', 'HE', 'UNH', 'INTC', 'XOM', 'AMZN', 'AAPL', 'SNAP'];
+  uswtlists = ['NVDA', 'HE', 'UNH', 'INTC', 'XOM', 'AMZN', 'AAPL', 'CNC'];
   testapikey = '2bbd0d305edb404aac2e2de5cc1311af'; // test
   allkeys = 'all'; // test
   wtchUsapikey = '2ff722044c8c4342938d5f10943dc754'; // alexangderwang@hotmail.com
@@ -190,6 +189,27 @@ export class TasksService {
         'CRYPTO_WATCH',
       );
     }
+
+       // new 
+    const buyE = await this.earlyBuyInRSI(lastdata, Secondlastdata)
+    if(buyE){
+      await this.sendDiscord(
+        `BUY earlyBuyInRSI-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker} -ON- ${timeframe}`,
+        lastdata,
+        channel,
+      );
+    }
+
+    const sellE = await this.earlySellInRSI(lastdata, Secondlastdata)
+    if(sellE){
+      await this.sendDiscord(
+        `SELLLLLLLL earlySellInRSI-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker} -ON- ${timeframe}`,
+        lastdata,
+        'CRYPTO_WATCH',
+      );
+    }
     // if (
     //   lastdata?.close > lastdata?.MA200 &&
     //   Secondlastdata?.close < Secondlastdata?.MA200 &&
@@ -208,7 +228,39 @@ export class TasksService {
     const latest = await this.getLatest(data);
     await this.LocalPLWR.saveData(ticker, timeframe, latest.date, data);
   }
+  async earlyBuyInRSI(last: StockData, prev: StockData): Promise<boolean> {
+    if (!last || !prev) return false; // safety
 
+    const isDivergenceNegative = last.divergence != null && last.divergence < 0;
+    const isRSISetup =
+      last.RSI != null &&
+      prev.RSI != null &&
+      last.RSI < 40 &&
+      last.RSI > prev.RSI;
+    const isMACDRising =
+      last.MACDLine != null &&
+      prev.MACDLine != null &&
+      last.MACDLine > prev.MACDLine;
+
+    return isDivergenceNegative && isRSISetup && isMACDRising;
+  }
+
+  async earlySellInRSI(last: StockData, prev: StockData): Promise<boolean> {
+    if (!last || !prev) return false; // safety
+
+    const isDivergenceNegative = last.divergence != null && last.divergence > 0;
+    const isRSISetup =
+      last.RSI != null &&
+      prev.RSI != null &&
+      last.RSI > 60 &&
+      last.RSI < prev.RSI;
+    const isMACDRising =
+      last.MACDLine != null &&
+      prev.MACDLine != null &&
+      last.MACDLine < prev.MACDLine;
+
+    return isDivergenceNegative && isRSISetup && isMACDRising;
+  }
   async run15Min5signal(ticker, lastdata5min, channel) {
     this.logger.log(`${ticker} run15Min5signal.`);
 
@@ -271,4 +323,24 @@ export class TasksService {
       new Date(current.date) > new Date(latest.date) ? current : latest,
     );
   }
+}
+
+export interface StockData {
+  date: string
+  open: number
+  high: number
+  low: number
+  close: number
+  volume: number
+  MA5: number
+  MA10: number
+  MA20: number
+  MA50: number
+  MA100: number
+  MA200: number
+  RSI: number
+  MACDLine: number
+  SignalLine: number
+  divergence: number
+  MACDDivergence: any
 }
