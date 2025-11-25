@@ -164,6 +164,16 @@ export class TasksService {
       return;
     }
     if (
+      lastdata.close > lastdata.MA200 &&  Secondlastdata.close < Secondlastdata.MA200
+    ) {
+      await this.sendDiscord(
+        `BUY CLOSE> MA200-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker} -ON- ${timeframe}`,
+        lastdata,
+        channel,
+      );
+    }
+    if (
       lastdata.close > lastdata.MA200 &&
       lastdata?.MACDLine > lastdata?.SignalLine &&
       Secondlastdata?.MACDLine < Secondlastdata?.SignalLine
