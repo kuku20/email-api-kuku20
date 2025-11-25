@@ -18,7 +18,7 @@ export class TasksService {
   allkeys = 'all'; // test
   wtchUsapikey = '2ff722044c8c4342938d5f10943dc754'; // alexangderwang@hotmail.com
 
-  @Cron('*/5 14-21 * * 1-5')
+@Cron('*/5 14-21 * * 1-5', { timeZone: 'UTC' })
   async runAllWatchLists() {
     // this.wakeupcall()
     const symbols = (await this.LocalPLWR.getDolist()) || [];
@@ -27,7 +27,7 @@ export class TasksService {
     ]);
   }
 
-  @Cron('*/15 14-21 * * 1-5')
+@Cron('*/15 14-21 * * 1-5', { timeZone: 'UTC' })
   async runAllWatL15min() {
     await this.sendDiscord(
       'WAKEUPCALL:15min',
@@ -164,6 +164,7 @@ export class TasksService {
       return;
     }
     if (
+      lastdata.close > lastdata.MA200 &&
       lastdata?.MACDLine > lastdata?.SignalLine &&
       Secondlastdata?.MACDLine < Secondlastdata?.SignalLine
     ) {
@@ -242,7 +243,7 @@ export class TasksService {
       prev.MACDLine != null &&
       last.MACDLine > prev.MACDLine;
 
-    return isDivergenceNegative && isRSISetup && isMACDRising;
+    return isDivergenceNegative && isRSISetup && isMACDRising && last.close > last.MA200;
   }
 
   async earlySellInRSI(last: StockData, prev: StockData): Promise<boolean> {
