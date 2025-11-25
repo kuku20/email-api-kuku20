@@ -788,7 +788,7 @@ async putToFBDynamic(endpoint:string, data: any,) {
         // return this.getCoinHistory(ticker, '5m')
         ticker = this.stockHelperService.formatSymbol(ticker)
       }
-      let BASE_URL = `https://api.twelvedata.com/time_series?symbol=${ticker}&interval=${tem}&outputsize=400&dp=2&apikey=`;
+      let BASE_URL = `https://api.twelvedata.com/time_series?symbol=${ticker}&interval=${tem}&outputsize=600&dp=2&apikey=`;
       const response = await this.tryCatchtwelvedata(BASE_URL);
       if (response.status == 'ok') {
         // us stock     "exchange_timezone": "America/New_York", ChartOutTwelveData
