@@ -12,7 +12,12 @@ export class TasksService {
     private readonly webhooksService: WebhooksService,
     private readonly stockHelperService: StockHelperService,
     private readonly LocalPLWR: LocalPLWR,
-  ) {}
+  ) {
+    setInterval(() => {
+      this.sendlist = [];
+      console.log('sendlist reset');
+    }, 4 * 60 * 60 * 1000); // 4 hours in milliseconds
+  }
   uswtlists = ['NVDA', 'HE', 'UNH', 'INTC', 'XOM', 'AMZN', 'AAPL', 'CNC'];
   testapikey = '2bbd0d305edb404aac2e2de5cc1311af'; // test
   allkeys = 'all'; // test
