@@ -652,8 +652,9 @@ export class LocalPLWR {
     // await this.getRsilist('rsiD-0-15', 8)
     // await this.getRsilist('MACD_AB_POS',10)
     // await this.getRsilist('MACD_BL_POS',5)
-    await this.getRsilist('ma200bl_over_neg_0_5',25)
-    await this.getRsilist('ma200ab_less_0_5',25)
+    await this.getRsilist('ma200bl_over_neg_0_1',100)
+    // await this.getRsilist('ma200bl_over_neg_0_5',20)
+    // await this.getRsilist('ma200ab_less_0_5',25)
     // await this.getRsilist('MACD_BL_NEG') // run on rail
   }
 
