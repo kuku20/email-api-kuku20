@@ -23,9 +23,20 @@ export class TasksService {
   allkeys = 'all'; // test
   wtchUsapikey = '2ff722044c8c4342938d5f10943dc754'; // alexangderwang@hotmail.com
 
+
+  // @Cron('*/1 14-21 * * 1-5', { timeZone: 'UTC' })
+  // async runAllWatchLists1() {
+  //   // this.wakeupcall()
+  //   const symbols = (await this.LocalPLWR.getDolist()) || [];
+  //   await Promise.all([
+  //     this.USTIMERUN(this.uswtlists, this.allkeys, 'USSTOCK_WATCH', 0, '1min'),
+  //   ]);
+  // }
+
 @Cron('*/5 14-21 * * 1-5', { timeZone: 'UTC' })
   async runAllWatchLists() {
     // this.wakeupcall()
+    await this.LocalPLWR.getRsilist('ma200bl_over_neg_0_1',100)
     const symbols = (await this.LocalPLWR.getDolist()) || [];
     await Promise.all([
       this.USTIMERUN(symbols, this.allkeys, 'US_EARLY_5MIN', 2, '5min'),
@@ -41,6 +52,7 @@ export class TasksService {
       'CRON_CHECK',
     );
     const symbols = (await this.LocalPLWR.getDolist()) || [];
+    await this.LocalPLWR.getRsilist('ma200bl_over_neg_0_1',100)
     await Promise.all([
       this.USTIMERUN(symbols, this.allkeys, 'US_EARLY_15MIN', 3, '15min'),
     ]);
