@@ -213,24 +213,25 @@ export class LocalPLWR {
     data: any,
     source = 'llcone'
   ) {
-    try {
-      // Get the repository for the timeframe
-      const repo = this.getRepository(timeframe);
-      if (!repo) {
-        console.warn(`Skipping unsupported timeframe: ${timeframe}`);
-        return; // do nothing
-      }
-      // Save (insert or update automatically based on primary key)
-      await repo.save({
-        symbol,
-        source,
-        date,
-        data,
-      });
-    } catch (error) {
-      console.error(`Error saving data for ${symbol} [${timeframe}]:`, error);
-      throw error;
-    }
+    return true
+    // try {
+    //   // Get the repository for the timeframe
+    //   const repo = this.getRepository(timeframe);
+    //   if (!repo) {
+    //     console.warn(`Skipping unsupported timeframe: ${timeframe}`);
+    //     return; // do nothing
+    //   }
+    //   // Save (insert or update automatically based on primary key)
+    //   await repo.save({
+    //     symbol,
+    //     source,
+    //     date,
+    //     data,
+    //   });
+    // } catch (error) {
+    //   console.error(`Error saving data for ${symbol} [${timeframe}]:`, error);
+    //   throw error;
+    // }
   }
   
   // Map timeframe to repository
