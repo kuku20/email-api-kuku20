@@ -58,7 +58,7 @@ import { AlphavantageService } from './alphavantage/alphavantage.service';
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
-        const dbUrl = new URL(config.get<string>('DATABASE_URL'));
+        const dbUrl = new URL('postgresql://william:93-mZ-d68hhxww6gPA_aUA@shrewd-weasel-13317.5xj.cockroachlabs.cloud:26257/emailapiUserAdmin?sslmode=verify-full');
         const routingId = dbUrl.searchParams.get('options');
         dbUrl.searchParams.delete('options');
 
