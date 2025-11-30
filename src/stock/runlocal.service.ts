@@ -82,7 +82,7 @@ export class LocalPLWR {
     if(ticker.includes('USD') && ticker.length>3){
       return
     }
-    const urls = `https://api.massive.com/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${dayStart}/${dayend}?adjusted=true&sort=desc&limit=50000&apiKey=`;
+    const urls = `https://api.massive.com/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${dayStart}/${dayend}?adjusted=true&sort=desc&limit=1000&apiKey=`;
     // if (timefame.includes('weekly') || timefame.includes('monthly')) {
     //   return this.alphavantageService.weekORmonthly(ticker, timefame);
     // }

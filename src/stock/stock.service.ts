@@ -75,7 +75,7 @@ export class StockService {
     }
     const dateRanges = await this.stockHelperService.getDateRanges(dateStart, dateEnd, 85);
     const urls = dateRanges.map(({ start, end }) => {
-      return `https://api.massive.com/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${start}/${end}?adjusted=true&sort=desc&limit=400&apiKey=`;
+      return `https://api.massive.com/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${start}/${end}?adjusted=true&sort=desc&limit=1000&apiKey=`;
     });
     // console.log(urls)
     const responsesArray = await Promise.allSettled(
