@@ -434,7 +434,7 @@ export class LocalPLWR {
         return response.data; // success!
       } catch (error: any) {
         attempt++;
-        console.error(`:PO:Error with key ${nextKey.slice(0, 4)}...:`, error?.response.statusText);
+        console.error(`:PO:Error with key ${nextKey.slice(0, 4)}...:`, error?.response);
         // const dir = './logs';
         // if (!fs.existsSync(dir)) fs.mkdirSync(dir);
 
