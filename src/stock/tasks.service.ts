@@ -36,7 +36,7 @@ export class TasksService {
 @Cron('*/5 14-21 * * 1-5', { timeZone: 'UTC' })
   async runAllWatchLists() {
     // this.wakeupcall()
-    await this.LocalPLWR.getRsilist('ma200bl_over_neg_0_1',100)
+    // await this.LocalPLWR.getRsilist('ma200bl_over_neg_0_1',100)
     const symbols = (await this.LocalPLWR.getDolist()) || [];
     await Promise.all([
       this.USTIMERUN(symbols, this.allkeys, 'US_EARLY_5MIN', 2, '5min'),
@@ -52,7 +52,7 @@ export class TasksService {
       'CRON_CHECK',
     );
     const symbols = (await this.LocalPLWR.getDolist()) || [];
-    await this.LocalPLWR.getRsilist('ma200bl_over_neg_0_1',100)
+    // await this.LocalPLWR.getRsilist('ma200bl_over_neg_0_1',100)
     await Promise.all([
       this.USTIMERUN(symbols, this.allkeys, 'US_EARLY_15MIN', 3, '15min'),
     ]);
@@ -182,53 +182,55 @@ export class TasksService {
       );
       return;
     }
-    if (
-      lastdata.close > lastdata.MA200 &&  Secondlastdata.close < Secondlastdata.MA200
-    ) {
-      await this.sendDiscord(
-        `BUY CLOSE> MA200-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker} -ON- ${timeframe}`,
-        lastdata,
-        channel,
-      );
-    }
-    if (
-      lastdata.close > lastdata.MA200 &&
-      lastdata?.MACDLine > lastdata?.SignalLine &&
-      Secondlastdata?.MACDLine < Secondlastdata?.SignalLine
-    ) {
-      if (timeframe === '5min') {
-        // check on 15min to see bullish or bearish macd
-        await this.run15Min5signal(ticker, lastdata, channel);
-      } else {
+    if(lastdata.close > lastdata.MA200){
+      if (
+        lastdata.close > lastdata.MA200 &&  Secondlastdata.close < Secondlastdata.MA200
+      ) {
         await this.sendDiscord(
-          `BUY ON MACDCROSS-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+          `BUY CLOSE> MA200-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
           `${ticker} -ON- ${timeframe}`,
           lastdata,
           channel,
         );
       }
-    } else if (
-      lastdata?.MACDLine < lastdata?.SignalLine &&
-      Secondlastdata?.MACDLine > Secondlastdata?.SignalLine
-    ) {
-      await this.sendDiscord(
-        `SELLLLLLLL ON-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker} -ON- ${timeframe}`,
-        lastdata,
-        'CRYPTO_WATCH',
-      );
-    }
-
-       // new 
-    const buyE = await this.earlyBuyInRSI(lastdata, Secondlastdata)
-    if(buyE){
-      await this.sendDiscord(
-        `BUY earlyBuyInRSI-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker} -ON- ${timeframe}`,
-        lastdata,
-        channel,
-      );
+      if (
+        lastdata.close > lastdata.MA200 &&
+        lastdata?.MACDLine > lastdata?.SignalLine &&
+        Secondlastdata?.MACDLine < Secondlastdata?.SignalLine
+      ) {
+        if (timeframe === '5min') {
+          // check on 15min to see bullish or bearish macd
+          await this.run15Min5signal(ticker, lastdata, channel);
+        } else {
+          await this.sendDiscord(
+            `BUY ON MACDCROSS-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+            `${ticker} -ON- ${timeframe}`,
+            lastdata,
+            channel,
+          );
+        }
+      } else if (
+        lastdata?.MACDLine < lastdata?.SignalLine &&
+        Secondlastdata?.MACDLine > Secondlastdata?.SignalLine
+      ) {
+        await this.sendDiscord(
+          `SELLLLLLLL ON-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+          `${ticker} -ON- ${timeframe}`,
+          lastdata,
+          'CRYPTO_WATCH',
+        );
+      }
+  
+         // new 
+      const buyE = await this.earlyBuyInRSI(lastdata, Secondlastdata)
+      if(buyE){
+        await this.sendDiscord(
+          `BUY earlyBuyInRSI-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+          `${ticker} -ON- ${timeframe}`,
+          lastdata,
+          channel,
+        );
+      }
     }
 
     const sellE = await this.earlySellInRSI(lastdata, Secondlastdata)
