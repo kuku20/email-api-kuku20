@@ -82,7 +82,7 @@ export class LocalPLWR {
     if(ticker.includes('USD') && ticker.length>3){
       return
     }
-    const urls = `https://api.massive.com/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${dayStart}/${dayend}?adjusted=true&sort=desc&limit=1000&apiKey=`;
+    const urls = `https://api.massive.com/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${dayStart}/${dayend}?adjusted=true&sort=desc&limit=2000&apiKey=`;
     // if (timefame.includes('weekly') || timefame.includes('monthly')) {
     //   return this.alphavantageService.weekORmonthly(ticker, timefame);
     // }
@@ -90,11 +90,13 @@ export class LocalPLWR {
     console.log(urls)
     const responsesArray = await this.tryCatchtPO(urls);
     // return responsesArray.results
-    const response = plainToClass(
+    const response = plainToInstance(
       DTO.ChartOutPolygonDto,
-      responsesArray.results,
-    );
-    return response;
+      responsesArray.results, {
+        excludeExtraneousValues: true,
+      }
+    ) as any;
+    return  response.slice(0, 300);;
     // const result = await this.stockHelperService.returnNewData(response);
 
     // return result;
@@ -653,7 +655,7 @@ export class LocalPLWR {
     // await this.getRsilist('rsiD-0-15', 8)
     // await this.getRsilist('MACD_AB_POS',10)
     // await this.getRsilist('MACD_BL_POS',5)
-    await this.getRsilist('ma200bl_over_neg_0_1',100)
+    // await this.getRsilist('ma200bl_over_neg_0_1',100)
     // await this.getRsilist('ma200bl_over_neg_0_5',20)
     // await this.getRsilist('ma200ab_less_0_5',25)
     // await this.getRsilist('MACD_BL_NEG') // run on rail
