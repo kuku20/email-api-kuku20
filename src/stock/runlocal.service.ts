@@ -59,7 +59,7 @@ export class LocalPLWR {
       dayStart = this.stockHelperService.getDateNDaysAgo(700 + daytestBF);
     } else if (timefame.includes('hour')) {
       timespan = 'hour';
-      dayStart = this.stockHelperService.getDateNDaysAgo(100 + daytestBF);
+      dayStart = this.stockHelperService.getDateNDaysAgo(700 + daytestBF);
       range = timefame.match(/\d+/)[0];
     } else if (timefame.includes('min')) {
       timespan = 'minute';
@@ -82,7 +82,7 @@ export class LocalPLWR {
     if(ticker.includes('USD') && ticker.length>3){
       return
     }
-    const urls = `https://api.massive.com/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${dayStart}/${dayend}?adjusted=true&sort=desc&limit=2000&apiKey=`;
+    const urls = `https://api.massive.com/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${dayStart}/${dayend}?adjusted=true&sort=desc&limit=50000&apiKey=`;
     // if (timefame.includes('weekly') || timefame.includes('monthly')) {
     //   return this.alphavantageService.weekORmonthly(ticker, timefame);
     // }
@@ -655,9 +655,10 @@ export class LocalPLWR {
     // await this.getRsilist('rsiD-0-15', 8)
     // await this.getRsilist('MACD_AB_POS',10)
     // await this.getRsilist('MACD_BL_POS',5)
-    await this.getRsilist('ma200bl_over_neg_0_1',100)
+    // await this.getRsilist('ma200bl_over_neg_0_1',100)
     // await this.getRsilist('ma200bl_over_neg_0_5',20)
     // await this.getRsilist('ma200ab_less_0_5',25)
+    await this.getRsilist('1day_alway_ab_pos',50)
     // await this.getRsilist('MACD_BL_NEG') // run on rail
   }
 
