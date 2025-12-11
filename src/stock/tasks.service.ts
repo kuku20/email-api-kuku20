@@ -43,7 +43,7 @@ export class TasksService {
     ]);
   }
 
-@Cron('*/15 14-21 * * 1-5', { timeZone: 'UTC' })
+// @Cron('*/15 14-21 * * 1-5', { timeZone: 'UTC' })
   async runAllWatL15min() {
     await this.sendDiscord(
       'WAKEUPCALL:15min',
