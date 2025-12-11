@@ -15,4 +15,6 @@ export * from './ChartOutPolygon.dto';
 export * from './ChartOutFMP.dto';
 export * from './realtimeFhForChart.dto';
 export * from './ChartOutTwelveData.dto';
-export * from './CoinHistoryDto.dto'
+export * from './ChartOutTiingo.dto';
+export * from './CoinHistoryDto.dto';
+export * from './chartData';
