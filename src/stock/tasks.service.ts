@@ -33,7 +33,7 @@ export class TasksService {
   //   ]);
   // }
 
-@Cron('*/5 14-21 * * 1-5', { timeZone: 'UTC' })
+// @Cron('*/5 14-21 * * 1-5', { timeZone: 'UTC' })
   async runAllWatchLists() {
     // this.wakeupcall()
     // await this.LocalPLWR.getRsilist('ma200bl_over_neg_0_1',100)
