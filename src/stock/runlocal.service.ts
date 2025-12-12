@@ -278,6 +278,51 @@ export class LocalPLWR {
     }
   }
   
+  async getAllData(symbols: string[], timeframe: string= '1day') {
+    try {
+      // Get the repository for the requested timeframe
+      const repo = this.getRepository(timeframe);
+      if (!repo) {
+        console.warn(`Skipping unsupported timeframe: ${timeframe}`);
+        return; // do nothing
+      }
+      // Fetch all records for this symbol, ordered by date descending
+      const results = await repo.find({
+        where: { symbol: In(symbols) },
+        order: { date: 'DESC' },
+      });
+      // Sort each record’s data array if it exists
+      const latestData = results
+    .map(result => {
+      if (result?.data && Array.isArray(result.data) && result.data.length > 0) {
+        // Sort data by date (descending)
+        result.data.sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
+
+        // Take only the latest day's record
+        const latest = result.data[0];
+
+        return {
+          symbol: result.symbol,
+          date: latest.date,
+          open: latest.open,
+          high: latest.high,
+          low: latest.low,
+          close: latest.close,
+          volume: latest.volume,
+        };
+      }
+      return null;
+    })
+    .filter(Boolean); // remove nulls
+
+  return latestData;
+    } catch (error) {
+      return; 
+    }
+  }
+
   public shuffleArray(array: any[]) {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -658,7 +703,7 @@ export class LocalPLWR {
     // await this.getRsilist('ma200bl_over_neg_0_1',100)
     // await this.getRsilist('ma200bl_over_neg_0_5',20)
     // await this.getRsilist('ma200ab_less_0_5',25)
-    await this.getRsilist('1day_alway_ab_pos',50)
+    await this.getRsilist('1min_runme_part2',150)
     // await this.getRsilist('MACD_BL_NEG') // run on rail
   }
 
@@ -711,6 +756,46 @@ export class LocalPLWR {
         console.error(`❌ Network or Axios error: ${error.message}`);
       }
       return 'skipped';
+    }
+  }
+
+  async tiingo(ticker: string, timefame: string) {
+    const daytestBF = 0;
+    let dayStart;
+
+    if (timefame.includes('day')) {
+      dayStart = this.stockHelperService.getDateNDaysAgo(500 + daytestBF);
+    } else if (timefame.includes('hour')) {
+      dayStart = this.stockHelperService.getDateNDaysAgo(20 + daytestBF);
+    } else if (timefame.includes('min')) {
+      dayStart = this.stockHelperService.getDateNDaysAgo(3 + daytestBF);
+    } 
+    else{
+      return null
+    }
+    const urls= `https://api.tiingo.com/tiingo/fx/${ticker}/prices?startDate=${dayStart}&token=5f7e0b2da2b5c849dfd5a3dc7938b82c02a7c6f4&resampleFreq=${timefame}`
+    console.log(urls)
+    const responsesArray = await this.tryCatcht_tiingo(urls);
+    // return responsesArray
+    const response = plainToInstance(
+      DTO.ChartOutTiingo,
+      responsesArray, {
+        excludeExtraneousValues: true,
+      }
+    ) as any;
+    // return response
+    const result = await this.stockHelperService.returnNewData(response);
+    const reversedData = [...result].reverse(); // clone + reverse
+    // return reversedData; // success!
+    return  reversedData.slice(0, 300);;
+  }
+
+  async tryCatcht_tiingo(BASE_URL: string) {
+    try {
+      const response = await axios.get(BASE_URL);
+      return response.data
+    } catch (error: any) {
+        throw new Error(':tiingo: All API keys failed');
     }
   }
 }
