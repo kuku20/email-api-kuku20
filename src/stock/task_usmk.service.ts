@@ -114,21 +114,21 @@ export class TasksUSMKService {
       this.uplist.push(ticker);
     }
 
-    const downtime = await this.stockHelperService.macdCrossBL(
-      lastdata,
-      Secondlastdata,
-    );
-    if (downtime) {
-      if (this.uplist.includes(ticker)) {
-        this.uplist = this.uplist.filter((sym) => sym !== ticker);
-      }
-      await this.sendDiscord(
-        `SELLLLLLLL macdCrossBL-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker} -ON- ${timeframe}`,
-        lastdata,
-        'US_ALL',
-      );
-    }
+    // const downtime = await this.stockHelperService.macdCrossBL(
+    //   lastdata,
+    //   Secondlastdata,
+    // );
+    // if (downtime) {
+    //   if (this.uplist.includes(ticker)) {
+    //     this.uplist = this.uplist.filter((sym) => sym !== ticker);
+    //   }
+    //   await this.sendDiscord(
+    //     `SELLLLLLLL macdCrossBL-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+    //     `${ticker} -ON- ${timeframe}`,
+    //     lastdata,
+    //     'US_ALL',
+    //   );
+    // }
     const sellALl =
       await this.stockHelperService.priceBlAll1or5or15MinSELL(lastdata);
     if (sellALl && !this.downlist.includes(ticker)) {
@@ -141,21 +141,21 @@ export class TasksUSMKService {
       // add to downlist and remove from uplist
       this.downlist.push(ticker);
     }
-    const uptime = await this.stockHelperService.macdCrossAB(
-      lastdata,
-      Secondlastdata,
-    );
-    if (uptime) {
-      if (this.downlist.includes(ticker)) {
-        this.downlist = this.downlist.filter((sym) => sym !== ticker);
-      }
-      await this.sendDiscord(
-        `BUY macdCrossAB-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker} -ON- ${timeframe}`,
-        lastdata,
-        'US_EARLY_15MIN',
-      );
-    }
+    // const uptime = await this.stockHelperService.macdCrossAB(
+    //   lastdata,
+    //   Secondlastdata,
+    // );
+    // if (uptime) {
+    //   if (this.downlist.includes(ticker)) {
+    //     this.downlist = this.downlist.filter((sym) => sym !== ticker);
+    //   }
+    //   await this.sendDiscord(
+    //     `BUY macdCrossAB-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+    //     `${ticker} -ON- ${timeframe}`,
+    //     lastdata,
+    //     'US_EARLY_15MIN',
+    //   );
+    // }
   }
   async sendDiscord(
     message: string,
