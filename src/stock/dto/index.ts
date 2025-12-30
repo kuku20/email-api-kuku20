@@ -18,3 +18,4 @@ export * from './ChartOutTwelveData.dto';
 export * from './ChartOutTiingo.dto';
 export * from './CoinHistoryDto.dto';
 export * from './chartData';
+export * from './ChartOutTiingo.dto';

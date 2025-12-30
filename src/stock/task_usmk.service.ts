@@ -12,6 +12,7 @@ import { WebhooksService } from 'src/webhooks/webhooks.service';
 @Injectable()
 export class TasksUSMKService {
   allkeys = 'all'; // test
+  mysymbols = ['QQQ', 'SPY', 'SNAP','BULL','UNH',"TTD","CNC"]; // test symbols
   constructor(
     private readonly configService: ConfigService,
         private readonly webhooksService: WebhooksService,
@@ -174,35 +175,10 @@ export class TasksUSMKService {
       throw err;
     }
   }
-
-  async wakeupcall() {
-    try {
-      const date = new Date();
-      await this.sendDiscord(
-        'RAILWAY WAKEUPCALL:' + date,
-        'RWBOT 5MIN',
-        'Nono',
-        'CRON_CHECK',
-      );
-      const { data } = await axios.get(
-        'https://mytopnest-production.up.railway.app/webhooks',
-      );
-      this.logger.log('⏱️ Keep-alive ping success:', data.status);
-    } catch (err) {
-      this.logger.error(`❌ RAILWAY Keep-alive failed: ${err.message}`);
-      this.sendDiscord(
-        `❌ RAILWAY Keep-alive failed:`,
-        `RWBOT BOTBOT`,
-        'Nono',
-        'ERORR_CALL',
-      );
-    }
-  }
   @Cron('*/5 14-21 * * 1-5', { timeZone: 'UTC' })
   async runAllWatchLists() {
-    const symbols = (await this.LocalPLWR.getDolist()) || [];
     await Promise.all([
-      this.USTIMERUN(symbols, this.allkeys, 'US_EARLY_5MIN', 2, '5min'),
+      this.USTIMERUN(this.mysymbols, this.allkeys, 'US_EARLY_5MIN', 2, '5min'),
     ]);
   }
 

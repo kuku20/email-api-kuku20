@@ -34,6 +34,7 @@ import { WebhooksService } from './webhooks/webhooks.service';
 import { LocalPLWR } from './stock/runlocal.service';
 import { AlphavantageService } from './alphavantage/alphavantage.service';
 import { TasksUSMKService } from './stock/task_usmk.service';
+import { TasksForexService } from './stock/task_forex.service';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -103,6 +104,6 @@ import { TasksUSMKService } from './stock/task_usmk.service';
     AlphavantageModule,
   ],
   controllers: [AppController],
-  providers: [AppService, TasksService,StockHelperService, WebhooksService, LocalPLWR, AlphavantageService,TasksUSMKService],
+  providers: [AppService, TasksService,StockHelperService, WebhooksService, LocalPLWR, AlphavantageService,TasksUSMKService,TasksForexService],
 })
 export class AppModule {}
