@@ -36,6 +36,7 @@ import { AlphavantageService } from './alphavantage/alphavantage.service';
 import { TasksUSMKService } from './stock/task_usmk.service';
 import { TasksForexService } from './stock/task_forex.service';
 import { SendEverydayService } from './stock/send_everyday.service';
+import { TaskCryptoService } from './stock/task_crypto.service';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -105,6 +106,6 @@ import { SendEverydayService } from './stock/send_everyday.service';
     AlphavantageModule,
   ],
   controllers: [AppController],
-  providers: [AppService, TasksService,StockHelperService, WebhooksService, LocalPLWR, AlphavantageService,TasksUSMKService,TasksForexService,SendEverydayService],
+  providers: [AppService, TasksService,StockHelperService, WebhooksService, LocalPLWR, AlphavantageService,TaskCryptoService,TasksUSMKService,TasksForexService,SendEverydayService],
 })
 export class AppModule {}
