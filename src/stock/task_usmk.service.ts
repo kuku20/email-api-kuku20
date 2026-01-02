@@ -178,8 +178,10 @@ export class TasksUSMKService {
   }
   @Cron('*/5 14-21 * * 1-5', { timeZone: 'UTC' })
   async runAllWatchLists() {
+    const symbols = (await this.LocalPLWR.getDolist()) || [];
+    const combined = [...this.mysymbols, ...symbols];
     await Promise.all([
-      this.USTIMERUN(this.mysymbols, this.allkeys, 'US_EARLY_5MIN', 2, '5min'),
+      this.USTIMERUN(combined, this.allkeys, 'US_EARLY_5MIN', 2, '5min'),
     ]);
   }
 
@@ -191,9 +193,10 @@ export class TasksUSMKService {
       'US',
       'CRON_CHECK',
     );
-    // const symbols = (await this.LocalPLWR.getDolist()) || [];
+    const symbols = (await this.LocalPLWR.getDolist()) || [];
+    const combined = [...this.mysymbols, ...symbols];
     await Promise.all([
-      this.USTIMERUN(this.mysymbols, this.allkeys, 'US_EARLY_15MIN', 3, '15min'),
+      this.USTIMERUN(combined, this.allkeys, 'US_EARLY_15MIN', 3, '15min'),
     ]);
   }
 }
