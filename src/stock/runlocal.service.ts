@@ -1,6 +1,6 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import axios from 'axios';
-import * as fs from 'fs'; 
+// import * as fs from 'fs'; 
 import { ConfigService } from '@nestjs/config';
 import { plainToClass, plainToInstance } from 'class-transformer';
 import * as DTO from './dto';
@@ -833,19 +833,19 @@ export class LocalPLWR {
   
       try {
         const response = await axios.get(url);
-        const dir = './logs';
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir);
-        const successPath = `${dir}/successPath_tickers.txt`;
-        fs.appendFileSync(successPath, `| :PO: | ${url}  |\n`, 'utf8');
+        // const dir = './logs';
+        // if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+        // const successPath = `${dir}/successPath_tickers.txt`;
+        // fs.appendFileSync(successPath, `| :PO: | ${url}  |\n`, 'utf8');
         return response.data; // success!
       } catch (error: any) {
         attempt++;
         console.error(`:PO:Error with key ${nextKey.slice(0, 4)}...:`, error?.response);
-        const dir = './logs';
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+        // const dir = './logs';
+        // if (!fs.existsSync(dir)) fs.mkdirSync(dir);
 
-        const successPath = `${dir}/error_tickers.txt`;
-        fs.appendFileSync(successPath, `| :PO: | ${url}  |\n`, 'utf8');
+        // const successPath = `${dir}/error_tickers.txt`;
+        // fs.appendFileSync(successPath, `| :PO: | ${url}  |\n`, 'utf8');
         // Only retry if we haven't exhausted all keys
         if (attempt >= maxRetries) {
           throw new Error(':TII: All API keys failed');
