@@ -12,7 +12,8 @@ import { WebhooksService } from 'src/webhooks/webhooks.service';
 @Injectable()
 export class TasksUSMKService {
   allkeys = 'all'; // test
-  mysymbols = ['QQQ', 'SPY', 'SNAP','BULL','UNH',"TTD","CNC"]; // test symbols
+  // mysymbols = ['QQQ', 'SPY', 'SNAP','BULL','UNH',"TTD","CNC"]; // test symbols
+  mysymbols = ['INTC', 'SMCI', 'BULL','RDW','CRWV',"TSLA","BILL",'QQQ', 'SPY', 'SNAP','BULL','UNH',"TTD","CNC"]; // test symbols
   constructor(
     private readonly configService: ConfigService,
         private readonly webhooksService: WebhooksService,
@@ -182,17 +183,17 @@ export class TasksUSMKService {
     ]);
   }
 
-  // @Cron('*/15 14-21 * * 1-5', { timeZone: 'UTC' })
-  // async runAllWatL15min() {
-  //   await this.sendDiscord(
-  //     'WAKEUPCALL:15min',
-  //     'RWBOT 15min',
-  //     'US',
-  //     'CRON_CHECK',
-  //   );
-  //   const symbols = (await this.LocalPLWR.getDolist()) || [];
-  //   await Promise.all([
-  //     this.USTIMERUN(symbols, this.allkeys, 'US_EARLY_15MIN', 3, '15min'),
-  //   ]);
-  // }
+  @Cron('*/15 14-21 * * 1-5', { timeZone: 'UTC' })
+  async runAllWatL15min() {
+    await this.sendDiscord(
+      'WAKEUPCALL:15min',
+      'RWBOT 15min',
+      'US',
+      'CRON_CHECK',
+    );
+    // const symbols = (await this.LocalPLWR.getDolist()) || [];
+    await Promise.all([
+      this.USTIMERUN(this.mysymbols, this.allkeys, 'US_EARLY_15MIN', 3, '15min'),
+    ]);
+  }
 }

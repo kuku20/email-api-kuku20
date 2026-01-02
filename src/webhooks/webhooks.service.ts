@@ -242,7 +242,7 @@ export class WebhooksService {
         let formattedValue: string;
         if (typeof value === 'number') {
           // Format numbers with 2 decimals
-          formattedValue = value.toFixed(2);
+          formattedValue = value.toFixed(4);
         } else if (field.toLowerCase() === 'date') {
           // Format ISO date strings to short readable form
           const date = new Date(value);

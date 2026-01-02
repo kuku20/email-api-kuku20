@@ -1,6 +1,6 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import axios from 'axios';
-// import * as fs from 'fs'; 
+import * as fs from 'fs'; 
 import { ConfigService } from '@nestjs/config';
 import { plainToClass, plainToInstance } from 'class-transformer';
 import * as DTO from './dto';
@@ -384,7 +384,11 @@ export class LocalPLWR {
       // return this.getCoinHistory(ticker, '5m')
       ticker = this.stockHelperService.formatSymbol(ticker)
     }
+    // const daytestBF = 10;
+    // const dayend = this.stockHelperService.getDateNDaysAgo(-1 + daytestBF);
+    // let BASE_URL = `https://api.twelvedata.com/time_series?symbol=${ticker}&interval=${tem}&outputsize=600&dp=2&end_date=${dayend}&apikey=`;
     let BASE_URL = `https://api.twelvedata.com/time_series?symbol=${ticker}&interval=${tem}&outputsize=600&dp=2&apikey=`;
+    // console.log(BASE_URL)
     const response = await this.tryCatchtwelvedata(BASE_URL);
       if (response?.status == 'ok') {
         // us stock     "exchange_timezone": "America/New_York", ChartOutTwelveData
@@ -444,7 +448,8 @@ export class LocalPLWR {
           console.warn(':12: Received HTTP 404 from TwelveData, breaking...');
           return null; 
         }
-        console.error(`:12:Error with key ${nextKey.slice(0, 4)}...:`, error?.message || error);
+        // console.error(`:12:Error with key ${nextKey.slice(0, 4)}...:`, error?.message || error);
+        console.error(`:12:Error with key ${nextKey}`, url);
         if (attempt >= maxRetries) {
           throw new Error(':12:All API keys failed: 12');
         }
@@ -703,7 +708,7 @@ export class LocalPLWR {
     // await this.getRsilist('ma200bl_over_neg_0_1',100)
     // await this.getRsilist('ma200bl_over_neg_0_5',20)
     // await this.getRsilist('ma200ab_less_0_5',25)
-    await this.getRsilist('1min_runme_part2',150)
+    // await this.getRsilist('weekly_daily_pos_blo',150)
     // await this.getRsilist('MACD_BL_NEG') // run on rail
   }
 
@@ -759,7 +764,7 @@ export class LocalPLWR {
     }
   }
 
-  async tiingo(ticker: string, timefame: string, apikey='54c43c0fc7b27681254eeac1d7138d6b5477cf10') {
+  async tiingo(ticker: string, timefame: string, apikey?:string) {
     const daytestBF = 0;
     let dayStart;
 
@@ -773,9 +778,15 @@ export class LocalPLWR {
     else{
       return null
     }
-    const urls= `https://api.tiingo.com/tiingo/fx/${ticker}/prices?startDate=${dayStart}&token=${apikey}&resampleFreq=${timefame}`
-    console.log(urls)
-    const responsesArray = await this.tryCatcht_tiingo(urls);
+    let responsesArray, urls
+    const baseUrl= `https://api.tiingo.com/tiingo/fx/${ticker}/prices?startDate=${dayStart}&resampleFreq=${timefame}&token=`
+    if(apikey == undefined){
+      responsesArray = await this.tryCatcht_Alltiingo(baseUrl);
+    }else{
+      urls = `${baseUrl}${apikey}`;
+      console.log(urls)
+      responsesArray = await this.tryCatcht_tiingo(urls);
+    }
     // return responsesArray
     const response = plainToInstance(
       DTO.ChartOutTiingo,
@@ -796,6 +807,50 @@ export class LocalPLWR {
       return response.data
     } catch (error: any) {
         throw new Error(':tiingo: All API keys failed');
+    }
+  }
+  // keysTiingo = ['83365fbbd86bf38b68cb49d8d71fea5aa7118d6e'];
+  
+  keysTiingo = this.configService.get<any>('TIINGO_STOCK_API_KEY').split(',');
+  repeatTiingo = 0
+  indexTiingo = this.getRandomNumber(this.keysTiingo.length-1)
+  nextKeyTiingo(keys) {
+    const key = keys[this.indexTiingo];
+    this.repeatTiingo++;
+    if (this.repeatTiingo === 1) {
+      console.log(this.indexTiingo)
+      this.repeatTiingo = 0;
+      this.indexTiingo = (this.indexTiingo + 1) % keys.length; // loop back to start
+    }
+    return key;
+  }
+  async tryCatcht_Alltiingo(BASE_URL: string, maxRetries = this.keysTiingo.length) {
+    let attempt = 0;
+    while (attempt < maxRetries) {
+      const nextKey = this.nextKeyTiingo(this.keysTiingo);
+      const url = `${BASE_URL}${nextKey}`;
+      console.log(`:TII:Trying key: ${nextKey.slice(0, 4)}...`);
+  
+      try {
+        const response = await axios.get(url);
+        const dir = './logs';
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+        const successPath = `${dir}/successPath_tickers.txt`;
+        fs.appendFileSync(successPath, `| :PO: | ${url}  |\n`, 'utf8');
+        return response.data; // success!
+      } catch (error: any) {
+        attempt++;
+        console.error(`:PO:Error with key ${nextKey.slice(0, 4)}...:`, error?.response);
+        const dir = './logs';
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+
+        const successPath = `${dir}/error_tickers.txt`;
+        fs.appendFileSync(successPath, `| :PO: | ${url}  |\n`, 'utf8');
+        // Only retry if we haven't exhausted all keys
+        if (attempt >= maxRetries) {
+          throw new Error(':TII: All API keys failed');
+        }
+      }
     }
   }
 }
