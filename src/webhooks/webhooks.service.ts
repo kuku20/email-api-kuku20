@@ -65,7 +65,7 @@ export class WebhooksService {
     let embed 
     let options:any
     const botdt = botname.split(' ').slice(1).join(' ');
-    const color = botdt.includes('DOWN')? 0xff0000 : 0x00ff00 
+    const color = message.includes('SELL')? 0xff0000 : 0x00ff00 // Red for SELL, Green otherwise
     /**
     **[sMk000-1m](https://stockmarkets000.web.app//price-log/${ticker})** 
      | **[sMk000-5m](https://stockmarkets000.web.app//price-log/${ticker}?daysRange=5)** 
