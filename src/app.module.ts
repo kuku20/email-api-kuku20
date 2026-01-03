@@ -106,6 +106,12 @@ import { TaskCryptoService } from './stock/task_crypto.service';
     AlphavantageModule,
   ],
   controllers: [AppController],
-  providers: [AppService, TasksService,StockHelperService, WebhooksService, LocalPLWR, AlphavantageService,TaskCryptoService,TasksUSMKService,TasksForexService,SendEverydayService],
+  providers: [AppService,StockHelperService, WebhooksService, LocalPLWR, AlphavantageService,
+    TasksService,
+    TaskCryptoService,
+    TasksUSMKService,
+    TasksForexService,
+    SendEverydayService
+  ],
 })
 export class AppModule {}
