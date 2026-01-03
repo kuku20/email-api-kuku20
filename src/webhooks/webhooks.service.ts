@@ -326,7 +326,7 @@ export class WebhooksService {
     }
     // Launch Puppeteer browser (headless mode)
    // Launch Puppeteer browser (headless mode)
-   const browser = await puppeteer.launch({ headless: true });
+   const browser = await puppeteer.launch({ headless: true , args: ['--no-sandbox', '--disable-setuid-sandbox'], });
    const page = await browser.newPage();
    // Set the viewport to the full screen size
    const screenWidth = 1920; // Example screen width (can be dynamic)
