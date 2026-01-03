@@ -5,7 +5,7 @@ import axios from 'axios';
 import { StockHelperService } from './stockHelper.service';
 import { LocalPLWR } from './runlocal.service';
 import { WebhooksService } from 'src/webhooks/webhooks.service';
-
+import pLimit from 'p-limit';
 @Injectable()
 export class TaskCryptoService {
   constructor(
@@ -258,48 +258,60 @@ export class TaskCryptoService {
     channel: string,
     delay = 5,
   ) {
+    const limit = pLimit(7); // Limit the concurrency to 5 at a time
+
     const date = new Date();
     const washselllists =
       (await this.LocalPLWR.loadWashSellList()) ||
       this.LocalPLWR.getWashSellList();
-    // Delay 2 minutes before processing
+
+    // Delay 2 minutes before processing (optional)
     await new Promise((resolve) => setTimeout(resolve, delay * 60 * 1000));
 
-    for (const ticker of tickers) {
-      if (washselllists.includes(ticker)) {
-        console.log(`⏭️ Skipping ${ticker} — in wash sell list`);
-        continue; // ✅ Skip this ticker and move on
-      }
-      try {
-        let data;
-        if (apikey === 'all') {
-          data = await this.LocalPLWR.TwReveseNOAPI(ticker, timeframe);
-        } else {
-          data = await this.LocalPLWR.get12for(ticker, timeframe, apikey);
+    // Map through tickers and limit concurrency
+    const tickerPromises = tickers.map((ticker) =>
+      limit(async () => {
+        if (washselllists.includes(ticker)) {
+          console.log(`⏭️ Skipping ${ticker} — in wash sell list`);
+          return; // Skip this ticker and move on
         }
 
-        const lastData = data[data.length - 1];
-        const secondLastData = data[data.length - 2];
+        try {
+          let data;
+          if (apikey === 'all') {
+            data = await this.LocalPLWR.TwReveseNOAPI(ticker, timeframe);
+          } else {
+            data = await this.LocalPLWR.get12for(ticker, timeframe, apikey);
+          }
 
-        await this.compareAndSend1hour(
-          data,
-          lastData,
-          secondLastData,
-          ticker,
-          timeframe,
-          channel,
-        );
-        this.logger.log(`${ticker} processed successfully.`);
-      } catch (error) {
-        this.sendDiscord(
-          `ERROR ON API AT: ${timeframe} On ${date}: ${JSON.stringify(error)}`,
-          `RSIENDBOT ${ticker} at ${timeframe}`,
-          'Nono',
-          'ERORR_CALL',
-        );
-        this.logger.error(`Error processing ${ticker}: ${error.message}`);
-      }
-    }
+          const lastData = data[data.length - 1];
+          const secondLastData = data[data.length - 2];
+
+          await this.compareAndSend1hour(
+            data,
+            lastData,
+            secondLastData,
+            ticker,
+            timeframe,
+            channel,
+          );
+          this.logger.log(`${ticker} processed successfully.`);
+        } catch (error) {
+          await this.sendDiscord(
+            `ERROR ON API AT: ${timeframe} On ${date}: ${JSON.stringify(
+              error,
+            )}`,
+            `RSIENDBOT ${ticker} at ${timeframe}`,
+            'Nono',
+            'ERORR_CALL',
+          );
+          this.logger.error(`Error processing ${ticker}: ${error.message}`);
+        }
+      }),
+    );
+
+    // Wait for all ticker promises to complete concurrently (with concurrency limit)
+    await Promise.all(tickerPromises);
   }
   async compareAndSend1hour(
     data,
@@ -323,7 +335,7 @@ export class TaskCryptoService {
       lastdata,
       Secondlastdata,
     );
-    if (!buy_earlyBuyInRSI) {
+    if (buy_earlyBuyInRSI) {
       await this.sendDiscord(
         `BUY earlyBuyInRSI-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker} -ON- ${timeframe}`,
@@ -346,7 +358,7 @@ export class TaskCryptoService {
       lastdata,
       Secondlastdata,
     );
-    if (!sell_earlySellInRSI) {
+    if (sell_earlySellInRSI) {
       await this.sendDiscord(
         `SELLLLLLLL sell_earlySellInRSI-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker} -ON- ${timeframe}`,
@@ -372,7 +384,13 @@ export class TaskCryptoService {
       'ETCUSD',
       'DASHUSD',
       'ZECUSD',
-      'XMRUSD','SOLUSD', 'ADAUSD', 'XRPUSD', 'BNBUSD', 'LINKUSD' ,'SUIUSD',
+      'XMRUSD',
+      'SOLUSD',
+      'ADAUSD',
+      'XRPUSD',
+      'BNBUSD',
+      'LINKUSD',
+      'SUIUSD',
       'TONUSD',
       'UNIUSD',
       'AAVEUSD',
