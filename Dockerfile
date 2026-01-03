@@ -22,6 +22,22 @@ FROM node:18-alpine
 # Set the working directory inside the container
 WORKDIR /usr/src/app
 
+# Install necessary dependencies for Puppeteer and Chromium
+RUN apk update && apk add --no-cache \
+  chromium \
+  nss \
+  freetype \
+  harfbuzz \
+  ttf-freefont \
+  bash \
+  && rm -rf /var/cache/apk/*
+
+# Set environment variable to use the installed Chromium binary
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+
+# Set the working directory inside the container
+WORKDIR /usr/src/app
+
 # Copy the package.json and package-lock.json
 COPY package*.json ./
 
@@ -37,6 +53,6 @@ COPY --from=build /usr/src/app/dist ./dist
 # Expose the port the app runs on
 ARG PORT
 EXPOSE ${PORT:-3000}
- 
+
 # Set the default command to run the NestJS app
 CMD ["node", "dist/main"]
