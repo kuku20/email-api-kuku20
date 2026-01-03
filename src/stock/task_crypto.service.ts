@@ -438,7 +438,7 @@ export class TaskCryptoService {
       0,
     );
   }
-  @Cron('10 */4 * * *') // Every 4 hours at minute 8
+  @Cron('10 */4 * * *') // Every 4 hours at minute 10
   async handle4hourCrypto3() {
     const tickers = ['SOLUSD', 'ADAUSD', 'XRPUSD', 'BNBUSD', 'LINKUSD'];
     // const tickers = ['BTCUSD'];
@@ -453,7 +453,7 @@ export class TaskCryptoService {
     );
   }
 
-  @Cron('12 */4 * * *') // Every 4 hours at minute 8
+  @Cron('12 */4 * * *') // Every 4 hours at minute 12
   async handle4hourCrypto4() {
     const tickers = [
       'SUIUSD',
@@ -535,6 +535,66 @@ export class TaskCryptoService {
       apikey,
       'CRYPTO_EARLY_15MIN',
       4,
+    );
+  }
+
+  @Cron('14 1 * * *')  // Every day at 1:14 AM
+  async handledailyCrypto() {
+    const tickers = [
+      'BTCUSD',
+      'BCHUSD',
+      'LTCUSD',
+      'ETHUSD',
+      'ETCUSD',
+      'DASHUSD',
+      'ZECUSD',
+      'XMRUSD',
+    ];
+    // const tickers = ['BTCUSD'];
+    const apikey = '2711824a92bc40498c8bc30728813e2a'; //liamsterling1@outlook.com
+    this.logger.log('Running scheduled every 1 hour for CRYPTOs...');
+    await this.processTickers1hour(
+      tickers,
+      '1day',
+      apikey,
+      'CRYPTO_EARLY_15MIN',
+      0,
+    );
+  }
+  @Cron('16 1 * * *')  // Every day at 1:16 AM
+  async handledailyCrypto1() {
+    const tickers = ['SOLUSD', 'ADAUSD', 'XRPUSD', 'BNBUSD', 'LINKUSD'];
+    // const tickers = ['BTCUSD'];
+    const apikey = '2711824a92bc40498c8bc30728813e2a'; //liamsterling1@outlook.com
+    this.logger.log('Running scheduled every 1 hour for CRYPTOs...');
+    await this.processTickers1hour(
+      tickers,
+      '1day',
+      apikey,
+      'CRYPTO_EARLY_15MIN',
+      0,
+    );
+  }
+
+  @Cron('18 1 * * *')  // Every day at 1:18 AM
+  async handledailyCrypto2() {
+    const tickers = [
+      'SUIUSD',
+      'TONUSD',
+      'UNIUSD',
+      'AAVEUSD',
+      'COMPUSD',
+      'AVAXUSD',
+    ];
+    // const tickers = ['BTCUSD'];
+    const apikey = '2711824a92bc40498c8bc30728813e2a'; //liamsterling1@outlook.com
+    this.logger.log('Running scheduled every 1 hour for CRYPTOs...');
+    await this.processTickers1hour(
+      tickers,
+      '1day',
+      apikey,
+      'CRYPTO_EARLY_15MIN',
+      0,
     );
   }
 }
