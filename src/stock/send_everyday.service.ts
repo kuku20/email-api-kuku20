@@ -41,14 +41,14 @@ export class SendEverydayService {
       // CLOSE YESTERDAY
       await this.webhooksService.sendDiscordNotification(
         `${equal}==END-${yesterday}${equal}`,
-        `${channel} RWBOT`,
+        `${channel} RSIENDBOT`,
         JSON.stringify('lastdata'),
       );
 
       // START TODAY
       await this.webhooksService.sendDiscordNotification(
         `${equal}START-${today}${equal}`,
-        `${channel} RWBOT`,
+        `${channel} RSIENDBOT`,
         JSON.stringify('lastdata'),
       );
 

@@ -197,12 +197,15 @@ export class TaskCryptoService {
     ticker: string,
     lastdata: any,
     channel: string,
+    data?: any,
   ) {
     try {
+      const fileBuffer = await this.webhooksService.captureChart(data);
       return await this.webhooksService.sendDiscordNotification(
-        'RAILWAY ' + message,
+        message,
         `${channel} ${ticker}`,
         JSON.stringify(lastdata),
+        fileBuffer
       );
     } catch (err) {
       console.error('❌ Error in controller:', err);
@@ -215,7 +218,7 @@ export class TaskCryptoService {
     //   const date = new Date();
     //   await this.sendDiscord(
     //     'RAILWAY WAKEUPCALL:' + date,
-    //     'RWBOT 5MIN',
+    //     'RSIENDBOT 5MIN',
     //     'Nono',
     //     'CRON_CHECK',
     //   );
@@ -227,7 +230,7 @@ export class TaskCryptoService {
     //   this.logger.error(`❌ RAILWAY Keep-alive failed: ${err.message}`);
     //   this.sendDiscord(
     //     `❌ RAILWAY Keep-alive failed:`,
-    //     `RWBOT BOTBOT`,
+    //     `RSIENDBOT BOTBOT`,
     //     'Nono',
     //     'ERORR_CALL',
     //   );
@@ -279,6 +282,7 @@ export class TaskCryptoService {
         const secondLastData = data[data.length - 2];
 
         await this.compareAndSend1hour(
+          data,
           lastData,
           secondLastData,
           ticker,
@@ -289,7 +293,7 @@ export class TaskCryptoService {
       } catch (error) {
         this.sendDiscord(
           `ERROR ON API AT: ${timeframe} On ${date}: ${JSON.stringify(error)}`,
-          `RWBOT ${ticker} at ${timeframe}`,
+          `RSIENDBOT ${ticker} at ${timeframe}`,
           'Nono',
           'ERORR_CALL',
         );
@@ -298,6 +302,7 @@ export class TaskCryptoService {
     }
   }
   async compareAndSend1hour(
+    data,
     lastdata,
     Secondlastdata,
     ticker,
@@ -311,6 +316,7 @@ export class TaskCryptoService {
         `${ticker} -ON- ${timeframe}`,
         lastdata,
         channel,
+        data
       );
     }
     const buy_earlyBuyInRSI = await this.earlyBuyInRSI(
@@ -323,6 +329,7 @@ export class TaskCryptoService {
         `${ticker} -ON- ${timeframe}`,
         lastdata,
         channel,
+        data
       );
     }
     const sellE = await this.macdCrossBL(lastdata, Secondlastdata);
@@ -331,7 +338,7 @@ export class TaskCryptoService {
         `SELLLLLLLL macdCrossBL-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker} -ON- ${timeframe}`,
         lastdata,
-        'CRYPTO_ALL',
+        'CRYPTO_ALL',data
       );
     }
     const sell_earlySellInRSI = await this.earlySellInRSI(
@@ -343,18 +350,13 @@ export class TaskCryptoService {
         `SELLLLLLLL sell_earlySellInRSI-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker} -ON- ${timeframe}`,
         lastdata,
-        'CRYPTO_ALL',
+        'CRYPTO_ALL',data
       );
     }
   }
   @Cron('0 * * * *') // every 1 hour
   async handle1hourCrypto() {
-    await this.sendDiscord(
-      'WAKEUPCALL:1hour',
-      'RWBOT 1hour',
-      'CRYTO',
-      'CRON_CHECK',
-    );
+
     const tickers = [
       'BTCUSD',
       'BCHUSD',
@@ -379,12 +381,7 @@ export class TaskCryptoService {
 
   @Cron('0 * * * *') // every 1 hour
   async handle1hourCrypto1() {
-    await this.sendDiscord(
-      'WAKEUPCALL:1hour',
-      'RWBOT 1hour',
-      'CRYTO',
-      'CRON_CHECK',
-    );
+
     const tickers = ['SOLUSD', 'ADAUSD', 'XRPUSD', 'BNBUSD', 'LINKUSD'];
     // const tickers = ['BTCUSD'];
     const apikey = 'd3058ae5683b4fc19a787ceb21a87f67';
@@ -399,12 +396,7 @@ export class TaskCryptoService {
   }
   @Cron('0 * * * *') // every 1 hour
   async handle1hourCrypto2() {
-    await this.sendDiscord(
-      'WAKEUPCALL:1hour',
-      'RWBOT 1hour',
-      'CRYTO',
-      'CRON_CHECK',
-    );
+
     const tickers = [
       'SUIUSD',
       'TONUSD',
@@ -427,7 +419,7 @@ export class TaskCryptoService {
   async handle30pCrypto() {
     await this.sendDiscord(
       'WAKEUPCALL:30min',
-      'RWBOT 30min',
+      'RSIENDBOT 30min',
       'CRYTO',
       'CRON_CHECK',
     );
@@ -455,12 +447,7 @@ export class TaskCryptoService {
   
   @Cron(CronExpression.EVERY_30_MINUTES)
   async handle30minCrypto1() {
-    await this.sendDiscord(
-      'WAKEUPCALL:30min',
-      'RWBOT 30min',
-      'CRYTO',
-      'CRON_CHECK',
-    );
+
     const tickers = ['SOLUSD', 'ADAUSD', 'XRPUSD', 'BNBUSD', 'LINKUSD'];
     const apikey = 'd3058ae5683b4fc19a787ceb21a87f67';
     this.logger.log('Running scheduled every 30min for CRYPTOs...');
@@ -474,12 +461,7 @@ export class TaskCryptoService {
   }
   @Cron(CronExpression.EVERY_30_MINUTES)
   async handle30minCrypto2() {
-    await this.sendDiscord(
-      'WAKEUPCALL:30min',
-      'RWBOT 30min',
-      'CRYTO',
-      'CRON_CHECK',
-    );
+
     const tickers = [
       'SUIUSD',
       'TONUSD',

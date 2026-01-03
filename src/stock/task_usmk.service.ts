@@ -81,7 +81,7 @@ export class TasksUSMKService {
         const lastData = data[data.length - 1];
         const secondLastData = data[data.length - 2];
 
-        await this.compareAndSend(
+        await this.compareAndSend(data,
           lastData,
           secondLastData,
           ticker,
@@ -92,7 +92,7 @@ export class TasksUSMKService {
       } catch (error) {
         this.sendDiscord(
           `ERROR ON API AT: ${timeframe} On ${date}`,
-          `RWBOT ${ticker} at ${timeframe}`,
+          `RSIENDBOT ${ticker} at ${timeframe}`,
           'Nono',
           'ERORR_CALL',
         );
@@ -102,7 +102,7 @@ export class TasksUSMKService {
   }
   uplist = [];
   downlist = [];
-  async compareAndSend(lastdata, Secondlastdata, ticker, timeframe, channel) {
+  async compareAndSend(data, lastdata, Secondlastdata, ticker, timeframe, channel) {
     const buyALL =
       await this.stockHelperService.priceAbAll1or5or15MinBUY(lastdata);
     if (buyALL && !this.uplist.includes(ticker)) {
@@ -112,6 +112,7 @@ export class TasksUSMKService {
         `${ticker} -ON- ${timeframe}`,
         lastdata,
         'US_EARLY_5MIN',
+        data
       );
       this.uplist.push(ticker);
     }
@@ -138,7 +139,7 @@ export class TasksUSMKService {
         `SELLLLLLLL priceBlAll-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker} -ON- ${timeframe}`,
         lastdata,
-        'US_ALL',
+        'US_ALL',data
       );
       // add to downlist and remove from uplist
       this.downlist.push(ticker);
@@ -164,12 +165,15 @@ export class TasksUSMKService {
     ticker: string,
     lastdata: any,
     channel: string,
+    data?: any,
   ) {
     try {
+      const fileBuffer = await this.webhooksService.captureChart(data);
       return await this.webhooksService.sendDiscordNotification(
         message,
         `${channel} ${ticker}`,
         JSON.stringify(lastdata),
+        fileBuffer
       );
     } catch (err) {
       console.error('❌ Error in controller:', err);
@@ -187,12 +191,7 @@ export class TasksUSMKService {
 
   @Cron('*/15 14-21 * * 1-5', { timeZone: 'UTC' })
   async runAllWatL15min() {
-    await this.sendDiscord(
-      'WAKEUPCALL:15min',
-      'RWBOT 15min',
-      'US',
-      'CRON_CHECK',
-    );
+
     const symbols = (await this.LocalPLWR.getDolist()) || [];
     const combined = [...this.mysymbols, ...symbols];
     await Promise.all([

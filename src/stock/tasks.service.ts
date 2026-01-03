@@ -62,7 +62,7 @@ export class TasksService {
   // async runAllWatL1hour() {
   //   await this.sendDiscord(
   //     'WAKEUPCALL:1hour',
-  //     'RWBOT 1hour',
+  //     'RSIENDBOT 1hour',
   //     'US',
   //     'CRON_CHECK',
   //   );
