@@ -336,6 +336,12 @@ export class TasksService {
 
   @Cron(CronExpression.EVERY_5_MINUTES)
   async wakeupcall() {
+    this.sendDiscord(
+      `WAKEUPCALL`,
+      `RSIENDBOT BOTBOT`,
+      'Nono',
+      'CRON_CHECK',
+    );
     try {
       const { data } = await axios.get('https://nestjs-api.koyeb.app');
       this.logger.log('⏱️ koyeb Keep-alive ping success:', data.status);
