@@ -596,7 +596,7 @@ export class LocalPLWR {
       if(ticker.includes('USD')){
         ticker = this.stockHelperService.formatSymbol(ticker)
       }
-      let BASE_URL = `https://api.twelvedata.com/time_series?symbol=${ticker}&interval=${timefame}&outputsize=400&dp=2&apikey=${apikey}`;
+      let BASE_URL = `https://api.twelvedata.com/time_series?symbol=${ticker}&interval=${timefame}&outputsize=600&dp=2&apikey=${apikey}`;
       const response = await axios.get(BASE_URL);
       if (response.data.status === 'error') {
         throw new Error('API returned error status');
@@ -639,7 +639,7 @@ export class LocalPLWR {
       // return this.getCoinHistory(ticker, '5m')
       ticker = this.stockHelperService.formatSymbol(ticker)
     }
-    let BASE_URL = `https://api.twelvedata.com/time_series?symbol=${ticker}&interval=${tem}&outputsize=400&dp=2&apikey=`;
+    let BASE_URL = `https://api.twelvedata.com/time_series?symbol=${ticker}&interval=${tem}&outputsize=600&dp=2&apikey=`;
     console.log(BASE_URL)
     const response = await this.tryCatchtwelvedata(BASE_URL);
     if (response?.status == 'ok') {
