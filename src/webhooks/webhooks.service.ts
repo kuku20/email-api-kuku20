@@ -419,9 +419,7 @@ export class WebhooksService {
       });
    
       // Wait for the custom element to be fully loaded
-      await page.waitForSelector('stock-chart-display', { visible: true, timeout: 10000 });
-      // await page.waitForSelector('#stockChart', { visible: true });
-      // Check if the chart component is rendered and stockData is set
+      await page.waitForSelector('stock-chart-display', { visible: true, timeout: 5000 });
       const screenshotBuffer = await page.screenshot();
       await browser.close();
       return screenshotBuffer
