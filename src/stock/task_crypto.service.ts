@@ -112,7 +112,7 @@ export class TaskCryptoService {
     if (buyE) {
       await this.sendDiscord(
         `BUY macdCrossAB-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker} -ON- ${timeframe}`,
+        `${ticker}-ON-${timeframe}`,
         lastdata,
         channel,
         data,
@@ -125,7 +125,7 @@ export class TaskCryptoService {
     if (buy_earlyBuyInRSI) {
       await this.sendDiscord(
         `BUY earlyBuyInRSI-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker} -ON- ${timeframe}`,
+        `${ticker}-ON-${timeframe}`,
         lastdata,
         channel,
         data,
@@ -138,7 +138,7 @@ export class TaskCryptoService {
     if (sellE) {
       await this.sendDiscord(
         `SELLLLLLLL macdCrossBL-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker} -ON- ${timeframe}`,
+        `${ticker}-ON-${timeframe}`,
         lastdata,
         'CRYPTO_ALL',
         data,
@@ -151,7 +151,7 @@ export class TaskCryptoService {
     if (sell_earlySellInRSI) {
       await this.sendDiscord(
         `SELLLLLLLL sell_earlySellInRSI-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker} -ON- ${timeframe}`,
+        `${ticker}-ON-${timeframe}`,
         lastdata,
         'CRYPTO_ALL',
         data,

@@ -3,7 +3,7 @@ import puppeteer from 'puppeteer';
 import axios from 'axios';
 import * as FormData from 'form-data';
 import { ConfigService } from '@nestjs/config';
-import { AttachmentBuilder,EmbedBuilder, WebhookClient } from 'discord.js';
+import { AttachmentBuilder, EmbedBuilder, WebhookClient } from 'discord.js';
 @Injectable()
 export class WebhooksService {
   private webhookClient: WebhookClient;
@@ -11,17 +11,16 @@ export class WebhooksService {
   private WEBHOOKS_CN: Record<string, string>;
   private rsiChannels: string[];
   constructor(private readonly configService: ConfigService) {
-     // Parse JSON from env vars
-     this.WEBHOOKS_ENV = JSON.parse(
+    // Parse JSON from env vars
+    this.WEBHOOKS_ENV = JSON.parse(
       this.configService.get<string>('WEBHOOKS_ENV_MAP') ||
-      '{"Other":"DISCORD_WEBHOOKS"}'
+        '{"Other":"DISCORD_WEBHOOKS"}',
     );
     this.WEBHOOKS_CN = JSON.parse(
-      this.configService.get<string>('WEBHOOKS_CN_MAP') ||
-      '{"Other":"Other"}'
+      this.configService.get<string>('WEBHOOKS_CN_MAP') || '{"Other":"Other"}',
     );
     const channelsStr = this.configService.get<string>('RSI_CHANNELS') || '';
-    this.rsiChannels = channelsStr.split(',').map(c => c.trim());
+    this.rsiChannels = channelsStr.split(',').map((c) => c.trim());
   }
 
   async sendSlackNotification(message: string) {
@@ -40,19 +39,21 @@ export class WebhooksService {
       return { msg: 'post to Slack fails:', error };
     }
   }
-  sentMessages = []
+  sentMessages = [];
   async sendDiscordNotification(
     message: string,
     botname: string = 'Bot Alert',
     lastData: string,
-    file?:  any,
-    extra?: any
+    file?: any,
+    extra?: any,
   ) {
     const current = new Date().toISOString().replace(/T.*$/, '');
     const ticker = botname.split(' ')[1].toUpperCase();
     const webhookCl = botname.split(' ')[0].toUpperCase();
     const WEBHOOKS = this.WEBHOOKS_ENV[webhookCl] || this.WEBHOOKS_ENV.Other;
-    this.webhookClient = new WebhookClient({url: this.configService.get<any>(WEBHOOKS)});
+    this.webhookClient = new WebhookClient({
+      url: this.configService.get<any>(WEBHOOKS),
+    });
     // avatarURL: 'https://i.imgur.com/AfFp7pu.png',
     const botAvatar = {
       QQQ: 'https://image-post-625h.vercel.app/upload/eleceed/discord/QQQ.png',
@@ -62,10 +63,10 @@ export class WebhooksService {
     // Dynamically select avatarURL based on the ticker, default to 'Other' if ticker not found
     const selectedAvatar = botAvatar[ticker] || botAvatar.Other;
     // Create the embed object
-    let embed 
-    let options:any
+    let embed;
+    let options: any;
     const botdt = botname.split(' ').slice(1).join(' ');
-    const color = message.includes('SELL')? 0xff0000 : 0x00ff00 // Red for SELL, Green otherwise
+    const color = message.includes('SELL') ? 0xff0000 : 0x00ff00; // Red for SELL, Green otherwise
     /**
     **[sMk000-1m](https://stockmarkets000.web.app//price-log/${ticker})** 
      | **[sMk000-5m](https://stockmarkets000.web.app//price-log/${ticker}?daysRange=5)** 
@@ -73,37 +74,51 @@ export class WebhooksService {
     | **[sMk000-30m](https://stockmarkets000.web.app//price-log/${ticker}?daysRange=30)** \n
      | **[stock-chart-abc.web.app](https://stock-chart-abc.web.app/?stockTicker=${ticker})** 
      */
-    const origin =`**[4200-on1m](http://localhost:4200/price-log/${ticker})** | **[4200-5m](http://localhost:4200/price-log/${ticker}?daysRange=5)** | **[4200-15m](http://localhost:4200/price-log/${ticker}?daysRange=15)** \n **[3001-PO-day](http://localhost:3001/?stockTicker=${ticker}&endpoint=po&timeframe=1day)** | **[3001-FM-day](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[3001-fm-1m](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=1min)** | **[3001-fm-5m](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=5min)** | **[3001-fm-15m](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=15min)** \n **[PB-view](https://stock-chart-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`
-    let gptres
-    if(extra){
+    const origin = `**[4200-on1m](http://localhost:4200/price-log/${ticker})** | **[4200-5m](http://localhost:4200/price-log/${ticker}?daysRange=5)** | **[4200-15m](http://localhost:4200/price-log/${ticker}?daysRange=15)** \n **[3001-PO-day](http://localhost:3001/?stockTicker=${ticker}&endpoint=po&timeframe=1day)** | **[3001-FM-day](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[3001-fm-1m](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=1min)** | **[3001-fm-5m](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=5min)** | **[3001-fm-15m](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=15min)** \n **[PB-view](https://stock-chart-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`;
+    let gptres;
+    if (extra) {
       const parts = extra.split('/');
-      const id =  parts[parts.length - 1];
-      gptres = `**[ASK GPT](${extra})** | **[GPT RES](https://todocalender.web.app/home/stock-track/${id}?sym=${ticker}&date=${current})**`
+      const id = parts[parts.length - 1];
+      gptres = `**[ASK GPT](${extra})** | **[GPT RES](https://todocalender.web.app/home/stock-track/${id}?sym=${ticker}&date=${current})**`;
     }
-    const setmess = extra ? `${origin} | ${gptres}`: origin
-    if(botdt.includes('RSIENDBOT')){
+    const setmess = extra ? `${origin} | ${gptres}` : origin;
+    if (botdt.includes('RSIENDBOT')) {
       options = {
         username: botdt,
         content: message,
       };
-    } else if(lastData === '{}'){
+    } else if (lastData === '{}') {
       embed = new EmbedBuilder()
-      .setColor(color)
-      .addFields({ name: botdt, value: setmess, inline: false });
+        .setColor(color)
+        .addFields({ name: botdt, value: setmess, inline: false });
       options = {
         username: botdt,
         avatarURL: selectedAvatar,
         embeds: [embed],
       };
-    } else{
+    } else {
       const lastDataJson = await this.StopNTarget(JSON.parse(lastData));
-      const selectedFields = ['date', 'close', 'stop', 'target', 'MA200', 'RSI', 'price','priceAvg200','dayHigh','yearHigh','eps', 'rsi','ema200'];
-      
+      const selectedFields = [
+        'date',
+        'close',
+        'stop',
+        'target',
+        'MA200',
+        'RSI',
+        'price',
+        'priceAvg200',
+        'dayHigh',
+        'yearHigh',
+        'eps',
+        'rsi',
+        'ema200',
+      ];
+
       embed = new EmbedBuilder()
-      .setTitle('LATEST DATA')
-      .setColor(color)
-      .addFields({ name: botdt, value: setmess, inline: false })
-      .addFields(...this.createEmbedFields(lastDataJson, selectedFields))
+        .setTitle('LATEST DATA')
+        .setColor(color)
+        .addFields({ name: botdt, value: setmess, inline: false })
+        .addFields(...this.createEmbedFields(lastDataJson, selectedFields));
       // .addFields({ name: 'URL', value: `http://localhost:4200/price-prediction/${ticker}`, inline: true });
       options = {
         username: botdt,
@@ -113,15 +128,14 @@ export class WebhooksService {
       };
     }
 
-
     // ✅ If there's a file (image), attach it
-  // Ensure you are passing a proper Buffer here
+    // Ensure you are passing a proper Buffer here
     if (file && file instanceof Buffer) {
       const filename = 'capture.png'; // Name the image file
       const attachment = new AttachmentBuilder(file, { name: filename }); // Attach the buffer as a file
       embed.setImage(`attachment://${filename}`);
       options.files = [attachment]; // Add to options
-    } else if(file) {
+    } else if (file) {
       const filename = 'capture.png';
       const attachment = new AttachmentBuilder(file.buffer, { name: filename });
       embed.setImage(`attachment://${filename}`);
@@ -131,31 +145,41 @@ export class WebhooksService {
     const WEBHOOKS_CNA = this.WEBHOOKS_CN[webhookCl] || this.WEBHOOKS_CN.Other;
     await this.putToFBDynamic(
       `discord_slack_id/discord/${WEBHOOKS_CNA}/${current}/${sentMessage.id}.json`,
-      `https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}`
+      `https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}`,
     );
-    if (this.rsiChannels.some(channel => WEBHOOKS_CNA.includes(channel)) && !botdt.includes('RSIENDBOT')) {
+    if (
+      this.rsiChannels.some((channel) => WEBHOOKS_CNA.includes(channel)) &&
+      !botdt.includes('RSIENDBOT')
+    ) {
       // store symbol of date
-      await this.RsiToDatabase('RSI/' + WEBHOOKS_CNA, current+`/${ticker}`, `${ticker}`)
+      await this.RsiToDatabase(
+        'RSI/' + WEBHOOKS_CNA,
+        current + `/${ticker}`,
+        `${ticker}`,
+      );
       // store data of the date of sym that sent to discord
-      await this.RsiToDatabase('RSI-DATE-DATA',ticker+`/${current}`,{msglik:`https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}`,...options})
+      await this.RsiToDatabase('RSI-DATE-DATA', ticker + `/${current}`, {
+        msglik: `https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}`,
+        ...options,
+      });
     }
-    return { msg: 'post to discord success' ,...sentMessage};
+    return { msg: 'post to discord success', ...sentMessage };
   }
-  async RsiToDatabase(target: any, current:any, data:any) {
-    const firebaseUrl = `alerts/${target}/${current}.json`
-    await this.putToFBDynamic(firebaseUrl,data,'put');
+  async RsiToDatabase(target: any, current: any, data: any) {
+    const firebaseUrl = `alerts/${target}/${current}.json`;
+    await this.putToFBDynamic(firebaseUrl, data, 'put');
   }
 
   async StopNTarget(lastdata: any) {
     const currClose = lastdata?.close; // or whatever key holds the current price
     if (currClose == null) return lastdata; // safeguard against missing price
-  
+
     const RISK_PERCENT = 0.01;
     const REWARD_RATIO = 2;
-  
+
     const stop = +(currClose * (1 - RISK_PERCENT)).toFixed(2);
     const target = +(currClose + (currClose - stop) * REWARD_RATIO).toFixed(2);
-  
+
     // Update lastdata
     return {
       ...lastdata,
@@ -173,13 +197,16 @@ export class WebhooksService {
     const getIdsOb = await this.getFromFBDynamic(
       `discord_slack_id/discord/${WEBHOOKS_CNA}/${current}.json`,
     );
-    const Ids = Object.keys(getIdsOb)
+    const Ids = Object.keys(getIdsOb);
     if (Ids.length === 0) return { msg: 'nothing to delete' };
     for (const messageId of Ids) {
       try {
         await this.webhookClient.deleteMessage(messageId);
-        const WEBHOOKS_CNA = this.WEBHOOKS_CN[webhookCl] || this.WEBHOOKS_CN.Other;
-        await this.deleteInFB(`discord_slack_id/discord/${WEBHOOKS_CNA}/${current}/${messageId}.json`,);
+        const WEBHOOKS_CNA =
+          this.WEBHOOKS_CN[webhookCl] || this.WEBHOOKS_CN.Other;
+        await this.deleteInFB(
+          `discord_slack_id/discord/${WEBHOOKS_CNA}/${current}/${messageId}.json`,
+        );
       } catch (error) {
         if (error.code === 'MESSAGE_NOT_FOUND') {
           console.log(`Message ${messageId} does not exist.`);
@@ -191,9 +218,11 @@ export class WebhooksService {
     return { msg: 'delete complete' };
   }
 
-  async shortenUrl(url:string) {
+  async shortenUrl(url: string) {
     try {
-      const res = await axios.get(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(url)}`);
+      const res = await axios.get(
+        `https://tinyurl.com/api-create.php?url=${encodeURIComponent(url)}`,
+      );
       return res.data;
     } catch (error) {
       console.error('❌ Failed to shorten URL:', error.message);
@@ -213,13 +242,13 @@ export class WebhooksService {
     let BASE_URL = `${firebaseRoot}/${endpoint}`;
     try {
       const response = await axios.delete(BASE_URL);
-      console.log("Data deleted successfully");
+      console.log('Data deleted successfully');
     } catch (error) {
-      console.log("error", error);
+      console.log('error', error);
     }
   }
-  
-  async putToFBDynamic(endpoint: string, data: any, method:string= 'put') {
+
+  async putToFBDynamic(endpoint: string, data: any, method: string = 'put') {
     const firebaseRoot = this.configService.get<any>('FIREBASE_DATA');
     let BASE_URL = `${firebaseRoot}/${endpoint}`;
     let config = {
@@ -240,7 +269,7 @@ export class WebhooksService {
         console.log(error);
       });
   }
-  
+
   createEmbedFields(data: Record<string, any>, fields: string[]) {
     return fields
       .map((field) => {
@@ -267,65 +296,21 @@ export class WebhooksService {
           inline: true,
         };
       })
-      .filter((item): item is { name: string; value: string; inline: boolean } => item !== undefined);
-  }
-  
-
-  async bulkDelete() {
-
-    const getIds = await this.getFromFBDynamic(
-      `discord_slack_id/discord.json`,
-    );
-    await this.webhookClient.deleteMessage('1427861642263396400');
-
-    
-    // console.log(getIdsOb)
-    const WEBHOOKS_CNA_ALL = Object.keys(getIds)
-    const WEBHOOKS_CNA_ALL_VALUE = Object.values(getIds)
-    // for (let i = 0; i < WEBHOOKS_CNA_ALL.length; i++) {
-    //   try {
-    //     const WEBHOOKS_CNA = WEBHOOKS_CNA_ALL[i]
-    //     const current_date_all = Object.keys(WEBHOOKS_CNA_ALL_VALUE[i])
-    //     console.log(WEBHOOKS_CNA)
-    //     console.log(current_date_all)
-    //     for (let current = 0; current < current_date_all.length; current++) {
-    //       const getIdsOb = await this.getFromFBDynamic(
-    //         `discord_slack_id/discord/${WEBHOOKS_CNA}/${current_date_all[current]}.json`,
-    //       );
-    //       const Ids = Object.keys(getIdsOb)
-    //       // console.log(Ids)
-    //       for (const messageId of Ids) {
-    //         try {
-    //           console.log(messageId)
-    //           console.log(`discord_slack_id/discord/${WEBHOOKS_CNA}/${current_date_all[current]}/${messageId}.json`)
-    //           // await this.webhookClient.deleteMessage(messageId);
-    //           // await this.deleteInFB(`discord_slack_id/discord/${WEBHOOKS_CNA}/${current_date_all[current]}/${messageId}.json`,);
-    //         } catch (error) {
-    //           if (error.code === 'MESSAGE_NOT_FOUND') {
-    //             console.log(`Message ${messageId} does not exist.`);
-    //           } else {
-    //             console.log(`Error deleting message ${messageId},${error}`);
-    //           }
-    //         }
-    //       }
-    //     }
-    //   } catch (error) {
-    //     if (error.code === 'MESSAGE_NOT_FOUND') {
-    //       // console.log(`Message ${messageId} does not exist.`);
-    //     } else {
-    //       // console.log(`Error deleting message ${messageId}`);
-    //     }
-    //   }
-    // }
-    return { msg: 'delete complete' };
+      .filter(
+        (item): item is { name: string; value: string; inline: boolean } =>
+          item !== undefined,
+      );
   }
 
-  async captureChart(chartData: any)  {
-    if(!chartData || chartData.length === 0) {
+  async captureChart(chartData: any) {
+    if (!chartData || chartData.length === 0) {
       return null;
     }
     try {
-      const browser = await puppeteer.launch({ headless: true , args: ['--no-sandbox', '--disable-setuid-sandbox'], });
+      const browser = await puppeteer.launch({
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      });
       const page = await browser.newPage();
       // Set the viewport to the full screen size
       const screenWidth = 1920; // Example screen width (can be dynamic)
@@ -409,22 +394,120 @@ export class WebhooksService {
         </body>
       </html>
     `;
-   
+
       // Set the page content
       await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-   
+
       // Capture console logs for debugging
       page.on('console', (msg) => {
         console.log('PAGE LOG:', msg.text());
       });
-   
+
       // Wait for the custom element to be fully loaded
-      await page.waitForSelector('stock-chart-display', { visible: true, timeout: 5000 });
+      await page.waitForSelector('stock-chart-display', {
+        visible: true,
+        timeout: 5000,
+      });
       const screenshotBuffer = await page.screenshot();
       await browser.close();
-      return screenshotBuffer
+      return screenshotBuffer;
     } catch (error) {
       return null;
     }
   }
+  async sendDiscordNotificationImage(
+    botname: string = 'Bot Alert',
+    file?: any,
+  ) {
+    const current = new Date().toISOString().replace(/T.*$/, '');
+    const ticker = botname.split(' ')[1].toUpperCase();
+    const webhookCl = botname.split(' ')[0].toUpperCase();
+    const WEBHOOKS = this.WEBHOOKS_ENV[webhookCl] || this.WEBHOOKS_ENV.Other;
+    this.webhookClient = new WebhookClient({
+      url: this.configService.get<any>(WEBHOOKS),
+    });
+  
+    const botAvatar = {
+      QQQ: 'https://image-post-625h.vercel.app/upload/eleceed/discord/QQQ.png',
+      SPY: 'https://image-post-625h.vercel.app/upload/eleceed/discord/s&p.png',
+      Other: `https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${ticker}.png`,
+    };
+    
+    // Dynamically select avatarURL based on the ticker, default to 'Other' if ticker not found
+    const selectedAvatar = botAvatar[ticker] || botAvatar.Other;
+  
+    const botdt = botname.split(' ').slice(1).join(' ');
+  
+    // Prepare the options for the message
+    let options: any = {
+      username: botdt,
+      avatarURL: selectedAvatar,
+    };
+  
+    if (file) {
+      const filename = 'capture.png';
+      const attachment = new AttachmentBuilder(file.buffer, { name: filename });
+      options.files = [attachment];
+    }
+  
+    // Send the message with the image as an attachment, no embed
+    const sentMessage = await this.webhookClient.send(options);
+  
+    const WEBHOOKS_CNA = this.WEBHOOKS_CN[webhookCl] || this.WEBHOOKS_CN.Other;
+    await this.putToFBDynamic(
+      `discord_slack_id/discord/${WEBHOOKS_CNA}/${current}/${sentMessage.id}.json`,
+      `https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}`,
+    );
+  
+    return { msg: 'post to discord success', ...sentMessage };
+  }
+  /**
+   async sendDiscordNotificationImage(
+  botname: string = 'Bot Alert',
+  file?: any,
+) {
+  const current = new Date().toISOString().replace(/T.*$/, '');
+  const ticker = botname.split(' ')[1].toUpperCase();
+  const webhookCl = botname.split(' ')[0].toUpperCase();
+  const WEBHOOKS = this.WEBHOOKS_ENV[webhookCl] || this.WEBHOOKS_ENV.Other;
+  this.webhookClient = new WebhookClient({
+    url: this.configService.get<any>(WEBHOOKS),
+  });
+
+  const botAvatar = {
+    QQQ: 'https://image-post-625h.vercel.app/upload/eleceed/discord/QQQ.png',
+    SPY: 'https://image-post-625h.vercel.app/upload/eleceed/discord/s&p.png',
+    Other: `https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${ticker}.png`,
+  };
+  
+  // Dynamically select avatarURL based on the ticker, default to 'Other' if ticker not found
+  const selectedAvatar = botAvatar[ticker] || botAvatar.Other;
+
+  const botdt = botname.split(' ').slice(1).join(' ');
+
+  // Prepare the options for the message
+  let options: any = {
+    username: botdt,
+    avatarURL: selectedAvatar,
+  };
+
+  if (file) {
+    const filename = 'capture.png';
+    const attachment = new AttachmentBuilder(file.buffer, { name: filename });
+    options.files = [attachment];
+  }
+
+  // Send the message with the image as an attachment, no embed
+  const sentMessage = await this.webhookClient.send(options);
+
+  const WEBHOOKS_CNA = this.WEBHOOKS_CN[webhookCl] || this.WEBHOOKS_CN.Other;
+  await this.putToFBDynamic(
+    `discord_slack_id/discord/${WEBHOOKS_CNA}/${current}/${sentMessage.id}.json`,
+    `https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}`,
+  );
+
+  return { msg: 'post to discord success', ...sentMessage };
+}
+
+   */
 }

@@ -32,6 +32,25 @@ export class WebhooksController {
     }
   }
 
+  @Post('discord2')
+  @UseInterceptors(FileInterceptor('file'))
+  async sendDiscordNotificationImage(
+    @UploadedFile() file: import('multer').File,
+    @Body('message') message: string,
+    @Body('botname') botname: string,
+    @Body('lastdata') lastdata: string,
+  ) {
+    try {
+      return await this.webhooksService.sendDiscordNotificationImage(
+        botname,
+        file,
+      );
+    } catch (err) {
+      console.error('❌ Error in controller:', err);
+      throw err;
+    }
+  }
+
   @UseGuards(JwtGuard)
   @Post('slack')
   async sendSlackNotification(@Body('message') message: string) {
@@ -102,16 +121,6 @@ export class WebhooksController {
     }
   }
 
-
-
-  @UseGuards(JwtGuard)
-  @UseGuards(AdminUserAuthGuard)
-  @Post('delete-messages-all')
-  async bulkDelete(@Body('date') date: string,
-  ) {
-    const result = await this.webhooksService.bulkDelete();
-    return result;
-  }
   // nothing
   async retryShortenUrl(
     webhooksService: any,
