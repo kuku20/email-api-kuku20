@@ -167,7 +167,7 @@ export class TasksService {
     //   (lastdata?.MACDLine > lastdata?.SignalLine && Secondlastdata?.MACDLine < Secondlastdata?.SignalLine
     //   || lastdata?.MACDLine > lastdata?.SignalLine && Secondlastdata?.MACDLine > Secondlastdata?.SignalLine)
     // ) {
-    //   await this.sendDiscord(`BUY EARLY ON-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'early_'+timeframe);
+    //   await this.sendDiscord(`BUY EARLY ON-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker}-ON-${timeframe}`, lastdata,channel+'early_'+timeframe);
     // }
     const isWithinRange = Timer.checkIfWithin5MinutesEST(lastdata?.date);
     if (isWithinRange) {
@@ -188,7 +188,7 @@ export class TasksService {
       ) {
         await this.sendDiscord(
           `BUY CLOSE> MA200-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-          `${ticker} -ON- ${timeframe}`,
+          `${ticker}-ON-${timeframe}`,
           lastdata,
           channel,
         );
@@ -204,7 +204,7 @@ export class TasksService {
         } else {
           await this.sendDiscord(
             `BUY ON MACDCROSS-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-            `${ticker} -ON- ${timeframe}`,
+            `${ticker}-ON-${timeframe}`,
             lastdata,
             channel,
           );
@@ -215,7 +215,7 @@ export class TasksService {
       ) {
         await this.sendDiscord(
           `SELLLLLLLL ON-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-          `${ticker} -ON- ${timeframe}`,
+          `${ticker}-ON-${timeframe}`,
           lastdata,
           'CRYPTO_WATCH',
         );
@@ -226,7 +226,7 @@ export class TasksService {
       if(buyE){
         await this.sendDiscord(
           `BUY earlyBuyInRSI-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-          `${ticker} -ON- ${timeframe}`,
+          `${ticker}-ON-${timeframe}`,
           lastdata,
           channel,
         );
@@ -237,7 +237,7 @@ export class TasksService {
     if(sellE){
       await this.sendDiscord(
         `SELLLLLLLL earlySellInRSI-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker} -ON- ${timeframe}`,
+        `${ticker}-ON-${timeframe}`,
         lastdata,
         'CRYPTO_WATCH',
       );
@@ -248,14 +248,14 @@ export class TasksService {
     //   (lastdata?.MACDLine > lastdata?.SignalLine && Secondlastdata?.MACDLine < Secondlastdata?.SignalLine
     //   || lastdata?.MACDLine > lastdata?.SignalLine && Secondlastdata?.MACDLine > Secondlastdata?.SignalLine)
     // ) {
-    //   await this.sendDiscord(`BUY now:check me-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'all');
+    //   await this.sendDiscord(`BUY now:check me-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker}-ON-${timeframe}`, lastdata,channel+'all');
     // }
     // else{
     //   // this.sendDiscord('BUY ERALLY', ticker, {}, 'ERORR_CALL');
-    //   await this.sendDiscord(`TEST IF IT SENT-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel+'all');
+    //   await this.sendDiscord(`TEST IF IT SENT-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker}-ON-${timeframe}`, lastdata,channel+'all');
     //   // console.log(lastdata)
     //   // console.log(Secondlastdata)
-    //   // await this.sendDiscord(`BUY ERALLY ON-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker} -ON- ${timeframe}`, lastdata,channel);
+    //   // await this.sendDiscord(`BUY ERALLY ON-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}` , `${ticker}-ON-${timeframe}`, lastdata,channel);
     // }
     const latest = await this.getLatest(data);
     await this.LocalPLWR.saveData(ticker, timeframe, latest.date, data);
@@ -303,14 +303,14 @@ export class TasksService {
       // 5min cross, 15 allway buy buy
       await this.sendDiscord(
         `ALL ABOVE SAFE BUY 5min (MACD:${lastdata5min?.MACDLine}): ${lastdata5min?.date}`,
-        `${ticker} -ON- 5min`,
+        `${ticker}-ON-5min`,
         lastdata5min,
         channel,
       );
     } else {
       await this.sendDiscord(
         `5MIN CROSS, BUT 15 RED!!!! (MACD:${lastdata5min?.MACDLine}): ${lastdata5min?.date}`,
-        `${ticker} -ON- 5min`,
+        `${ticker}-ON-5min`,
         lastdata5min,
         channel.includes('US') ? 'US_ALL' : 'CRYPTO_ALL',
       );
@@ -369,7 +369,7 @@ export class TasksService {
       this.sendlist.push(sym)
       await this.sendDiscord(
         `AB200 BUYYYYY (MACD:${last?.MACDLine}): ${last?.date}`,
-        `${sym} -ON- ${timeframe}`,
+        `${sym}-ON-${timeframe}`,
         last,
         'USSTOCK_WATCH',
       );
