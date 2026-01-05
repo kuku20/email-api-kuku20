@@ -48,7 +48,8 @@ export class WebhooksService {
     extra?: any,
   ) {
     const current = new Date().toISOString().replace(/T.*$/, '');
-    const ticker = botname.split(' ')[1].toUpperCase();
+    const tickerON = botname.split(' ')[1].toUpperCase(); // ETHUSD-ON-5min
+    const ticker = tickerON.split('-')[0].toUpperCase(); // ETHUSD
     const webhookCl = botname.split(' ')[0].toUpperCase();
     const WEBHOOKS = this.WEBHOOKS_ENV[webhookCl] || this.WEBHOOKS_ENV.Other;
     this.webhookClient = new WebhookClient({
@@ -81,7 +82,11 @@ export class WebhooksService {
       const id = parts[parts.length - 1];
       gptres = `**[ASK GPT](${extra})** | **[GPT RES](https://todocalender.web.app/home/stock-track/${id}?sym=${ticker}&date=${current})**`;
     }
-    const setmess = extra ? `${origin} | ${gptres}` : origin;
+    let setmess = extra ? `${origin} | ${gptres}` : origin;
+
+    if (!file && !message.includes('SELLCR')) {
+      setmess = `${setmess} | **[CHART MISSING](https://stockmarkets000.web.app/capture-click/${webhookCl}/${tickerON})**`;
+    }
     if (botdt.includes('RSIENDBOT')) {
       options = {
         username: botdt,
@@ -302,10 +307,17 @@ export class WebhooksService {
       );
   }
 
-  async captureChart(chartData: any) {
+  async captureChart(
+    chartData: any,
+    ticker: string,
+    channel: string,
+    message: string,
+  ) {
     if (!chartData || chartData.length === 0) {
       return null;
     }
+    const slicedData =
+      chartData && chartData.length > 0 ? chartData.slice(-200) : [];
     try {
       const browser = await puppeteer.launch({
         headless: true,
@@ -316,7 +328,7 @@ export class WebhooksService {
       const screenWidth = 1920; // Example screen width (can be dynamic)
       const screenHeight = 1080; // Example screen height (can be dynamic)
       await page.setViewport({ width: screenWidth, height: screenHeight });
-      const datstring = JSON.stringify(chartData?.slice(-400));
+      const datstring = JSON.stringify(slicedData);
       // Ensure the LitElement component is loaded and render the chart using the stock-chart-display component
       const htmlContent = `
       <html>
@@ -342,6 +354,7 @@ export class WebhooksService {
               padding: 0;
               width: 100%;
               height: 100%;
+              background: rgb(243, 235, 235);
             }
     
             /* Override styles for the stock-chart-display by targeting the #stockChart ID specifically */
@@ -357,23 +370,16 @@ export class WebhooksService {
               width: 100% !important;
               height: 100% !important;
             }
-    
-            /* Optional: style the heading */
-            h1 {
-              position: absolute;
-              top: 20px;
-              left: 20px;
-              color: white;
-              z-index: 9999;
-              font-size: 24px;
+            .center{
+                text-align: center;
             }
           </style>
         </head>
         <body id="capture-target">
           <!-- Display the chart date dynamically if chartData is available -->
-          <h1>Stock Chart Capture <span id="stockDate"></span></h1>
+          <h3 class="center">${ticker} | ${message} </h3>
           <!-- Container for the chart to fill the screen -->
-          <div style="width: 100%; height: 100%; background: white;">
+          <div style="width: 100%; height: 100%; background: rgb(243, 235, 235);">
             <!-- Properly passing chartData using .stockData binding -->
             <stock-chart-display id="stockChart" .stockData=""></stock-chart-display>
           </div>
@@ -381,9 +387,6 @@ export class WebhooksService {
           <script>
             // Your data (replace this with your actual chart data)
             const chartData = ${datstring};
-    
-            // Set the date dynamically (if chartData is available)
-            document.getElementById('stockDate').innerText = chartData[1]?.date || 'No Date Found';
     
             // Get the stock-chart-display element by its ID
             const stockChartElement = document.getElementById('stockChart');
@@ -412,9 +415,56 @@ export class WebhooksService {
       await browser.close();
       return screenshotBuffer;
     } catch (error) {
+      const path = `${channel}/${ticker}`.toUpperCase();
+      const data = await this.FireBaseApi(
+        'put',
+        `stock-data/${path}.json`,
+        slicedData,
+      );
+      // load the webpage again next time
+      const url = `https://stockmarkets000.web.app/capture-target/${path}`;
+      // Load the website and render for 5 seconds
+      await this.loadWebsiteFor5Seconds(url);
+      console.log('Storing chart data for later viewing at:', url);
+      console.error('Error capturing chart:');
       return null;
     }
   }
+  async loadWebsiteFor5Seconds(url: string): Promise<void> {
+    let browser;
+    try {
+      // Launch Puppeteer in headless mode (no UI)
+      browser = await puppeteer.launch({
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      });
+
+      const page = await browser.newPage();
+
+      // Set viewport size (optional)
+      await page.setViewport({ width: 1920, height: 1080 });
+      // Navigate to the URL
+      await page.goto(url, { waitUntil: 'networkidle2' }); // Wait until network is idle or fully loaded
+
+      console.log(`Website ${url} loaded, waiting for 5 seconds.`);
+
+      // Wait for 5 seconds using setTimeout
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+
+      console.log('5 seconds have passed, closing the browser.');
+
+      // Optionally: take a screenshot after 5 seconds
+      // await page.screenshot({ path: 'screenshot.png' });
+    } catch (error) {
+      console.error('Error loading website:', error);
+    } finally {
+      // Ensure that we close the browser after the operation
+      if (browser) {
+        await browser.close();
+      }
+    }
+  }
+
   async sendDiscordNotificationImage(
     botname: string = 'Bot Alert',
     file?: any,
@@ -426,40 +476,71 @@ export class WebhooksService {
     this.webhookClient = new WebhookClient({
       url: this.configService.get<any>(WEBHOOKS),
     });
-  
+
     const botAvatar = {
       QQQ: 'https://image-post-625h.vercel.app/upload/eleceed/discord/QQQ.png',
       SPY: 'https://image-post-625h.vercel.app/upload/eleceed/discord/s&p.png',
       Other: `https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${ticker}.png`,
     };
-    
+
     // Dynamically select avatarURL based on the ticker, default to 'Other' if ticker not found
     const selectedAvatar = botAvatar[ticker] || botAvatar.Other;
-  
+
     const botdt = botname.split(' ').slice(1).join(' ');
-  
+
     // Prepare the options for the message
     let options: any = {
       username: botdt,
       avatarURL: selectedAvatar,
     };
-  
+
     if (file) {
       const filename = 'capture.png';
       const attachment = new AttachmentBuilder(file.buffer, { name: filename });
       options.files = [attachment];
     }
-  
+
     // Send the message with the image as an attachment, no embed
     const sentMessage = await this.webhookClient.send(options);
-  
+
     const WEBHOOKS_CNA = this.WEBHOOKS_CN[webhookCl] || this.WEBHOOKS_CN.Other;
     await this.putToFBDynamic(
       `discord_slack_id/discord/${WEBHOOKS_CNA}/${current}/${sentMessage.id}.json`,
       `https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}`,
     );
-  
+
     return { msg: 'post to discord success', ...sentMessage };
+  }
+
+  async FireBaseApi(
+    method: 'post' | 'patch' | 'put' | 'delete' | 'get',
+    endpoint: string,
+    data: any,
+  ) {
+    const firebaseRoot = this.configService.get<any>('FIREBASE_DATA');
+    let BASE_URL = `${firebaseRoot}/${endpoint}`;
+    try {
+      const response = await axios.request({
+        method: method || 'get',
+        url: BASE_URL,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        data: data,
+        maxBodyLength: Infinity,
+      });
+
+      // Axios automatically parses JSON, so just return response.data
+      return response.data;
+    } catch (error) {
+      // Match fetch's "return 'skipped'" behavior
+      if (error.response) {
+        console.error(`❌ Failed request. Status: ${error.response.status}`);
+      } else {
+        console.error(`❌ Network or Axios error: ${error.message}`);
+      }
+      return 'skipped';
+    }
   }
   /**
    async sendDiscordNotificationImage(

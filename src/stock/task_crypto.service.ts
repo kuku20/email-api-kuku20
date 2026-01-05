@@ -5,7 +5,7 @@ import axios from 'axios';
 import { StockHelperService } from './stockHelper.service';
 import { LocalPLWR } from './runlocal.service';
 import { WebhooksService } from 'src/webhooks/webhooks.service';
-import pLimit from 'p-limit';
+
 @Injectable()
 export class TaskCryptoService {
   constructor(
@@ -23,7 +23,12 @@ export class TaskCryptoService {
     data?: any,
   ) {
     try {
-      const fileBuffer = await this.webhooksService.captureChart(data);
+      const fileBuffer = await this.webhooksService.captureChart(
+        data,
+        ticker,
+        channel,
+        message,
+      );
       return await this.webhooksService.sendDiscordNotification(
         message,
         `${channel} ${ticker}`,
@@ -43,59 +48,48 @@ export class TaskCryptoService {
     channel: string,
     delay = 5,
   ) {
-    const limit = pLimit(8); // Limit the concurrency to 5 at a time
-
     const date = new Date();
     const washselllists =
       (await this.LocalPLWR.loadWashSellList()) ||
       this.LocalPLWR.getWashSellList();
-
-    // Delay 2 minutes before processing (optional)
+    // Delay 2 minutes before processing
     await new Promise((resolve) => setTimeout(resolve, delay * 60 * 1000));
 
-    // Map through tickers and limit concurrency
-    const tickerPromises = tickers.map((ticker) =>
-      limit(async () => {
-        if (washselllists.includes(ticker)) {
-          console.log(`⏭️ Skipping ${ticker} — in wash sell list`);
-          return; // Skip this ticker and move on
+    for (const ticker of tickers) {
+      if (washselllists.includes(ticker)) {
+        console.log(`⏭️ Skipping ${ticker} — in wash sell list`);
+        continue; // ✅ Skip this ticker and move on
+      }
+      try {
+        let data;
+        if (apikey === 'all') {
+          data = await this.LocalPLWR.TwReveseNOAPI(ticker, timeframe);
+        } else {
+          data = await this.LocalPLWR.get12for(ticker, timeframe, apikey);
         }
 
-        try {
-          let data;
-          if (apikey === 'all') {
-            data = await this.LocalPLWR.TwReveseNOAPI(ticker, timeframe);
-          } else {
-            data = await this.LocalPLWR.get12for(ticker, timeframe, apikey);
-          }
+        const lastData = data[data.length - 1];
+        const secondLastData = data[data.length - 2];
 
-          const lastData = data[data.length - 1];
-          const secondLastData = data[data.length - 2];
-          await this.compareAndSend1hour(
-            data,
-            lastData,
-            secondLastData,
-            ticker,
-            timeframe,
-            channel,
-          );
-          this.logger.log(`${ticker} processed successfully.`);
-        } catch (error) {
-          await this.sendDiscord(
-            `ERROR ON API AT: ${timeframe} On ${date}: ${JSON.stringify(
-              error,
-            )}`,
-            `RLWAYBOT ${ticker} at ${timeframe}`,
-            'Nono',
-            'ERORR_CALL',
-          );
-          this.logger.error(`Error processing ${ticker}: ${error.message}`);
-        }
-      }),
-    );
-
-    // Wait for all ticker promises to complete concurrently (with concurrency limit)
-    await Promise.all(tickerPromises);
+        await this.compareAndSend1hour(
+          data,
+          lastData,
+          secondLastData,
+          ticker,
+          timeframe,
+          channel,
+        );
+        this.logger.log(`${ticker} processed successfully.`);
+      } catch (error) {
+        this.sendDiscord(
+          `ERROR ON API AT: ${timeframe} On ${date}: ${JSON.stringify(error)}`,
+          `RSIENDBOT ${ticker} at ${timeframe}`,
+          'Nono',
+          'ERORR_CALL',
+        );
+        this.logger.error(`Error processing ${ticker}: ${error.message}`);
+      }
+    }
   }
   async compareAndSend1hour(
     data,
@@ -105,81 +99,145 @@ export class TaskCryptoService {
     timeframe,
     channel,
   ) {
-    const buyE = await this.stockHelperService.macdCrossAB(
+    if (timeframe === '4h' || timeframe === '1day') {
+      await this.sendDiscord(
+        `JUST WATCH_ME-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        channel,
+        data,
+      );
+    }
+    const macdCrossAB_BL0 = await this.stockHelperService.macdCrossAB_BL0(
       lastdata,
       Secondlastdata,
     );
-    if (buyE) {
+    if (macdCrossAB_BL0) {
+      await this.sendDiscord(
+        `BUY macdCrossAB_BL0-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        'CRYPTO_EARLY_5MIN',
+        data,
+      );
+      return;
+    }
+
+    const priceAbMA200BUY = await this.stockHelperService.priceAbMA200BUY(
+      lastdata,
+      Secondlastdata,
+    );
+    if (priceAbMA200BUY) {
+      // add to uplist and delete out downlist
+      await this.sendDiscord(
+        `BUY priceAbMA200BUY-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        'CRYPTO_EARLY_5MIN',
+        data,
+      );
+      return;
+    }
+    const priceBlMA200SELL = await this.stockHelperService.priceBlMA200SELL(
+      lastdata,
+      Secondlastdata,
+    );
+    if (priceBlMA200SELL) {
+      await this.sendDiscord(
+        `SELLCRLLLL priceBlMA200SELL-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        'CRYPTO_EARLY_5MIN',
+        data,
+      );
+      return;
+    }
+    const macdCrossAB = await this.stockHelperService.macdCrossAB(
+      lastdata,
+      Secondlastdata,
+    );
+    if (macdCrossAB) {
       await this.sendDiscord(
         `BUY macdCrossAB-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
-        channel,
+        'CRYPTO_EARLY_15MIN',
         data,
       );
+      return;
     }
-    const buy_earlyBuyInRSI = await this.stockHelperService.earlyBuyInRSI(
+    const earlyBuyInRSI = await this.stockHelperService.earlyBuyInRSI(
       lastdata,
       Secondlastdata,
     );
-    if (buy_earlyBuyInRSI) {
+    if (earlyBuyInRSI) {
       await this.sendDiscord(
         `BUY earlyBuyInRSI-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
-        channel,
+        'CRYPTO_EARLY_15MIN',
         data,
       );
+      return;
     }
-    const sellE = await this.stockHelperService.macdCrossBL(
+    const macdCrossBL = await this.stockHelperService.macdCrossBL(
       lastdata,
       Secondlastdata,
     );
-    if (sellE) {
+    if (macdCrossBL) {
       await this.sendDiscord(
-        `SELLLLLLLL macdCrossBL-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `SELLCRLLLL macdCrossBL-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
         'CRYPTO_ALL',
-        data,
       );
+      return;
     }
-    const sell_earlySellInRSI = await this.stockHelperService.earlySellInRSI(
+    const earlySellInRSI = await this.stockHelperService.earlySellInRSI(
       lastdata,
       Secondlastdata,
     );
-    if (sell_earlySellInRSI) {
+    if (earlySellInRSI) {
       await this.sendDiscord(
-        `SELLLLLLLL sell_earlySellInRSI-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `SELLCRLLLL earlySellInRSI-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
         'CRYPTO_ALL',
-        data,
       );
+      return;
     }
   }
-  // @Cron(CronExpression.EVERY_10_SECONDS)
-  // async handle30pCrypto() {
-  //   await this.sendDiscord(
-  //     'WAKEUPCALL:30min',
-  //     'RLWAYBOT 30min',
-  //     'CRYTO',
-  //     'CRON_CHECK',
-  //   );
-  //   const tickers = [
-  //     'BCHUSD',
-  //   ];
-  //   // const tickers = ['BTCUSD'];
-  //   const apikey = '2711824a92bc40498c8bc30728813e2a'; //liamsterling1@outlook.com
-  //   this.logger.log('Running scheduled every 30min for CRYPTOs...');
-  //   await this.processTickers1hour(
-  //     tickers,
-  //     '30min',
-  //     'all',
-  //     'CRYPTO_EARLY_15MIN',
-  //     0,
-  //   );
-  // }
+  @Cron(CronExpression.EVERY_5_MINUTES)
+  async handle5pCrypto() {
+    const tickers = [
+      'BTCUSD',
+      'BCHUSD',
+      'LTCUSD',
+      'ETHUSD',
+      'ETCUSD',
+      'DASHUSD',
+      'ZECUSD',
+      'XMRUSD',
+      'SOLUSD',
+      'XRPUSD',
+      'BNBUSD',
+      'LINKUSD',
+      'SUIUSD',
+      'TONUSD',
+      'UNIUSD',
+      'AAVEUSD',
+      'COMPUSD',
+      'AVAXUSD',
+    ];
+    this.logger.log('Running scheduled every 30min for CRYPTOs...');
+    await this.processTickers1hour(
+      tickers,
+      '5min',
+      'all',
+      'CRYPTO_EARLY_5MIN',
+      1,
+    );
+  }
 
   @Cron(CronExpression.EVERY_30_MINUTES)
   async handle30pCrypto() {
@@ -317,13 +375,7 @@ export class TaskCryptoService {
     // const tickers = ['BTCUSD'];
     const apikey = '2711824a92bc40498c8bc30728813e2a'; //liamsterling1@outlook.com
     this.logger.log('Running scheduled every 1 hour for CRYPTOs...');
-    await this.processTickers1hour(
-      tickers,
-      '4h',
-      apikey,
-      'CRYPTO_EARLY_15MIN',
-      0,
-    );
+    await this.processTickers1hour(tickers, '4h', apikey, 'CRYPTO_WATCH', 0);
   }
   @Cron('10 */4 * * *') // Every 4 hours at minute 10
   async handle4hourCrypto3() {
@@ -331,13 +383,7 @@ export class TaskCryptoService {
     // const tickers = ['BTCUSD'];
     const apikey = '2711824a92bc40498c8bc30728813e2a'; //liamsterling1@outlook.com
     this.logger.log('Running scheduled every 1 hour for CRYPTOs...');
-    await this.processTickers1hour(
-      tickers,
-      '4h',
-      apikey,
-      'CRYPTO_EARLY_15MIN',
-      0,
-    );
+    await this.processTickers1hour(tickers, '4h', apikey, 'CRYPTO_WATCH', 0);
   }
   @Cron('12 */4 * * *') // Every 4 hours at minute 12
   async handle4hourCrypto4() {
@@ -352,13 +398,7 @@ export class TaskCryptoService {
     // const tickers = ['BTCUSD'];
     const apikey = '2711824a92bc40498c8bc30728813e2a'; //liamsterling1@outlook.com
     this.logger.log('Running scheduled every 1 hour for CRYPTOs...');
-    await this.processTickers1hour(
-      tickers,
-      '4h',
-      apikey,
-      'CRYPTO_EARLY_15MIN',
-      0,
-    );
+    await this.processTickers1hour(tickers, '4h', apikey, 'CRYPTO_WATCH', 0);
   }
 
   @Cron('14 1 * * *') // Every day at 1:14 AM
@@ -376,13 +416,7 @@ export class TaskCryptoService {
     // const tickers = ['BTCUSD'];
     const apikey = '2711824a92bc40498c8bc30728813e2a'; //liamsterling1@outlook.com
     this.logger.log('Running scheduled every 1 hour for CRYPTOs...');
-    await this.processTickers1hour(
-      tickers,
-      '1day',
-      apikey,
-      'CRYPTO_EARLY_15MIN',
-      0,
-    );
+    await this.processTickers1hour(tickers, '1day', apikey, 'CRYPTO_WATCH', 0);
   }
   @Cron('16 1 * * *') // Every day at 1:16 AM
   async handledailyCrypto1() {
@@ -390,13 +424,7 @@ export class TaskCryptoService {
     // const tickers = ['BTCUSD'];
     const apikey = '2711824a92bc40498c8bc30728813e2a'; //liamsterling1@outlook.com
     this.logger.log('Running scheduled every 1 hour for CRYPTOs...');
-    await this.processTickers1hour(
-      tickers,
-      '1day',
-      apikey,
-      'CRYPTO_EARLY_15MIN',
-      0,
-    );
+    await this.processTickers1hour(tickers, '1day', apikey, 'CRYPTO_WATCH', 0);
   }
   @Cron('18 1 * * *') // Every day at 1:18 AM
   async handledailyCrypto2() {
@@ -411,13 +439,7 @@ export class TaskCryptoService {
     // const tickers = ['BTCUSD'];
     const apikey = '2711824a92bc40498c8bc30728813e2a'; //liamsterling1@outlook.com
     this.logger.log('Running scheduled every 1 hour for CRYPTOs...');
-    await this.processTickers1hour(
-      tickers,
-      '1day',
-      apikey,
-      'CRYPTO_EARLY_15MIN',
-      0,
-    );
+    await this.processTickers1hour(tickers, '1day', apikey, 'CRYPTO_WATCH', 0);
   }
 }
 

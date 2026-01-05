@@ -6,9 +6,8 @@ import { ConfigService } from '@nestjs/config';
 import { StockHelperService } from './stockHelper.service';
 import { LocalPLWR } from './runlocal.service';
 import { WebhooksService } from 'src/webhooks/webhooks.service';
-
 @Injectable()
-export class TasksUSMKService {
+export class TasksUSMK_1MIN_Service {
   allkeys = 'all'; // test
   mysymbols = [
     'INTC',
@@ -28,18 +27,18 @@ export class TasksUSMKService {
   ]; // test symbols
   constructor(
     private readonly configService: ConfigService,
-    private readonly webhooksService: WebhooksService,
+        private readonly webhooksService: WebhooksService,
     private readonly stockHelperService: StockHelperService,
     private readonly LocalPLWR: LocalPLWR,
   ) {}
-  private readonly logger = new Logger(TasksUSMKService.name);
+  private readonly logger = new Logger(TasksUSMK_1MIN_Service.name);
 
   async USTIMERUN(
     intickers: string[],
     api: any,
     channel,
     delay,
-    timeframe = '5min',
+    timeframe = '1min',
   ) {
     const now = new Date().toLocaleString('en-US', {
       timeZone: 'America/New_York',
@@ -93,8 +92,7 @@ export class TasksUSMKService {
         const lastData = data[data.length - 1];
         const secondLastData = data[data.length - 2];
 
-        await this.compareAndSend(
-          data,
+        await this.compareAndSend(data,
           lastData,
           secondLastData,
           ticker,
@@ -130,7 +128,7 @@ export class TasksUSMKService {
         `BUY macdCrossAB_BL0-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
-        'US_EARLY_5MIN',
+        channel,
         data,
       );
       return;
@@ -144,7 +142,7 @@ export class TasksUSMKService {
         `BUY priceAbMA200BUY-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
-        'US_EARLY_5MIN',
+        channel,
         data,
       );
       return;
@@ -158,63 +156,7 @@ export class TasksUSMKService {
         `SELLUSLLLL priceBlMA200SELL-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
-        'US_EARLY_5MIN',
-        data,
-      );
-      return;
-    }
-    const macdCrossAB = await this.stockHelperService.macdCrossAB(
-      lastdata,
-      Secondlastdata,
-    );
-    if (macdCrossAB) {
-      await this.sendDiscord(
-        `BUY macdCrossAB-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
-        lastdata,
-        'US_EARLY_15MIN',
-        data,
-      );
-      return;
-    }
-    const earlyBuyInRSI = await this.stockHelperService.earlyBuyInRSI(
-      lastdata,
-      Secondlastdata,
-    );
-    if (earlyBuyInRSI) {
-      await this.sendDiscord(
-        `BUY earlyBuyInRSI-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
-        lastdata,
-        'US_EARLY_15MIN',
-        data,
-      );
-      return;
-    }
-    const macdCrossBL = await this.stockHelperService.macdCrossBL(
-      lastdata,
-      Secondlastdata,
-    );
-    if (macdCrossBL) {
-      await this.sendDiscord(
-        `SELLUSLLLL macdCrossBL-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
-        lastdata,
-        'US_ALL',
-        data,
-      );
-      return;
-    }
-    const earlySellInRSI = await this.stockHelperService.earlySellInRSI(
-      lastdata,
-      Secondlastdata,
-    );
-    if (earlySellInRSI) {
-      await this.sendDiscord(
-        `SELLUSLLLL sell_earlySellInRSI-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
-        lastdata,
-        'US_ALL',
+        channel,
         data,
       );
       return;
@@ -245,21 +187,11 @@ export class TasksUSMKService {
       throw err;
     }
   }
-  @Cron('*/5 14-21 * * 1-5', { timeZone: 'UTC' })
+  @Cron('10 14-21 * * 1-5', { timeZone: 'UTC' })
+  // @Cron('10 * * * * *', { timeZone: 'UTC' }) // every minute at the 10th second in UTC for testing
   async runAllWatchLists() {
-    const symbols = (await this.LocalPLWR.getDolist()) || [];
-    const combined = [...this.mysymbols, ...symbols];
     await Promise.all([
-      this.USTIMERUN(combined, this.allkeys, 'US_EARLY_5MIN', 2, '5min'),
-    ]);
-  }
-
-  @Cron('*/15 14-21 * * 1-5', { timeZone: 'UTC' })
-  async runAllWatL15min() {
-    const symbols = (await this.LocalPLWR.getDolist()) || [];
-    const combined = [...this.mysymbols, ...symbols];
-    await Promise.all([
-      this.USTIMERUN(combined, this.allkeys, 'US_EARLY_15MIN', 3, '15min'),
+      this.USTIMERUN(this.mysymbols, this.allkeys, 'US_EARLY_5MIN', 0, '1min'),
     ]);
   }
 }
