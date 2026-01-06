@@ -38,7 +38,6 @@ import { TasksForexService } from './stock/task_forex.service';
 import { SendEverydayService } from './stock/send_everyday.service';
 import { TaskCryptoService } from './stock/task_crypto.service';
 import { TasksUSMK_1MIN_Service } from './stock/task_usmk_1min.service';
-import { TasksUSMKService_15MIN } from './stock/task_usmk_15min.service';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
