@@ -110,7 +110,7 @@ import { TasksUSMK_1MIN_Service } from './stock/task_usmk_1min.service';
   providers: [AppService,StockHelperService, WebhooksService, LocalPLWR, AlphavantageService,
     TasksService,
     // TaskCryptoService,
-    TasksUSMKService,
+   // TasksUSMKService,
    // TasksUSMK_1MIN_Service,
     // TasksUSMKService_15MIN
     // TasksForexService,
