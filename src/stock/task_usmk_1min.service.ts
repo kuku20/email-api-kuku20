@@ -6,6 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { StockHelperService } from './stockHelper.service';
 import { LocalPLWR } from './runlocal.service';
 import { WebhooksService } from 'src/webhooks/webhooks.service';
+
 @Injectable()
 export class TasksUSMK_1MIN_Service {
   allkeys = 'all'; // test
@@ -97,7 +98,7 @@ export class TasksUSMK_1MIN_Service {
           secondLastData,
           ticker,
           timeframe,
-          channel,
+          ticker,
         );
         this.logger.log(`${ticker} processed successfully.`);
       } catch (error) {
@@ -119,6 +120,40 @@ export class TasksUSMK_1MIN_Service {
     timeframe,
     channel,
   ) {
+    const isWithinRange = this.webhooksService.checktimeMinutesEST(ticker,lastdata?.date,2);
+    if (!isWithinRange) {
+      return;
+    }
+    const AbMA200BUY_MACDCR = await this.stockHelperService.AbMA200BUY_MACDCR(
+      lastdata,
+      Secondlastdata,
+    );
+    if (AbMA200BUY_MACDCR) {
+      await this.sendDiscord(
+        `BUY AbMA200BUY_MACDCR-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        channel,
+        data,
+      );
+      return;
+    }
+
+    const Over200NUpBuy = await this.stockHelperService.Over200NUpBuy(
+      lastdata,
+      Secondlastdata,
+    );
+    if (Over200NUpBuy) {
+      await this.sendDiscord(
+        `BUY Over200NUpBuy-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        channel,
+        data,
+      );
+      return;
+    }
+
     const macdCrossAB_BL0 = await this.stockHelperService.macdCrossAB_BL0(
       lastdata,
       Secondlastdata,
@@ -161,6 +196,22 @@ export class TasksUSMK_1MIN_Service {
       );
       return;
     }
+
+    const Under200NDownSell = await this.stockHelperService.Under200NDownSell(
+      lastdata,
+      Secondlastdata,
+    );
+    if (Under200NDownSell) {
+      await this.sendDiscord(
+        `SELLUSLLLL Under200NDownSell-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        channel,
+        data,
+      );
+      return;
+    }
+
   }
   async sendDiscord(
     message: string,
@@ -187,8 +238,8 @@ export class TasksUSMK_1MIN_Service {
       throw err;
     }
   }
-  @Cron('10 14-21 * * 1-5', { timeZone: 'UTC' })
-  // @Cron('10 * * * * *', { timeZone: 'UTC' }) // every minute at the 10th second in UTC for testing
+  // @Cron('10 14-21 * * 1-5', { timeZone: 'UTC' })
+  @Cron('10 * * * * *', { timeZone: 'UTC' }) // every minute at the 10th second in UTC for testing
   async runAllWatchLists() {
     await Promise.all([
       this.USTIMERUN(this.mysymbols, this.allkeys, 'US_EARLY_5MIN', 0, '1min'),

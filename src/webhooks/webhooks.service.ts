@@ -1,16 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import puppeteer from 'puppeteer';
 import axios from 'axios';
-import * as FormData from 'form-data';
+import * as Timer from '../stock/compareTime';
 import { ConfigService } from '@nestjs/config';
 import { AttachmentBuilder, EmbedBuilder, WebhookClient } from 'discord.js';
+import pLimit from 'p-limit';
+import { StockHelperService } from 'src/stock/stockHelper.service';
 @Injectable()
 export class WebhooksService {
   private webhookClient: WebhookClient;
   private WEBHOOKS_ENV: Record<string, string>;
   private WEBHOOKS_CN: Record<string, string>;
   private rsiChannels: string[];
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly stockHelperService: StockHelperService,
+  ) {
     // Parse JSON from env vars
     this.WEBHOOKS_ENV = JSON.parse(
       this.configService.get<string>('WEBHOOKS_ENV_MAP') ||
@@ -193,33 +198,44 @@ export class WebhooksService {
     };
   }
   async deleteMessages(webhookCl: string, current: string) {
-    // const current = new Date().toISOString().replace(/T.*$/, '');
     const WEBHOOKS = this.WEBHOOKS_ENV[webhookCl] || this.WEBHOOKS_ENV.Other;
     this.webhookClient = new WebhookClient({
       url: this.configService.get<any>(WEBHOOKS),
     });
+
     const WEBHOOKS_CNA = this.WEBHOOKS_CN[webhookCl] || this.WEBHOOKS_CN.Other;
+
+    // Fetch the list of message IDs
     const getIdsOb = await this.getFromFBDynamic(
       `discord_slack_id/discord/${WEBHOOKS_CNA}/${current}.json`,
     );
+
     const Ids = Object.keys(getIdsOb);
     if (Ids.length === 0) return { msg: 'nothing to delete' };
-    for (const messageId of Ids) {
-      try {
-        await this.webhookClient.deleteMessage(messageId);
-        const WEBHOOKS_CNA =
-          this.WEBHOOKS_CN[webhookCl] || this.WEBHOOKS_CN.Other;
-        await this.deleteInFB(
-          `discord_slack_id/discord/${WEBHOOKS_CNA}/${current}/${messageId}.json`,
-        );
-      } catch (error) {
-        if (error.code === 'MESSAGE_NOT_FOUND') {
-          console.log(`Message ${messageId} does not exist.`);
-        } else {
-          console.log(`Error deleting message ${messageId}`);
+
+    // Create a limit function to restrict concurrency to 20
+    const limit = pLimit(10); // This will allow only 20 promises to run in parallel
+
+    // Prepare the delete promises, wrapped in the limit function
+    const deletePromises = Ids.map((messageId) =>
+      limit(async () => {
+        try {
+          await this.webhookClient.deleteMessage(messageId);
+          const messagePath = `discord_slack_id/discord/${WEBHOOKS_CNA}/${current}/${messageId}.json`;
+          await this.deleteInFB(messagePath);
+        } catch (error) {
+          if (error.code === 'MESSAGE_NOT_FOUND') {
+            console.log(`Message ${messageId} does not exist.`);
+          } else {
+            console.log(`Error deleting message ${messageId}:`, error);
+          }
         }
-      }
-    }
+      }),
+    );
+
+    // Wait for all delete operations to complete
+    await Promise.allSettled(deletePromises);
+
     return { msg: 'delete complete' };
   }
 
@@ -540,6 +556,194 @@ export class WebhooksService {
         console.error(`❌ Network or Axios error: ${error.message}`);
       }
       return 'skipped';
+    }
+  }
+
+  async sendDiscord(
+    message: string,
+    ticker: string,
+    lastdata: any,
+    channel: string,
+    data?: any,
+  ) {
+    try {
+      const fileBuffer = await this.captureChart(
+        data,
+        ticker,
+        channel,
+        message,
+      );
+      return await this.sendDiscordNotification(
+        message,
+        `${channel} ${ticker}`,
+        JSON.stringify(lastdata),
+        fileBuffer,
+      );
+    } catch (err) {
+      console.error('❌ Error in controller:', err);
+      throw err;
+    }
+  }
+  async checktimeMinutesEST(ticker: string, date, time: number) {
+    const isWithinRange = Timer.checkIfWithin5MinutesEST(date, time);
+    if (isWithinRange) {
+      console.log(ticker, `✅ Within ±${time} minutes of EST time`);
+      // check one
+      return true
+    } else {
+      console.log(ticker, `❌ Outside  ±${time} minutes of EST time: `, date);
+      return false;
+    }
+  }
+
+  async compareAndSend1hour(
+    data,
+    lastdata,
+    Secondlastdata,
+    ticker,
+    timeframe,
+    B_Channel,
+    HT_Channel,
+  ) {
+    if (timeframe === '4h' || timeframe === '1day') {
+      await this.sendDiscord(
+        `JUST WATCH_ME-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        HT_Channel,
+        data,
+      );
+    }
+    const Over200NUpBuy = await this.stockHelperService.Over200NUpBuy(
+      lastdata,
+      Secondlastdata,
+    );
+    if (Over200NUpBuy) {
+      await this.sendDiscord(
+        `BUY Over200NUpBuy-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        B_Channel,
+        data,
+      );
+      return;
+    }
+    const macdCrossAB_BL0 = await this.stockHelperService.macdCrossAB_BL0(
+      lastdata,
+      Secondlastdata,
+    );
+    if (macdCrossAB_BL0) {
+      await this.sendDiscord(
+        `BUY macdCrossAB_BL0-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        B_Channel,
+        data,
+      );
+      return;
+    }
+
+    const priceAbMA200BUY = await this.stockHelperService.priceAbMA200BUY(
+      lastdata,
+      Secondlastdata,
+    );
+    if (priceAbMA200BUY) {
+      // add to uplist and delete out downlist
+      await this.sendDiscord(
+        `BUY priceAbMA200BUY-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        B_Channel,
+        data,
+      );
+      return;
+    }
+
+    const priceBlMA200SELL = await this.stockHelperService.priceBlMA200SELL(
+      lastdata,
+      Secondlastdata,
+    );
+    if (priceBlMA200SELL) {
+      await this.sendDiscord(
+        `SELLCRLLLL priceBlMA200SELL-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        B_Channel,
+        data,
+      );
+      return;
+    }
+
+    const macdCrossAB = await this.stockHelperService.macdCrossAB(
+      lastdata,
+      Secondlastdata,
+    );
+    if (macdCrossAB) {
+      await this.sendDiscord(
+        `BUY macdCrossAB-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        HT_Channel,
+        data,
+      );
+      return;
+    }
+    const earlyBuyInRSI = await this.stockHelperService.earlyBuyInRSI(
+      lastdata,
+      Secondlastdata,
+    );
+    if (earlyBuyInRSI) {
+      await this.sendDiscord(
+        `BUY earlyBuyInRSI-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        HT_Channel,
+        data,
+      );
+      return;
+    }
+    const macdCrossBL = await this.stockHelperService.macdCrossBL(
+      lastdata,
+      Secondlastdata,
+    );
+    if (macdCrossBL) {
+      await this.sendDiscord(
+        `SELLCRLLLL macdCrossBL-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        HT_Channel,
+        data,
+      );
+      return;
+    }
+    const earlySellInRSI = await this.stockHelperService.earlySellInRSI(
+      lastdata,
+      Secondlastdata,
+    );
+    if (earlySellInRSI) {
+      await this.sendDiscord(
+        `SELLCRLLLL earlySellInRSI-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        HT_Channel,
+        data,
+      );
+      return;
+    }
+
+    const Under200NDownSell = await this.stockHelperService.Under200NDownSell(
+      lastdata,
+      Secondlastdata,
+    );
+    if (Under200NDownSell) {
+      await this.sendDiscord(
+        `SELLCRLLLL Under200NDownSell-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        HT_Channel,
+        data,
+      );
+      return;
     }
   }
   /**

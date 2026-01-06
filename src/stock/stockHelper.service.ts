@@ -440,6 +440,10 @@ export class StockHelperService {
     return LastAbMA200 && PrevBlMa200;
   }
 
+  async AbMA200BUY_MACDCR(last: StockData, prev: StockData): Promise<boolean> {
+    return await this.macdCrossAB(last, prev) && last.close > last.MA200;
+  }
+  
   async priceBlMA200SELL(last: StockData, prev: StockData): Promise<boolean> {
     if (!last || !prev) return false; // safety
     const LastAbMA200 = last.close < last.MA200;
@@ -462,5 +466,15 @@ export class StockHelperService {
     );
     const blowAll = last.low < lowestLast;
     return blowAll && last.divergence < 0;
+  }
+
+  async Over200NUpBuy(last: StockData, prev: StockData): Promise<boolean> {
+    if (!last || !prev) return false; // safety
+    return last.divergence > 0 && await this.priceAbMA200BUY(last, prev);
+  }
+
+  async Under200NDownSell(last: StockData, prev: StockData): Promise<boolean> {
+    if (!last || !prev) return false; // safety
+    return last.divergence < 0 && await this.priceBlMA200SELL(last, prev);
   }
 }

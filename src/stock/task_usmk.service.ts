@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { StockHelperService } from './stockHelper.service';
 import { LocalPLWR } from './runlocal.service';
 import { WebhooksService } from 'src/webhooks/webhooks.service';
-
+import * as Timer from './compareTime';
 @Injectable()
 export class TasksUSMKService {
   allkeys = 'all'; // test
@@ -37,7 +37,8 @@ export class TasksUSMKService {
   async USTIMERUN(
     intickers: string[],
     api: any,
-    channel,
+    B_Channel,
+    HT_Channel,
     delay,
     timeframe = '5min',
   ) {
@@ -59,14 +60,22 @@ export class TasksUSMKService {
     );
 
     const tickers = intickers;
-    await this.processTickers(tickers, timeframe, api, channel, delay);
+    await this.processTickers(
+      tickers,
+      timeframe,
+      api,
+      B_Channel,
+      HT_Channel,
+      delay,
+    );
   }
 
   private async processTickers(
     tickers: string[],
     timeframe: string,
     apikey: string,
-    channel: string,
+    B_Channel,
+    HT_Channel,
     delay = 2,
   ) {
     const date = new Date();
@@ -93,17 +102,18 @@ export class TasksUSMKService {
         const lastData = data[data.length - 1];
         const secondLastData = data[data.length - 2];
 
-        await this.compareAndSend(
+        await this.webhooksService.compareAndSend1hour(
           data,
           lastData,
           secondLastData,
           ticker,
           timeframe,
-          channel,
+          B_Channel,
+          HT_Channel,
         );
         this.logger.log(`${ticker} processed successfully.`);
       } catch (error) {
-        this.sendDiscord(
+        this.webhooksService.sendDiscord(
           `ERROR ON API AT: ${timeframe} On ${date}`,
           `RSIENDBOT ${ticker} at ${timeframe}`,
           'Nono',
@@ -113,144 +123,20 @@ export class TasksUSMKService {
       }
     }
   }
-  async compareAndSend(
-    data,
-    lastdata,
-    Secondlastdata,
-    ticker,
-    timeframe,
-    channel,
-  ) {
-    const macdCrossAB_BL0 = await this.stockHelperService.macdCrossAB_BL0(
-      lastdata,
-      Secondlastdata,
-    );
-    if (macdCrossAB_BL0) {
-      await this.sendDiscord(
-        `BUY macdCrossAB_BL0-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
-        lastdata,
-        'US_EARLY_5MIN',
-        data,
-      );
-      return;
-    }
-    const priceAbMA200BUY = await this.stockHelperService.priceAbMA200BUY(
-      lastdata,
-      Secondlastdata,
-    );
-    if (priceAbMA200BUY) {
-      await this.sendDiscord(
-        `BUY priceAbMA200BUY-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
-        lastdata,
-        'US_EARLY_5MIN',
-        data,
-      );
-      return;
-    }
-    const priceBlMA200SELL = await this.stockHelperService.priceBlMA200SELL(
-      lastdata,
-      Secondlastdata,
-    );
-    if (priceBlMA200SELL) {
-      await this.sendDiscord(
-        `SELLUSLLLL priceBlMA200SELL-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
-        lastdata,
-        'US_EARLY_5MIN',
-        data,
-      );
-      return;
-    }
-    const macdCrossAB = await this.stockHelperService.macdCrossAB(
-      lastdata,
-      Secondlastdata,
-    );
-    if (macdCrossAB) {
-      await this.sendDiscord(
-        `BUY macdCrossAB-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
-        lastdata,
-        'US_EARLY_15MIN',
-        data,
-      );
-      return;
-    }
-    const earlyBuyInRSI = await this.stockHelperService.earlyBuyInRSI(
-      lastdata,
-      Secondlastdata,
-    );
-    if (earlyBuyInRSI) {
-      await this.sendDiscord(
-        `BUY earlyBuyInRSI-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
-        lastdata,
-        'US_EARLY_15MIN',
-        data,
-      );
-      return;
-    }
-    const macdCrossBL = await this.stockHelperService.macdCrossBL(
-      lastdata,
-      Secondlastdata,
-    );
-    if (macdCrossBL) {
-      await this.sendDiscord(
-        `SELLUSLLLL macdCrossBL-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
-        lastdata,
-        'US_ALL',
-        data,
-      );
-      return;
-    }
-    const earlySellInRSI = await this.stockHelperService.earlySellInRSI(
-      lastdata,
-      Secondlastdata,
-    );
-    if (earlySellInRSI) {
-      await this.sendDiscord(
-        `SELLUSLLLL sell_earlySellInRSI-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
-        lastdata,
-        'US_ALL',
-        data,
-      );
-      return;
-    }
-  }
-  async sendDiscord(
-    message: string,
-    ticker: string,
-    lastdata: any,
-    channel: string,
-    data?: any,
-  ) {
-    try {
-      const fileBuffer = await this.webhooksService.captureChart(
-        data,
-        ticker,
-        channel,
-        message,
-      );
-      return await this.webhooksService.sendDiscordNotification(
-        message,
-        `${channel} ${ticker}`,
-        JSON.stringify(lastdata),
-        fileBuffer,
-      );
-    } catch (err) {
-      console.error('❌ Error in controller:', err);
-      throw err;
-    }
-  }
+
   @Cron('*/5 14-21 * * 1-5', { timeZone: 'UTC' })
   async runAllWatchLists() {
     const symbols = (await this.LocalPLWR.getDolist()) || [];
     const combined = [...this.mysymbols, ...symbols];
     await Promise.all([
-      this.USTIMERUN(combined, this.allkeys, 'US_EARLY_5MIN', 2, '5min'),
+      this.USTIMERUN(
+        combined,
+        this.allkeys,
+        'US_EARLY_5MIN',
+        'US_5M_HT',
+        2,
+        '5min',
+      ),
     ]);
   }
 
@@ -259,7 +145,14 @@ export class TasksUSMKService {
     const symbols = (await this.LocalPLWR.getDolist()) || [];
     const combined = [...this.mysymbols, ...symbols];
     await Promise.all([
-      this.USTIMERUN(combined, this.allkeys, 'US_EARLY_15MIN', 3, '15min'),
+      this.USTIMERUN(
+        combined,
+        this.allkeys,
+        'US_EARLY_15MIN',
+        'US_15M_HT',
+        3,
+        '15min',
+      ),
     ]);
   }
 }
