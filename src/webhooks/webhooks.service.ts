@@ -92,7 +92,7 @@ export class WebhooksService {
     if (!file && !message.includes('SELLCR')) {
       setmess = `${setmess} | **[CHART MISSING](https://stockmarkets000.web.app/capture-click/${webhookCl}/${tickerON})**`;
     }
-    if (botdt.includes('RSIENDBOT')) {
+    if (botdt.includes('RWBOT')) {
       options = {
         username: botdt,
         content: message,
@@ -159,7 +159,7 @@ export class WebhooksService {
     );
     if (
       this.rsiChannels.some((channel) => WEBHOOKS_CNA.includes(channel)) &&
-      !botdt.includes('RSIENDBOT')
+      !botdt.includes('RWBOT')
     ) {
       // store symbol of date
       await this.RsiToDatabase(

@@ -84,7 +84,7 @@ export class WebhooksController {
       const symbol = botname.split(' ')[1].toUpperCase();
       let extra;
     
-      if (symbol !== 'RSIENDBOT') {
+      if (symbol !== 'RWBOT') {
         const metric = (await this.stockService.getMetric_FINHUB(symbol)).metric;
         const metricStr = JSON.stringify(metric);
     

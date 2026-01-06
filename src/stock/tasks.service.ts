@@ -47,7 +47,7 @@ export class TasksService {
   async runAllWatL15min() {
     await this.sendDiscord(
       'WAKEUPCALL:15min',
-      'RSIENDBOT 15min',
+      'RWBOT 15min',
       'US',
       'CRON_CHECK',
     );
@@ -62,7 +62,7 @@ export class TasksService {
   // async runAllWatL1hour() {
   //   await this.sendDiscord(
   //     'WAKEUPCALL:1hour',
-  //     'RSIENDBOT 1hour',
+  //     'RWBOT 1hour',
   //     'US',
   //     'CRON_CHECK',
   //   );
@@ -107,7 +107,7 @@ export class TasksService {
     delay = 2,
   ) {
     const date = new Date();
-    // this.sendDiscord(`CHECKBOT ${category} ${timeframe} RUN AT: ${date}`, `RSIENDBOT ${category} ${timeframe}`, 'Nono', 'CRON_CHECK');
+    // this.sendDiscord(`CHECKBOT ${category} ${timeframe} RUN AT: ${date}`, `RWBOT ${category} ${timeframe}`, 'Nono', 'CRON_CHECK');
 
     const washselllists =
       (await this.LocalPLWR.loadWashSellList()) ||
@@ -143,7 +143,7 @@ export class TasksService {
       } catch (error) {
         this.sendDiscord(
           `ERROR ON API AT: ${timeframe} On ${date}`,
-          `RSIENDBOT ${ticker} at ${timeframe}`,
+          `RWBOT ${ticker} at ${timeframe}`,
           'Nono',
           'ERORR_CALL',
         );
@@ -338,18 +338,18 @@ export class TasksService {
   async wakeupcall() {
     this.sendDiscord(
       `WAKEUPCALL`,
-      `RSIENDBOT BOTBOT`,
+      `RWBOT BOTBOT`,
       'Nono',
       'CRON_CHECK',
     );
     try {
-      const { data } = await axios.get('https://nestjs-api.koyeb.app');
-      this.logger.log('⏱️ koyeb Keep-alive ping success:', data.status);
+      const { data } = await axios.get('email-api-kuku20-production.up.railway.app');
+      this.logger.log('⏱️ railway Keep-alive ping success:', data.status);
     } catch (err) {
       this.logger.error(`❌ Keep-alive failed: ${err.message}`);
       this.sendDiscord(
-        `❌ koyeb Keep-alive failed:`,
-        `RSIENDBOT BOTBOT`,
+        `❌ railway Keep-alive failed:`,
+        `RWBOT BOTBOT`,
         'Nono',
         'ERORR_CALL',
       );

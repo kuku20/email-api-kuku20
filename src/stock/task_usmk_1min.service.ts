@@ -104,7 +104,7 @@ export class TasksUSMK_1MIN_Service {
       } catch (error) {
         this.sendDiscord(
           `ERROR ON API AT: ${timeframe} On ${date}`,
-          `RSIENDBOT ${ticker} at ${timeframe}`,
+          `RWBOT ${ticker} at ${timeframe}`,
           'Nono',
           'ERORR_CALL',
         );

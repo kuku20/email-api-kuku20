@@ -678,7 +678,7 @@ export class LocalPLWR {
 
   async sendTemporaryWebhook(ticker: any, errror:any, discordChanel: string='ERORR_CALL',) {
     console.log(123)
-    const botname = `${discordChanel} RSIENDBOT ${ticker}`;
+    const botname = `${discordChanel} RWBOT ${ticker}`;
     const payload = {
       message:'❌ API ERROR:'+errror,
       botname,

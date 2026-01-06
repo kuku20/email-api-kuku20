@@ -54,7 +54,7 @@ export class TasksForexService {
           `ERROR ON TasksForexService: ${timeframe} On ${date}: ${JSON.stringify(
             error,
           )}`,
-          `RSIENDBOT ${ticker} at ${timeframe}`,
+          `RWBOT ${ticker} at ${timeframe}`,
           'Nono',
           'ERORR_CALL',
         );
