@@ -108,7 +108,7 @@ import { TasksUSMK_1MIN_Service } from './stock/task_usmk_1min.service';
   ],
   controllers: [AppController],
   providers: [AppService,StockHelperService, WebhooksService, LocalPLWR, AlphavantageService,
-    TasksService,
+    // TasksService,
     // TaskCryptoService,
    // TasksUSMKService,
    // TasksUSMK_1MIN_Service,
