@@ -734,7 +734,17 @@ export class LocalPLWR {
     return this.washSell30;
   }
   getDolist() {
-    return this.dolist;
+    return ["OGN", "BRO", "CHTR", "CHD", "TPL", "INVH", "OC", "FND", "LBRDK", "PRMB", 
+      "GPK", "ABM", "FCPT", "LINE", "CACC", "AI", "GEO", "CRVL", "IPAR", "PRCT", 
+      "BWIN", "MAN", "CNMD", "IART", "DRVN", "LBRDA", "DEA", "SAFE", "AESI", "PLAY", 
+      "OXM", "IBTA", "FRPH", "MLR", "GOOD", "XRX", "NCMI", "HY", "SCVL", "OLP", "UIS", 
+      "MEI", "PTLO", "LPRO", "KLC", "HUMA", "RCEL", "MYPS", "SEAT", "ATYR", "TRON", 
+      "AFCG", "SENS", "NAKA", "OBDC", "BIOX", "SGMO", "CURV", "LESL", "BTAI", "NEON", 
+      "MRNO", "BIT", "JQC", "ATOM", "NMFC", "AIFU", "TUSK", "BTAI", "SUNS", "WLKP", 
+      "PFE", "POR", "NWE", "CVBF", "VCEL", "NBTB", "BHE", "GTY", "SRCE", "MOFG", "BLMN", 
+      "UTL", "UHT", "ALT", "DNUT", "BLSH", "BXSL", "QEPC", "TSLQ", "TKC", "HBIO", "HOLO", 
+      "BMEA"]
+     ;
   }
   async FireBaseApi(method:'post'|'patch'|'put'|'delete'|'get',endpoint:string, data: any,) {
     const firebaseRoot = this.configService.get<any>('FIREBASE_DATA')
