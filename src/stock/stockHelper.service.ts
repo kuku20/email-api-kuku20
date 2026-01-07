@@ -1,5 +1,5 @@
 import { Injectable, NotAcceptableException } from '@nestjs/common';
-import { StockData } from './dto';
+import { StockData } from './dto/chartData';
 
 @Injectable()
 export class StockHelperService {
@@ -435,8 +435,8 @@ export class StockHelperService {
   }
   async priceAbMA200BUY(last: StockData, prev: StockData): Promise<boolean> {
     if (!last || !prev) return false; // safety
-    const LastAbMA200 = last.close > last.MA200;
-    const PrevBlMa200 = prev.close < prev.MA200;
+    const LastAbMA200 = last.high > last.MA200;
+    const PrevBlMa200 = prev.low < prev.MA200;
     return LastAbMA200 && PrevBlMa200;
   }
 
@@ -446,8 +446,8 @@ export class StockHelperService {
   
   async priceBlMA200SELL(last: StockData, prev: StockData): Promise<boolean> {
     if (!last || !prev) return false; // safety
-    const LastAbMA200 = last.close < last.MA200;
-    const PrevBlMa200 = prev.close > prev.MA200;
+    const LastAbMA200 = last.low < last.MA200;
+    const PrevBlMa200 = prev.high > prev.MA200;
     return LastAbMA200 && PrevBlMa200;
   }
 
@@ -477,4 +477,42 @@ export class StockHelperService {
     if (!last || !prev) return false; // safety
     return last.divergence < 0 && await this.priceBlMA200SELL(last, prev);
   }
+
+  /**
+BUY ALL
+   */
+  async BlMA200_MA20_MA50_MA100_BUY(last: StockData, prev: StockData): Promise<boolean> {
+    if (!last || !prev) return false; // safety
+    const BlMa200 = last.MA200 > last.close
+    const abMa20 = last.high > last.MA20 && prev.low < prev.MA20
+    const abMa50 = last.high > last.MA50 && prev.low < prev.MA50
+    const abMa100 = last.high > last.MA100 && prev.low < prev.MA100
+    const MacdLine_divergen = last.divergence > 0 && last.MACDLine < 1
+    return (abMa20 || abMa50 || abMa100) && MacdLine_divergen && BlMa200;
+  }
+
+  async ABMA200_macdCrossAB_BUY(last: StockData, prev: StockData): Promise<boolean> {
+    if (!last || !prev) return false; // safety
+    const ABMa200 = last.MA200 < last.close
+    return ABMa200 && await this.macdCrossAB(last, prev);
+  }
+
+    /**
+SELL ALL
+   */
+async BlMA200_MA20_MA50_MA100_SELL(last: StockData, prev: StockData): Promise<boolean> {
+  if (!last || !prev) return false; // safety
+  const BlMa200 = last.MA200 > last.close
+  const blMA20 = last.low < last.MA20 && prev.high > prev.MA20
+  const blMA50 = last.low < last.MA50 && prev.high > prev.MA50
+  const blMA100 = last.low < last.MA100 && prev.high > prev.MA100
+  const MacdLine_divergen = last.divergence < 0 
+  return (blMA20 || blMA50 || blMA100) && MacdLine_divergen && BlMa200;
+}
+
+async ABMA200_macdCrossBL_SELL(last: StockData, prev: StockData): Promise<boolean> {
+  if (!last || !prev) return false; // safety
+  const ABMa200 = last.MA200 > last.close
+  return ABMa200 && await this.macdCrossBL(last, prev);
+}
 }
