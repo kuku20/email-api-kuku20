@@ -11,6 +11,14 @@ import { WebhooksService } from 'src/webhooks/webhooks.service';
 export class TasksUSMK_1MIN_Service {
   allkeys = 'all'; // test
   mysymbols = [
+    'MSFT',
+    'PLTR',
+    'SOXX',
+    'NVDA',
+    'MSTR',
+    'ORCL',
+    'HE',
+    'AVGO',
     'INTC',
     'SMCI',
     'BULL',
@@ -100,6 +108,7 @@ export class TasksUSMK_1MIN_Service {
           timeframe,
           ticker,
         );
+        
         this.logger.log(`${ticker} processed successfully.`);
       } catch (error) {
         this.sendDiscord(
@@ -124,93 +133,100 @@ export class TasksUSMK_1MIN_Service {
     if (!isWithinRange) {
       return;
     }
-    const AbMA200BUY_MACDCR = await this.stockHelperService.AbMA200BUY_MACDCR(
+    await this.webhooksService.compareAndSend_BUY(data,
       lastdata,
       Secondlastdata,
-    );
-    if (AbMA200BUY_MACDCR) {
-      await this.sendDiscord(
-        `BUY AbMA200BUY_MACDCR-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
-        lastdata,
-        channel,
-        data,
-      );
-      return;
-    }
+      ticker,
+      timeframe,
+      ticker,
+      channel,
+    )
+    // const Under200NDownSell = await this.stockHelperService.Under200NDownSell(
+    //   lastdata,
+    //   Secondlastdata,
+    // );
+    // if (Under200NDownSell) {
+    //   await this.sendDiscord(
+    //     `SELLUSLLLL Under200NDownSell-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+    //     `${ticker}-ON-${timeframe}`,
+    //     lastdata,
+    //     channel,
+    //     data,
+    //   );
+    //   return;
+    // }
+    // const AbMA200BUY_MACDCR = await this.stockHelperService.AbMA200BUY_MACDCR(
+    //   lastdata,
+    //   Secondlastdata,
+    // );
+    // if (AbMA200BUY_MACDCR) {
+    //   await this.sendDiscord(
+    //     `BUY AbMA200BUY_MACDCR-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+    //     `${ticker}-ON-${timeframe}`,
+    //     lastdata,
+    //     channel,
+    //     data,
+    //   );
+    //   return;
+    // }
 
-    const Over200NUpBuy = await this.stockHelperService.Over200NUpBuy(
-      lastdata,
-      Secondlastdata,
-    );
-    if (Over200NUpBuy) {
-      await this.sendDiscord(
-        `BUY Over200NUpBuy-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
-        lastdata,
-        channel,
-        data,
-      );
-      return;
-    }
+    // const Over200NUpBuy = await this.stockHelperService.Over200NUpBuy(
+    //   lastdata,
+    //   Secondlastdata,
+    // );
+    // if (Over200NUpBuy) {
+    //   await this.sendDiscord(
+    //     `BUY Over200NUpBuy-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+    //     `${ticker}-ON-${timeframe}`,
+    //     lastdata,
+    //     channel,
+    //     data,
+    //   );
+    //   return;
+    // }
 
-    const macdCrossAB_BL0 = await this.stockHelperService.macdCrossAB_BL0(
-      lastdata,
-      Secondlastdata,
-    );
-    if (macdCrossAB_BL0) {
-      await this.sendDiscord(
-        `BUY macdCrossAB_BL0-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
-        lastdata,
-        channel,
-        data,
-      );
-      return;
-    }
-    const priceAbMA200BUY = await this.stockHelperService.priceAbMA200BUY(
-      lastdata,
-      Secondlastdata,
-    );
-    if (priceAbMA200BUY) {
-      await this.sendDiscord(
-        `BUY priceAbMA200BUY-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
-        lastdata,
-        channel,
-        data,
-      );
-      return;
-    }
-    const priceBlMA200SELL = await this.stockHelperService.priceBlMA200SELL(
-      lastdata,
-      Secondlastdata,
-    );
-    if (priceBlMA200SELL) {
-      await this.sendDiscord(
-        `SELLUSLLLL priceBlMA200SELL-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
-        lastdata,
-        channel,
-        data,
-      );
-      return;
-    }
-
-    const Under200NDownSell = await this.stockHelperService.Under200NDownSell(
-      lastdata,
-      Secondlastdata,
-    );
-    if (Under200NDownSell) {
-      await this.sendDiscord(
-        `SELLUSLLLL Under200NDownSell-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
-        lastdata,
-        channel,
-        data,
-      );
-      return;
-    }
+    // const macdCrossAB_BL0 = await this.stockHelperService.macdCrossAB_BL0(
+    //   lastdata,
+    //   Secondlastdata,
+    // );
+    // if (macdCrossAB_BL0) {
+    //   await this.sendDiscord(
+    //     `BUY macdCrossAB_BL0-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+    //     `${ticker}-ON-${timeframe}`,
+    //     lastdata,
+    //     channel,
+    //     data,
+    //   );
+    //   return;
+    // }
+    // const priceAbMA200BUY = await this.stockHelperService.priceAbMA200BUY(
+    //   lastdata,
+    //   Secondlastdata,
+    // );
+    // if (priceAbMA200BUY) {
+    //   await this.sendDiscord(
+    //     `BUY priceAbMA200BUY-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+    //     `${ticker}-ON-${timeframe}`,
+    //     lastdata,
+    //     channel,
+    //     data,
+    //   );
+    //   return;
+    // }
+    // const priceBlMA200SELL = await this.stockHelperService.priceBlMA200SELL(
+    //   lastdata,
+    //   Secondlastdata,
+    // );
+    // if (priceBlMA200SELL) {
+    //   await this.sendDiscord(
+    //     `SELLUSLLLL priceBlMA200SELL-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+    //     `${ticker}-ON-${timeframe}`,
+    //     lastdata,
+    //     channel,
+    //     data,
+    //   );
+    //   return;
+    // }
 
   }
   async sendDiscord(
@@ -239,7 +255,7 @@ export class TasksUSMK_1MIN_Service {
     }
   }
   // @Cron('10 14-21 * * 1-5', { timeZone: 'UTC' })
-  @Cron('10 * * * * *', { timeZone: 'UTC' }) // every minute at the 10th second in UTC for testing
+//@Cron('10 * * * * *', { timeZone: 'UTC' }) // every minute at the 10th second in UTC for testing
   async runAllWatchLists() {
     await Promise.all([
       this.USTIMERUN(this.mysymbols, this.allkeys, 'US_EARLY_5MIN', 0, '1min'),

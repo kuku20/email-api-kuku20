@@ -11,6 +11,14 @@ import * as Timer from './compareTime';
 export class TasksUSMKService {
   allkeys = 'all'; // test
   mysymbols = [
+    'MSFT',
+    'PLTR',
+    'SOXX',
+    'NVDA',
+    'MSTR',
+    'ORCL',
+    'HE',
+    'AVGO',
     'INTC',
     'SMCI',
     'BULL',
@@ -102,7 +110,7 @@ export class TasksUSMKService {
         const lastData = data[data.length - 1];
         const secondLastData = data[data.length - 2];
 
-        await this.webhooksService.compareAndSend1hour(
+        await this.webhooksService.above_or_bellow(
           data,
           lastData,
           secondLastData,
@@ -130,7 +138,7 @@ export class TasksUSMKService {
     const combined = [...this.mysymbols, ...symbols];
     await Promise.all([
       this.USTIMERUN(
-        combined,
+        this.mysymbols,
         this.allkeys,
         'US_EARLY_5MIN',
         'US_5M_HT',
@@ -146,7 +154,7 @@ export class TasksUSMKService {
     const combined = [...this.mysymbols, ...symbols];
     await Promise.all([
       this.USTIMERUN(
-        combined,
+        this.mysymbols,
         this.allkeys,
         'US_EARLY_15MIN',
         'US_15M_HT',

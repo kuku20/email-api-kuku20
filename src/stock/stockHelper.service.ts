@@ -20,6 +20,7 @@ export class StockHelperService {
     dataIn = await this.calculateMovingAverage(dataIn, 100, 'MA100');
     dataIn = await this.calculateMovingAverage(dataIn, 200, 'MA200');
     dataIn = await this.calculateRSI(dataIn);
+    dataIn = await this.calculateStochasticRSI(dataIn);
     dataIn = await this.calculateMACD(dataIn);
 
     return dataIn;
@@ -175,6 +176,65 @@ export class StockHelperService {
       SignalLine: signalLine[i],
       divergence: histogram[i],
       MACDDivergence: divergence[i],
+    }));
+  }
+
+  /**
+   * Calculate 3, 3, 14, 14 Stochastic RSI
+   */
+  async calculateStochasticRSI(
+    data: any[],
+    rsiPeriod: number = 14,
+    stochPeriod: number = 14,
+    kSmoothing: number = 3,
+    dSmoothing: number = 3,
+  ) {
+    if (!data?.length) return [];
+
+    // Step 1: Calculate RSI first
+    const rsiData = await this.calculateRSI(data, rsiPeriod);
+    const stochRSIArray: number[] = Array(data.length).fill(null);
+    const kArray: number[] = Array(data.length).fill(null); // K values (Stochastic RSI)
+    const dArray: number[] = Array(data.length).fill(null); // D values (3-period smoothing of K)
+
+    // Step 2: Calculate Stochastic RSI (K)
+    for (let i = stochPeriod - 1; i < data.length; i++) {
+      const rsiWindow = rsiData.slice(i - stochPeriod + 1, i + 1); // Get RSI window for the period
+      const minRSI = Math.min(...rsiWindow.map((item) => item.RSI)); // Get min RSI in the window
+      const maxRSI = Math.max(...rsiWindow.map((item) => item.RSI)); // Get max RSI in the window
+
+      if (maxRSI !== minRSI) {
+        // Calculate Stochastic RSI (K)
+        const stochRSI = (rsiData[i].RSI - minRSI) / (maxRSI - minRSI);
+        stochRSIArray[i] = parseFloat(stochRSI.toFixed(9)); // Store the Stochastic RSI value
+      } else {
+        stochRSIArray[i] = null; // Set null if maxRSI equals minRSI (to avoid division by zero)
+      }
+    }
+
+    // Step 3: Calculate K (Fast Stochastic RSI)
+    for (let i = kSmoothing - 1; i < data.length; i++) {
+      const kWindow = stochRSIArray.slice(i - kSmoothing + 1, i + 1);
+      const kAverage =
+        kWindow.reduce((acc, val) => (val !== null ? acc + val : acc), 0) /
+        kSmoothing;
+      kArray[i] = parseFloat(kAverage.toFixed(9));
+    }
+
+    // Step 4: Calculate D (Slow Stochastic RSI) - 3-period moving average of K
+    for (let i = dSmoothing - 1; i < data.length; i++) {
+      const dWindow = kArray.slice(i - dSmoothing + 1, i + 1);
+      const dAverage =
+        dWindow.reduce((acc, val) => (val !== null ? acc + val : acc), 0) /
+        dSmoothing;
+      dArray[i] = parseFloat(dAverage.toFixed(9));
+    }
+
+    // Step 5: Merge K and D values into the data
+    return data.map((item, i) => ({
+      ...item,
+      StochRSI_K: kArray[i], // K (Stochastic RSI)
+      StochRSI_D: dArray[i], // D (Slow Stochastic RSI)
     }));
   }
 
@@ -374,7 +434,14 @@ export class StockHelperService {
   }
   async macdCrossAB_BL0(last: StockData, prev: StockData): Promise<boolean> {
     if (!last || !prev) return false; // safety
-    return last.divergence > 0 && prev.divergence < 0 && (last.MACDLine <0 || last.SignalLine<0 || prev.MACDLine <0 || prev.SignalLine<0);
+    return (
+      last.divergence > 0 &&
+      prev.divergence < 0 &&
+      (last.MACDLine < 0 ||
+        last.SignalLine < 0 ||
+        prev.MACDLine < 0 ||
+        prev.SignalLine < 0)
+    );
   }
   private readonly forexHolidays = [
     '2026-01-01', // New Year's Day (global)
@@ -441,9 +508,9 @@ export class StockHelperService {
   }
 
   async AbMA200BUY_MACDCR(last: StockData, prev: StockData): Promise<boolean> {
-    return await this.macdCrossAB(last, prev) && last.close > last.MA200;
+    return (await this.macdCrossAB(last, prev)) && last.close > last.MA200;
   }
-  
+
   async priceBlMA200SELL(last: StockData, prev: StockData): Promise<boolean> {
     if (!last || !prev) return false; // safety
     const LastAbMA200 = last.low < last.MA200;
@@ -470,49 +537,174 @@ export class StockHelperService {
 
   async Over200NUpBuy(last: StockData, prev: StockData): Promise<boolean> {
     if (!last || !prev) return false; // safety
-    return last.divergence > 0 && await this.priceAbMA200BUY(last, prev);
+    return last.divergence > 0 && (await this.priceAbMA200BUY(last, prev));
   }
 
   async Under200NDownSell(last: StockData, prev: StockData): Promise<boolean> {
     if (!last || !prev) return false; // safety
-    return last.divergence < 0 && await this.priceBlMA200SELL(last, prev);
+    return last.divergence < 0 && (await this.priceBlMA200SELL(last, prev));
   }
 
   /**
 BUY ALL
    */
-  async BlMA200_MA20_MA50_MA100_BUY(last: StockData, prev: StockData): Promise<boolean> {
+  async BlMA200_MA20_MA50_MA100_BUY(
+    last: StockData,
+    prev: StockData,
+  ): Promise<boolean> {
     if (!last || !prev) return false; // safety
-    const BlMa200 = last.MA200 > last.close
-    const abMa20 = last.high > last.MA20 && prev.low < prev.MA20
-    const abMa50 = last.high > last.MA50 && prev.low < prev.MA50
-    const abMa100 = last.high > last.MA100 && prev.low < prev.MA100
-    const MacdLine_divergen = last.divergence > 0 && last.MACDLine < 1
-    return (abMa20 || abMa50 || abMa100) && MacdLine_divergen && BlMa200;
+    const BlMa200 = last.MA200 > last.close;
+    const abMa20 = last.high > last.MA20 && prev.low < prev.MA20;
+    const abMa50 = last.high > last.MA50 && prev.low < prev.MA50;
+    const abMa100 = last.high > last.MA100 && prev.low < prev.MA100;
+    const MacdLine_divergen = last.divergence > 0;
+    return abMa50 && MacdLine_divergen && BlMa200;
   }
 
-  async ABMA200_macdCrossAB_BUY(last: StockData, prev: StockData): Promise<boolean> {
+  async ABMA200_macdCrossAB_BUY(
+    last: StockData,
+    prev: StockData,
+  ): Promise<boolean> {
     if (!last || !prev) return false; // safety
-    const ABMa200 = last.MA200 < last.close
-    return ABMa200 && await this.macdCrossAB(last, prev);
+    const ABMa200 = last.MA200 < last.close;
+    return ABMa200 && (await this.macdCrossAB(last, prev));
   }
 
-    /**
+  /**
 SELL ALL
    */
-async BlMA200_MA20_MA50_MA100_SELL(last: StockData, prev: StockData): Promise<boolean> {
-  if (!last || !prev) return false; // safety
-  const BlMa200 = last.MA200 > last.close
-  const blMA20 = last.low < last.MA20 && prev.high > prev.MA20
-  const blMA50 = last.low < last.MA50 && prev.high > prev.MA50
-  const blMA100 = last.low < last.MA100 && prev.high > prev.MA100
-  const MacdLine_divergen = last.divergence < 0 
-  return (blMA20 || blMA50 || blMA100) && MacdLine_divergen && BlMa200;
-}
+  async BlMA200_MA20_MA50_MA100_SELL(
+    last: StockData,
+    prev: StockData,
+  ): Promise<boolean> {
+    if (!last || !prev) return false; // safety
+    const BlMa200 = last.MA200 > last.close;
+    const blMA20 = last.low < last.MA20 && prev.high > prev.MA20;
+    const blMA50 = last.low < last.MA50 && prev.high > prev.MA50;
+    const blMA100 = last.low < last.MA100 && prev.high > prev.MA100;
+    const MacdLine_divergen = last.divergence < 0;
+    return (blMA20 || blMA50 || blMA100) && MacdLine_divergen && BlMa200;
+  }
 
-async ABMA200_macdCrossBL_SELL(last: StockData, prev: StockData): Promise<boolean> {
-  if (!last || !prev) return false; // safety
-  const ABMa200 = last.MA200 > last.close
-  return ABMa200 && await this.macdCrossBL(last, prev);
-}
+  async ABMA200_macdCrossBL_SELL(
+    last: StockData,
+    prev: StockData,
+  ): Promise<boolean> {
+    if (!last || !prev) return false; // safety
+    const ABMa200 = last.MA200 > last.close;
+    return ABMa200 && (await this.macdCrossBL(last, prev));
+  }
+
+  async RSI_28(last: StockData, prev: StockData): Promise<boolean> {
+    if (!last || !prev) return false; // safety
+    const RSI28 = last.RSI < 28 || prev.RSI < 28;
+    const RSIUP = last.RSI > prev.RSI;
+    return RSI28 && RSIUP;
+  }
+
+  async BlMA200_MA50_BUY(last: StockData, prev: StockData): Promise<boolean> {
+    if (!last || !prev) return false; // safety
+    const BlMa200 = last.MA200 > last.close;
+    const abMa50 = last.high > last.MA50 && prev.low < prev.MA50;
+    const MacdLine_divergen = last.divergence > 0;
+    return abMa50 && MacdLine_divergen && BlMa200;
+  }
+
+  async StochRSIBuy_HOLD(
+    last: StockData,
+    prev: StockData,
+  ): Promise<{ upside: boolean; upside80: boolean }> {
+    if (!last || !prev) return { upside: false, upside80: false }; // safety
+    const stockRSILAUP = last.StochRSI_K - last.StochRSI_D > 0;
+    const stockRSIPRUP = prev.StochRSI_K - prev.StochRSI_D > 0;
+    const compare2day = stockRSILAUP >= stockRSIPRUP;
+    const inrange2080 = last.StochRSI_K < 80 && prev.StochRSI_K < 80;
+    return {
+      upside: stockRSILAUP && compare2day,
+      upside80: stockRSILAUP && stockRSIPRUP && inrange2080,
+    };
+  }
+
+  async StochRSICross(
+    last: StockData,
+    prev: StockData,
+  ): Promise<{ crossUp: boolean; crossDo: boolean }> {
+    if (!last || !prev) return { crossUp: false, crossDo: false }; // safety
+    const stockRSILast = last.StochRSI_K - last.StochRSI_D;
+    const stockRSIPrev = prev.StochRSI_K - prev.StochRSI_D;
+    const crossUp =
+      stockRSILast >= 0 &&
+      stockRSIPrev <= 0 &&
+      (last.MACDLine < 0 ||
+        last.SignalLine < 0 ||
+        prev.MACDLine < 0 ||
+        prev.SignalLine < 0);
+    const crossDo = stockRSILast <= 0 && stockRSIPrev >= 0;
+    return {
+      crossUp,
+      crossDo,
+    };
+  }
+
+  async BuyOnly_StochRSICrossAB200(
+    last: StockData,
+    prev: StockData,
+  ): Promise<{
+    CrUpAll: boolean;
+    CrUpMacdBl0: boolean;
+    PriceCrMA200: boolean;
+    PriceCrMA100: boolean;
+    macdCrAB: boolean;
+  }> {
+    if (!last || !prev)
+      return {
+        CrUpAll: false,
+        CrUpMacdBl0: false,
+        PriceCrMA200: false,
+        PriceCrMA100: false,
+        macdCrAB: false,
+      }; // safety
+    const lastAb50 = last.MA50 > last.close;
+    const lastBl200 = last.MA200 > last.close;
+    // if (lastAb50)
+    //   return {
+    //     CrUpAll: false,
+    //     CrUpMacdBl0: false,
+    //     PriceCrMA200: false,
+    //     PriceCrMA100: false,
+    //     macdCrAB: false,
+    //   }; // safety
+    const MACDbelow0 =
+      last.MACDLine < 0 ||
+      last.SignalLine < 0 ||
+      prev.MACDLine < 0 ||
+      prev.SignalLine < 0;
+    const stockRSILast = last.StochRSI_K - last.StochRSI_D;
+    const stockRSIPrev = prev.StochRSI_K - prev.StochRSI_D;
+    const CrUpAll = stockRSILast >= 0 && stockRSIPrev <= 0;
+    const CrUpMacdBl0 = CrUpAll && MACDbelow0;
+    const PriceCrMA200 = await this.priceAbMA200BUY(last, prev);
+    const PriceCrMA100 = await this.priceAbMABUY(last, prev, 'MA100') && lastBl200;
+    const macdCrAB = await this.macdCrossAB(last, prev);
+    return {
+      CrUpAll,
+      CrUpMacdBl0,
+      PriceCrMA200,
+      PriceCrMA100,
+      macdCrAB,
+    };
+  }
+
+  async priceAbMABUY(
+    last: StockData,
+    prev: StockData,
+    maType: 'MA100' | 'MA200',
+  ): Promise<boolean> {
+    if (!last || !prev) return false; // safety
+
+    const lastAbMA = last.high > last[maType]; // Check if the last high is above the MA
+    const prevBlMA = prev.low < prev[maType]; // Check if the previous low is below the MA
+
+    return lastAbMA && prevBlMA;
+  }
 }
