@@ -21,12 +21,29 @@ import { StockUser } from './stock-user/entities/stock-user.entity';
 import { WatchList } from './stock-user/entities/watchlist.entity';
 import { UserAuth } from './auth/userAuth.entity';
 import { StockPortfolioModule } from './stock-portfolio/stock-portfolio.module';
-import { Buy, Deposit, HoldingAmounts, Sell, StockPortfolio, Withdraw, LostDay } from './stock-portfolio/entities';
+import {
+  Buy,
+  Deposit,
+  HoldingAmounts,
+  Sell,
+  StockPortfolio,
+  Withdraw,
+  LostDay,
+} from './stock-portfolio/entities';
 import { AiToolModule } from './ai-tool/ai-tool.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
 import { MegaModule } from './mega/mega.module';
 import { AlphavantageModule } from './alphavantage/alphavantage.module';
-import {DataHistory1mo,DataHistory1d,DataHistory4h,DataHistory1h,DataHistory30m,DataHistory15m,DataHistory5m ,DataHistory1m} from './stock/entities';
+import {
+  DataHistory1mo,
+  DataHistory1d,
+  DataHistory4h,
+  DataHistory1h,
+  DataHistory30m,
+  DataHistory15m,
+  DataHistory5m,
+  DataHistory1m,
+} from './stock/entities';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TasksService } from './stock/tasks.service';
 import { StockHelperService } from './stock/stockHelper.service';
@@ -37,6 +54,9 @@ import { TasksUSMKService } from './stock/task_usmk.service';
 import { TasksForexService } from './stock/task_forex.service';
 import { SendEverydayService } from './stock/send_everyday.service';
 import { TaskCryptoService } from './stock/task_crypto.service';
+import { TasksUSMK_1MIN_Service } from './stock/task_usmk_1min.service';
+import { TasksUSMKService_SP500 } from './stock/task_usmk500.service';
+import { TasksVNMKService } from './stock/task_vn600.service';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -81,8 +101,21 @@ import { TaskCryptoService } from './stock/task_crypto.service';
             StockUser,
             WatchList,
             UserAuth,
-            StockPortfolio,Buy, Sell, Withdraw, Deposit, HoldingAmounts, LostDay,
-            DataHistory4h,DataHistory1h,DataHistory30m,DataHistory15m,DataHistory5m,DataHistory1m,DataHistory1d,DataHistory1mo
+            StockPortfolio,
+            Buy,
+            Sell,
+            Withdraw,
+            Deposit,
+            HoldingAmounts,
+            LostDay,
+            DataHistory4h,
+            DataHistory1h,
+            DataHistory30m,
+            DataHistory15m,
+            DataHistory5m,
+            DataHistory1m,
+            DataHistory1d,
+            DataHistory1mo,
           ],
           synchronize: true,
         };
@@ -90,7 +123,16 @@ import { TaskCryptoService } from './stock/task_crypto.service';
     }),
     UserModule,
     ShopModule,
-    TypeOrmModule.forFeature([DataHistory1mo,DataHistory1d,DataHistory4h,DataHistory1h,DataHistory30m,DataHistory15m,DataHistory5m,DataHistory1m ]),
+    TypeOrmModule.forFeature([
+      DataHistory1mo,
+      DataHistory1d,
+      DataHistory4h,
+      DataHistory1h,
+      DataHistory30m,
+      DataHistory15m,
+      DataHistory5m,
+      DataHistory1m,
+    ]),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '/src/assets/images'), // Specify the path to the assets directory
       serveRoot: '/images', // The URL path to access the assets
@@ -106,10 +148,19 @@ import { TaskCryptoService } from './stock/task_crypto.service';
     AlphavantageModule,
   ],
   controllers: [AppController],
-  providers: [AppService,StockHelperService, WebhooksService, LocalPLWR, AlphavantageService,
-    TasksService,
+  providers: [
+    AppService,
+    StockHelperService,
+    WebhooksService,
+    LocalPLWR,
+    AlphavantageService,
+    TasksUSMKService_SP500,
+    TasksUSMKService,
+    // TasksVNMKService,
+    // TasksService,
     // TaskCryptoService,
-    // TasksUSMKService,
+    // TasksUSMK_1MIN_Service,
+    // TasksUSMKService_15MIN
     // TasksForexService,
     // SendEverydayService
   ],

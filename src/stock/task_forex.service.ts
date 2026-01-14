@@ -15,26 +15,6 @@ export class TasksForexService {
   ) {}
   private readonly logger = new Logger(TasksForexService.name);
 
-  async sendDiscord(
-    message: string,
-    ticker: string,
-    lastdata: any,
-    channel: string,
-    data?: any,
-  ) {
-    try {
-      const fileBuffer = await this.webhooksService.captureChart(data);
-      return await this.webhooksService.sendDiscordNotification(
-        message,
-        `${channel} ${ticker}`,
-        JSON.stringify(lastdata),
-        fileBuffer
-      );
-    } catch (err) {
-      console.error('❌ Error in controller:', err);
-      throw err;
-    }
-  }
   private async processTickers1hour(
     tickers: string[],
     timeframe: string,
@@ -58,7 +38,8 @@ export class TasksForexService {
         // const lastData = data[data.length - 1];
         // const secondLastData = data[data.length - 2];
 
-        await this.compareAndSend1hour(data.reverse(),
+        await this.webhooksService.compareAndSend1hour(
+          data.reverse(),
           lastData,
           secondLastData,
           ticker,
@@ -69,7 +50,7 @@ export class TasksForexService {
         this.logger.log(`${ticker} processed successfully.`);
       } catch (error) {
         const date = new Date();
-        this.sendDiscord(
+        this.webhooksService.sendDiscord(
           `ERROR ON TasksForexService: ${timeframe} On ${date}: ${JSON.stringify(
             error,
           )}`,
@@ -81,64 +62,6 @@ export class TasksForexService {
       }
     }
   }
-  async compareAndSend1hour(data,
-    lastdata,
-    Secondlastdata,
-    ticker,
-    timeframe,
-    buyChannel,
-    sellChannel,
-  ) {
-    const buyE = await this.stockHelperService.macdCrossAB(
-      lastdata,
-      Secondlastdata,
-    );
-    if (buyE) {
-      await this.sendDiscord(
-        `BUY macdCrossAB-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
-        lastdata,
-        buyChannel,data
-      );
-    }
-    const buy_earlyBuyInRSI = await this.stockHelperService.earlyBuyInRSI(
-      lastdata,
-      Secondlastdata,
-    );
-    if (buy_earlyBuyInRSI) {
-      await this.sendDiscord(
-        `BUY earlyBuyInRSI-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
-        lastdata,
-        buyChannel,data
-      );
-    }
-    const sellE = await this.stockHelperService.macdCrossBL(
-      lastdata,
-      Secondlastdata,
-    );
-    if (sellE) {
-      await this.sendDiscord(
-        `SELLLLLLLL macdCrossBL-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
-        lastdata,
-        sellChannel,data
-      );
-    }
-    const sell_earlySellInRSI = await this.stockHelperService.earlySellInRSI(
-      lastdata,
-      Secondlastdata,
-    );
-    if (sell_earlySellInRSI) {
-      await this.sendDiscord(
-        `SELLLLLLLL sell_earlySellInRSI-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
-        lastdata,
-        sellChannel,data
-      );
-    }
-  }
-
   @Cron('*/15 * * * *') // every 15 minutes
   async handle15minForex() {
     const tickers = [

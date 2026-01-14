@@ -1,16 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import puppeteer from 'puppeteer';
 import axios from 'axios';
-import * as FormData from 'form-data';
+import * as Timer from '../stock/compareTime';
 import { ConfigService } from '@nestjs/config';
 import { AttachmentBuilder, EmbedBuilder, WebhookClient } from 'discord.js';
+import pLimit from 'p-limit';
+import { StockHelperService } from 'src/stock/stockHelper.service';
+
+import * as fs from 'fs';
 @Injectable()
 export class WebhooksService {
   private webhookClient: WebhookClient;
   private WEBHOOKS_ENV: Record<string, string>;
   private WEBHOOKS_CN: Record<string, string>;
   private rsiChannels: string[];
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly stockHelperService: StockHelperService,
+  ) {
     // Parse JSON from env vars
     this.WEBHOOKS_ENV = JSON.parse(
       this.configService.get<string>('WEBHOOKS_ENV_MAP') ||
@@ -48,7 +55,8 @@ export class WebhooksService {
     extra?: any,
   ) {
     const current = new Date().toISOString().replace(/T.*$/, '');
-    const ticker = botname.split(' ')[1].toUpperCase();
+    const tickerON = botname.split(' ')[1].toUpperCase(); // ETHUSD-ON-5min
+    const ticker = tickerON.split('-')[0].toUpperCase(); // ETHUSD
     const webhookCl = botname.split(' ')[0].toUpperCase();
     const WEBHOOKS = this.WEBHOOKS_ENV[webhookCl] || this.WEBHOOKS_ENV.Other;
     this.webhookClient = new WebhookClient({
@@ -81,7 +89,11 @@ export class WebhooksService {
       const id = parts[parts.length - 1];
       gptres = `**[ASK GPT](${extra})** | **[GPT RES](https://todocalender.web.app/home/stock-track/${id}?sym=${ticker}&date=${current})**`;
     }
-    const setmess = extra ? `${origin} | ${gptres}` : origin;
+    let setmess = extra ? `${origin} | ${gptres}` : origin;
+
+    if (!file && !message.includes('SELLCR')) {
+      setmess = `${setmess} | **[CHART MISSING](https://stockmarkets000.web.app/capture-click/${webhookCl}/${tickerON})**`;
+    }
     if (botdt.includes('RSIENDBOT')) {
       options = {
         username: botdt,
@@ -188,33 +200,44 @@ export class WebhooksService {
     };
   }
   async deleteMessages(webhookCl: string, current: string) {
-    // const current = new Date().toISOString().replace(/T.*$/, '');
     const WEBHOOKS = this.WEBHOOKS_ENV[webhookCl] || this.WEBHOOKS_ENV.Other;
     this.webhookClient = new WebhookClient({
       url: this.configService.get<any>(WEBHOOKS),
     });
+
     const WEBHOOKS_CNA = this.WEBHOOKS_CN[webhookCl] || this.WEBHOOKS_CN.Other;
+
+    // Fetch the list of message IDs
     const getIdsOb = await this.getFromFBDynamic(
       `discord_slack_id/discord/${WEBHOOKS_CNA}/${current}.json`,
     );
+
     const Ids = Object.keys(getIdsOb);
     if (Ids.length === 0) return { msg: 'nothing to delete' };
-    for (const messageId of Ids) {
-      try {
-        await this.webhookClient.deleteMessage(messageId);
-        const WEBHOOKS_CNA =
-          this.WEBHOOKS_CN[webhookCl] || this.WEBHOOKS_CN.Other;
-        await this.deleteInFB(
-          `discord_slack_id/discord/${WEBHOOKS_CNA}/${current}/${messageId}.json`,
-        );
-      } catch (error) {
-        if (error.code === 'MESSAGE_NOT_FOUND') {
-          console.log(`Message ${messageId} does not exist.`);
-        } else {
-          console.log(`Error deleting message ${messageId}`);
+
+    // Create a limit function to restrict concurrency to 20
+    const limit = pLimit(10); // This will allow only 20 promises to run in parallel
+
+    // Prepare the delete promises, wrapped in the limit function
+    const deletePromises = Ids.map((messageId) =>
+      limit(async () => {
+        try {
+          await this.webhookClient.deleteMessage(messageId);
+          const messagePath = `discord_slack_id/discord/${WEBHOOKS_CNA}/${current}/${messageId}.json`;
+          await this.deleteInFB(messagePath);
+        } catch (error) {
+          if (error.code === 'MESSAGE_NOT_FOUND') {
+            console.log(`Message ${messageId} does not exist.`);
+          } else {
+            console.log(`Error deleting message ${messageId}:`);
+          }
         }
-      }
-    }
+      }),
+    );
+
+    // Wait for all delete operations to complete
+    await Promise.allSettled(deletePromises);
+
     return { msg: 'delete complete' };
   }
 
@@ -302,10 +325,17 @@ export class WebhooksService {
       );
   }
 
-  async captureChart(chartData: any) {
+  async captureChart(
+    chartData: any,
+    ticker: string,
+    channel: string,
+    message: string,
+  ) {
     if (!chartData || chartData.length === 0) {
       return null;
     }
+    const slicedData =
+      chartData && chartData.length > 0 ? chartData.slice(-200) : [];
     try {
       const browser = await puppeteer.launch({
         headless: true,
@@ -316,7 +346,7 @@ export class WebhooksService {
       const screenWidth = 1920; // Example screen width (can be dynamic)
       const screenHeight = 1080; // Example screen height (can be dynamic)
       await page.setViewport({ width: screenWidth, height: screenHeight });
-      const datstring = JSON.stringify(chartData?.slice(-400));
+      const datstring = JSON.stringify(slicedData);
       // Ensure the LitElement component is loaded and render the chart using the stock-chart-display component
       const htmlContent = `
       <html>
@@ -342,6 +372,7 @@ export class WebhooksService {
               padding: 0;
               width: 100%;
               height: 100%;
+              background: rgb(243, 235, 235);
             }
     
             /* Override styles for the stock-chart-display by targeting the #stockChart ID specifically */
@@ -357,23 +388,16 @@ export class WebhooksService {
               width: 100% !important;
               height: 100% !important;
             }
-    
-            /* Optional: style the heading */
-            h1 {
-              position: absolute;
-              top: 20px;
-              left: 20px;
-              color: white;
-              z-index: 9999;
-              font-size: 24px;
+            .center{
+                text-align: center;
             }
           </style>
         </head>
         <body id="capture-target">
           <!-- Display the chart date dynamically if chartData is available -->
-          <h1>Stock Chart Capture <span id="stockDate"></span></h1>
+          <h3 class="center">${ticker} | ${message} </h3>
           <!-- Container for the chart to fill the screen -->
-          <div style="width: 100%; height: 100%; background: white;">
+          <div style="width: 100%; height: 100%; background: rgb(243, 235, 235);">
             <!-- Properly passing chartData using .stockData binding -->
             <stock-chart-display id="stockChart" .stockData=""></stock-chart-display>
           </div>
@@ -381,9 +405,6 @@ export class WebhooksService {
           <script>
             // Your data (replace this with your actual chart data)
             const chartData = ${datstring};
-    
-            // Set the date dynamically (if chartData is available)
-            document.getElementById('stockDate').innerText = chartData[1]?.date || 'No Date Found';
     
             // Get the stock-chart-display element by its ID
             const stockChartElement = document.getElementById('stockChart');
@@ -412,9 +433,56 @@ export class WebhooksService {
       await browser.close();
       return screenshotBuffer;
     } catch (error) {
+      const path = `${channel}/${ticker}`.toUpperCase();
+      const data = await this.FireBaseApi(
+        'put',
+        `stock-data/${path}.json`,
+        slicedData,
+      );
+      // load the webpage again next time
+      const url = `https://stockmarkets000.web.app/capture-target/${path}`;
+      // Load the website and render for 5 seconds
+      await this.loadWebsiteFor5Seconds(url);
+      console.log('Storing chart data for later viewing at:', url);
+      console.error('Error capturing chart:');
       return null;
     }
   }
+  async loadWebsiteFor5Seconds(url: string): Promise<void> {
+    let browser;
+    try {
+      // Launch Puppeteer in headless mode (no UI)
+      browser = await puppeteer.launch({
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      });
+
+      const page = await browser.newPage();
+
+      // Set viewport size (optional)
+      await page.setViewport({ width: 1920, height: 1080 });
+      // Navigate to the URL
+      await page.goto(url, { waitUntil: 'networkidle2' }); // Wait until network is idle or fully loaded
+
+      console.log(`Website ${url} loaded, waiting for 5 seconds.`);
+
+      // Wait for 5 seconds using setTimeout
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+
+      console.log('5 seconds have passed, closing the browser.');
+
+      // Optionally: take a screenshot after 5 seconds
+      // await page.screenshot({ path: 'screenshot.png' });
+    } catch (error) {
+      console.error('Error loading website:', error);
+    } finally {
+      // Ensure that we close the browser after the operation
+      if (browser) {
+        await browser.close();
+      }
+    }
+  }
+
   async sendDiscordNotificationImage(
     botname: string = 'Bot Alert',
     file?: any,
@@ -426,40 +494,798 @@ export class WebhooksService {
     this.webhookClient = new WebhookClient({
       url: this.configService.get<any>(WEBHOOKS),
     });
-  
+
     const botAvatar = {
       QQQ: 'https://image-post-625h.vercel.app/upload/eleceed/discord/QQQ.png',
       SPY: 'https://image-post-625h.vercel.app/upload/eleceed/discord/s&p.png',
       Other: `https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/${ticker}.png`,
     };
-    
+
     // Dynamically select avatarURL based on the ticker, default to 'Other' if ticker not found
     const selectedAvatar = botAvatar[ticker] || botAvatar.Other;
-  
+
     const botdt = botname.split(' ').slice(1).join(' ');
-  
+
     // Prepare the options for the message
     let options: any = {
       username: botdt,
       avatarURL: selectedAvatar,
     };
-  
+
     if (file) {
       const filename = 'capture.png';
       const attachment = new AttachmentBuilder(file.buffer, { name: filename });
       options.files = [attachment];
     }
-  
+
     // Send the message with the image as an attachment, no embed
     const sentMessage = await this.webhookClient.send(options);
-  
+
     const WEBHOOKS_CNA = this.WEBHOOKS_CN[webhookCl] || this.WEBHOOKS_CN.Other;
     await this.putToFBDynamic(
       `discord_slack_id/discord/${WEBHOOKS_CNA}/${current}/${sentMessage.id}.json`,
       `https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}`,
     );
-  
+
     return { msg: 'post to discord success', ...sentMessage };
+  }
+
+  async FireBaseApi(
+    method: 'post' | 'patch' | 'put' | 'delete' | 'get',
+    endpoint: string,
+    data: any,
+  ) {
+    const firebaseRoot = this.configService.get<any>('FIREBASE_DATA');
+    let BASE_URL = `${firebaseRoot}/${endpoint}`;
+    try {
+      const response = await axios.request({
+        method: method || 'get',
+        url: BASE_URL,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        data: data,
+        maxBodyLength: Infinity,
+      });
+
+      // Axios automatically parses JSON, so just return response.data
+      return response.data;
+    } catch (error) {
+      // Match fetch's "return 'skipped'" behavior
+      if (error.response) {
+        console.error(`❌ Failed request. Status: ${error.response.status}`);
+      } else {
+        console.error(`❌ Network or Axios error: ${error.message}`);
+      }
+      return 'skipped';
+    }
+  }
+
+  async sendDiscord(
+    message: string,
+    ticker: string,
+    lastdata: any,
+    channel: string,
+    data?: any,
+  ) {
+    try {
+      const fileBuffer = await this.captureChart(
+        data,
+        ticker,
+        channel,
+        message,
+      );
+      return await this.sendDiscordNotification(
+        message,
+        `${channel} ${ticker}`,
+        JSON.stringify(lastdata),
+        fileBuffer,
+      );
+    } catch (err) {
+      console.error('❌ Error in controller:', err);
+      throw err;
+    }
+  }
+  async checktimeMinutesEST(ticker: string, date, time: number) {
+    const isWithinRange = Timer.checkIfWithin5MinutesEST(date, time);
+    if (isWithinRange) {
+      console.log(ticker, `✅ Within ±${time} minutes of EST time`);
+      // check one
+      return true;
+    } else {
+      console.log(ticker, `❌ Outside  ±${time} minutes of EST time: `, date);
+      return false;
+    }
+  }
+
+  async compareAndSend1hour(
+    data,
+    lastdata,
+    Secondlastdata,
+    ticker,
+    timeframe,
+    B_Channel,
+    HT_Channel,
+  ) {
+    if (timeframe === '4h' || timeframe === '1day') {
+      await this.sendDiscord(
+        `JUST WATCH_ME-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        HT_Channel,
+        data,
+      );
+    }
+    const Over200NUpBuy = await this.stockHelperService.Over200NUpBuy(
+      lastdata,
+      Secondlastdata,
+    );
+    if (Over200NUpBuy) {
+      await this.sendDiscord(
+        `BUY Over200NUpBuy-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        B_Channel,
+        data,
+      );
+      return;
+    }
+    const macdCrossAB_BL0 = await this.stockHelperService.macdCrossAB_BL0(
+      lastdata,
+      Secondlastdata,
+    );
+    if (macdCrossAB_BL0) {
+      await this.sendDiscord(
+        `BUY macdCrossAB_BL0-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        B_Channel,
+        data,
+      );
+      return;
+    }
+
+    const priceAbMA200BUY = await this.stockHelperService.priceAbMA200BUY(
+      lastdata,
+      Secondlastdata,
+    );
+    if (priceAbMA200BUY) {
+      // add to uplist and delete out downlist
+      await this.sendDiscord(
+        `BUY priceAbMA200BUY-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        B_Channel,
+        data,
+      );
+      return;
+    }
+
+    const priceBlMA200SELL = await this.stockHelperService.priceBlMA200SELL(
+      lastdata,
+      Secondlastdata,
+    );
+    if (priceBlMA200SELL) {
+      await this.sendDiscord(
+        `SELLCRLLLL priceBlMA200SELL-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        B_Channel,
+        data,
+      );
+      return;
+    }
+
+    const macdCrossAB = await this.stockHelperService.macdCrossAB(
+      lastdata,
+      Secondlastdata,
+    );
+    if (macdCrossAB) {
+      await this.sendDiscord(
+        `BUY macdCrossAB-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        HT_Channel,
+        data,
+      );
+      return;
+    }
+    const earlyBuyInRSI = await this.stockHelperService.earlyBuyInRSI(
+      lastdata,
+      Secondlastdata,
+    );
+    if (earlyBuyInRSI) {
+      await this.sendDiscord(
+        `BUY earlyBuyInRSI-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        HT_Channel,
+        data,
+      );
+      return;
+    }
+    const macdCrossBL = await this.stockHelperService.macdCrossBL(
+      lastdata,
+      Secondlastdata,
+    );
+    if (macdCrossBL) {
+      await this.sendDiscord(
+        `SELLCRLLLL macdCrossBL-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        HT_Channel,
+        data,
+      );
+      return;
+    }
+    const earlySellInRSI = await this.stockHelperService.earlySellInRSI(
+      lastdata,
+      Secondlastdata,
+    );
+    if (earlySellInRSI) {
+      await this.sendDiscord(
+        `SELLCRLLLL earlySellInRSI-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        HT_Channel,
+        data,
+      );
+      return;
+    }
+
+    const Under200NDownSell = await this.stockHelperService.Under200NDownSell(
+      lastdata,
+      Secondlastdata,
+    );
+    if (Under200NDownSell) {
+      await this.sendDiscord(
+        `SELLCRLLLL Under200NDownSell-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        HT_Channel,
+        data,
+      );
+      return;
+    }
+  }
+
+  async compareAndSend1hourv2(
+    data,
+    lastdata,
+    Secondlastdata,
+    ticker,
+    timeframe,
+    B_Channel,
+    HT_Channel,
+  ) {
+    const BlMA200_MA20_MA50_MA100_BUY =
+      await this.stockHelperService.BlMA200_MA20_MA50_MA100_BUY(
+        lastdata,
+        Secondlastdata,
+      );
+    if (BlMA200_MA20_MA50_MA100_BUY) {
+      await this.sendDiscord(
+        `BUY BlMA200_MA20_MA50_MA100_BUY-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        B_Channel,
+        data,
+      );
+      return;
+    }
+    const ABMA200_macdCrossAB_BUY =
+      await this.stockHelperService.ABMA200_macdCrossAB_BUY(
+        lastdata,
+        Secondlastdata,
+      );
+    if (ABMA200_macdCrossAB_BUY) {
+      await this.sendDiscord(
+        `BUY ABMA200_macdCrossAB_BUY-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        B_Channel,
+        data,
+      );
+      return;
+    }
+
+    const BlMA200_MA20_MA50_MA100_SELL =
+      await this.stockHelperService.BlMA200_MA20_MA50_MA100_SELL(
+        lastdata,
+        Secondlastdata,
+      );
+    if (BlMA200_MA20_MA50_MA100_SELL) {
+      await this.sendDiscord(
+        `SELLLLLL BlMA200_MA20_MA50_MA100_SELL-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        HT_Channel,
+        data,
+      );
+      return;
+    }
+
+    const ABMA200_macdCrossBL_SELL =
+      await this.stockHelperService.ABMA200_macdCrossBL_SELL(
+        lastdata,
+        Secondlastdata,
+      );
+    if (ABMA200_macdCrossBL_SELL) {
+      await this.sendDiscord(
+        `SELLLLLL ABMA200_macdCrossBL_SELL-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        HT_Channel,
+        data,
+      );
+      return;
+    }
+  }
+
+  async crossAB_bl0_not15(
+    data,
+    lastdata,
+    Secondlastdata,
+    ticker,
+    timeframe,
+    B_Channel,
+    HT_Channel,
+  ) {
+    const macdCrossAB_BL0 = await this.stockHelperService.macdCrossAB_BL0(
+      lastdata,
+      Secondlastdata,
+    );
+    if (macdCrossAB_BL0) {
+      await this.sendDiscord(
+        `BUY macdCrossAB_BL0-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        B_Channel,
+        data,
+      );
+      return;
+    }
+    const macdCrossAB = await this.stockHelperService.macdCrossAB(
+      lastdata,
+      Secondlastdata,
+    );
+    if (macdCrossAB) {
+      await this.sendDiscord(
+        `BUY macdCrossAB-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        HT_Channel,
+        data,
+      );
+      return;
+    }
+  }
+
+  async crossAB_bl0_not5(
+    data,
+    lastdata,
+    Secondlastdata,
+    ticker,
+    timeframe,
+    B_Channel,
+    HT_Channel,
+  ) {
+    const macdCrossAB_BL0 = await this.stockHelperService.macdCrossAB_BL0(
+      lastdata,
+      Secondlastdata,
+    );
+    if (macdCrossAB_BL0) {
+      await this.sendDiscord(
+        `BUY macdCrossAB_BL0-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        B_Channel,
+        data,
+      );
+      return;
+    }
+    const earlySellInRSI = await this.stockHelperService.earlySellInRSI(
+      lastdata,
+      Secondlastdata,
+    );
+    if (earlySellInRSI) {
+      await this.sendDiscord(
+        `BUY macdCrossAB-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        HT_Channel,
+        data,
+      );
+      return;
+    }
+  }
+
+  async compareAndSend_BUY(
+    data,
+    lastdata,
+    Secondlastdata,
+    ticker,
+    timeframe,
+    B_Channel,
+    HT_Channel,
+  ) {
+    const lastAb200 = lastdata.MA200 > lastdata.close;
+    if (lastAb200) return;
+    const RSI_28 = await this.stockHelperService.RSI_28(
+      lastdata,
+      Secondlastdata,
+    );
+    if (RSI_28) {
+      await this.sendDiscord(
+        `BUY-BlMA200 RSI_28-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        B_Channel,
+        data,
+      );
+      return;
+    }
+    const BlMA200_MA50_BUY = await this.stockHelperService.BlMA200_MA50_BUY(
+      lastdata,
+      Secondlastdata,
+    );
+    if (BlMA200_MA50_BUY) {
+      await this.sendDiscord(
+        `BUY-BlMA200_MA50_BUY-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        B_Channel,
+        data,
+      );
+      return;
+    }
+
+    const Over200NUpBuy = await this.stockHelperService.Over200NUpBuy(
+      lastdata,
+      Secondlastdata,
+    );
+    if (Over200NUpBuy) {
+      await this.sendDiscord(
+        `BUY-Over200NUpBuy-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        B_Channel,
+        data,
+      );
+      return;
+    }
+
+    const priceAbMA200BUY = await this.stockHelperService.priceAbMA200BUY(
+      lastdata,
+      Secondlastdata,
+    );
+    if (priceAbMA200BUY) {
+      await this.sendDiscord(
+        `BUY-priceAbMA200BUY-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        B_Channel,
+        data,
+      );
+      return;
+    }
+
+    const macdCrossAB_BL0 = await this.stockHelperService.priceAbMA200BUY(
+      lastdata,
+      Secondlastdata,
+    );
+    if (macdCrossAB_BL0) {
+      await this.sendDiscord(
+        `BUY-macdCrossAB_BL0-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        B_Channel,
+        data,
+      );
+      return;
+    }
+  }
+
+  async above_or_bellow(
+    data,
+    lastdata,
+    Secondlastdata,
+    ticker,
+    timeframe,
+    B_Channel,
+    HT_Channel,
+  ) {
+    const lastpriceToMA200 = lastdata.MA200 < lastdata.close;
+    if (lastpriceToMA200) {
+      // price above MA200 buy
+      const Over200NUpBuy = await this.stockHelperService.Over200NUpBuy(
+        lastdata,
+        Secondlastdata,
+      );
+      if (Over200NUpBuy) {
+        await this.sendDiscord(
+          `BUY-Over200NUpBuy-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+          `${ticker}-ON-${timeframe}`,
+          lastdata,
+          B_Channel,
+          data,
+        );
+        return;
+      }
+      const priceAbMA200BUY = await this.stockHelperService.priceAbMA200BUY(
+        lastdata,
+        Secondlastdata,
+      );
+      if (priceAbMA200BUY) {
+        await this.sendDiscord(
+          `BUY-priceAbMA200BUY-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+          `${ticker}-ON-${timeframe}`,
+          lastdata,
+          B_Channel,
+          data,
+        );
+        return;
+      }
+      const macdCrossAB = await this.stockHelperService.macdCrossAB(
+        lastdata,
+        Secondlastdata,
+      );
+      if (macdCrossAB) {
+        await this.sendDiscord(
+          `BUY-macdCrossAB-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+          `${ticker}-ON-${timeframe}`,
+          lastdata,
+          B_Channel,
+          data,
+        );
+        return;
+      }
+    } else {
+      // price below MA200 HT channel
+      const RSI_28 = await this.stockHelperService.RSI_28(
+        lastdata,
+        Secondlastdata,
+      );
+      if (RSI_28) {
+        await this.sendDiscord(
+          `BUY-BlMA200 RSI_28-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+          `${ticker}-ON-${timeframe}`,
+          lastdata,
+          HT_Channel,
+          data,
+        );
+        return;
+      }
+      const BlMA200_MA50_BUY = await this.stockHelperService.BlMA200_MA50_BUY(
+        lastdata,
+        Secondlastdata,
+      );
+      if (BlMA200_MA50_BUY) {
+        await this.sendDiscord(
+          `BUY-BlMA200_MA50_BUY-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+          `${ticker}-ON-${timeframe}`,
+          lastdata,
+          HT_Channel,
+          data,
+        );
+        return;
+      }
+
+      this.StochRSICross(
+        data,
+        lastdata,
+        Secondlastdata,
+        ticker,
+        timeframe,
+        HT_Channel,
+        HT_Channel,
+      );
+    }
+  }
+
+  async OUTPUTFILE(
+    data,
+    lastdata,
+    Secondlastdata,
+    ticker,
+    timeframe,
+    B_Channel,
+    HT_Channel,
+  ) {
+    const StochRSIBuy_HOLD = await this.stockHelperService.StochRSIBuy_HOLD(
+      lastdata,
+      Secondlastdata,
+    );
+    const dir = './logs_' + timeframe;
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+    if (StochRSIBuy_HOLD.upside) {
+      // await this.sendDiscord(
+      //   `BUY-upside-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+      //   `${ticker}-ON-${timeframe}`,
+      //   lastdata,
+      //   B_Channel,
+      //   data,
+      // );
+      console.log(`✅ Success: ${ticker}`);
+      // Log successful tickers
+      const successPathtxt = `${dir}/upside.txt`;
+      const successPathfeature = `${dir}/upside.feature`;
+
+      fs.appendFileSync(
+        successPathtxt,
+        ` | http://localhost:4200/price-log/${ticker}?daysRange=500 |\n`,
+        'utf8',
+      );
+      fs.appendFileSync(
+        successPathfeature,
+        ` | http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=1day|\n`,
+        'utf8',
+      );
+      const successPath_cvs = `${dir}/upside.cvs`;
+      fs.appendFileSync(successPath_cvs, `  ${ticker} \n`, 'utf8');
+      return;
+    }
+    if (StochRSIBuy_HOLD.upside80) {
+      // await this.sendDiscord(
+      //   `BUY-upside80-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+      //   `${ticker}-ON-${timeframe}`,
+      //   lastdata,
+      //   B_Channel,
+      //   data,
+      // );
+      console.log(`✅ AB80: ${ticker}`);
+      // Log successful tickers
+      const successPathtxt = `${dir}/upside-AB80.txt`;
+      const successPathfeature = `${dir}/upside-AB80.feature`;
+      fs.appendFileSync(
+        successPathtxt,
+        ` | http://localhost:4200/price-log/${ticker}?daysRange=500 |\n`,
+        'utf8',
+      );
+      fs.appendFileSync(
+        successPathfeature,
+        ` | http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=1day|\n`,
+        'utf8',
+      );
+      const successPath_cvs = `${dir}/upsideAB80.cvs`;
+      fs.appendFileSync(successPath_cvs, ` ${ticker} \n`, 'utf8');
+      return;
+    }
+    // await this.sendDiscord(
+    //   `SELL-NONO-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+    //   `${ticker}-ON-${timeframe}`,
+    //   lastdata,
+    //   HT_Channel,
+    //   data,
+    // );
+    // return;
+    // Log successful tickers
+    const successPathtxt = `${dir}/down-Fails.txt`;
+    const successPathfeature = `${dir}/down-Fails.feature`;
+    fs.appendFileSync(
+      successPathtxt,
+      ` | http://localhost:4200/price-log/${ticker}?daysRange=500 |\n`,
+      'utf8',
+    );
+    fs.appendFileSync(
+      successPathfeature,
+      ` | http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=1day|\n`,
+      'utf8',
+    );
+    const successPath_cvs = `${dir}/Fails.cvs`;
+    fs.appendFileSync(successPath_cvs, `  ${ticker} \n`, 'utf8');
+  }
+
+  async StochRSICross(
+    data,
+    lastdata,
+    Secondlastdata,
+    ticker,
+    timeframe,
+    B_Channel,
+    HT_Channel,
+  ) {
+    const StochRSICross = await this.stockHelperService.StochRSICross(
+      lastdata,
+      Secondlastdata,
+    );
+    if (StochRSICross.crossUp) {
+      await this.sendDiscord(
+        `BUY-StochRSICrossUP-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        B_Channel,
+        data,
+      );
+      return;
+    }
+    if (StochRSICross.crossDo) {
+      await this.sendDiscord(
+        `SELL-StochRSICrossDOWN -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        HT_Channel,
+        data,
+      );
+      return;
+    }
+  }
+
+  async BuyOnly_StochRSICrossAB200(
+    data,
+    lastdata,
+    Secondlastdata,
+    ticker,
+    timeframe,
+    B_Channel,
+    HT_Channel,
+  ) {
+    const BuyOnly_StochRSICrossAB200 =
+      await this.stockHelperService.BuyOnly_StochRSICrossAB200(
+        lastdata,
+        Secondlastdata,
+      );
+    if (BuyOnly_StochRSICrossAB200.PriceCrMA200) {
+      await this.sendDiscord(
+        `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA200 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        B_Channel,
+        data,
+      );
+      return;
+    }
+
+    if (BuyOnly_StochRSICrossAB200.PriceCrMA100) {
+      await this.sendDiscord(
+        `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA100 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        B_Channel,
+        data,
+      );
+      return;
+    }
+    // if (BuyOnly_StochRSICrossAB200.CrUpMacdBl0) {
+    //   await this.sendDiscord(
+    //     `SBUY-BuyOnly_StochRSICrossAB200-CrUpMacdBl0 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+    //     `${ticker}-ON-${timeframe}`,
+    //     lastdata,
+    //     B_Channel,
+    //     data,
+    //   );
+    //   return;
+    // }
+    // if (BuyOnly_StochRSICrossAB200.CrUpAll) {
+    //   await this.sendDiscord(
+    //     `BUY-BuyOnly_StochRSICrossAB200-CrUpAll -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+    //     `${ticker}-ON-${timeframe}`,
+    //     lastdata,
+    //     HT_Channel,
+    //     data,
+    //   );
+    //   return;
+    // }
+    // if (BuyOnly_StochRSICrossAB200.PriceCrMA200) {
+    //   await this.sendDiscord(
+    //     `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA200 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+    //     `${ticker}-ON-${timeframe}`,
+    //     lastdata,
+    //     B_Channel,
+    //     data,
+    //   );
+    //   return;
+    // }
+    // if (BuyOnly_StochRSICrossAB200.macdCrAB) {
+    //   await this.sendDiscord(
+    //     `BUY-BuyOnly_StochRSICrossAB200-macdCrAB -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+    //     `${ticker}-ON-${timeframe}`,
+    //     lastdata,
+    //     HT_Channel,
+    //     data,
+    //   );
+    //   return;
+    // }
   }
   /**
    async sendDiscordNotificationImage(

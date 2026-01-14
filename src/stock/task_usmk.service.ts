@@ -6,17 +6,37 @@ import { ConfigService } from '@nestjs/config';
 import { StockHelperService } from './stockHelper.service';
 import { LocalPLWR } from './runlocal.service';
 import { WebhooksService } from 'src/webhooks/webhooks.service';
-
-
-
+import * as Timer from './compareTime';
 @Injectable()
 export class TasksUSMKService {
   allkeys = 'all'; // test
-  // mysymbols = ['QQQ', 'SPY', 'SNAP','BULL','UNH',"TTD","CNC"]; // test symbols
-  mysymbols = ['INTC', 'SMCI', 'BULL','RDW','CRWV',"TSLA","BILL",'QQQ', 'SPY', 'SNAP','BULL','UNH',"TTD","CNC"]; // test symbols
+  mysymbols = [
+    'MSFT',
+    'PLTR',
+    'SOXX',
+    'NVDA',
+    'MSTR',
+    'ORCL',
+    'HE',
+    'AVGO',
+    'INTC',
+    'SMCI',
+    'BULL',
+    'RDW',
+    'CRWV',
+    'TSLA',
+    'BILL',
+    'QQQ',
+    'SPY',
+    'SNAP',
+    'BULL',
+    'UNH',
+    'TTD',
+    'CNC',
+  ]; // test symbols
   constructor(
     private readonly configService: ConfigService,
-        private readonly webhooksService: WebhooksService,
+    private readonly webhooksService: WebhooksService,
     private readonly stockHelperService: StockHelperService,
     private readonly LocalPLWR: LocalPLWR,
   ) {}
@@ -25,7 +45,8 @@ export class TasksUSMKService {
   async USTIMERUN(
     intickers: string[],
     api: any,
-    channel,
+    B_Channel,
+    HT_Channel,
     delay,
     timeframe = '5min',
   ) {
@@ -47,14 +68,22 @@ export class TasksUSMKService {
     );
 
     const tickers = intickers;
-    await this.processTickers(tickers, timeframe, api, channel, delay);
+    await this.processTickers(
+      tickers,
+      timeframe,
+      api,
+      B_Channel,
+      HT_Channel,
+      delay,
+    );
   }
 
   private async processTickers(
     tickers: string[],
     timeframe: string,
     apikey: string,
-    channel: string,
+    B_Channel,
+    HT_Channel,
     delay = 2,
   ) {
     const date = new Date();
@@ -81,16 +110,18 @@ export class TasksUSMKService {
         const lastData = data[data.length - 1];
         const secondLastData = data[data.length - 2];
 
-        await this.compareAndSend(data,
+        await this.webhooksService.above_or_bellow(
+          data,
           lastData,
           secondLastData,
           ticker,
           timeframe,
-          channel,
+          B_Channel,
+          HT_Channel,
         );
         this.logger.log(`${ticker} processed successfully.`);
       } catch (error) {
-        this.sendDiscord(
+        this.webhooksService.sendDiscord(
           `ERROR ON API AT: ${timeframe} On ${date}`,
           `RSIENDBOT ${ticker} at ${timeframe}`,
           'Nono',
@@ -100,102 +131,36 @@ export class TasksUSMKService {
       }
     }
   }
-  uplist = [];
-  downlist = [];
-  async compareAndSend(data, lastdata, Secondlastdata, ticker, timeframe, channel) {
-    const buyALL =
-      await this.stockHelperService.priceAbAll1or5or15MinBUY(lastdata);
-    if (buyALL && !this.uplist.includes(ticker)) {
-      // add to uplist and delete out downlist
-      await this.sendDiscord(
-        `BUY priceAbAll-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
-        lastdata,
-        'US_EARLY_5MIN',
-        data
-      );
-      this.uplist.push(ticker);
-    }
 
-    // const downtime = await this.stockHelperService.macdCrossBL(
-    //   lastdata,
-    //   Secondlastdata,
-    // );
-    // if (downtime) {
-    //   if (this.uplist.includes(ticker)) {
-    //     this.uplist = this.uplist.filter((sym) => sym !== ticker);
-    //   }
-    //   await this.sendDiscord(
-    //     `SELLLLLLLL macdCrossBL-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-    //     `${ticker}-ON-${timeframe}`,
-    //     lastdata,
-    //     'US_ALL',
-    //   );
-    // }
-    const sellALl =
-      await this.stockHelperService.priceBlAll1or5or15MinSELL(lastdata);
-    if (sellALl && !this.downlist.includes(ticker)) {
-      await this.sendDiscord(
-        `SELLLLLLLL priceBlAll-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
-        lastdata,
-        'US_ALL',data
-      );
-      // add to downlist and remove from uplist
-      this.downlist.push(ticker);
-    }
-    // const uptime = await this.stockHelperService.macdCrossAB(
-    //   lastdata,
-    //   Secondlastdata,
-    // );
-    // if (uptime) {
-    //   if (this.downlist.includes(ticker)) {
-    //     this.downlist = this.downlist.filter((sym) => sym !== ticker);
-    //   }
-    //   await this.sendDiscord(
-    //     `BUY macdCrossAB-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-    //     `${ticker}-ON-${timeframe}`,
-    //     lastdata,
-    //     'US_EARLY_15MIN',
-    //   );
-    // }
-  }
-  async sendDiscord(
-    message: string,
-    ticker: string,
-    lastdata: any,
-    channel: string,
-    data?: any,
-  ) {
-    try {
-      const fileBuffer = await this.webhooksService.captureChart(data);
-      return await this.webhooksService.sendDiscordNotification(
-        message,
-        `${channel} ${ticker}`,
-        JSON.stringify(lastdata),
-        fileBuffer
-      );
-    } catch (err) {
-      console.error('❌ Error in controller:', err);
-      throw err;
-    }
-  }
   @Cron('*/5 14-21 * * 1-5', { timeZone: 'UTC' })
   async runAllWatchLists() {
     const symbols = (await this.LocalPLWR.getDolist()) || [];
     const combined = [...this.mysymbols, ...symbols];
     await Promise.all([
-      this.USTIMERUN(combined, this.allkeys, 'US_EARLY_5MIN', 2, '5min'),
+      this.USTIMERUN(
+        this.mysymbols,
+        this.allkeys,
+        'US_EARLY_5MIN',
+        'US_5M_HT',
+        2,
+        '5min',
+      ),
     ]);
   }
 
   @Cron('*/15 14-21 * * 1-5', { timeZone: 'UTC' })
   async runAllWatL15min() {
-
     const symbols = (await this.LocalPLWR.getDolist()) || [];
     const combined = [...this.mysymbols, ...symbols];
     await Promise.all([
-      this.USTIMERUN(combined, this.allkeys, 'US_EARLY_15MIN', 3, '15min'),
+      this.USTIMERUN(
+        this.mysymbols,
+        this.allkeys,
+        'US_EARLY_15MIN',
+        'US_15M_HT',
+        3,
+        '15min',
+      ),
     ]);
   }
 }
