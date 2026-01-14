@@ -6,6 +6,8 @@ import { ConfigService } from '@nestjs/config';
 import { AttachmentBuilder, EmbedBuilder, WebhookClient } from 'discord.js';
 import pLimit from 'p-limit';
 import { StockHelperService } from 'src/stock/stockHelper.service';
+
+import * as fs from 'fs';
 @Injectable()
 export class WebhooksService {
   private webhookClient: WebhookClient;
@@ -227,7 +229,7 @@ export class WebhooksService {
           if (error.code === 'MESSAGE_NOT_FOUND') {
             console.log(`Message ${messageId} does not exist.`);
           } else {
-            console.log(`Error deleting message ${messageId}:`, error);
+            console.log(`Error deleting message ${messageId}:`);
           }
         }
       }),
@@ -589,7 +591,7 @@ export class WebhooksService {
     if (isWithinRange) {
       console.log(ticker, `✅ Within ±${time} minutes of EST time`);
       // check one
-      return true
+      return true;
     } else {
       console.log(ticker, `❌ Outside  ±${time} minutes of EST time: `, date);
       return false;
@@ -745,6 +747,545 @@ export class WebhooksService {
       );
       return;
     }
+  }
+
+  async compareAndSend1hourv2(
+    data,
+    lastdata,
+    Secondlastdata,
+    ticker,
+    timeframe,
+    B_Channel,
+    HT_Channel,
+  ) {
+    const BlMA200_MA20_MA50_MA100_BUY =
+      await this.stockHelperService.BlMA200_MA20_MA50_MA100_BUY(
+        lastdata,
+        Secondlastdata,
+      );
+    if (BlMA200_MA20_MA50_MA100_BUY) {
+      await this.sendDiscord(
+        `BUY BlMA200_MA20_MA50_MA100_BUY-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        B_Channel,
+        data,
+      );
+      return;
+    }
+    const ABMA200_macdCrossAB_BUY =
+      await this.stockHelperService.ABMA200_macdCrossAB_BUY(
+        lastdata,
+        Secondlastdata,
+      );
+    if (ABMA200_macdCrossAB_BUY) {
+      await this.sendDiscord(
+        `BUY ABMA200_macdCrossAB_BUY-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        B_Channel,
+        data,
+      );
+      return;
+    }
+
+    const BlMA200_MA20_MA50_MA100_SELL =
+      await this.stockHelperService.BlMA200_MA20_MA50_MA100_SELL(
+        lastdata,
+        Secondlastdata,
+      );
+    if (BlMA200_MA20_MA50_MA100_SELL) {
+      await this.sendDiscord(
+        `SELLLLLL BlMA200_MA20_MA50_MA100_SELL-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        HT_Channel,
+        data,
+      );
+      return;
+    }
+
+    const ABMA200_macdCrossBL_SELL =
+      await this.stockHelperService.ABMA200_macdCrossBL_SELL(
+        lastdata,
+        Secondlastdata,
+      );
+    if (ABMA200_macdCrossBL_SELL) {
+      await this.sendDiscord(
+        `SELLLLLL ABMA200_macdCrossBL_SELL-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        HT_Channel,
+        data,
+      );
+      return;
+    }
+  }
+
+  async crossAB_bl0_not15(
+    data,
+    lastdata,
+    Secondlastdata,
+    ticker,
+    timeframe,
+    B_Channel,
+    HT_Channel,
+  ) {
+    const macdCrossAB_BL0 = await this.stockHelperService.macdCrossAB_BL0(
+      lastdata,
+      Secondlastdata,
+    );
+    if (macdCrossAB_BL0) {
+      await this.sendDiscord(
+        `BUY macdCrossAB_BL0-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        B_Channel,
+        data,
+      );
+      return;
+    }
+    const macdCrossAB = await this.stockHelperService.macdCrossAB(
+      lastdata,
+      Secondlastdata,
+    );
+    if (macdCrossAB) {
+      await this.sendDiscord(
+        `BUY macdCrossAB-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        HT_Channel,
+        data,
+      );
+      return;
+    }
+  }
+
+  async crossAB_bl0_not5(
+    data,
+    lastdata,
+    Secondlastdata,
+    ticker,
+    timeframe,
+    B_Channel,
+    HT_Channel,
+  ) {
+    const macdCrossAB_BL0 = await this.stockHelperService.macdCrossAB_BL0(
+      lastdata,
+      Secondlastdata,
+    );
+    if (macdCrossAB_BL0) {
+      await this.sendDiscord(
+        `BUY macdCrossAB_BL0-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        B_Channel,
+        data,
+      );
+      return;
+    }
+    const earlySellInRSI = await this.stockHelperService.earlySellInRSI(
+      lastdata,
+      Secondlastdata,
+    );
+    if (earlySellInRSI) {
+      await this.sendDiscord(
+        `BUY macdCrossAB-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        HT_Channel,
+        data,
+      );
+      return;
+    }
+  }
+
+  async compareAndSend_BUY(
+    data,
+    lastdata,
+    Secondlastdata,
+    ticker,
+    timeframe,
+    B_Channel,
+    HT_Channel,
+  ) {
+    const lastAb200 = lastdata.MA200 > lastdata.close;
+    if (lastAb200) return;
+    const RSI_28 = await this.stockHelperService.RSI_28(
+      lastdata,
+      Secondlastdata,
+    );
+    if (RSI_28) {
+      await this.sendDiscord(
+        `BUY-BlMA200 RSI_28-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        B_Channel,
+        data,
+      );
+      return;
+    }
+    const BlMA200_MA50_BUY = await this.stockHelperService.BlMA200_MA50_BUY(
+      lastdata,
+      Secondlastdata,
+    );
+    if (BlMA200_MA50_BUY) {
+      await this.sendDiscord(
+        `BUY-BlMA200_MA50_BUY-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        B_Channel,
+        data,
+      );
+      return;
+    }
+
+    const Over200NUpBuy = await this.stockHelperService.Over200NUpBuy(
+      lastdata,
+      Secondlastdata,
+    );
+    if (Over200NUpBuy) {
+      await this.sendDiscord(
+        `BUY-Over200NUpBuy-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        B_Channel,
+        data,
+      );
+      return;
+    }
+
+    const priceAbMA200BUY = await this.stockHelperService.priceAbMA200BUY(
+      lastdata,
+      Secondlastdata,
+    );
+    if (priceAbMA200BUY) {
+      await this.sendDiscord(
+        `BUY-priceAbMA200BUY-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        B_Channel,
+        data,
+      );
+      return;
+    }
+
+    const macdCrossAB_BL0 = await this.stockHelperService.priceAbMA200BUY(
+      lastdata,
+      Secondlastdata,
+    );
+    if (macdCrossAB_BL0) {
+      await this.sendDiscord(
+        `BUY-macdCrossAB_BL0-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        B_Channel,
+        data,
+      );
+      return;
+    }
+  }
+
+  async above_or_bellow(
+    data,
+    lastdata,
+    Secondlastdata,
+    ticker,
+    timeframe,
+    B_Channel,
+    HT_Channel,
+  ) {
+    const lastpriceToMA200 = lastdata.MA200 < lastdata.close;
+    if (lastpriceToMA200) {
+      // price above MA200 buy
+      const Over200NUpBuy = await this.stockHelperService.Over200NUpBuy(
+        lastdata,
+        Secondlastdata,
+      );
+      if (Over200NUpBuy) {
+        await this.sendDiscord(
+          `BUY-Over200NUpBuy-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+          `${ticker}-ON-${timeframe}`,
+          lastdata,
+          B_Channel,
+          data,
+        );
+        return;
+      }
+      const priceAbMA200BUY = await this.stockHelperService.priceAbMA200BUY(
+        lastdata,
+        Secondlastdata,
+      );
+      if (priceAbMA200BUY) {
+        await this.sendDiscord(
+          `BUY-priceAbMA200BUY-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+          `${ticker}-ON-${timeframe}`,
+          lastdata,
+          B_Channel,
+          data,
+        );
+        return;
+      }
+      const macdCrossAB = await this.stockHelperService.macdCrossAB(
+        lastdata,
+        Secondlastdata,
+      );
+      if (macdCrossAB) {
+        await this.sendDiscord(
+          `BUY-macdCrossAB-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+          `${ticker}-ON-${timeframe}`,
+          lastdata,
+          B_Channel,
+          data,
+        );
+        return;
+      }
+    } else {
+      // price below MA200 HT channel
+      const RSI_28 = await this.stockHelperService.RSI_28(
+        lastdata,
+        Secondlastdata,
+      );
+      if (RSI_28) {
+        await this.sendDiscord(
+          `BUY-BlMA200 RSI_28-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+          `${ticker}-ON-${timeframe}`,
+          lastdata,
+          HT_Channel,
+          data,
+        );
+        return;
+      }
+      const BlMA200_MA50_BUY = await this.stockHelperService.BlMA200_MA50_BUY(
+        lastdata,
+        Secondlastdata,
+      );
+      if (BlMA200_MA50_BUY) {
+        await this.sendDiscord(
+          `BUY-BlMA200_MA50_BUY-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+          `${ticker}-ON-${timeframe}`,
+          lastdata,
+          HT_Channel,
+          data,
+        );
+        return;
+      }
+
+      this.StochRSICross(
+        data,
+        lastdata,
+        Secondlastdata,
+        ticker,
+        timeframe,
+        HT_Channel,
+        HT_Channel,
+      );
+    }
+  }
+
+  async OUTPUTFILE(
+    data,
+    lastdata,
+    Secondlastdata,
+    ticker,
+    timeframe,
+    B_Channel,
+    HT_Channel,
+  ) {
+    const StochRSIBuy_HOLD = await this.stockHelperService.StochRSIBuy_HOLD(
+      lastdata,
+      Secondlastdata,
+    );
+    const dir = './logs_' + timeframe;
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+    if (StochRSIBuy_HOLD.upside) {
+      // await this.sendDiscord(
+      //   `BUY-upside-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+      //   `${ticker}-ON-${timeframe}`,
+      //   lastdata,
+      //   B_Channel,
+      //   data,
+      // );
+      console.log(`✅ Success: ${ticker}`);
+      // Log successful tickers
+      const successPathtxt = `${dir}/upside.txt`;
+      const successPathfeature = `${dir}/upside.feature`;
+
+      fs.appendFileSync(
+        successPathtxt,
+        ` | http://localhost:4200/price-log/${ticker}?daysRange=500 |\n`,
+        'utf8',
+      );
+      fs.appendFileSync(
+        successPathfeature,
+        ` | http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=1day|\n`,
+        'utf8',
+      );
+      const successPath_cvs = `${dir}/upside.cvs`;
+      fs.appendFileSync(successPath_cvs, `  ${ticker} \n`, 'utf8');
+      return;
+    }
+    if (StochRSIBuy_HOLD.upside80) {
+      // await this.sendDiscord(
+      //   `BUY-upside80-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+      //   `${ticker}-ON-${timeframe}`,
+      //   lastdata,
+      //   B_Channel,
+      //   data,
+      // );
+      console.log(`✅ AB80: ${ticker}`);
+      // Log successful tickers
+      const successPathtxt = `${dir}/upside-AB80.txt`;
+      const successPathfeature = `${dir}/upside-AB80.feature`;
+      fs.appendFileSync(
+        successPathtxt,
+        ` | http://localhost:4200/price-log/${ticker}?daysRange=500 |\n`,
+        'utf8',
+      );
+      fs.appendFileSync(
+        successPathfeature,
+        ` | http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=1day|\n`,
+        'utf8',
+      );
+      const successPath_cvs = `${dir}/upsideAB80.cvs`;
+      fs.appendFileSync(successPath_cvs, ` ${ticker} \n`, 'utf8');
+      return;
+    }
+    // await this.sendDiscord(
+    //   `SELL-NONO-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+    //   `${ticker}-ON-${timeframe}`,
+    //   lastdata,
+    //   HT_Channel,
+    //   data,
+    // );
+    // return;
+    // Log successful tickers
+    const successPathtxt = `${dir}/down-Fails.txt`;
+    const successPathfeature = `${dir}/down-Fails.feature`;
+    fs.appendFileSync(
+      successPathtxt,
+      ` | http://localhost:4200/price-log/${ticker}?daysRange=500 |\n`,
+      'utf8',
+    );
+    fs.appendFileSync(
+      successPathfeature,
+      ` | http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=1day|\n`,
+      'utf8',
+    );
+    const successPath_cvs = `${dir}/Fails.cvs`;
+    fs.appendFileSync(successPath_cvs, `  ${ticker} \n`, 'utf8');
+  }
+
+  async StochRSICross(
+    data,
+    lastdata,
+    Secondlastdata,
+    ticker,
+    timeframe,
+    B_Channel,
+    HT_Channel,
+  ) {
+    const StochRSICross = await this.stockHelperService.StochRSICross(
+      lastdata,
+      Secondlastdata,
+    );
+    if (StochRSICross.crossUp) {
+      await this.sendDiscord(
+        `BUY-StochRSICrossUP-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        B_Channel,
+        data,
+      );
+      return;
+    }
+    if (StochRSICross.crossDo) {
+      await this.sendDiscord(
+        `SELL-StochRSICrossDOWN -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        HT_Channel,
+        data,
+      );
+      return;
+    }
+  }
+
+  async BuyOnly_StochRSICrossAB200(
+    data,
+    lastdata,
+    Secondlastdata,
+    ticker,
+    timeframe,
+    B_Channel,
+    HT_Channel,
+  ) {
+    const BuyOnly_StochRSICrossAB200 =
+      await this.stockHelperService.BuyOnly_StochRSICrossAB200(
+        lastdata,
+        Secondlastdata,
+      );
+    if (BuyOnly_StochRSICrossAB200.PriceCrMA200) {
+      await this.sendDiscord(
+        `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA200 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        B_Channel,
+        data,
+      );
+      return;
+    }
+
+    if (BuyOnly_StochRSICrossAB200.PriceCrMA100) {
+      await this.sendDiscord(
+        `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA100 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        B_Channel,
+        data,
+      );
+      return;
+    }
+    // if (BuyOnly_StochRSICrossAB200.CrUpMacdBl0) {
+    //   await this.sendDiscord(
+    //     `SBUY-BuyOnly_StochRSICrossAB200-CrUpMacdBl0 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+    //     `${ticker}-ON-${timeframe}`,
+    //     lastdata,
+    //     B_Channel,
+    //     data,
+    //   );
+    //   return;
+    // }
+    // if (BuyOnly_StochRSICrossAB200.CrUpAll) {
+    //   await this.sendDiscord(
+    //     `BUY-BuyOnly_StochRSICrossAB200-CrUpAll -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+    //     `${ticker}-ON-${timeframe}`,
+    //     lastdata,
+    //     HT_Channel,
+    //     data,
+    //   );
+    //   return;
+    // }
+    // if (BuyOnly_StochRSICrossAB200.PriceCrMA200) {
+    //   await this.sendDiscord(
+    //     `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA200 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+    //     `${ticker}-ON-${timeframe}`,
+    //     lastdata,
+    //     B_Channel,
+    //     data,
+    //   );
+    //   return;
+    // }
+    // if (BuyOnly_StochRSICrossAB200.macdCrAB) {
+    //   await this.sendDiscord(
+    //     `BUY-BuyOnly_StochRSICrossAB200-macdCrAB -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+    //     `${ticker}-ON-${timeframe}`,
+    //     lastdata,
+    //     HT_Channel,
+    //     data,
+    //   );
+    //   return;
+    // }
   }
   /**
    async sendDiscordNotificationImage(
