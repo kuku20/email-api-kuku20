@@ -45,18 +45,18 @@ import {
   DataHistory1m,
 } from './stock/entities';
 import { ScheduleModule } from '@nestjs/schedule';
-import { TasksService } from './stock/tasks.service';
+// import { TasksService } from './stock/tasks.service';
 import { StockHelperService } from './stock/stockHelper.service';
 import { WebhooksService } from './webhooks/webhooks.service';
 import { LocalPLWR } from './stock/runlocal.service';
 import { AlphavantageService } from './alphavantage/alphavantage.service';
 import { TasksUSMKService } from './stock/task_usmk.service';
-import { TasksForexService } from './stock/task_forex.service';
-import { SendEverydayService } from './stock/send_everyday.service';
-import { TaskCryptoService } from './stock/task_crypto.service';
-import { TasksUSMK_1MIN_Service } from './stock/task_usmk_1min.service';
-import { TasksUSMKService_SP500 } from './stock/task_usmk500.service';
-import { TasksVNMKService } from './stock/task_vn600.service';
+// import { TasksForexService } from './stock/task_forex.service';
+// import { SendEverydayService } from './stock/send_everyday.service';
+// import { TaskCryptoService } from './stock/task_crypto.service';
+// import { TasksUSMK_1MIN_Service } from './stock/task_usmk_1min.service';
+// import { TasksUSMKService_SP500 } from './stock/task_usmk500.service';
+// import { TasksVNMKService } from './stock/task_vn600.service';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
