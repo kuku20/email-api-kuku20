@@ -50,7 +50,7 @@ import { StockHelperService } from './stock/stockHelper.service';
 import { WebhooksService } from './webhooks/webhooks.service';
 import { LocalPLWR } from './stock/runlocal.service';
 import { AlphavantageService } from './alphavantage/alphavantage.service';
-import { TasksUSMKService } from './stock/task_usmk.service';
+// import { TasksUSMKService } from './stock/task_usmk.service';
 // import { TasksForexService } from './stock/task_forex.service';
 // import { SendEverydayService } from './stock/send_everyday.service';
 // import { TaskCryptoService } from './stock/task_crypto.service';
@@ -155,7 +155,7 @@ import { TasksUSMKService } from './stock/task_usmk.service';
     LocalPLWR,
     AlphavantageService,
     // TasksUSMKService_SP500,
-    TasksUSMKService,
+    // TasksUSMKService,
     // TasksVNMKService,
     // TasksService,
     // TaskCryptoService,
