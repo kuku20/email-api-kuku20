@@ -155,7 +155,7 @@ import { TasksVNMKService } from './stock/task_vn600.service';
     LocalPLWR,
     AlphavantageService,
     TasksUSMKService_SP500,
-    TasksUSMKService,
+    //TasksUSMKService,
     // TasksVNMKService,
     TasksService,
     // TaskCryptoService,
