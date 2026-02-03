@@ -863,4 +863,72 @@ export class LocalPLWR {
       }
     }
   }
+
+
+  keysEod = this.configService.get<any>('EODHD_STOCK_API_KEY').split(',');
+  repeatEod = 0
+  indexEod = this.getRandomNumber(this.keysEod.length-1)
+  nextKeyEod(keys) {
+    const key = keys[this.indexEod];
+    this.repeatEod++;
+    if (this.repeatEod === 1) {
+      console.log(this.indexEod)
+      this.repeatEod = 0;
+      this.indexEod = (this.indexEod + 1) % keys.length; // loop back to start
+    }
+    return key;
+  }
+
+  async tryCatcht_Eodhd(BASE_URL: string, maxRetries = this.keysEod.length) {
+    let attempt = 0;
+    while (attempt < maxRetries) {
+      const nextKey = this.nextKeyEod(this.keysEod);
+      const url = `${BASE_URL}${nextKey}`;
+      console.log(`:EOD:Trying key: ${nextKey.slice(0, 4)}...`);
+  
+      try {
+        const response = await axios.get(url);
+        // const dir = './logs';
+        // if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+        // const successPath = `${dir}/successPath_tickers.txt`;
+        // fs.appendFileSync(successPath, `| :PO: | ${url}  |\n`, 'utf8');
+        
+        return response.data; // success!
+      } catch (error: any) {
+        attempt++;
+        console.error(`:EOD:Error with key ${nextKey.slice(0, 4)}...:`, error?.response);
+        // const successPath = `${dir}/error_tickers.txt`;
+        // fs.appendFileSync(successPath, `| :PO: | ${url}  |\n`, 'utf8');
+        // Only retry if we haven't exhausted all keys
+        if (attempt >= maxRetries) {
+          throw new Error(':EOD: All API keys failed');
+        }
+      }
+    }
+  }
+
+  async Eodhd_vn(ticker: string) {
+    const baseUrl= `https://eodhd.com/api/eod/${ticker}.VN?fmt=json&api_token=`
+    let responsesArray = await this.tryCatcht_Eodhd(baseUrl);
+    const path = `VN_MK/${ticker}`.toUpperCase();
+    const data = await this.FireBaseApi(
+      'put',
+      `stock-data/${path}.json`,
+      responsesArray,
+    );
+    const result = await this.stockHelperService.returnNewData(responsesArray)
+    const maxlength = result.length-1
+    return  result.slice(maxlength-100, maxlength);
+  }
+
+  async Eodhd_vnFB(ticker: string) {
+    const path = `VN_MK/${ticker}`.toUpperCase();
+    const data = await this.FireBaseApi(
+      'get',
+      `stock-data/${path}.json`,''
+    );
+    const result = await this.stockHelperService.returnNewData(data)
+    const maxlength = result.length-1
+    return  result.slice(maxlength-100, maxlength);
+  }
 }

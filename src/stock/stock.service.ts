@@ -800,7 +800,10 @@ async putToFBDynamic(endpoint:string, data: any,) {
         }else if(!meta_timezone){
           responseRe = plainToClass(DTO.ChartOutTwelveDataUTC, response.values);
         }
-        return responseRe;
+        const newdata = Array.isArray(responseRe) ? [...responseRe] : [responseRe];
+        const reverseData = newdata.reverse();
+        const result = await this.stockHelperService.returnNewData(reverseData)
+        return result;
       }
       return null;
     }

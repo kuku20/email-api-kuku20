@@ -82,7 +82,7 @@ export class WebhooksService {
     | **[sMk000-30m](https://stockmarkets000.web.app//price-log/${ticker}?daysRange=30)** \n
      | **[stock-chart-abc.web.app](https://stock-chart-abc.web.app/?stockTicker=${ticker})** 
      */
-    const origin = `**[4200-on1m](http://localhost:4200/price-log/${ticker})** | **[4200-5m](http://localhost:4200/price-log/${ticker}?daysRange=5)** | **[4200-15m](http://localhost:4200/price-log/${ticker}?daysRange=15)** \n **[3001-PO-day](http://localhost:3001/?stockTicker=${ticker}&endpoint=po&timeframe=1day)** | **[3001-FM-day](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[3001-fm-1m](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=1min)** | **[3001-fm-5m](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=5min)** | **[3001-fm-15m](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=15min)** \n **[PB-view](https://stock-chart-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`;
+    const origin = `**[4200-on1m](https://stockmarkets000.web.app/price-log/${ticker})** | **[4200-5m](https://stockmarkets000.web.app/price-log/${ticker}?daysRange=5)** | **[4200-15m](https://stockmarkets000.web.app/price-log/${ticker}?daysRange=15)** \n **[3001-PO-day](https://new-site-for-stock-abc.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day)** | **[3001-FM-day](https://new-site-for-stock-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[3001-fm-1m](https://new-site-for-stock-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1min)** | **[3001-fm-5m](https://new-site-for-stock-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=5min)** | **[3001-fm-15m](https://new-site-for-stock-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=15min)** \n **[PB-view](https://stock-chart-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`;
     let gptres;
     if (extra) {
       const parts = extra.split('/');
@@ -131,7 +131,7 @@ export class WebhooksService {
         .setColor(color)
         .addFields({ name: botdt, value: setmess, inline: false })
         .addFields(...this.createEmbedFields(lastDataJson, selectedFields));
-      // .addFields({ name: 'URL', value: `http://localhost:4200/price-prediction/${ticker}`, inline: true });
+      // .addFields({ name: 'URL', value: `https://stockmarkets000.web.app/price-prediction/${ticker}`, inline: true });
       options = {
         username: botdt,
         avatarURL: selectedAvatar,
@@ -395,7 +395,7 @@ export class WebhooksService {
         </head>
         <body id="capture-target">
           <!-- Display the chart date dynamically if chartData is available -->
-          <h3 class="center">${ticker} | ${message} </h3>
+          <h3 class="center">${ticker} | ${message} | <span id="closePrice"></span> </h3>
           <!-- Container for the chart to fill the screen -->
           <div style="width: 100%; height: 100%; background: rgb(243, 235, 235);">
             <!-- Properly passing chartData using .stockData binding -->
@@ -411,6 +411,12 @@ export class WebhooksService {
     
             // Ensure the chartData is passed as a property to the component
             stockChartElement.stockData = chartData;
+
+            // Get the stock-chart-display element by its ID
+            const closePrice = document.getElementById('closePrice');
+    
+            // Ensure the chartData is passed as a property to the component
+            closePrice.textContent = ${slicedData[slicedData.length - 1].close};
           </script>
         </body>
       </html>
@@ -1113,12 +1119,12 @@ export class WebhooksService {
 
       fs.appendFileSync(
         successPathtxt,
-        ` | http://localhost:4200/price-log/${ticker}?daysRange=500 |\n`,
+        ` | https://stockmarkets000.web.app/price-log/${ticker}?daysRange=500 |\n`,
         'utf8',
       );
       fs.appendFileSync(
         successPathfeature,
-        ` | http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=1day|\n`,
+        ` | https://new-site-for-stock-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day|\n`,
         'utf8',
       );
       const successPath_cvs = `${dir}/upside.cvs`;
@@ -1139,12 +1145,12 @@ export class WebhooksService {
       const successPathfeature = `${dir}/upside-AB80.feature`;
       fs.appendFileSync(
         successPathtxt,
-        ` | http://localhost:4200/price-log/${ticker}?daysRange=500 |\n`,
+        ` | https://stockmarkets000.web.app/price-log/${ticker}?daysRange=500 |\n`,
         'utf8',
       );
       fs.appendFileSync(
         successPathfeature,
-        ` | http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=1day|\n`,
+        ` | https://new-site-for-stock-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day|\n`,
         'utf8',
       );
       const successPath_cvs = `${dir}/upsideAB80.cvs`;
@@ -1164,12 +1170,12 @@ export class WebhooksService {
     const successPathfeature = `${dir}/down-Fails.feature`;
     fs.appendFileSync(
       successPathtxt,
-      ` | http://localhost:4200/price-log/${ticker}?daysRange=500 |\n`,
+      ` | https://stockmarkets000.web.app/price-log/${ticker}?daysRange=500 |\n`,
       'utf8',
     );
     fs.appendFileSync(
       successPathfeature,
-      ` | http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=1day|\n`,
+      ` | https://new-site-for-stock-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day|\n`,
       'utf8',
     );
     const successPath_cvs = `${dir}/Fails.cvs`;
@@ -1199,16 +1205,16 @@ export class WebhooksService {
       );
       return;
     }
-    if (StochRSICross.crossDo) {
-      await this.sendDiscord(
-        `SELL-StochRSICrossDOWN -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
-        lastdata,
-        HT_Channel,
-        data,
-      );
-      return;
-    }
+    // if (StochRSICross.crossDo) {
+    //   await this.sendDiscord(
+    //     `SELL-StochRSICrossDOWN -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+    //     `${ticker}-ON-${timeframe}`,
+    //     lastdata,
+    //     HT_Channel,
+    //     data,
+    //   );
+    //   return;
+    // }
   }
 
   async BuyOnly_StochRSICrossAB200(
@@ -1225,17 +1231,6 @@ export class WebhooksService {
         lastdata,
         Secondlastdata,
       );
-    if (BuyOnly_StochRSICrossAB200.PriceCrMA200) {
-      await this.sendDiscord(
-        `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA200 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
-        lastdata,
-        B_Channel,
-        data,
-      );
-      return;
-    }
-
     if (BuyOnly_StochRSICrossAB200.PriceCrMA100) {
       await this.sendDiscord(
         `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA100 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
@@ -1246,6 +1241,17 @@ export class WebhooksService {
       );
       return;
     }
+    if (BuyOnly_StochRSICrossAB200.PriceCrMA200) {
+      await this.sendDiscord(
+        `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA200 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        HT_Channel,
+        data,
+      );
+      return;
+    }
+
     // if (BuyOnly_StochRSICrossAB200.CrUpMacdBl0) {
     //   await this.sendDiscord(
     //     `SBUY-BuyOnly_StochRSICrossAB200-CrUpMacdBl0 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
@@ -1287,6 +1293,7 @@ export class WebhooksService {
     //   return;
     // }
   }
+
   /**
    async sendDiscordNotificationImage(
   botname: string = 'Bot Alert',

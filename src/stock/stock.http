@@ -119,7 +119,7 @@ curl --location '{{rootUrl}}/stock{{newfmep}}/realtimeprice?stockTicker=BTCUSD'
 ### get all current price
 curl --location '{{rootUrl}}/stock{{newfmep}}/realtimepriceall'
 ### get multiple-company-prices
-curl --location '{{rootUrl}}/stock{{newfmep}}/multiple-company-prices?stockTicker=ROKU'
+curl --location '{{rootUrl}}/stock{{newfmep}}/multiple-company-prices?stockTicker=ROKU,AAL'
 ### Get losers
 curl --location '{{rootUrl}}/stock{{newfmep}}/gainers-or-losers?stockMarket=losers'
 ### Get gainers
@@ -137,10 +137,10 @@ Host: localhost:3000
 #  second minute hour day week month quarter year
 ### get all data for chart form Polygon max 2 year
 @ticker = QQQ
-curl --location '{{rootUrl}}/stock/chartdata/{{timespanpolygon}}?stockTicker={{ticker}}&range=1&start=2024-10-24&end=2025-10-24&limit=50000'
+curl --location '{{rootUrl}}/stock/chartdata/{{timespanpolygon}}?stockTicker={{ticker}}&range=1&start=2024-10-24&end=2025-10-24&limit=600'
 
 ### get all data for mprange =5min
-curl --location '{{rootUrl}}/stock/chartdata/{{timespanfmp}}?stockTicker=QQQ&range={{fmprange}}&start=2024-02-11&end=2025-12-12&limit=50000'
+curl --location '{{rootUrl}}/stock/chartdata/{{timespanfmp}}?stockTicker=QQQ&range={{fmprange}}&start=2024-02-11&end=2025-12-12&limit=600'
 
 ### get all data daily chart form FMp max 5 year
 curl --location '{{rootUrl}}/stock/daily-chart?stockTicker=TSLA&start=2024-10-23&end=2024-10-24'
@@ -235,7 +235,7 @@ curl -X POST http://localhost:3000/stock/firebase-api \
   -H "User-Agent: vscode-restclient" \
   -d '{
     "path": "history",
-    "method":"put",
+    "method":"get",
     "data": {
       "buy": {
         "2024-11-04 09:30:00": {
@@ -253,17 +253,19 @@ curl -X POST http://localhost:3000/stock/firebase-api \
   }'
 
 
-@endpoint = fm
-@ticker = INTC
-@timefame = 1day
-# @timefame = 1hour
-# @timefame = 5min
-# @timefame = 15min
+@endpoint = po
+@ticker = SPR
+@timeframe = 1day
+# @timeframe = 1hour
+# @timeframe = 5min
+# @timeframe = 15min
 ### get local
-curl --location '{{rootUrl}}/stock/local/{{endpoint}}?ticker={{ticker}}&timefame={{timefame}}'
+curl --location '{{rootUrl}}/stock/local/{{endpoint}}?ticker={{ticker}}&timeframe={{timeframe}}'
 
-### local
-curl --location '{{rootUrl}}/stock/localhis/?ticker={{ticker}}'
+
+
+### local hisall
+curl --location '{{rootUrl}}/stock/hisall?tickers=AAL,SMCI'
 
 ### Getdata daily from firebase     const urlPath = `${path}/${ticker.toUpperCase()}/${date}.json`
 curl --location '{{rootUrl}}/stock/getfbdata' \
@@ -273,3 +275,44 @@ curl --location '{{rootUrl}}/stock/getfbdata' \
     "ticker":"RSI",
     "date":"RSI25AL/2025-10-25"
 }'
+
+### coinwatch
+GET http://localhost:3000/stock/history-coinwatch?ticker=LTC&interval=5m
+
+### coinwatch
+GET http://localhost:3000/stock/history-coinwatch?ticker=XMR&interval=5m
+
+### coinwatch
+GET http://localhost:3000/stock/fmp-eod?ticker=LTCUSD
+
+
+### fm get from stock000
+GET http://localhost:3000/stock/chartdata/v2/fm?stockTicker=MDB&start=2025-11-15&end=2025-11-16
+
+### get po stock000
+GET http://localhost:3000/stock/chartdata/v2/po?stockTicker=QQQ&start=2025-11-15&end=2025-11-16
+
+### get po
+GET http://localhost:3000/stock/githublocalfm/fm?ticker=TTD&timeframe=5min
+
+### get fm
+GET http://localhost:3000/stock/githublocalfm/fm?ticker=BTCUSD&timeframe=5min
+
+### local hisall
+curl --location '{{rootUrl}}/stock/localhis/?ticker=JBHT&timeframe=1day'
+
+
+### get tiingo
+GET http://localhost:3000/stock/tiingo?ticker=eurusd&timeframe=1min
+# GET http://localhost:3000/stock/tiingo?ticker=btcusd&timeframe=5min
+
+
+####
+curl --location "https://eodhd.com/api/exchange-details/{EXCHANGE_CODE}?api_token=693a4e825f6990&fmt=json"
+
+#### Getend
+GET https://eodhd.com/api/eod/AAA.VN?api_token=693e5efda56137.54562069&fmt=json
+
+
+### get Getend
+GET http://localhost:3000/stock/eodhd?ticker=E1VFVN30

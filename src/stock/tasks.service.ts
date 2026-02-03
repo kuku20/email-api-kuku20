@@ -5,6 +5,7 @@ import { LocalPLWR } from './runlocal.service';
 import axios from 'axios';
 import { StockHelperService } from './stockHelper.service';
 import * as Timer from './compareTime';
+import { StockData } from './dto/chartData';
 @Injectable()
 export class TasksService {
   private readonly logger = new Logger(TasksService.name);
@@ -378,22 +379,4 @@ export class TasksService {
   }
 }
 
-export interface StockData {
-  date: string
-  open: number
-  high: number
-  low: number
-  close: number
-  volume: number
-  MA5: number
-  MA10: number
-  MA20: number
-  MA50: number
-  MA100: number
-  MA200: number
-  RSI: number
-  MACDLine: number
-  SignalLine: number
-  divergence: number
-  MACDDivergence: any
-}
+

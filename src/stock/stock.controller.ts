@@ -378,17 +378,17 @@ export class StockController {
     }
   }
 
-  // @Get('/hisall')
-  // async hisall(
-  //   @Query('tickers') tickers: string,
-  // ) {
-  //   try {
-  //     const symbols = tickers.split(',');
-  //     return await this.loacl.getAllData(symbols);
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
+  @Get('/hisall')
+  async hisall(
+    @Query('tickers') tickers: string,
+  ) {
+    try {
+      const symbols = tickers.split(',');
+      return await this.loacl.getAllData(symbols);
+    } catch (error) {
+      throw error;
+    }
+  }
   @Get('/githublocalfm/:src_api')
   async githublocalfm(
     @Param() params: RequestDTO.SrcApiDto,
@@ -403,6 +403,7 @@ export class StockController {
       if (params.src_api === RequestDTO.SRC_API.FM) {
         data = await this.loacl.getTickerFullChart_FMP(Query.ticker, Query.timeframe);
         await this.loacl.saveData(Query.ticker, Query.timeframe,data[0]?.date, data);
+        // return await this.loacl.tiingo(Query.ticker.toLowerCase(), Query.timeframe);;
       } else if (params.src_api === RequestDTO.SRC_API.FMP_EOD) {
         const olddata = await this.loacl.getData(Query.ticker, Query.timeframe);
         if(olddata)
@@ -442,5 +443,37 @@ export class StockController {
   
     // Just pass code + interval to the service
     return this.loacl.FMP_EOD_FULL(ticker);
+  }
+
+
+  @Get('/tiingo')
+  async tiingo(
+    @Param() params: any,
+    @Query() Query: RequestDTO.TIMEFRAME_SYMBOL,
+  ) {
+    if(this.loacl.washSell30.includes(Query.ticker)) return [    {
+      "error": " in wash sell list",
+  } ]
+    try {
+      let data = await this.loacl.tiingo(Query.ticker.toLowerCase(), Query.timeframe);;
+      return data;
+    } catch (error) {
+      this.loacl.sendTemporaryWebhook(Query.ticker, JSON.stringify(params)+'/tiingo')
+      throw error;
+    }
+  }
+
+  @Get('/eodhd')
+  async eodhd(
+    @Param() params: any,
+    @Query() Query: any,
+  ) {
+    try {
+      let data = await this.loacl.Eodhd_vn(Query.ticker.toUpperCase());;
+      return data;
+    } catch (error) {
+      this.loacl.sendTemporaryWebhook(Query.ticker, JSON.stringify(params)+'/eodhd')
+      throw error;
+    }
   }
 }
