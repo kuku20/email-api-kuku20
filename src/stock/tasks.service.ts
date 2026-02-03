@@ -338,7 +338,7 @@ export class TasksService {
   @Cron(CronExpression.EVERY_5_MINUTES)
   async wakeupcall() {
     this.sendDiscord(
-      `WAKEUPCALL`,
+      `WAKEUPCALL railway`,
       `RSIENDBOT BOTBOT`,
       'Nono',
       'CRON_CHECK',
