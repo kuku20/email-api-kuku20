@@ -337,12 +337,12 @@ export class TasksService {
 
   @Cron(CronExpression.EVERY_5_MINUTES)
   async wakeupcall() {
-    this.sendDiscord(
-      `WAKEUPCALL railway`,
-      `RSIENDBOT BOTBOT`,
-      'Nono',
-      'CRON_CHECK',
-    );
+    // this.sendDiscord(
+    //   `WAKEUPCALL railway`,
+    //   `RSIENDBOT BOTBOT`,
+    //   'Nono',
+    //   'CRON_CHECK',
+    // );
     try {
       const { data } = await axios.get('https://email-api-kuku20-production.up.railway.app/');
       this.logger.log('⏱️ koyeb Keep-alive ping success:', data.status);
