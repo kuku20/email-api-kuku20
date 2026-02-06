@@ -1241,16 +1241,16 @@ export class WebhooksService {
       );
       return;
     }
-    if (BuyOnly_StochRSICrossAB200.PriceCrMA200) {
-      await this.sendDiscord(
-        `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA200 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
-        lastdata,
-        HT_Channel,
-        data,
-      );
-      return;
-    }
+    // if (BuyOnly_StochRSICrossAB200.PriceCrMA200) {
+    //   await this.sendDiscord(
+    //     `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA200 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+    //     `${ticker}-ON-${timeframe}`,
+    //     lastdata,
+    //     HT_Channel,
+    //     data,
+    //   );
+    //   return;
+    // }
 
     // if (BuyOnly_StochRSICrossAB200.CrUpMacdBl0) {
     //   await this.sendDiscord(
