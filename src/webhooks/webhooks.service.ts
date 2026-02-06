@@ -1225,16 +1225,16 @@ export class WebhooksService {
         lastdata,
         Secondlastdata,
       );
-    if (BuyOnly_StochRSICrossAB200.PriceCrMA200) {
-      await this.sendDiscord(
-        `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA200 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
-        lastdata,
-        B_Channel,
-        data,
-      );
-      return;
-    }
+    // if (BuyOnly_StochRSICrossAB200.PriceCrMA200) {
+    //   await this.sendDiscord(
+    //     `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA200 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+    //     `${ticker}-ON-${timeframe}`,
+    //     lastdata,
+    //     B_Channel,
+    //     data,
+    //   );
+    //   return;
+    // }
 
     if (BuyOnly_StochRSICrossAB200.PriceCrMA100) {
       await this.sendDiscord(
