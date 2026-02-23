@@ -331,6 +331,7 @@ export class WebhooksService {
     channel: string,
     message: string,
   ) {
+    return null;
     if (!chartData || chartData.length === 0) {
       return null;
     }
