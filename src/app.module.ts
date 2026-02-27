@@ -161,7 +161,7 @@ import { TasksVNMKService } from './stock/task_vn600.service';
     // TaskCryptoService,
     // TasksUSMK_1MIN_Service,
     // TasksUSMKService_15MIN
-    // TasksForexService,
+    TasksForexService,
     // SendEverydayService
   ],
 })
