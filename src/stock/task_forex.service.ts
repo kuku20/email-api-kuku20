@@ -65,13 +65,9 @@ export class TasksForexService {
   @Cron('*/15 * * * *') // every 15 minutes
   async handle15minForex() {
     const tickers = [
-      'CHFUSD',
       'EURUSD',
-      'CADUSD',
-      'AUDUSD',
       'GBPUSD',
       'JPYUSD',
-      'NZDUSD',
     ];
     // const tickers = ['EURUSD'];
     await this.processTickers1hour(
@@ -86,13 +82,9 @@ export class TasksForexService {
   @Cron(CronExpression.EVERY_30_MINUTES)
   async handle30minForex() {
     const tickers = [
-      'CHFUSD',
       'EURUSD',
-      'CADUSD',
-      'AUDUSD',
       'GBPUSD',
       'JPYUSD',
-      'NZDUSD',
     ];
     // const tickers = ['EURUSD'];
     await this.processTickers1hour(
@@ -107,13 +99,9 @@ export class TasksForexService {
   @Cron('0 * * * *') // every 1 hour
   async handle1hourForex() {
     const tickers = [
-      'CHFUSD',
       'EURUSD',
-      'CADUSD',
-      'AUDUSD',
       'GBPUSD',
       'JPYUSD',
-      'NZDUSD',
     ];
     // const tickers = ['EURUSD'];
     await this.processTickers1hour(
@@ -128,13 +116,9 @@ export class TasksForexService {
   @Cron(CronExpression.EVERY_4_HOURS)
   async handle4hourForex() {
     const tickers = [
-      'CHFUSD',
       'EURUSD',
-      'CADUSD',
-      'AUDUSD',
       'GBPUSD',
       'JPYUSD',
-      'NZDUSD',
     ];
     // const tickers = ['EURUSD'];
     await this.processTickers1hour(
