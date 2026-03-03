@@ -44,7 +44,7 @@ export class TasksUSMKService_SP500 {
     this.logger.log(
       `✅ Market open — running ${timeframe} trading logic (${now} ET)`,
     );
-    await this.SendEverydayService()
+    await this.SendEverydayService();
     const tickers = intickers;
     await this.processTickers(
       tickers,
@@ -123,7 +123,7 @@ export class TasksUSMKService_SP500 {
 
   async onModuleInit() {
     // This runs ONCE when the app starts
-//await this.runAllWatchLists();
+    //await this.runAllWatchLists();
     // console.log(  stock_500_symbols.length)
   }
   @Cron('*/15 14-21 * * 1-5', { timeZone: 'UTC' })
@@ -134,31 +134,42 @@ export class TasksUSMKService_SP500 {
         this.allkeys,
         'US_ALL',
         'USSTOCK_WATCH',
-       3,
+        3,
         '15min',
       ),
     ]);
   }
 
-
+  @Cron('10 14-21/4 * * 1-5', { timeZone: 'UTC' }) // Every 4 hours at minute 8
   async runAllWatchLists4h() {
     await Promise.all([
       this.USTIMERUN(
         stock_500_symbols,
         this.allkeys,
-        'US_ALL',
-        'USSTOCK_WATCH',
+        'US_15M_HT',
+        'US_15M_HT',
         0,
         '4h',
       ),
     ]);
-  } 
+  }
+
+  @Cron('6 10-15 * * 1-5', { timeZone: 'America/New_York' }) // Every 1 hours at minute 6
+  async runAllWatchLists1h() {
+    await Promise.all([
+      this.USTIMERUN(
+        stock_500_symbols,
+        this.allkeys,
+        'US_30M_BUY',
+        'US_30M_HT',
+        0,
+        '1h',
+      ),
+    ]);
+  }
   async SendEverydayService() {
     const equal = `===========================================`;
-    const Channels = [
-      'US_ALL',
-      'USSTOCK_WATCH',
-    ]; // example list
+    const Channels = ['US_ALL', 'USSTOCK_WATCH']; // example list
 
     for (const channel of Channels) {
       // CLOSE YESTERDAY
