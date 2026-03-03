@@ -1232,7 +1232,7 @@ export class WebhooksService {
         lastdata,
         Secondlastdata,
       );
-    if(timeframe.includes('h') && BuyOnly_StochRSICrossAB200.PriceCrMA50) {
+    if(!timeframe.includes('m') && BuyOnly_StochRSICrossAB200.PriceCrMA50) {
       await this.sendDiscord(
         `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA50 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
