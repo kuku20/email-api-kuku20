@@ -136,7 +136,7 @@ export class TasksUSMKService_SP500 {
         'US_ALL',
         'USSTOCK_WATCH',
         3,
-        '15min',
+        '30min',
       ),
     ]);
   }
