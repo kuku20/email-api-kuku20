@@ -1232,10 +1232,11 @@ export class WebhooksService {
         lastdata,
         Secondlastdata,
       );
-    if(!timeframe.includes('m') && BuyOnly_StochRSICrossAB200.PriceCrMA50) {
+    // if(!timeframe.includes('m') && BuyOnly_StochRSICrossAB200.PriceCrMA50) {
+    if(BuyOnly_StochRSICrossAB200.PriceCrMA50) {
       await this.sendDiscord(
         `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA50 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
+        `${ticker}-ON-${timeframe}-CrMA50-${lastdata?.close}`,
         lastdata,
         HT_Channel,
         data,
@@ -1245,7 +1246,7 @@ export class WebhooksService {
     if (BuyOnly_StochRSICrossAB200.PriceCrMA100) {
       await this.sendDiscord(
         `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA100 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
+        `${ticker}-ON-${timeframe}-CrMA100-${lastdata?.close}`,
         lastdata,
         B_Channel,
         data,
