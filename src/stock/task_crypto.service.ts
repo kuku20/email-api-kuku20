@@ -68,7 +68,7 @@ export class TaskCryptoService {
     }
   }
 
-  @Cron(CronExpression.EVERY_5_MINUTES)
+  //@Cron(CronExpression.EVERY_5_MINUTES)
   async handle5pCrypto() {
     const tickers = [
       'BTCUSD',
@@ -101,7 +101,7 @@ export class TaskCryptoService {
     );
   }
 
-  @Cron(CronExpression.EVERY_30_MINUTES)
+  //@Cron(CronExpression.EVERY_30_MINUTES)
   async handle30pCrypto() {
     await this.webhooksService.sendDiscord(
       'WAKEUPCALL:30min',
@@ -131,7 +131,7 @@ export class TaskCryptoService {
       3,
     );
   }
-  @Cron(CronExpression.EVERY_30_MINUTES)
+ // @Cron(CronExpression.EVERY_30_MINUTES)
   async handle30minCrypto1() {
     const tickers = ['SOLUSD', 'ADAUSD', 'XRPUSD', 'BNBUSD', 'LINKUSD'];
     const apikey = 'd3058ae5683b4fc19a787ceb21a87f67';
@@ -145,7 +145,7 @@ export class TaskCryptoService {
       3,
     );
   }
-  @Cron(CronExpression.EVERY_30_MINUTES)
+  //@Cron(CronExpression.EVERY_30_MINUTES)
   async handle30minCrypto2() {
     const tickers = [
       'SUIUSD',
