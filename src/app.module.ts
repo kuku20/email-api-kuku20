@@ -158,7 +158,7 @@ import { TasksVNMKService } from './stock/task_vn600.service';
     //TasksUSMKService,
     // TasksVNMKService,
     TasksService,
-    // TaskCryptoService,
+    TaskCryptoService,
     // TasksUSMK_1MIN_Service,
     // TasksUSMKService_15MIN
     TasksForexService,
