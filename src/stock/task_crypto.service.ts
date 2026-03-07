@@ -175,9 +175,9 @@ export class TaskCryptoService {
       'LTCUSD',
       'ETHUSD',
       'ETCUSD',
-      'DASHUSD',
-      'ZECUSD',
-      'XMRUSD',
+      // 'DASHUSD',
+      // 'ZECUSD',
+      // 'XMRUSD',
     ];
     // const tickers = ['BTCUSD'];
     const apikey = '2711824a92bc40498c8bc30728813e2a'; //liamsterling1@outlook.com
@@ -191,7 +191,7 @@ export class TaskCryptoService {
       5,
     );
   }
-  @Cron('0 * * * *') // every 1 hour
+ // @Cron('0 * * * *') // every 1 hour
   async handle1hourCrypto1() {
     const tickers = ['SOLUSD', 'ADAUSD', 'XRPUSD', 'BNBUSD', 'LINKUSD'];
     // const tickers = ['BTCUSD'];
@@ -206,7 +206,7 @@ export class TaskCryptoService {
       6,
     );
   }
-  @Cron('0 * * * *') // every 1 hour
+  //@Cron('0 * * * *') // every 1 hour
   async handle1hourCrypto2() {
     const tickers = [
       'SUIUSD',
@@ -228,7 +228,7 @@ export class TaskCryptoService {
     );
   }
 
-  @Cron('8 */4 * * *') // Every 4 hours at minute 8
+  //@Cron('8 */4 * * *') // Every 4 hours at minute 8
   async handle4hourCrypto2() {
     const tickers = [
       'BTCUSD',
@@ -236,9 +236,9 @@ export class TaskCryptoService {
       'LTCUSD',
       'ETHUSD',
       'ETCUSD',
-      'DASHUSD',
-      'ZECUSD',
-      'XMRUSD',
+      // 'DASHUSD',
+      // 'ZECUSD',
+      // 'XMRUSD',
     ];
     // const tickers = ['BTCUSD'];
     const apikey = '2711824a92bc40498c8bc30728813e2a'; //liamsterling1@outlook.com
@@ -252,7 +252,7 @@ export class TaskCryptoService {
       0,
     );
   }
-  @Cron('10 */4 * * *') // Every 4 hours at minute 10
+  //@Cron('10 */4 * * *') // Every 4 hours at minute 10
   async handle4hourCrypto3() {
     const tickers = ['SOLUSD', 'ADAUSD', 'XRPUSD', 'BNBUSD', 'LINKUSD'];
     // const tickers = ['BTCUSD'];
@@ -267,7 +267,7 @@ export class TaskCryptoService {
       0,
     );
   }
-  @Cron('12 */4 * * *') // Every 4 hours at minute 12
+  //@Cron('12 */4 * * *') // Every 4 hours at minute 12
   async handle4hourCrypto4() {
     const tickers = [
       'SUIUSD',
@@ -298,9 +298,9 @@ export class TaskCryptoService {
       'LTCUSD',
       'ETHUSD',
       'ETCUSD',
-      'DASHUSD',
-      'ZECUSD',
-      'XMRUSD',
+      // 'DASHUSD',
+      // 'ZECUSD',
+      // 'XMRUSD',
     ];
     // const tickers = ['BTCUSD'];
     const apikey = '2711824a92bc40498c8bc30728813e2a'; //liamsterling1@outlook.com
@@ -314,7 +314,7 @@ export class TaskCryptoService {
       0,
     );
   }
-  @Cron('16 1 * * *') // Every day at 1:16 AM
+  //@Cron('16 1 * * *') // Every day at 1:16 AM
   async handledailyCrypto1() {
     const tickers = ['SOLUSD', 'ADAUSD', 'XRPUSD', 'BNBUSD', 'LINKUSD'];
     // const tickers = ['BTCUSD'];
@@ -329,7 +329,7 @@ export class TaskCryptoService {
       0,
     );
   }
-  @Cron('18 1 * * *') // Every day at 1:18 AM
+  //@Cron('18 1 * * *') // Every day at 1:18 AM
   async handledailyCrypto2() {
     const tickers = [
       'SUIUSD',
