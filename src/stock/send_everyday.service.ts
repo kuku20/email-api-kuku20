@@ -58,8 +58,8 @@ export class SendEverydayService {
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT) // close yesterday and open today
-  async delete() {
-    const yesterday = this.stockHelperService.getDateNDaysAgo(1);
+  async delete(dayago = 1) {
+    const yesterday = this.stockHelperService.getDateNDaysAgo(dayago);
     const Channels = [
       'US_ALL',
       'ERORR_CALL',
@@ -75,11 +75,11 @@ export class SendEverydayService {
       'CRYPTO_EARLY_15MIN',
       'CRYPTO_ALL',
       'US_EARLY_15MIN',
-      'US_EARLY_5MIN',
+      'US_EARLY_5MIN','US_30M_HT','USSTOCK_WATCH','US_30M_BUY','US_15M_HT',
       'BUYSELL',
     ]; // example list
 
-    await new Promise((resolve) => setTimeout(resolve, 2 * 60 * 1000));
+    await new Promise((resolve) => setTimeout(resolve, dayago*5 * 60 * 1000));
     for (const channel of Channels) {
       // Log completion
       this.logger.error(`✅ Finished sending for`, channel);
@@ -92,7 +92,15 @@ export class SendEverydayService {
 
     async onModuleInit() {
     // This runs ONCE when the app starts
-    await this.delete();
+    await this.delete(0);
+    await this.delete(1);
+    await this.delete(3);
+    await this.delete(4);
+    await this.delete(5);
+    await this.delete(6);
+    await this.delete(7);
+    await this.delete(8);
+    await this.delete(9);
     // console.log(  stock_500_symbols.length)
   }
 }
