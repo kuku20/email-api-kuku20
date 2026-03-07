@@ -82,11 +82,11 @@ export class SendEverydayService {
     await new Promise((resolve) => setTimeout(resolve, 0 * 60 * 1000));
     for (const channel of Channels) {
       // Log completion
-      this.logger.error(`✅ Finished sending for`, channel);
+      this.logger.error(`✅ Finished sending for`, channel,yesterday);
 
       // DELETE two days ago messages
       await this.webhooksService.deleteMessages(channel, yesterday);
-      this.logger.error(`🗑️ Deleted old messages for`, channel);
+      this.logger.error(`🗑️ Deleted old messages for`, channel,yesterday);
     }
   }
 
