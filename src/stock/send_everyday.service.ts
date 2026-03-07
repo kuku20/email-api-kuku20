@@ -79,7 +79,7 @@ export class SendEverydayService {
       'BUYSELL',
     ]; // example list
 
-    await new Promise((resolve) => setTimeout(resolve, dayago*5 * 60 * 1000));
+    await new Promise((resolve) => setTimeout(resolve, 0 * 60 * 1000));
     for (const channel of Channels) {
       // Log completion
       this.logger.error(`✅ Finished sending for`, channel);

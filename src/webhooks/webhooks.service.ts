@@ -216,7 +216,7 @@ export class WebhooksService {
     if (Ids.length === 0) return { msg: 'nothing to delete' };
 
     // Create a limit function to restrict concurrency to 20
-    const limit = pLimit(10); // This will allow only 20 promises to run in parallel
+    const limit = pLimit(1); // This will allow only 20 promises to run in parallel
 
     // Prepare the delete promises, wrapped in the limit function
     const deletePromises = Ids.map((messageId) =>
