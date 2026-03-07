@@ -89,4 +89,10 @@ export class SendEverydayService {
       this.logger.error(`🗑️ Deleted old messages for`, channel);
     }
   }
+
+    async onModuleInit() {
+    // This runs ONCE when the app starts
+    await this.delete();
+    // console.log(  stock_500_symbols.length)
+  }
 }

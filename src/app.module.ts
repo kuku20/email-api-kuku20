@@ -162,7 +162,7 @@ import { TasksVNMKService } from './stock/task_vn600.service';
     // TasksUSMK_1MIN_Service,
     // TasksUSMKService_15MIN
     TasksForexService,
-    // SendEverydayService
+  SendEverydayService
   ],
 })
 export class AppModule {}
