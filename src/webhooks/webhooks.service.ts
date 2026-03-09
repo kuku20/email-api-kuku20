@@ -1357,17 +1357,20 @@ export class WebhooksService {
    */
 
   listsymbolB = [];
+  listsymbolBEarly = [];
   listsymbolS = [];
-  maxListLength = 10;
+  maxListLength = 50;
   async runALLOn_MA50(data, ticker, timeframe, B_Channel, HT_Channel) {
     const lastData = data[data.length - 1];
     const secondLastData = data[data.length - 2];
     const thirdLastData = data[data.length - 3];
     const fourthLastData = data[data.length - 4];
+    const fifthLastData = data[data.length - 5];
     const aboveMA50 = lastData.close > lastData.MA50;
     const aboveMA50Second = secondLastData.close > secondLastData.MA50;
     const aboveMA50Third = thirdLastData.close > thirdLastData.MA50;
     const aboveMA50Fourth = fourthLastData.close > fourthLastData.MA50;
+    const belowMA50Fifth = fifthLastData.close < fifthLastData.MA50;
 
     const aboveMA50Count = [
       aboveMA50,
@@ -1376,6 +1379,18 @@ export class WebhooksService {
       aboveMA50Fourth,
     ].filter(Boolean).length;
     if (aboveMA50Count >= 3) {
+      if(belowMA50Fifth) {
+        this.listsymbolBEarly.push(ticker);
+        if (this.listsymbolBEarly.length > this.maxListLength) {
+        await this.sendDiscord(
+          `list-BUY- ${this.listsymbolBEarly.toString()}`,
+          `${ticker}-ON-${timeframe}`,
+          'Nono',
+          '200AB_LESS_1',
+        );
+        this.listsymbolBEarly = [];
+      }
+      }
       this.listsymbolB.push(ticker);
       if (this.listsymbolB.length > this.maxListLength) {
         await this.sendDiscord(
@@ -1409,12 +1424,20 @@ export class WebhooksService {
       B_Channel,
     );
     await this.sendDiscord(
+      `listlast-BUY- ${this.listsymbolBEarly.toString()}`,
+      `TSLA-ON-1h`,
+      'Nono',
+      '200AB_LESS_1',
+    );
+    await this.sendDiscord(
       `listlast-SELL- ${this.listsymbolS.toString()}`,
       `TSLA-ON-1h`,
       'Nono',
       HT_Channel,
     );
     this.listsymbolB = [];
+    this.listsymbolBEarly = [];
+    this.listsymbolS = [];
     return;
   }
 }
