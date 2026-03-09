@@ -3115,7 +3115,6 @@
 'IYZ',
 'IEO',
 'IDU',
-'ELP',
 'RAPP',
 'VIV',
 'ETHE',
