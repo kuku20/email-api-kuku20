@@ -1233,7 +1233,7 @@ export class WebhooksService {
         Secondlastdata,
       );
     // if(!timeframe.includes('m') && BuyOnly_StochRSICrossAB200.PriceCrMA50) {
-    if(BuyOnly_StochRSICrossAB200.PriceCrMA50) {
+    if (BuyOnly_StochRSICrossAB200.PriceCrMA50) {
       await this.sendDiscord(
         `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA50 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-${timeframe}-CrMA50-${lastdata?.close}`,
@@ -1242,7 +1242,7 @@ export class WebhooksService {
         data,
       );
       return;
-    };
+    }
     if (BuyOnly_StochRSICrossAB200.PriceCrMA100) {
       await this.sendDiscord(
         `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA100 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
@@ -1355,4 +1355,66 @@ export class WebhooksService {
 }
 
    */
+
+  listsymbolB = [];
+  listsymbolS = [];
+  maxListLength = 10;
+  async runALLOn_MA50(data, ticker, timeframe, B_Channel, HT_Channel) {
+    const lastData = data[data.length - 1];
+    const secondLastData = data[data.length - 2];
+    const thirdLastData = data[data.length - 3];
+    const fourthLastData = data[data.length - 4];
+    const aboveMA50 = lastData.close > lastData.MA50;
+    const aboveMA50Second = secondLastData.close > secondLastData.MA50;
+    const aboveMA50Third = thirdLastData.close > thirdLastData.MA50;
+    const aboveMA50Fourth = fourthLastData.close > fourthLastData.MA50;
+
+    const aboveMA50Count = [
+      aboveMA50,
+      aboveMA50Second,
+      aboveMA50Third,
+      aboveMA50Fourth,
+    ].filter(Boolean).length;
+    if (aboveMA50Count >= 3) {
+      this.listsymbolB.push(ticker);
+      if (this.listsymbolB.length > this.maxListLength) {
+        await this.sendDiscord(
+          `list-BUY- ${this.listsymbolB.toString()}`,
+          `${ticker}-ON-${timeframe}`,
+          'Nono',
+          B_Channel,
+        );
+        this.listsymbolB = [];
+        return;
+      }
+    } else if (aboveMA50Count <= 1) {
+      this.listsymbolS.push(ticker);
+      if (this.listsymbolS.length > this.maxListLength) {
+        await this.sendDiscord(
+          `list-SELL- ${this.listsymbolS.toString()}`,
+          `${ticker}-ON-${timeframe}`,
+          'Nono',
+          HT_Channel,
+        );
+        this.listsymbolS = [];
+        return;
+      }
+    }
+  }
+  async sendlast(data, ticker, timeframe, B_Channel, HT_Channel) {
+    await this.sendDiscord(
+      `listlast-BUY- ${this.listsymbolB.toString()}`,
+      `${ticker}-ON-${timeframe}`,
+      'Nono',
+      B_Channel,
+    );
+    await this.sendDiscord(
+      `listlast-SELL- ${this.listsymbolS.toString()}`,
+      `${ticker}-ON-${timeframe}`,
+      'Nono',
+      HT_Channel,
+    );
+    this.listsymbolB = [];
+    return;
+  }
 }

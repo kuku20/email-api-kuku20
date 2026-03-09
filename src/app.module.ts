@@ -57,6 +57,7 @@ import { TaskCryptoService } from './stock/task_crypto.service';
 import { TasksUSMK_1MIN_Service } from './stock/task_usmk_1min.service';
 import { TasksUSMKService_SP500 } from './stock/task_usmk500.service';
 import { TasksVNMKService } from './stock/task_vn600.service';
+import { TasksUS_ALL_MKService } from './stock/task_usmkall.service';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -159,6 +160,7 @@ import { TasksVNMKService } from './stock/task_vn600.service';
     // TasksVNMKService,
     TasksService,
     TaskCryptoService,
+    TasksUS_ALL_MKService,
     // TasksUSMK_1MIN_Service,
     // TasksUSMKService_15MIN
     TasksForexService,
