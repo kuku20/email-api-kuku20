@@ -100,9 +100,11 @@ export class TasksUS_ALL_MKService {
 
   async onModuleInit() {
     // This runs ONCE when the app starts
-    await this.runAllOn1h();
-    // await this.runAllWatchLists();
-    // console.log(  stock_500_symbols.length)
+    await this.SendEverydayService('EARLY_AB200', '200AB_LESS_01');
+    await this.runAllWatchLists();
+
+    // await this.SendEverydayService('200BL_OV_NEG_01', '200BL_OV_NEG_05');
+    // await this.runAllOn1h();
   }
   // @Cron('*/15 14-21 * * 1-5', { timeZone: 'UTC' }) // Every 15 minutes between 14:00 and 21:59 UTC (10:00 AM to 5:59 PM ET) on weekdays
   //@Cron('*/30 14-21 * * 1-5', { timeZone: 'UTC' }) // Every 30 minutes between 14:00 and 21:59 UTC (10:00 AM to 5:59 PM ET) on weekdays
@@ -132,5 +134,21 @@ export class TasksUS_ALL_MKService {
       ),
     ]);
     await this.webhooksService.sendlast('200BL_OV_NEG_01', '200BL_OV_NEG_05');
+  }
+
+  async SendEverydayService(chanel1, chanel2) {
+    const equal = `===========================================`;
+    const Channels = [chanel1, chanel2, '200AB_LESS_1']; // example list
+
+    for (const channel of Channels) {
+      // CLOSE YESTERDAY
+      await this.webhooksService.sendDiscordNotification(
+        `${equal}==${equal}`,
+        `${channel} RSIENDBOT`,
+        JSON.stringify('lastdata'),
+      );
+      // Log completion
+      this.logger.error(`✅ Finished sending for`, channel);
+    }
   }
 }

@@ -160,7 +160,7 @@ import { TasksUS_ALL_MKService } from './stock/task_usmkall.service';
     // TasksVNMKService,
     TasksService,
     TaskCryptoService,
-    //TasksUS_ALL_MKService,
+    TasksUS_ALL_MKService,
     // TasksUSMK_1MIN_Service,
     // TasksUSMKService_15MIN
     TasksForexService,
