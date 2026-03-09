@@ -100,7 +100,7 @@ export class TasksUS_ALL_MKService {
 
   async onModuleInit() {
     // This runs ONCE when the app starts
-    // await this.runAllOn1h();
+    await this.runAllOn1h();
     // await this.runAllWatchLists();
     // console.log(  stock_500_symbols.length)
   }
@@ -128,7 +128,7 @@ export class TasksUS_ALL_MKService {
         '200BL_OV_NEG_01',
         '200BL_OV_NEG_05',
         0,
-        '1h',
+        '4h',
       ),
     ]);
     await this.webhooksService.sendlast('200BL_OV_NEG_01', '200BL_OV_NEG_05');
