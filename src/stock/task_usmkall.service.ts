@@ -4,8 +4,10 @@ import { ConfigService } from '@nestjs/config';
 import { StockHelperService } from './stockHelper.service';
 import { LocalPLWR } from './runlocal.service';
 import { WebhooksService } from 'src/webhooks/webhooks.service';
+import * as StockSymbols from './dto/chartData';
 import { stock_usall_symbols } from './dto/chartData';
 import { stock_500_symbols } from './dto/chartData';
+import { dayab50 } from './dto/chartData';
 import pLimit from 'p-limit';
 @Injectable()
 export class TasksUS_ALL_MKService {
@@ -98,7 +100,7 @@ export class TasksUS_ALL_MKService {
 
   async onModuleInit() {
     // This runs ONCE when the app starts
-    await this.runAllWatchLists();
+    await this.runAllOn1h();
     // console.log(  stock_500_symbols.length)
   }
   // @Cron('*/15 14-21 * * 1-5', { timeZone: 'UTC' }) // Every 15 minutes between 14:00 and 21:59 UTC (10:00 AM to 5:59 PM ET) on weekdays
@@ -106,7 +108,7 @@ export class TasksUS_ALL_MKService {
   async runAllWatchLists() {
     await Promise.all([
       this.USTIMERUN(
-        stock_usall_symbols,
+        StockSymbols.stock_usall_symbols,
         this.allkeys,
         'EARLY_AB200',
         '200AB_LESS_01',
@@ -115,5 +117,19 @@ export class TasksUS_ALL_MKService {
       ),
     ]);
     await this.webhooksService.sendlast('EARLY_AB200', '200AB_LESS_01');
+  }
+
+  async runAllOn1h() {
+    await Promise.all([
+      this.USTIMERUN(
+        StockSymbols.dayab50,
+        this.allkeys,
+        '200BL_OV_NEG_01',
+        '200BL_OV_NEG_05',
+        0,
+        '1h',
+      ),
+    ]);
+    await this.webhooksService.sendlast('200BL_OV_NEG_01', '200BL_OV_NEG_05');
   }
 }
