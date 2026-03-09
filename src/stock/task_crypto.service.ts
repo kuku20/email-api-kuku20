@@ -105,7 +105,7 @@ export class TaskCryptoService {
   async handle30pCrypto() {
     await this.webhooksService.sendDiscord(
       'WAKEUPCALL:30min',
-      'RLWAYBOT 30min',
+      'RSIENDBOT 30min',
       'CRYTO',
       'CRON_CHECK',
     );

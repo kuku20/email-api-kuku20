@@ -83,7 +83,7 @@ export class TasksUS_ALL_MKService {
           // Send error notification and log the error
           await this.webhooksService.sendDiscord(
             `ERROR ON API AT: ${timeframe} On ${date}`,
-            `RLWAYBOT ${ticker} at ${timeframe}`,
+            `RSIENDBOT ${ticker} at ${timeframe}`,
             'Nono',
             'ERORR_CALL',
           );

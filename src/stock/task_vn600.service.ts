@@ -54,7 +54,7 @@ export class TasksVNMKService {
           // Send error notification and log the error
           await this.webhooksService.sendDiscord(
             `ERROR ON API AT: 1day On ${date}`,
-            `RLWAYBOT ${ticker}.VN at 1day`,
+            `RSIENDBOT ${ticker}.VN at 1day`,
             'Nono',
             'ERORR_CALL',
           );
