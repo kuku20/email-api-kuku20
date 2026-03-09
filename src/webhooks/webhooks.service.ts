@@ -1359,7 +1359,7 @@ export class WebhooksService {
   listsymbolB = [];
   listsymbolBEarly = [];
   listsymbolS = [];
-  maxListLength = 50;
+  maxListLength = 100;
   async runALLOn_MA50(data, ticker, timeframe, B_Channel, HT_Channel) {
     const lastData = data[data.length - 1];
     const secondLastData = data[data.length - 2];
