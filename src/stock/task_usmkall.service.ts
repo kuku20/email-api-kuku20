@@ -5,6 +5,7 @@ import { StockHelperService } from './stockHelper.service';
 import { LocalPLWR } from './runlocal.service';
 import { WebhooksService } from 'src/webhooks/webhooks.service';
 import { stock_usall_symbols } from './dto/chartData';
+import { stock_500_symbols } from './dto/chartData';
 import pLimit from 'p-limit';
 @Injectable()
 export class TasksUS_ALL_MKService {
@@ -105,7 +106,7 @@ export class TasksUS_ALL_MKService {
   async runAllWatchLists() {
     await Promise.all([
       this.USTIMERUN(
-        stock_usall_symbols,
+        stock_500_symbols,
         this.allkeys,
         'EARLY_AB200',
         '200AB_LESS_01',
