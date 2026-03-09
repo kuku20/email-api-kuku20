@@ -1368,7 +1368,7 @@ export class WebhooksService {
     const fourthLastData = data[data.length - 4];
     const fifthLastData = data[data.length - 5];
     const aboveMA50 = lastData.close > lastData.MA50;
-    const MACDPositive = lastData.MACDLine > 0;
+    const MACDPositive = lastData.divergence > 0;
     const aboveMA50Second = secondLastData.close > secondLastData.MA50;
     const aboveMA50Third = thirdLastData.close > thirdLastData.MA50;
     const aboveMA50Fourth = fourthLastData.close > fourthLastData.MA50;
