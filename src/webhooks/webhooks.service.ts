@@ -8,6 +8,7 @@ import pLimit from 'p-limit';
 import { StockHelperService } from 'src/stock/stockHelper.service';
 
 import * as fs from 'fs';
+import { channel } from 'diagnostics_channel';
 @Injectable()
 export class WebhooksService {
   private webhookClient: WebhookClient;
@@ -1379,25 +1380,23 @@ export class WebhooksService {
       aboveMA50Fourth,
     ].filter(Boolean).length;
     if (aboveMA50Count >= 3) {
-      if(belowMA50Fifth) {
+      if (belowMA50Fifth) {
         this.listsymbolBEarly.push(ticker);
         if (this.listsymbolBEarly.length > this.maxListLength) {
-        await this.sendDiscord(
-          `list-BUY- ${this.listsymbolBEarly.toString()}`,
-          `${ticker}-ON-${timeframe}`,
-          'Nono',
-          '200AB_LESS_1',
-        );
-        this.listsymbolBEarly = [];
-      }
+          await this.sendDiscordNotification(
+            `list-BUY- ${this.listsymbolBEarly.toString()}`,
+            `200AB_LESS_1 RSIENDBOT`,
+            JSON.stringify('lastdata'),
+          );
+          this.listsymbolBEarly = [];
+        }
       }
       this.listsymbolB.push(ticker);
       if (this.listsymbolB.length > this.maxListLength) {
-        await this.sendDiscord(
+        await this.sendDiscordNotification(
           `list-BUY- ${this.listsymbolB.toString()}`,
-          `${ticker}-ON-${timeframe}`,
-          'Nono',
-          B_Channel,
+          `${B_Channel} RSIENDBOT`,
+          JSON.stringify('lastdata'),
         );
         this.listsymbolB = [];
         return;
@@ -1405,11 +1404,10 @@ export class WebhooksService {
     } else if (aboveMA50Count <= 1) {
       this.listsymbolS.push(ticker);
       if (this.listsymbolS.length > this.maxListLength) {
-        await this.sendDiscord(
+        await this.sendDiscordNotification(
           `list-SELL- ${this.listsymbolS.toString()}`,
-          `${ticker}-ON-${timeframe}`,
-          'Nono',
-          HT_Channel,
+          `${HT_Channel} RSIENDBOT`,
+          JSON.stringify('lastdata'),
         );
         this.listsymbolS = [];
         return;
@@ -1417,23 +1415,20 @@ export class WebhooksService {
     }
   }
   async sendlast(B_Channel, HT_Channel) {
-    await this.sendDiscord(
+    await this.sendDiscordNotification(
       `listlast-BUY- ${this.listsymbolB.toString()}`,
-      `TSLA-ON-1h`,
-      'Nono',
-      B_Channel,
+      `${B_Channel} RSIENDBOT`,
+      JSON.stringify('lastdata'),
     );
-    await this.sendDiscord(
+    await this.sendDiscordNotification(
       `listlast-BUY- ${this.listsymbolBEarly.toString()}`,
-      `TSLA-ON-1h`,
-      'Nono',
-      '200AB_LESS_1',
+      `${'200AB_LESS_1'} RSIENDBOT`,
+      JSON.stringify('lastdata'),
     );
-    await this.sendDiscord(
+    await this.sendDiscordNotification(
       `listlast-SELL- ${this.listsymbolS.toString()}`,
-      `TSLA-ON-1h`,
-      'Nono',
-      HT_Channel,
+      `${HT_Channel} RSIENDBOT`,
+      JSON.stringify('lastdata'),
     );
     this.listsymbolB = [];
     this.listsymbolBEarly = [];
