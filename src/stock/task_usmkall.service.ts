@@ -77,13 +77,6 @@ export class TasksUS_ALL_MKService {
             B_Channel,
             HT_Channel,
           );
-          await this.webhooksService.sendlast(
-            data,
-            ticker,
-            timeframe,
-            B_Channel,
-            HT_Channel
-          );
           this.logger.log(`${ticker} processed successfully.`);
         } catch (error) {
           // Send error notification and log the error
@@ -120,5 +113,6 @@ export class TasksUS_ALL_MKService {
         '1day',
       ),
     ]);
+    await this.webhooksService.sendlast('EARLY_AB200', '200AB_LESS_01');
   }
 }

@@ -1401,16 +1401,16 @@ export class WebhooksService {
       }
     }
   }
-  async sendlast(data, ticker, timeframe, B_Channel, HT_Channel) {
+  async sendlast(B_Channel, HT_Channel) {
     await this.sendDiscord(
       `listlast-BUY- ${this.listsymbolB.toString()}`,
-      `${ticker}-ON-${timeframe}`,
+      `TSLA-ON-1h`,
       'Nono',
       B_Channel,
     );
     await this.sendDiscord(
       `listlast-SELL- ${this.listsymbolS.toString()}`,
-      `${ticker}-ON-${timeframe}`,
+      `TSLA-ON-1h`,
       'Nono',
       HT_Channel,
     );
