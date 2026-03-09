@@ -127,8 +127,8 @@ export class TasksUSMKService_SP500 {
     //await this.runAllWatchLists();
     // console.log(  stock_500_symbols.length)
   }
-  @Cron('*/15 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 15 minutes between 14:00 and 21:59 UTC (10:00 AM to 5:59 PM ET) on weekdays
   // @Cron('*/30 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 30 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
+  @Cron('*/15 13-21 * * 1-5', { timeZone: 'UTC' })// Every 15 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
   async runAllWatchLists() {
     await Promise.all([
       this.USTIMERUN(
@@ -137,6 +137,20 @@ export class TasksUSMKService_SP500 {
         'US_ALL',
         'USSTOCK_WATCH',
         3,
+        '15min',
+      ),
+    ]);
+  }
+
+  @Cron('*/30 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 30 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
+  async runAllWatchLists30() {
+    await Promise.all([
+      this.USTIMERUN(
+        stock_symbols2,
+        this.allkeys,
+        'US_ALL',
+        'USSTOCK_WATCH',
+        5,
         '30min',
       ),
     ]);
