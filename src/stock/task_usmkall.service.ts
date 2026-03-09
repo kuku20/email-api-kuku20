@@ -82,7 +82,7 @@ export class TasksUS_ALL_MKService {
         } catch (error) {
           // Send error notification and log the error
           await this.webhooksService.sendDiscord(
-            `ERROR ON API AT: ${timeframe} On ${date}`,
+            `ERROR ON API AT: ${timeframe} On ${date}| ${ticker}`,
             `RSIENDBOT ${ticker} at ${timeframe}`,
             'Nono',
             'ERORR_CALL',
@@ -106,7 +106,7 @@ export class TasksUS_ALL_MKService {
   async runAllWatchLists() {
     await Promise.all([
       this.USTIMERUN(
-        stock_500_symbols,
+        stock_usall_symbols,
         this.allkeys,
         'EARLY_AB200',
         '200AB_LESS_01',

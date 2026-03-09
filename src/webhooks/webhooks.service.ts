@@ -1384,7 +1384,7 @@ export class WebhooksService {
         this.listsymbolBEarly.push(ticker);
         if (this.listsymbolBEarly.length > this.maxListLength) {
           await this.sendDiscordNotification(
-            `list-BUY- ${this.listsymbolBEarly.toString()}`,
+            `,${this.listsymbolBEarly.toString()}`,
             `200AB_LESS_1 RSIENDBOT`,
             JSON.stringify('lastdata'),
           );
@@ -1394,7 +1394,7 @@ export class WebhooksService {
       this.listsymbolB.push(ticker);
       if (this.listsymbolB.length > this.maxListLength) {
         await this.sendDiscordNotification(
-          `list-BUY- ${this.listsymbolB.toString()}`,
+          `,${this.listsymbolB.toString()}`,
           `${B_Channel} RSIENDBOT`,
           JSON.stringify('lastdata'),
         );
@@ -1405,7 +1405,7 @@ export class WebhooksService {
       this.listsymbolS.push(ticker);
       if (this.listsymbolS.length > this.maxListLength) {
         await this.sendDiscordNotification(
-          `list-SELL- ${this.listsymbolS.toString()}`,
+          `,${this.listsymbolS.toString()}`,
           `${HT_Channel} RSIENDBOT`,
           JSON.stringify('lastdata'),
         );
@@ -1416,17 +1416,17 @@ export class WebhooksService {
   }
   async sendlast(B_Channel, HT_Channel) {
     await this.sendDiscordNotification(
-      `listlast-BUY- ${this.listsymbolB.toString()}`,
+      `,${this.listsymbolB.toString()}`,
       `${B_Channel} RSIENDBOT`,
       JSON.stringify('lastdata'),
     );
     await this.sendDiscordNotification(
-      `listlast-BUY- ${this.listsymbolBEarly.toString()}`,
+      `,${this.listsymbolBEarly.toString()}`,
       `${'200AB_LESS_1'} RSIENDBOT`,
       JSON.stringify('lastdata'),
     );
     await this.sendDiscordNotification(
-      `listlast-SELL- ${this.listsymbolS.toString()}`,
+      `,${this.listsymbolS.toString()}`,
       `${HT_Channel} RSIENDBOT`,
       JSON.stringify('lastdata'),
     );
