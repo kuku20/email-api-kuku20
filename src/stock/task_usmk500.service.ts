@@ -7,7 +7,7 @@ import { StockHelperService } from './stockHelper.service';
 import { LocalPLWR } from './runlocal.service';
 import { WebhooksService } from 'src/webhooks/webhooks.service';
 import { stock_500_symbols } from './dto/chartData';
-import { stock_symbols2 } from './dto/chartData';
+import { dayab50 } from './dto/chartData';
 import * as Timer from './compareTime';
 import pLimit from 'p-limit';
 @Injectable()
@@ -132,7 +132,7 @@ export class TasksUSMKService_SP500 {
   async runAllWatchLists() {
     await Promise.all([
       this.USTIMERUN(
-        stock_symbols2,
+        dayab50,
         this.allkeys,
         'US_ALL',
         'USSTOCK_WATCH',
@@ -146,7 +146,7 @@ export class TasksUSMKService_SP500 {
   async runAllWatchLists30() {
     await Promise.all([
       this.USTIMERUN(
-        stock_symbols2,
+        dayab50,
         this.allkeys,
         'US_ALL',
         'USSTOCK_WATCH',
@@ -160,7 +160,7 @@ export class TasksUSMKService_SP500 {
   async runAllWatchLists4h() {
     await Promise.all([
       this.USTIMERUN(
-        stock_500_symbols,
+        dayab50,
         this.allkeys,
         'US_15M_HT',
         'US_15M_HT',
@@ -174,7 +174,7 @@ export class TasksUSMKService_SP500 {
   async runAllWatchLists1h() {
     await Promise.all([
       this.USTIMERUN(
-        stock_symbols2,
+        dayab50,
         this.allkeys,
         'US_30M_BUY',
         'US_30M_HT',
