@@ -144,15 +144,15 @@ export class LocalPLWR {
     console.log(urls)
     const responsesArray = await this.tryCatchtPO(urls);
     // return responsesArray.results
-    const reversedData = [...responsesArray.results].reverse(); // clone + reverse
+    // const reversedData = [...responsesArray.results].reverse(); // clone + reverse
     const response = plainToInstance(
       DTO.ChartOutPolygonDto,
-      reversedData, {
+      responsesArray.results, {
         excludeExtraneousValues: true,
       }
     ) as any;
     const newData = await this.stockHelperService.returnNewData(response);
-    return newData.slice(0, 300);
+    return newData;
     return  response.slice(0, 300);
     // const result = await this.stockHelperService.returnNewData(response);
     // return  result.slice(0, 300);
