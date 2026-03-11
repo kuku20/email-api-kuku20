@@ -90,22 +90,30 @@ export class TasksUS_ALL_MK_MASS_Service {
 
   async onModuleInit() {
     // This runs ONCE when the app starts
-    await this.runfullonms();
+    // await this.runfullonms();
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, {
-    timeZone: 'America/New_York',
+    timeZone: 'America/Los_Angeles',
   })
   async runfullonms() {
     this.stockHelperService.ListMA50On1day = []; // Clear the list at the start of each run
     await this.SendEverydayService('EARLY_AB200', '200AB_LESS_01', '1day');
     await this.runAllWatchLists();
     await this.SendEverydayService('EARLY_AB200', '200AB_LESS_01', '1day');
-    
-    this.stockHelperService.ListMA50On4hour = []; 
-    await this.SendEverydayService('200BL_OV_NEG_01', '200BL_OV_NEG_05', '4hour');
+
+    this.stockHelperService.ListMA50On4hour = [];
+    await this.SendEverydayService(
+      '200BL_OV_NEG_01',
+      '200BL_OV_NEG_05',
+      '4hour',
+    );
     await this.runAllOn1h(this.stockHelperService.ListMA50On1day);
-    await this.SendEverydayService('200BL_OV_NEG_01', '200BL_OV_NEG_05', '4hour');
+    await this.SendEverydayService(
+      '200BL_OV_NEG_01',
+      '200BL_OV_NEG_05',
+      '4hour',
+    );
   }
 
   async runAllWatchLists() {
@@ -136,7 +144,7 @@ export class TasksUS_ALL_MK_MASS_Service {
 
   async SendEverydayService(chanel1, chanel2, timeframe = '1day') {
     const equal = `===========================================`;
-    const Channels = [chanel1, chanel2, '200AB_LESS_1']; // example list
+    const Channels = [chanel1, chanel2,]; // example list
 
     for (const channel of Channels) {
       // CLOSE YESTERDAY

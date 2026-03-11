@@ -164,8 +164,8 @@ export class TasksUSMKService_SP500 {
   async runAllWatchLists4h() {
     await Promise.all([
       this.USTIMERUN(
-        this.stockHelperService.ListMA50On4hour.length > 0
-          ? this.stockHelperService.ListMA50On4hour
+        this.stockHelperService.ListMA50On1day.length > 0
+          ? this.stockHelperService.ListMA50On1day
           : stock_500_symbols,
         this.allkeys,
         'US_15M_HT',
@@ -180,8 +180,8 @@ export class TasksUSMKService_SP500 {
   async runAllWatchLists1h() {
     await Promise.all([
       this.USTIMERUN(
-        this.stockHelperService.ListMA50On4hour.length > 0
-          ? this.stockHelperService.ListMA50On4hour
+        this.stockHelperService.ListMA50On1day.length > 0
+          ? this.stockHelperService.ListMA50On1day
           : stock_500_symbols,
         this.allkeys,
         'US_30M_BUY',

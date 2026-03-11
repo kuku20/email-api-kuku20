@@ -1386,7 +1386,8 @@ export class WebhooksService {
         if (this.listsymbolBEarly.length > this.maxListLength) {
           await this.sendDiscordNotification(
             `,${this.listsymbolBEarly.toString()}`,
-            `200AB_LESS_1 RSIENDBOT`,
+            // `200AB_LESS_1 RSIENDBOT`,
+            `${HT_Channel} RSIENDBOT`,
             JSON.stringify('lastdata'),
           );
           this.listsymbolBEarly = [];
@@ -1408,16 +1409,17 @@ export class WebhooksService {
         return;
       }
     } else if (aboveMA50Count <= 1) {
-      this.listsymbolS.push(ticker);
-      if (this.listsymbolS.length > this.maxListLength) {
-        await this.sendDiscordNotification(
-          `,${this.listsymbolS.toString()}`,
-          `${HT_Channel} RSIENDBOT`,
-          JSON.stringify('lastdata'),
-        );
-        this.listsymbolS = [];
-        return;
-      }
+      // skip posting to for now, just log it
+      // this.listsymbolS.push(ticker);
+      // if (this.listsymbolS.length > this.maxListLength) {
+      //   await this.sendDiscordNotification(
+      //     `,${this.listsymbolS.toString()}`,
+      //     `${HT_Channel} RSIENDBOT`,
+      //     JSON.stringify('lastdata'),
+      //   );
+      //   this.listsymbolS = [];
+      //   return;
+      // }
     }
   }
   async sendlast(B_Channel, HT_Channel) {
