@@ -96,10 +96,10 @@ export class LocalPLWR {
         excludeExtraneousValues: true,
       }
     ) as any;
-    return  response.slice(0, 300);;
-    // const result = await this.stockHelperService.returnNewData(response);
-
-    // return result;
+    // return  response.slice(0, 300);
+    const result = await this.stockHelperService.returnNewData(response);
+    return  result.slice(0, 300);
+    return result;
   }
 
   /**
@@ -662,6 +662,9 @@ export class LocalPLWR {
     // return null;
   }
 
+  async MassNOAPI(ticker: string, timefame: string) {
+
+  }
 
   async FMP_EOD_FULL(ticker: string) {
     const daytestBF = 0;

@@ -10,7 +10,7 @@ import { stock_500_symbols } from './dto/chartData';
 import { dayab50 } from './dto/chartData';
 import pLimit from 'p-limit';
 @Injectable()
-export class TasksUS_ALL_MKService {
+export class TasksUS_ALL_MK_MASS_Service {
   allkeys = 'all'; // test
   constructor(
     private readonly configService: ConfigService,
@@ -18,11 +18,10 @@ export class TasksUS_ALL_MKService {
     private readonly stockHelperService: StockHelperService,
     private readonly LocalPLWR: LocalPLWR,
   ) {}
-  private readonly logger = new Logger(TasksUS_ALL_MKService.name);
+  private readonly logger = new Logger(TasksUS_ALL_MK_MASS_Service.name);
 
   async USTIMERUN(
     intickers: string[],
-    api: any,
     B_Channel,
     HT_Channel,
     delay,
@@ -32,7 +31,6 @@ export class TasksUS_ALL_MKService {
     await this.processTickers(
       tickers,
       timeframe,
-      api,
       B_Channel,
       HT_Channel,
       delay,
@@ -42,7 +40,6 @@ export class TasksUS_ALL_MKService {
   private async processTickers(
     tickers: string[],
     timeframe: string,
-    apikey: string,
     B_Channel,
     HT_Channel,
     delay = 2,
@@ -66,12 +63,7 @@ export class TasksUS_ALL_MKService {
         }
 
         try {
-          let data;
-          if (apikey === 'all') {
-            data = await this.LocalPLWR.TwReveseNOAPI(ticker, timeframe);
-          } else {
-            data = await this.LocalPLWR.get12for(ticker, timeframe, apikey);
-          }
+          let data = await this.LocalPLWR.getTickerFullChart_POLYGON(ticker, timeframe);
           // Process the data
           await this.webhooksService.runALLOn_MA50(
             data,
@@ -106,13 +98,10 @@ export class TasksUS_ALL_MKService {
     // await this.SendEverydayService('200BL_OV_NEG_01', '200BL_OV_NEG_05');
     // await this.runAllOn1h();
   }
-  // @Cron('*/15 14-21 * * 1-5', { timeZone: 'UTC' }) // Every 15 minutes between 14:00 and 21:59 UTC (10:00 AM to 5:59 PM ET) on weekdays
-  //@Cron('*/30 14-21 * * 1-5', { timeZone: 'UTC' }) // Every 30 minutes between 14:00 and 21:59 UTC (10:00 AM to 5:59 PM ET) on weekdays
   async runAllWatchLists() {
     await Promise.all([
       this.USTIMERUN(
-        StockSymbols.stock_usall_symbols,
-        this.allkeys,
+        StockSymbols.dayab50,
         'EARLY_AB200',
         '200AB_LESS_01',
         0,
@@ -126,11 +115,10 @@ export class TasksUS_ALL_MKService {
     await Promise.all([
       this.USTIMERUN(
         StockSymbols.dayab50,
-        this.allkeys,
         '200BL_OV_NEG_01',
         '200BL_OV_NEG_05',
         0,
-        '4h',
+        '4hour',
       ),
     ]);
     await this.webhooksService.sendlast('200BL_OV_NEG_01', '200BL_OV_NEG_05');
