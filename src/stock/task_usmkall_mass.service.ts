@@ -107,7 +107,8 @@ export class TasksUS_ALL_MK_MASS_Service {
   async runAllWatchLists() {
     await Promise.all([
       this.USTIMERUN(
-        StockSymbols.stock_usall_symbols,
+        // StockSymbols.stock_usall_symbols,
+        ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA'], // Example tickers for testing
         'EARLY_AB200',
         '200AB_LESS_01',
         0,

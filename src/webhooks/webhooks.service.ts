@@ -1374,6 +1374,15 @@ export class WebhooksService {
     const aboveMA50Fourth = fourthLastData.close > fourthLastData.MA50;
     const belowMA50Fifth = fifthLastData.close < fifthLastData.MA50;
 
+      await this.sendDiscord(
+        `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA100 -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+        `${ticker}-${timeframe}-CrMA100-${lastData?.close}`,
+        lastData,
+        B_Channel,
+        data,
+      );
+      return;
+
     const aboveMA50Count = [
       aboveMA50,
       aboveMA50Second,
