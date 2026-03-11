@@ -150,9 +150,11 @@ export class LocalPLWR {
       responsesArray.results, {
         excludeExtraneousValues: true,
       }
-    ) as any;
+    ) as any
+   
     const newData = await this.stockHelperService.returnNewData(response);
-    return newData;
+     const reversedData = [...newData].reverse();
+    return reversedData;
     return  response.slice(0, 300);
     // const result = await this.stockHelperService.returnNewData(response);
     // return  result.slice(0, 300);
