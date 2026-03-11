@@ -153,9 +153,7 @@ export class LocalPLWR {
     ) as any
      const reversedData = [...response].reverse();
     const newData = await this.stockHelperService.returnNewData(reversedData);
-    //  const reversedData = [...newData].reverse();
-    return newData;
-    return  response.slice(0, 300);
+    return newData.slice(-10); //
     // const result = await this.stockHelperService.returnNewData(response);
     // return  result.slice(0, 300);
     return response;
