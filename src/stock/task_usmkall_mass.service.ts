@@ -90,25 +90,28 @@ export class TasksUS_ALL_MK_MASS_Service {
 
   async onModuleInit() {
     // This runs ONCE when the app starts
-    // await this.SendEverydayService('200BL_OV_NEG_01', '200BL_OV_NEG_05');
-    // await this.runAllOn1h();
-        await this.SendEverydayService('EARLY_AB200', '200AB_LESS_01');
-    await this.runAllWatchLists();
+    await this.runfullonms();
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, {
     timeZone: 'America/New_York',
   })
   async runfullonms() {
-    await this.SendEverydayService('EARLY_AB200', '200AB_LESS_01');
+    this.stockHelperService.ListMA50On1day = []; // Clear the list at the start of each run
+    await this.SendEverydayService('EARLY_AB200', '200AB_LESS_01', '1day');
     await this.runAllWatchLists();
+    await this.SendEverydayService('EARLY_AB200', '200AB_LESS_01', '1day');
+    
+    this.stockHelperService.ListMA50On4hour = []; 
+    await this.SendEverydayService('EARLY_AB200', '200AB_LESS_01', '4hour');
+    await this.runAllOn1h(this.stockHelperService.ListMA50On1day);
+    await this.SendEverydayService('EARLY_AB200', '200AB_LESS_01', '4hour');
   }
 
   async runAllWatchLists() {
     await Promise.all([
       this.USTIMERUN(
-        // StockSymbols.stock_usall_symbols,
-        ['AAPL'], // Example tickers for testing
+        StockSymbols.stock_usall_symbols,
         'EARLY_AB200',
         '200AB_LESS_01',
         0,
@@ -118,10 +121,10 @@ export class TasksUS_ALL_MK_MASS_Service {
     await this.webhooksService.sendlast('EARLY_AB200', '200AB_LESS_01');
   }
 
-  async runAllOn1h() {
+  async runAllOn1h(stocklist = StockSymbols.stock_500_symbols) {
     await Promise.all([
       this.USTIMERUN(
-        StockSymbols.dayab50,
+        stocklist,
         '200BL_OV_NEG_01',
         '200BL_OV_NEG_05',
         0,
@@ -131,14 +134,14 @@ export class TasksUS_ALL_MK_MASS_Service {
     await this.webhooksService.sendlast('200BL_OV_NEG_01', '200BL_OV_NEG_05');
   }
 
-  async SendEverydayService(chanel1, chanel2) {
+  async SendEverydayService(chanel1, chanel2, timeframe = '1day') {
     const equal = `===========================================`;
     const Channels = [chanel1, chanel2, '200AB_LESS_1']; // example list
 
     for (const channel of Channels) {
       // CLOSE YESTERDAY
       await this.webhooksService.sendDiscordNotification(
-        `${equal}==${equal}`,
+        `${equal}=${timeframe}=${equal}`,
         `${channel} RSIENDBOT`,
         JSON.stringify('lastdata'),
       );

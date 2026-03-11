@@ -3,6 +3,8 @@ import { StockData } from './dto/chartData';
 
 @Injectable()
 export class StockHelperService {
+  ListMA50On1day: string[] = [];
+  ListMA50On4hour: string[] = [];
   async returnNewData(dataIn: any[]) {
     if (!dataIn?.length) return [];
 
