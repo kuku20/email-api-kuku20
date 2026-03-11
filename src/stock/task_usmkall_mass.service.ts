@@ -103,9 +103,9 @@ export class TasksUS_ALL_MK_MASS_Service {
     await this.SendEverydayService('EARLY_AB200', '200AB_LESS_01', '1day');
     
     this.stockHelperService.ListMA50On4hour = []; 
-    await this.SendEverydayService('EARLY_AB200', '200AB_LESS_01', '4hour');
+    await this.SendEverydayService('200BL_OV_NEG_01', '200BL_OV_NEG_05', '4hour');
     await this.runAllOn1h(this.stockHelperService.ListMA50On1day);
-    await this.SendEverydayService('EARLY_AB200', '200AB_LESS_01', '4hour');
+    await this.SendEverydayService('200BL_OV_NEG_01', '200BL_OV_NEG_05', '4hour');
   }
 
   async runAllWatchLists() {
