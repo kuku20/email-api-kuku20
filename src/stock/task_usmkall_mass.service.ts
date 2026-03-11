@@ -9,6 +9,7 @@ import { stock_usall_symbols } from './dto/chartData';
 import { stock_500_symbols } from './dto/chartData';
 import { dayab50 } from './dto/chartData';
 import pLimit from 'p-limit';
+import { Cron, CronExpression } from '@nestjs/schedule';
 @Injectable()
 export class TasksUS_ALL_MK_MASS_Service {
   allkeys = 'all'; // test
@@ -28,13 +29,7 @@ export class TasksUS_ALL_MK_MASS_Service {
     timeframe = '5min',
   ) {
     const tickers = intickers;
-    await this.processTickers(
-      tickers,
-      timeframe,
-      B_Channel,
-      HT_Channel,
-      delay,
-    );
+    await this.processTickers(tickers, timeframe, B_Channel, HT_Channel, delay);
   }
 
   private async processTickers(
@@ -63,7 +58,10 @@ export class TasksUS_ALL_MK_MASS_Service {
         }
 
         try {
-          let data = await this.LocalPLWR.getTickerFullChart_POLYGON(ticker, timeframe);
+          let data = await this.LocalPLWR.getTickerFullChart_POLYGON(
+            ticker,
+            timeframe,
+          );
           // Process the data
           await this.webhooksService.runALLOn_MA50(
             data,
@@ -92,16 +90,24 @@ export class TasksUS_ALL_MK_MASS_Service {
 
   async onModuleInit() {
     // This runs ONCE when the app starts
-    await this.SendEverydayService('EARLY_AB200', '200AB_LESS_01');
-    await this.runAllWatchLists();
-
     // await this.SendEverydayService('200BL_OV_NEG_01', '200BL_OV_NEG_05');
     // await this.runAllOn1h();
+        await this.SendEverydayService('EARLY_AB200', '200AB_LESS_01');
+    await this.runAllWatchLists();
   }
+
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, {
+    timeZone: 'America/New_York',
+  })
+  async runfullonms() {
+    await this.SendEverydayService('EARLY_AB200', '200AB_LESS_01');
+    await this.runAllWatchLists();
+  }
+
   async runAllWatchLists() {
     await Promise.all([
       this.USTIMERUN(
-        StockSymbols.dayab50,
+        StockSymbols.stock_usall_symbols,
         'EARLY_AB200',
         '200AB_LESS_01',
         0,
