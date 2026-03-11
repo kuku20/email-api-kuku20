@@ -58,7 +58,7 @@ export class TasksUS_ALL_MK_MASS_Service {
         }
 
         try {
-          let data = await this.LocalPLWR.getTickerFullChart_POLYGON(
+          let data = await this.LocalPLWR.getTickerFullChart_POLYGON2(
             ticker,
             timeframe,
           );

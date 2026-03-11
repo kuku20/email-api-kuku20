@@ -96,12 +96,68 @@ export class LocalPLWR {
         excludeExtraneousValues: true,
       }
     ) as any;
-    // return  response.slice(0, 300);
-    const result = await this.stockHelperService.returnNewData(response);
-    return  result.slice(0, 300);
-    return result;
+    return  response.slice(0, 300);
+    // const result = await this.stockHelperService.returnNewData(response);
+    // return  result.slice(0, 300);
+    return response;
   }
+  async getTickerFullChart_POLYGON2(ticker: string, timefame: string) {
+    let range, timespan;
+    const daytestBF = 0;
+    const dayend = this.stockHelperService.getDateNDaysAgo(-1 + daytestBF);
+    let dayStart;
 
+    if (timefame.includes('day')) {
+      timespan = 'day';
+      range = timefame.match(/\d+/)[0];
+      dayStart = this.stockHelperService.getDateNDaysAgo(700 + daytestBF);
+    } else if (timefame.includes('hour')) {
+      timespan = 'hour';
+      dayStart = this.stockHelperService.getDateNDaysAgo(700 + daytestBF);
+      range = timefame.match(/\d+/)[0];
+    } else if (timefame.includes('min')) {
+      timespan = 'minute';
+      dayStart = this.stockHelperService.getDateNDaysAgo(35 + daytestBF);
+      range = timefame.match(/\d+/)[0];
+    } else if (timefame.includes('week')) {
+      timespan = 'week';
+      dayStart = this.stockHelperService.getDateNDaysAgo(720 + daytestBF);
+      range = 1;
+    } else if (timefame.includes('month')) {
+      timespan = 'month';
+      dayStart = this.stockHelperService.getDateNDaysAgo(720 + daytestBF);
+      range = 1;
+    } else{
+      return null
+    }
+    // return {
+    //   dayStart,range,timespan, dayend
+    // }
+    if(ticker.includes('USD') && ticker.length>3){
+      return
+    }
+    const urls = `https://api.massive.com/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${dayStart}/${dayend}?adjusted=true&sort=desc&limit=50000&apiKey=`;
+    // if (timefame.includes('weekly') || timefame.includes('monthly')) {
+    //   return this.alphavantageService.weekORmonthly(ticker, timefame);
+    // }
+    // const responsesArray = await this.tryCatchF(urls, 'POLYGON_STOCK_API_KEY');
+    console.log(urls)
+    const responsesArray = await this.tryCatchtPO(urls);
+    // return responsesArray.results
+    const reversedData = [...responsesArray.results].reverse(); // clone + reverse
+    const response = plainToInstance(
+      DTO.ChartOutPolygonDto,
+      reversedData, {
+        excludeExtraneousValues: true,
+      }
+    ) as any;
+    const newData = await this.stockHelperService.returnNewData(response);
+    return newData.slice(0, 300);
+    return  response.slice(0, 300);
+    // const result = await this.stockHelperService.returnNewData(response);
+    // return  result.slice(0, 300);
+    return response;
+  }
   /**
    *
    * @param ticker : AAL , SMCI
