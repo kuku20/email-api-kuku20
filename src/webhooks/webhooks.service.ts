@@ -1373,7 +1373,20 @@ export class WebhooksService {
     const aboveMA50Third = thirdLastData.close > thirdLastData.MA50;
     const aboveMA50Fourth = fourthLastData.close > fourthLastData.MA50;
     const belowMA50Fifth = fifthLastData.close < fifthLastData.MA50;
-
+    const PriceCrMA50 = await this.stockHelperService.priceAbMABUY(
+      lastData,
+      secondLastData,
+      'MA50',
+    );
+    if (MACDPositive && PriceCrMA50) {
+      await this.sendDiscord(
+        `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA100 -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+        `${ticker}-${timeframe}-CrMA100-${lastData?.close}`,
+        lastData,
+        '200AB_LESS_05',
+        data,
+      );
+    }
     const aboveMA50Count = [
       aboveMA50,
       aboveMA50Second,
@@ -1396,7 +1409,7 @@ export class WebhooksService {
       this.listsymbolB.push(ticker);
       if (timeframe === '1day') {
         this.stockHelperService.ListMA50On1day.push(ticker);
-      }else if (timeframe.includes('4h')) {
+      } else if (timeframe.includes('4h')) {
         this.stockHelperService.ListMA50On4hour.push(ticker);
       }
       if (this.listsymbolB.length > this.maxListLength) {
