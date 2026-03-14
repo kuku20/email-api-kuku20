@@ -99,8 +99,11 @@ export class TasksUS_ALL_MK_MASS_Service {
   async runfullonms() {
     this.stockHelperService.ListMA50On1day = []; // Clear the list at the start of each run
     await this.SendEverydayService('EARLY_AB200', '200AB_LESS_01', '1day');
+    await this.send1chanel('200AB_LESS_05', '1day');
     await this.runAllWatchLists();
     await this.SendEverydayService('EARLY_AB200', '200AB_LESS_01', '1day');
+    await this.send1chanel('200AB_LESS_05', '1day');
+
 
     this.stockHelperService.ListMA50On4hour = [];
     await this.SendEverydayService(
@@ -108,12 +111,14 @@ export class TasksUS_ALL_MK_MASS_Service {
       '200BL_OV_NEG_05',
       '4hour',
     );
+    await this.send1chanel( '200AB_LESS_1', '4hour');
     await this.runAllOn1h(this.stockHelperService.ListMA50On1day);
     await this.SendEverydayService(
       '200BL_OV_NEG_01',
       '200BL_OV_NEG_05',
       '4hour',
     );
+    await this.send1chanel( '200AB_LESS_1', '4hour');
   }
 
   async runAllWatchLists() {
@@ -144,7 +149,7 @@ export class TasksUS_ALL_MK_MASS_Service {
 
   async SendEverydayService(chanel1, chanel2, timeframe = '1day') {
     const equal = `===========================================`;
-    const Channels = [chanel1, chanel2,]; // example list
+    const Channels = [chanel1, chanel2]; // example list
 
     for (const channel of Channels) {
       // CLOSE YESTERDAY
@@ -156,5 +161,16 @@ export class TasksUS_ALL_MK_MASS_Service {
       // Log completion
       this.logger.error(`✅ Finished sending for`, channel);
     }
+  }
+
+  async send1chanel(channel, timeframe = '1day') {
+    const equal = `===========================================`;
+    await this.webhooksService.sendDiscordNotification(
+      `${equal}=${timeframe}=${equal}`,
+      `${channel} RSIENDBOT`,
+      JSON.stringify('lastdata'),
+    );
+    // Log completion
+    this.logger.error(`✅ Finished sending for`, channel);
   }
 }

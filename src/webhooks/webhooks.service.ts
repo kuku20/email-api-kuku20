@@ -1383,7 +1383,7 @@ export class WebhooksService {
         `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA100 -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
         `${ticker}-${timeframe}-CrMA100-${lastData?.close}`,
         lastData,
-        '200AB_LESS_05',
+        timeframe === '1day' ? '200AB_LESS_05' : '200AB_LESS_1',
         data,
       );
     }
@@ -1443,17 +1443,17 @@ export class WebhooksService {
     );
     await this.sendDiscordNotification(
       `,${this.listsymbolBEarly.toString()}`,
-      `${'200AB_LESS_1'} RSIENDBOT`,
-      JSON.stringify('lastdata'),
-    );
-    await this.sendDiscordNotification(
-      `,${this.listsymbolS.toString()}`,
       `${HT_Channel} RSIENDBOT`,
       JSON.stringify('lastdata'),
     );
+    // await this.sendDiscordNotification(
+    //   `,${this.listsymbolS.toString()}`,
+    //   `${'200AB_LESS_1'} RSIENDBOT`,
+    //   JSON.stringify('lastdata'),
+    // );
     this.listsymbolB = [];
     this.listsymbolBEarly = [];
-    this.listsymbolS = [];
+    // this.listsymbolS = [];
     return;
   }
 }

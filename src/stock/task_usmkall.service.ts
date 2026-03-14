@@ -100,8 +100,8 @@ export class TasksUS_ALL_MKService {
 
   async onModuleInit() {
     // This runs ONCE when the app starts
-    await this.SendEverydayService('EARLY_AB200', '200AB_LESS_01');
-    await this.runAllWatchLists();
+    // await this.SendEverydayService('EARLY_AB200', '200AB_LESS_01');
+    // await this.runAllWatchLists();
 
     // await this.SendEverydayService('200BL_OV_NEG_01', '200BL_OV_NEG_05');
     // await this.runAllOn1h();
