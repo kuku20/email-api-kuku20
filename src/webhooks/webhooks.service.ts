@@ -1387,6 +1387,7 @@ export class WebhooksService {
         data,
       );
     }
+    return
     const aboveMA50Count = [
       aboveMA50,
       aboveMA50Second,
