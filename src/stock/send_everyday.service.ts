@@ -111,7 +111,7 @@ export class SendEverydayService {
   async onModuleInit() {
     // This runs ONCE when the app starts
     // await this.SendEverydayService();
-    await this.delete(4);
+    await this.delete(5);
     // await this.delete(3);
     // await this.delete(4);
     // await this.delete(5);
