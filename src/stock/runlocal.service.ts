@@ -103,7 +103,7 @@ export class LocalPLWR {
   }
   async getTickerFullChart_POLYGON2(ticker: string, timefame: string) {
     let range, timespan;
-    const daytestBF = 3;
+    const daytestBF = 0;
     const dayend = this.stockHelperService.getDateNDaysAgo(-1 + daytestBF);
     let dayStart;
 

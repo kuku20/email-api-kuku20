@@ -90,17 +90,7 @@ export class TasksUS_ALL_MK_MASS_Service {
 
   async onModuleInit() {
     // This runs ONCE when the app starts
-        await this.SendEverydayService(
-      '200BL_OV_NEG_01',
-      '200BL_OV_NEG_05',
-      '4hour',
-    );
-    await this.runAllOn1h(StockSymbols.stock_usall_symbols,);
-        await this.SendEverydayService(
-      '200BL_OV_NEG_01',
-      '200BL_OV_NEG_05',
-      '4hour',
-    );
+      // await this.runfullonms();
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, {
