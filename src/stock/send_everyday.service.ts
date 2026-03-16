@@ -16,7 +16,7 @@ export class SendEverydayService {
   private readonly logger = new Logger(SendEverydayService.name);
 
   // // @Cron(CronExpression.EVERY_10_SECONDS)
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT) // close yesterday and open today
+ // @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT) // close yesterday and open today
   async SendEverydayService() {
     const today = this.stockHelperService.getDateNDaysAgo(0);
     const yesterday = this.stockHelperService.getDateNDaysAgo(1);
@@ -111,7 +111,7 @@ export class SendEverydayService {
   async onModuleInit() {
     // This runs ONCE when the app starts
     // await this.SendEverydayService();
-    await this.delete(12);
+    await this.delete(0);
     // await this.delete(3);
     // await this.delete(4);
     // await this.delete(5);

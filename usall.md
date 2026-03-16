@@ -2008,7 +2008,6 @@
 'NUVB',
 'AXGN',
 'KE',
-'MOFG',
 'BCAX',
 'BCML',
 'LXU',

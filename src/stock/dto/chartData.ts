@@ -3342,7 +3342,6 @@ export const stock_usall_symbols = [
   'NUVB',
   'AXGN',
   'KE',
-  'MOFG',
   'BCAX',
   'BCML',
   'LXU',
