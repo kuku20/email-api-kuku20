@@ -46,14 +46,21 @@ export class TaskCryptoService {
         const lastData = data[data.length - 1];
         const secondLastData = data[data.length - 2];
 
-        await this.webhooksService.compareAndSend1hour(
-          data,
-          lastData,
-          secondLastData,
-          ticker,
-          timeframe,
-          B_Channel,
-          HT_Channel,
+        // await this.webhooksService.compareAndSend1hour(
+        //   data,
+        //   lastData,
+        //   secondLastData,
+        //   ticker,
+        //   timeframe,
+        //   B_Channel,
+        //   HT_Channel,
+        // );
+        await this.webhooksService.runCrOn_MA50(
+            data,
+            ticker,
+            timeframe,
+            B_Channel,
+            HT_Channel,
         );
         this.logger.log(`${ticker} processed successfully.`);
       } catch (error) {
@@ -101,14 +108,14 @@ export class TaskCryptoService {
     );
   }
 
-  //@Cron(CronExpression.EVERY_30_MINUTES)
+  @Cron(CronExpression.EVERY_30_MINUTES)
   async handle30pCrypto() {
-    await this.webhooksService.sendDiscord(
-      'WAKEUPCALL:30min',
-      'RSIENDBOT 30min',
-      'CRYTO',
-      'CRON_CHECK',
-    );
+    // await this.webhooksService.sendDiscord(
+    //   'WAKEUPCALL:30min',
+    //   'RSIENDBOT 30min',
+    //   'CRYTO',
+    //   'CRON_CHECK',
+    // );
     const tickers = [
       'BTCUSD',
       'BCHUSD',
@@ -228,7 +235,7 @@ export class TaskCryptoService {
     );
   }
 
-  //@Cron('8 */4 * * *') // Every 4 hours at minute 8
+  @Cron('8 */4 * * *') // Every 4 hours at minute 8
   async handle4hourCrypto2() {
     const tickers = [
       'BTCUSD',

@@ -1456,4 +1456,54 @@ export class WebhooksService {
     // this.listsymbolS = [];
     return;
   }
+
+
+    async runCrOn_MA50(data, ticker, timeframe, B_Channel, HT_Channel) {
+    const lastData = data[data.length - 1];
+    const secondLastData = data[data.length - 2];
+    const thirdLastData = data[data.length - 3];
+    const fourthLastData = data[data.length - 4];
+    const aboveMA50 = lastData.close > lastData.MA50;
+    const MACDPositive = lastData.divergence > 0;
+    const aboveMA50Second = secondLastData.close > secondLastData.MA50;
+    const aboveMA50Third = thirdLastData.close > thirdLastData.MA50;
+    const aboveMA50Fourth = fourthLastData.close > fourthLastData.MA50;
+    const PriceCrMA50 = await this.stockHelperService.priceAbMABUY(
+      lastData,
+      secondLastData,
+      'MA50',
+    );
+    if (MACDPositive && PriceCrMA50) {
+      await this.sendDiscord(
+        `SBUY-BuyOnly_MACDPositive-PriceCrMA50 -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+        `${ticker}-${timeframe}-CrMA100-${lastData?.close}`,
+        lastData,
+        timeframe === '1day' ? B_Channel : HT_Channel,
+        data,
+      );
+    }
+    const aboveMA50Count = [
+      aboveMA50,
+      aboveMA50Second,
+      aboveMA50Third,
+      aboveMA50Fourth,
+    ].filter(Boolean).length;
+    if (aboveMA50Count >= 3 && MACDPositive) {
+      await this.sendDiscord(
+        `SBUY-BuyOnly_MACDPositive -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+        `${ticker}-${timeframe}-${lastData?.close}`,
+        lastData,
+        timeframe === '1day' ? B_Channel : HT_Channel,
+        data,
+      );
+    } else if (aboveMA50Count <= 1) {
+      await this.sendDiscord(
+        `SSELL-SellOnly_MACDPositive -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+        `${ticker}-${timeframe}-${lastData?.close}`,
+        lastData,
+        timeframe === '1day' ? HT_Channel : B_Channel,
+        data,
+      );
+    }
+  }
 }
