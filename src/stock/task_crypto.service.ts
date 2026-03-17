@@ -83,7 +83,7 @@ export class TaskCryptoService {
       'BCHUSD',
       'LTCUSD',
       'ETHUSD',
-      'ETCUSD',
+      'ETCUSD','PAXGUSD'
       // 'DASHUSD',
       // 'ZECUSD',
       // 'XMRUSD',
@@ -122,10 +122,10 @@ export class TaskCryptoService {
       'BCHUSD',
       'LTCUSD',
       'ETHUSD',
-      'ETCUSD',
-      'DASHUSD',
-      'ZECUSD',
-      'XMRUSD',
+      'ETCUSD','PAXGUSD'
+      // 'DASHUSD',
+      // 'ZECUSD',
+      // 'XMRUSD',
     ];
     // const tickers = ['BTCUSD'];
     const apikey = '2711824a92bc40498c8bc30728813e2a'; //liamsterling1@outlook.com
@@ -182,7 +182,7 @@ export class TaskCryptoService {
       'BCHUSD',
       'LTCUSD',
       'ETHUSD',
-      'ETCUSD',
+      'ETCUSD','PAXGUSD'
       // 'DASHUSD',
       // 'ZECUSD',
       // 'XMRUSD',
@@ -243,7 +243,7 @@ export class TaskCryptoService {
       'BCHUSD',
       'LTCUSD',
       'ETHUSD',
-      'ETCUSD',
+      'ETCUSD','PAXGUSD'
       // 'DASHUSD',
       // 'ZECUSD',
       // 'XMRUSD',
@@ -305,7 +305,7 @@ export class TaskCryptoService {
       'BCHUSD',
       'LTCUSD',
       'ETHUSD',
-      'ETCUSD',
+      'ETCUSD','PAXGUSD'
       // 'DASHUSD',
       // 'ZECUSD',
       // 'XMRUSD',
