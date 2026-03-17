@@ -1499,7 +1499,7 @@ export class WebhooksService {
       );
     } else if (aboveMA50Count <= 1) {
       await this.sendDiscord(
-        `SSELL-SellOnly_MACDPositive -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+        `SSELL-SellOnly_BL50 -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
         `${ticker}-${timeframe}-${lastData?.close}`,
         lastData,
         timeframe === '1day' ? HT_Channel : B_Channel,
