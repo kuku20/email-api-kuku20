@@ -37,7 +37,13 @@ export class TasksForexService {
         const secondLastData = data[1];
         // const lastData = data[data.length - 1];
         // const secondLastData = data[data.length - 2];
-
+        await this.webhooksService.runCrOn_MA50(
+          data.reverse(),
+          ticker,
+          timeframe,
+          buyChannel,
+          sellChannel,
+        );
         await this.webhooksService.compareAndSend1hour(
           data.reverse(),
           lastData,
@@ -62,13 +68,9 @@ export class TasksForexService {
       }
     }
   }
- // @Cron('*/15 * * * *') // every 15 minutes
+  // @Cron('*/15 * * * *') // every 15 minutes
   async handle15minForex() {
-    const tickers = [
-      'EURUSD',
-      'GBPUSD',
-      'JPYUSD',
-    ];
+    const tickers = ['EURUSD', 'GBPUSD', 'JPYUSD'];
     // const tickers = ['EURUSD'];
     await this.processTickers1hour(
       tickers,
@@ -81,11 +83,7 @@ export class TasksForexService {
   }
   @Cron(CronExpression.EVERY_30_MINUTES)
   async handle30minForex() {
-    const tickers = [
-      'EURUSD',
-      'GBPUSD',
-      'JPYUSD',
-    ];
+    const tickers = ['EURUSD', 'GBPUSD', 'JPYUSD'];
     // const tickers = ['EURUSD'];
     await this.processTickers1hour(
       tickers,
@@ -98,11 +96,7 @@ export class TasksForexService {
   }
   @Cron('0 * * * *') // every 1 hour
   async handle1hourForex() {
-    const tickers = [
-      'EURUSD',
-      'GBPUSD',
-      'JPYUSD',
-    ];
+    const tickers = ['EURUSD', 'GBPUSD', 'JPYUSD'];
     // const tickers = ['EURUSD'];
     await this.processTickers1hour(
       tickers,
@@ -115,11 +109,7 @@ export class TasksForexService {
   }
   @Cron(CronExpression.EVERY_4_HOURS)
   async handle4hourForex() {
-    const tickers = [
-      'EURUSD',
-      'GBPUSD',
-      'JPYUSD',
-    ];
+    const tickers = ['EURUSD', 'GBPUSD', 'JPYUSD'];
     // const tickers = ['EURUSD'];
     await this.processTickers1hour(
       tickers,
