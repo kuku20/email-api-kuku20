@@ -75,7 +75,7 @@ export class TaskCryptoService {
     }
   }
 
-  //@Cron(CronExpression.EVERY_5_MINUTES)
+  @Cron(CronExpression.EVERY_5_MINUTES)
   async handle5pCrypto() {
     const tickers = [
       'BTCUSD',
