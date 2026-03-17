@@ -101,7 +101,7 @@ export class TaskCryptoService {
     this.logger.log('Running scheduled every 30min for CRYPTOs...');
     await this.processTickers1hour(
       tickers,
-      '5min',
+      '15min',
       'all',
       'CRYPTO_EARLY_5MIN',
       'CR_5M_HT',
