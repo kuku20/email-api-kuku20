@@ -55,12 +55,20 @@ export class TaskCryptoService {
         //   B_Channel,
         //   HT_Channel,
         // );
+        const isWithinRange = this.webhooksService.checktimeMinutesEST(
+          ticker,
+          lastData?.date,
+          13,
+        );
+        if (!isWithinRange) {
+          return;
+        }
         await this.webhooksService.runCrOn_MA50(
-            data,
-            ticker,
-            timeframe,
-            B_Channel,
-            HT_Channel,
+          data,
+          ticker,
+          timeframe,
+          B_Channel,
+          HT_Channel,
         );
         this.logger.log(`${ticker} processed successfully.`);
       } catch (error) {
@@ -83,7 +91,8 @@ export class TaskCryptoService {
       'BCHUSD',
       'LTCUSD',
       'ETHUSD',
-      'ETCUSD','PAXGUSD'
+      'ETCUSD',
+      'PAXGUSD',
       // 'DASHUSD',
       // 'ZECUSD',
       // 'XMRUSD',
@@ -122,7 +131,8 @@ export class TaskCryptoService {
       'BCHUSD',
       'LTCUSD',
       'ETHUSD',
-      'ETCUSD','PAXGUSD'
+      'ETCUSD',
+      'PAXGUSD',
       // 'DASHUSD',
       // 'ZECUSD',
       // 'XMRUSD',
@@ -139,7 +149,7 @@ export class TaskCryptoService {
       3,
     );
   }
- // @Cron(CronExpression.EVERY_30_MINUTES)
+  // @Cron(CronExpression.EVERY_30_MINUTES)
   async handle30minCrypto1() {
     const tickers = ['SOLUSD', 'ADAUSD', 'XRPUSD', 'BNBUSD', 'LINKUSD'];
     const apikey = 'd3058ae5683b4fc19a787ceb21a87f67';
@@ -182,7 +192,8 @@ export class TaskCryptoService {
       'BCHUSD',
       'LTCUSD',
       'ETHUSD',
-      'ETCUSD','PAXGUSD'
+      'ETCUSD',
+      'PAXGUSD',
       // 'DASHUSD',
       // 'ZECUSD',
       // 'XMRUSD',
@@ -199,7 +210,7 @@ export class TaskCryptoService {
       5,
     );
   }
- // @Cron('0 * * * *') // every 1 hour
+  // @Cron('0 * * * *') // every 1 hour
   async handle1hourCrypto1() {
     const tickers = ['SOLUSD', 'ADAUSD', 'XRPUSD', 'BNBUSD', 'LINKUSD'];
     // const tickers = ['BTCUSD'];
@@ -243,7 +254,8 @@ export class TaskCryptoService {
       'BCHUSD',
       'LTCUSD',
       'ETHUSD',
-      'ETCUSD','PAXGUSD'
+      'ETCUSD',
+      'PAXGUSD',
       // 'DASHUSD',
       // 'ZECUSD',
       // 'XMRUSD',
@@ -305,7 +317,8 @@ export class TaskCryptoService {
       'BCHUSD',
       'LTCUSD',
       'ETHUSD',
-      'ETCUSD','PAXGUSD'
+      'ETCUSD',
+      'PAXGUSD',
       // 'DASHUSD',
       // 'ZECUSD',
       // 'XMRUSD',
@@ -360,4 +373,3 @@ export class TaskCryptoService {
     );
   }
 }
-
