@@ -1465,12 +1465,17 @@ export class WebhooksService {
     const fourthLastData = data[data.length - 4];
     const aboveMA50 = lastData.close > lastData.MA50;
     const MACDPositive = lastData.divergence > 0;
+    const MACDNegative = lastData.divergence < 0;
     const aboveMA50Second = secondLastData.close > secondLastData.MA50;
     const aboveMA50Third = thirdLastData.close > thirdLastData.MA50;
     const aboveMA50Fourth = fourthLastData.close > fourthLastData.MA50;
     const PriceCrMA50 = await this.stockHelperService.priceAbMABUY(
       lastData,
       secondLastData,
+      'MA50',
+    );
+        const PriceCrMA50bl = await this.stockHelperService.priceAbMABUY(
+      secondLastData,lastData,
       'MA50',
     );
     if (MACDPositive && PriceCrMA50) {
@@ -1498,7 +1503,7 @@ export class WebhooksService {
         data,
       );
       return;
-    } else if (aboveMA50Count <= 1) {
+    } else if ( MACDNegative && PriceCrMA50bl) {
       await this.sendDiscord(
         `SSELL-SellOnly_BL50 -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
         `${ticker}-${timeframe}-${lastData?.close}`,
