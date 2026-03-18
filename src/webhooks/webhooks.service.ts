@@ -1458,8 +1458,7 @@ export class WebhooksService {
     return;
   }
 
-
-    async runCrOn_MA50(data, ticker, timeframe, B_Channel, HT_Channel) {
+  async runCrOn_MA50(data, ticker, timeframe, B_Channel, HT_Channel) {
     const lastData = data[data.length - 1];
     const secondLastData = data[data.length - 2];
     const thirdLastData = data[data.length - 3];
@@ -1482,6 +1481,7 @@ export class WebhooksService {
         timeframe === '1day' ? B_Channel : HT_Channel,
         data,
       );
+      return;
     }
     const aboveMA50Count = [
       aboveMA50,
@@ -1497,6 +1497,7 @@ export class WebhooksService {
         timeframe === '1day' ? B_Channel : HT_Channel,
         data,
       );
+      return;
     } else if (aboveMA50Count <= 1) {
       await this.sendDiscord(
         `SSELL-SellOnly_BL50 -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
@@ -1505,6 +1506,7 @@ export class WebhooksService {
         timeframe === '1day' ? HT_Channel : B_Channel,
         data,
       );
+      return;
     }
   }
 }

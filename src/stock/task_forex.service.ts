@@ -44,15 +44,15 @@ export class TasksForexService {
           buyChannel,
           sellChannel,
         );
-        await this.webhooksService.compareAndSend1hour(
-          data.reverse(),
-          lastData,
-          secondLastData,
-          ticker,
-          timeframe,
-          buyChannel,
-          sellChannel,
-        );
+        // await this.webhooksService.compareAndSend1hour(
+        //   data.reverse(),
+        //   lastData,
+        //   secondLastData,
+        //   ticker,
+        //   timeframe,
+        //   buyChannel,
+        //   sellChannel,
+        // );
         this.logger.log(`${ticker} processed successfully.`);
       } catch (error) {
         const date = new Date();
@@ -68,7 +68,7 @@ export class TasksForexService {
       }
     }
   }
-  // @Cron('*/15 * * * *') // every 15 minutes
+ @Cron('*/15 * * * *') // every 15 minutes
   async handle15minForex() {
     const tickers = ['EURUSD', 'GBPUSD', 'JPYUSD'];
     // const tickers = ['EURUSD'];
