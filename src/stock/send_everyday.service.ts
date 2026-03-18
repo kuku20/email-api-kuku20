@@ -89,12 +89,12 @@ export class SendEverydayService {
       'US_30M_BUY',
       'US_15M_HT',
       'BUYSELL',
-      '200BL_OV_NEG_01',
-      '200BL_OV_NEG_05',
-      'EARLY_AB200',
-      '200AB_LESS_01',
-      '200AB_LESS_05',
-      '200AB_LESS_1',
+      // '200BL_OV_NEG_01',
+      // '200BL_OV_NEG_05',
+      // 'EARLY_AB200',
+      // '200AB_LESS_01',
+      // '200AB_LESS_05',
+      // '200AB_LESS_1',
     ]; // example list
 
     await new Promise((resolve) => setTimeout(resolve, 0 * 60 * 1000));
