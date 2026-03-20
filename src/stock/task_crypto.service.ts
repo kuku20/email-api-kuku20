@@ -88,7 +88,7 @@ export class TaskCryptoService {
   async handle5pCrypto() {
     const tickers = [
       'BTCUSD',
-      'BCHUSD',
+      // 'BCHUSD',
       'LTCUSD',
       'ETHUSD',
       'ETCUSD',
@@ -128,7 +128,7 @@ export class TaskCryptoService {
     // );
     const tickers = [
       'BTCUSD',
-      'BCHUSD',
+      // 'BCHUSD',
       'LTCUSD',
       'ETHUSD',
       'ETCUSD',
@@ -189,7 +189,7 @@ export class TaskCryptoService {
   async handle1hourCrypto() {
     const tickers = [
       'BTCUSD',
-      'BCHUSD',
+      // 'BCHUSD',
       'LTCUSD',
       'ETHUSD',
       'ETCUSD',
@@ -251,7 +251,7 @@ export class TaskCryptoService {
   async handle4hourCrypto2() {
     const tickers = [
       'BTCUSD',
-      'BCHUSD',
+      // 'BCHUSD',
       'LTCUSD',
       'ETHUSD',
       'ETCUSD',
@@ -314,7 +314,7 @@ export class TaskCryptoService {
   async handledailyCrypto() {
     const tickers = [
       'BTCUSD',
-      'BCHUSD',
+      // 'BCHUSD',
       'LTCUSD',
       'ETHUSD',
       'ETCUSD',
