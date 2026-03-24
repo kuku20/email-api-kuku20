@@ -2820,7 +2820,6 @@
 'MIY',
 'MQT',
 'LEGT',
-'MYD',
 'TRX',
 'FGFH',
 'CCFN',
