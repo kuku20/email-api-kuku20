@@ -31,10 +31,9 @@ export class WebhooksService {
     this.rsiChannels = channelsStr.split(',').map((c) => c.trim());
   }
 
-  async sendSlackNotification(message: string) {
-    const BASE_URL = `${this.configService.get<any>('SLACK_WEBHOOKS')}`;
-    const nexMsg = `*****************************************
-    ${message.replace(/\*\*/g, '*')}`;
+  async sendSlackNotification(message: string , other='1day') {
+    const BASE_URL = other ==='1day'?this.configService.get<any>('SLACK_WEBHOOKS'):this.configService.get<any>('SLACK_WEBHOOKS_4h');
+    const nexMsg = `*****************************************${message.replace(/\*\*/g, '*')}`;
     const payload = {
       type: 'mrkdwn',
       text: nexMsg,
@@ -1397,6 +1396,7 @@ export class WebhooksService {
     if (aboveMA50Count >= 3 && MACDPositive) {
       if (belowMA50Fifth) {
         this.listsymbolBEarly.push(ticker);
+        await this.sendSlackNotificationURL([ticker], timeframe);
         if (this.listsymbolBEarly.length > this.maxListLength) {
           await this.sendDiscordNotification(
             `,${this.listsymbolBEarly.toString()}`,
@@ -1512,6 +1512,28 @@ export class WebhooksService {
         data,
       );
       return;
+    }
+  }
+
+
+  async sendSlackNotificationURL(symbols: string[], other='1day') {
+    const BASE_URL = other ==='1day'?this.configService.get<any>('SLACK_WEBHOOKS'):this.configService.get<any>('SLACK_WEBHOOKS_4h');
+  
+    const formatted = symbols
+    .map(
+      (s) =>
+        `• ${s} → <http://localhost:4200/price-log/${s}?daysRange=5|5m> | <http://localhost:4200/price-log/${s}?daysRange=15|15m> | <http://localhost:4200/price-log/${s}?daysRange=30|30m> | <http://localhost:4200/price-log/${s}?daysRange=60|1hour> | <http://localhost:4200/price-log/${s}?daysRange=240|4hour> | <http://localhost:4200/price-log/${s}?daysRange=500|daily>`
+    )
+    .join('\n');
+
+  const payload = {
+    text: formatted,
+  };
+    try {
+      await axios.post(BASE_URL, payload);
+      return { msg: 'post to Slack success' };
+    } catch (error) {
+      return { msg: 'post to Slack fails:', error };
     }
   }
 }
