@@ -69,7 +69,7 @@ export class TasksVNMKService {
 
   async onModuleInit() {
     // This runs ONCE when the app starts
-   await this.runAllWatchLists();
+  //await this.runAllWatchLists();
     // console.log(  stock_500_symbols.length)
   }
   @Cron('*/15 14-21 * * 1-5', { timeZone: 'UTC' })

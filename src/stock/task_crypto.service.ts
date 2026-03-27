@@ -60,16 +60,15 @@ export class TaskCryptoService {
           lastData?.date,
           13,
         );
-        if (!isWithinRange) {
-          return;
+        if (isWithinRange) {
+          await this.webhooksService.runCrOn_MA50(
+            data,
+            ticker,
+            timeframe,
+            B_Channel,
+            HT_Channel,
+          );
         }
-        await this.webhooksService.runCrOn_MA50(
-          data,
-          ticker,
-          timeframe,
-          B_Channel,
-          HT_Channel,
-        );
         this.logger.log(`${ticker} processed successfully.`);
       } catch (error) {
         this.webhooksService.sendDiscord(
