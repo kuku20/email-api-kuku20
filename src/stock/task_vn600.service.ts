@@ -44,7 +44,7 @@ export class TasksVNMKService {
             data,
             lastData,
             secondLastData,
-            ticker,
+            `${ticker}.VN`,
             '1day',
             B_Channel,
             HT_Channel,

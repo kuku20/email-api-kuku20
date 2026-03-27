@@ -469,7 +469,7 @@ export class StockController {
     @Query() Query: any,
   ) {
     try {
-      let data = await this.loacl.Eodhd_vn(Query.ticker.toUpperCase());;
+      let data = await this.loacl.Eodhd_vnFB(Query.ticker.toUpperCase());;
       return data;
     } catch (error) {
       this.loacl.sendTemporaryWebhook(Query.ticker, JSON.stringify(params)+'/eodhd')
