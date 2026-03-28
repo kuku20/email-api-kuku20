@@ -781,6 +781,14 @@ export class LocalPLWR {
     return getwashsell30
   }
 
+  async getArrSymbolFFire(endpoint:string) {
+    // const data = await dbrs.getData('post-wash-sell');
+    const data = await this.FireBaseApi('get',`stock-related/${endpoint}.json`,'')
+    const result = [...new Set(Object.values(data))];
+    console.log(`✅ Loaded ${endpoint}: has ${result.length} symbols`);
+    return result
+  }
+
   async getRsilist(path:string,limit:number = 100,dayrange:number = 7) {
     const data = await this.FireBaseApi('get',`stock-related/${path}.json`,'')
     const symbolLists = dbrs.getlastXdays(data,dayrange, limit);
