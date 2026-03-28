@@ -157,10 +157,10 @@ import { TasksUS_ALL_MK_MASS_Service } from './stock/task_usmkall_mass.service';
     LocalPLWR,
     AlphavantageService,
 
-    TasksVNMKService,
-    TasksUS_ALL_MK_MASS_Service,
-    TaskCryptoService,
-    TasksForexService,
+    // TasksVNMKService,
+    // TasksUS_ALL_MK_MASS_Service,
+    // TaskCryptoService,
+    // TasksForexService,
 
     // TasksUSMKService_SP500,
     // TasksUSMKService,
