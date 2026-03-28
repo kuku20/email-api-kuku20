@@ -75,13 +75,13 @@ export class TasksVNMKService {
 
   async onModuleInit() {
     // This runs ONCE when the app starts
-  // await this.runAllWatchLists();
+//  await this.runAllWatchLists();
     // console.log(  stock_500_symbols.length)
   }
   @Cron('*/15 14-21 * * 1-5', { timeZone: 'UTC' })
   async runAllWatchLists() {
-    await this.webhooksService.sendSlackNotification('', 'SLACK_WEBHOOKS_VN50');
-    await this.webhooksService.sendSlackNotification('', 'SLACK_WEBHOOKS_VN100');
+    await this.webhooksService.sendSlackNotification('START', 'SLACK_WEBHOOKS_VN50');
+    await this.webhooksService.sendSlackNotification('START', 'SLACK_WEBHOOKS_VN100');
     await Promise.all([
       this.processTickers(
         VN_Stock_symbols,
@@ -89,5 +89,7 @@ export class TasksVNMKService {
         'SELL_EARLY_DAY',
       ),
     ]);
+    await this.webhooksService.sendSlackNotification('END', 'SLACK_WEBHOOKS_VN50');
+    await this.webhooksService.sendSlackNotification('END', 'SLACK_WEBHOOKS_VN100');
   }
 }
