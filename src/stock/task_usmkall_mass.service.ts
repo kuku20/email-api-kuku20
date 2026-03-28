@@ -102,13 +102,13 @@ export class TasksUS_ALL_MK_MASS_Service {
     this.stockHelperService.ListMA50On1day = []; // Clear the list at the start of each run
     await this.SendEverydayService('EARLY_AB200', '200AB_LESS_01', '1day');
     await this.send1chanel('200AB_LESS_05', '1day');
-    await this.webhooksService.sendSlackNotification('', '1day');
+    await this.webhooksService.sendSlackNotification('START', '1day');
 
     await this.runAllWatchLists();
 
     await this.SendEverydayService('EARLY_AB200', '200AB_LESS_01', '1day');
     await this.send1chanel('200AB_LESS_05', '1day');
-
+    await this.webhooksService.sendSlackNotification('END', '1day');
 
     this.stockHelperService.ListMA50On4hour = [];
     await this.SendEverydayService(
@@ -117,8 +117,11 @@ export class TasksUS_ALL_MK_MASS_Service {
       '4hour',
     );
     await this.send1chanel( '200AB_LESS_1', '4hour');
-    await this.webhooksService.sendSlackNotification('', '4hour');
+    await this.webhooksService.sendSlackNotification('START', '4hour');
+
     await this.runAllOn1h(this.stockHelperService.ListMA50On1day);
+    
+    await this.webhooksService.sendSlackNotification('END', '4hour');
     await this.SendEverydayService(
       '200BL_OV_NEG_01',
       '200BL_OV_NEG_05',
