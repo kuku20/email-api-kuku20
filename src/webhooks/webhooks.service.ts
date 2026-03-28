@@ -96,7 +96,7 @@ export class WebhooksService {
     let setmess = extra ? `${origin} | ${gptres}` : origin;
 
     if (!file && !message.includes('SELLCR')) {
-      setmess = `${setmess} | **[CHART MISSING](https://stockmarkets000.web.app/capture-click/${webhookCl}/${tickerON})**`;
+      setmess = `${setmess} | **[C.MISS.4200](http://localhost:4200/capture-click/${webhookCl}/${tickerON})** | **[C.MISS.PROD](https://stockmarkets000.web.app/capture-click/${webhookCl}/${tickerON})**`;
     }
     if (botdt.includes('RSIENDBOT')) {
       options = {
@@ -331,16 +331,27 @@ export class WebhooksService {
 
   async captureChart(
     chartData: any,
-    ticker: string,
+    tickerasall: string,
     channel: string,
     message: string,
   ) {
-    return null;
     if (!chartData || chartData.length === 0) {
       return null;
     }
-    const slicedData =
-      chartData && chartData.length > 0 ? chartData.slice(-200) : [];
+    const slicedData = chartData && chartData.length > 0 ? chartData.slice(-200) : [];
+    const ticker = tickerasall.split('-')[0];
+    const timeframe = tickerasall.split('-')[1];
+    const path = `${channel}/${ticker}-ON-${timeframe}`.toUpperCase();
+    
+    // turn of on local
+    const data = await this.FireBaseApi(
+      'put',
+      `stock-data/${path}.json`,
+      slicedData,
+    );
+    console.log('Chart data stored for later viewing at:',`stock-data/${path}.json`,);
+    return null; 
+
     try {
       const browser = await puppeteer.launch({
         headless: true,
