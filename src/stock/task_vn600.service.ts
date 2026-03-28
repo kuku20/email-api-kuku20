@@ -49,10 +49,10 @@ export class TasksVNMKService {
             B_Channel,
             HT_Channel,
           );
-          if (BuyOnly_StochRSICrossAB200.PriceCrMA50) {
+          if (BuyOnly_StochRSICrossAB200 && BuyOnly_StochRSICrossAB200?.PriceCrMA50) {
             await this.webhooksService.sendSlackNotificationVN([`${ticker}.VN`], 'SLACK_WEBHOOKS_VN50');
           }
-          else if (BuyOnly_StochRSICrossAB200.PriceCrMA100) {
+          else if (BuyOnly_StochRSICrossAB200 && BuyOnly_StochRSICrossAB200?.PriceCrMA100) {
             await this.webhooksService.sendSlackNotificationVN([`${ticker}.VN`], 'SLACK_WEBHOOKS_VN100');
           }
           this.logger.log(`${ticker} processed successfully.`);

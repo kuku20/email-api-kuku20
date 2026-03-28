@@ -32,7 +32,7 @@ export class WebhooksService {
   }
 
   async sendSlackNotification(message: string , other='1day') {
-    const BASE_URL = other ==='1day'?this.configService.get<any>('SLACK_WEBHOOKS'):this.configService.get<any>('SLACK_WEBHOOKS_4h');
+    const BASE_URL = other ==='1day'?this.configService.get<any>('SLACK_WEBHOOKS'):other ==='4hour'?this.configService.get<any>('SLACK_WEBHOOKS_4h'):this.configService.get<any>(other);
     const nexMsg = `*****************************************${message.replace(/\*\*/g, '*')}`;
     const payload = {
       type: 'mrkdwn',
@@ -340,16 +340,18 @@ export class WebhooksService {
     }
     const slicedData = chartData && chartData.length > 0 ? chartData.slice(-200) : [];
     const ticker = tickerasall.split('-')[0];
+    if(ticker.includes('.VN')) {
+      return null; // skip if ticker contains a dot
+    }
     const timeframe = tickerasall.split('-')[1];
     const path = `${channel}/${ticker}-ON-${timeframe}`.toUpperCase();
-    
+
     // turn of on local
-    const data = await this.FireBaseApi(
+    await this.FireBaseApi(
       'put',
       `stock-data/${path}.json`,
       slicedData,
     );
-    console.log('Chart data stored for later viewing at:',`stock-data/${path}.json`,);
     return null; 
 
     try {
