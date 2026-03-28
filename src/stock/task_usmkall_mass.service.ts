@@ -97,11 +97,15 @@ export class TasksUS_ALL_MK_MASS_Service {
     timeZone: 'America/Los_Angeles',
   })
   async runfullonms() {
+    // delete old data from firebase
+    await this.webhooksService.delete();
     this.stockHelperService.ListMA50On1day = []; // Clear the list at the start of each run
     await this.SendEverydayService('EARLY_AB200', '200AB_LESS_01', '1day');
     await this.send1chanel('200AB_LESS_05', '1day');
     await this.webhooksService.sendSlackNotification('', '1day');
+
     await this.runAllWatchLists();
+
     await this.SendEverydayService('EARLY_AB200', '200AB_LESS_01', '1day');
     await this.send1chanel('200AB_LESS_05', '1day');
 

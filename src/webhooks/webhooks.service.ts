@@ -1358,6 +1358,21 @@ export class WebhooksService {
 
    */
 
+  async postdata(path, symbols){
+    const data = await this.FireBaseApi(
+      'post',
+      `stock-related/above-ma50/${path}.json`,
+      symbols,
+    );
+  }
+
+  async delete(){
+    const data = await this.FireBaseApi(
+      'delete',
+      `stock-related/above-ma50.json`,''
+    );
+  }
+
   listsymbolB = [];
   listsymbolBEarly = [];
   listsymbolS = [];
@@ -1398,6 +1413,7 @@ export class WebhooksService {
       if (belowMA50Fifth) {
         this.listsymbolBEarly.push(ticker);
         await this.sendSlackNotificationURL([ticker], timeframe);
+        await this.postdata(`early/${timeframe}`, ticker);
         if (this.listsymbolBEarly.length > this.maxListLength) {
           await this.sendDiscordNotification(
             `,${this.listsymbolBEarly.toString()}`,
@@ -1409,6 +1425,7 @@ export class WebhooksService {
         }
       }
       this.listsymbolB.push(ticker);
+      await this.postdata(`alldata/${timeframe}`, ticker);
       if (timeframe === '1day') {
         this.stockHelperService.ListMA50On1day.push(ticker);
       } else if (timeframe.includes('4h')) {
