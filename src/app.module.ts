@@ -156,16 +156,19 @@ import { TasksUS_ALL_MK_MASS_Service } from './stock/task_usmkall_mass.service';
     WebhooksService,
     LocalPLWR,
     AlphavantageService,
-    // TasksUSMKService_SP500,
-    //TasksUSMKService,
+
     TasksVNMKService,
-    // TasksService,
-    TaskCryptoService,
-    // TasksUS_ALL_MKService,
     TasksUS_ALL_MK_MASS_Service,
+    TaskCryptoService,
+    TasksForexService,
+
+    // TasksUSMKService_SP500,
+    // TasksUSMKService,
+    // TasksService,
+    // TasksUS_ALL_MKService,
     // TasksUSMK_1MIN_Service,
     // TasksUSMKService_15MIN
-    TasksForexService,
+    
     SendEverydayService
   ],
 })
