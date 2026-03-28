@@ -169,7 +169,7 @@ import { TasksUS_ALL_MK_MASS_Service } from './stock/task_usmkall_mass.service';
     // TasksUSMK_1MIN_Service,
     // TasksUSMKService_15MIN
     
-    SendEverydayService
+    // SendEverydayService
   ],
 })
 export class AppModule {}
