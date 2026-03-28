@@ -1529,7 +1529,7 @@ export class WebhooksService {
     ].filter(Boolean).length;
     if (aboveMA50Count >= 3 && MACDPositive) {
       await this.sendDiscord(
-        `SBUY-BuyOnly_MACDPositive -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+        `SBUY-Continue-buy-keep-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
         `${ticker}-${timeframe}-${lastData?.close}`,
         lastData,
         timeframe === '1day' ? B_Channel : HT_Channel,
