@@ -82,8 +82,73 @@ export class TaskCryptoService {
     }
   }
 
+  private async processTickers15m(
+    tickers: string[],
+    timeframe: string,
+    apikey: string,
+    B_Channel,
+    HT_Channel,
+    delay = 5,
+  ) {
+    const date = new Date();
+    const washselllists =
+      (await this.LocalPLWR.loadWashSellList()) ||
+      this.LocalPLWR.getWashSellList();
+    // Delay 2 minutes before processing
+    await new Promise((resolve) => setTimeout(resolve, delay * 60 * 1000));
+
+    for (const ticker of tickers) {
+      if (washselllists.includes(ticker)) {
+        console.log(`⏭️ Skipping ${ticker} — in wash sell list`);
+        continue; // ✅ Skip this ticker and move on
+      }
+      try {
+        let data;
+        if (apikey === 'all') {
+          data = await this.LocalPLWR.TwReveseNOAPI(ticker, timeframe);
+        } else {
+          data = await this.LocalPLWR.get12for(ticker, timeframe, apikey);
+        }
+
+        const lastData = data[data.length - 1];
+        const secondLastData = data[data.length - 2];
+
+        const isWithinRange = this.webhooksService.checktimeMinutesEST(
+          ticker,
+          lastData?.date,
+          13,
+        );
+        if (isWithinRange) {
+          const BuyOnly_StochRSICrossAB200 =
+            await this.stockHelperService.BuyOnly_StochRSICrossAB200(
+              lastData,
+              secondLastData,
+            );
+          if (BuyOnly_StochRSICrossAB200.PriceCrMA200) {
+            await this.webhooksService.sendDiscord(
+              `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA200 -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+              `${ticker}-ON-${timeframe}`,
+              lastData,
+              HT_Channel,
+              data,
+            );
+            return;
+          }
+        }
+        this.logger.log(`${ticker} processed successfully.`);
+      } catch (error) {
+        this.webhooksService.sendDiscord(
+          `ERROR ON API AT: ${timeframe} On ${date}: ${JSON.stringify(error)}`,
+          `RSIENDBOT ${ticker} at ${timeframe}`,
+          'Nono',
+          'ERORR_CALL',
+        );
+        this.logger.error(`Error processing ${ticker}: ${error.message}`);
+      }
+    }
+  }
   //@Cron(CronExpression.EVERY_5_MINUTES)
-  // @Cron('*/15 * * * *') // every 15 minutes
+  @Cron('*/15 * * * *') // every 15 minutes
   async handle5pCrypto() {
     const tickers = [
       'BTCUSD',
@@ -106,14 +171,14 @@ export class TaskCryptoService {
       // 'COMPUSD',
       // 'AVAXUSD',
     ];
-    this.logger.log('Running scheduled every 30min for CRYPTOs...');
-    await this.processTickers1hour(
+    this.logger.log('Running scheduled every 15min for CRYPTOs...');
+    await this.processTickers15m(
       tickers,
       '15min',
       'all',
       'CRYPTO_EARLY_5MIN',
       'CR_5M_HT',
-      1,
+      2,
     );
   }
 
