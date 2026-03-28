@@ -57,6 +57,8 @@ import { TaskCryptoService } from './stock/task_crypto.service';
 import { TasksUSMK_1MIN_Service } from './stock/task_usmk_1min.service';
 import { TasksUSMKService_SP500 } from './stock/task_usmk500.service';
 import { TasksVNMKService } from './stock/task_vn600.service';
+import { TasksUS_ALL_MKService } from './stock/task_usmkall.service';
+import { TasksUS_ALL_MK_MASS_Service } from './stock/task_usmkall_mass.service';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -154,14 +156,19 @@ import { TasksVNMKService } from './stock/task_vn600.service';
     WebhooksService,
     LocalPLWR,
     AlphavantageService,
-    TasksUSMKService_SP500,
-    TasksUSMKService,
+
     // TasksVNMKService,
-    // TasksService,
+    // TasksUS_ALL_MK_MASS_Service,
     // TaskCryptoService,
+    // TasksForexService,
+
+    // TasksUSMKService_SP500,
+    // TasksUSMKService,
+    // TasksService,
+    // TasksUS_ALL_MKService,
     // TasksUSMK_1MIN_Service,
     // TasksUSMKService_15MIN
-    // TasksForexService,
+    
     // SendEverydayService
   ],
 })

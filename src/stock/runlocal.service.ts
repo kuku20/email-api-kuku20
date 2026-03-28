@@ -96,12 +96,68 @@ export class LocalPLWR {
         excludeExtraneousValues: true,
       }
     ) as any;
-    return  response.slice(0, 300);;
+    return  response.slice(0, 300);
     // const result = await this.stockHelperService.returnNewData(response);
-
-    // return result;
+    // return  result.slice(0, 300);
+    return response;
   }
+  async getTickerFullChart_POLYGON2(ticker: string, timefame: string) {
+    let range, timespan;
+    const daytestBF = 0;
+    const dayend = this.stockHelperService.getDateNDaysAgo(-1 + daytestBF);
+    let dayStart;
 
+    if (timefame.includes('day')) {
+      timespan = 'day';
+      range = timefame.match(/\d+/)[0];
+      dayStart = this.stockHelperService.getDateNDaysAgo(700 + daytestBF);
+    } else if (timefame.includes('hour')) {
+      timespan = 'hour';
+      dayStart = this.stockHelperService.getDateNDaysAgo(700 + daytestBF);
+      range = timefame.match(/\d+/)[0];
+    } else if (timefame.includes('min')) {
+      timespan = 'minute';
+      dayStart = this.stockHelperService.getDateNDaysAgo(35 + daytestBF);
+      range = timefame.match(/\d+/)[0];
+    } else if (timefame.includes('week')) {
+      timespan = 'week';
+      dayStart = this.stockHelperService.getDateNDaysAgo(720 + daytestBF);
+      range = 1;
+    } else if (timefame.includes('month')) {
+      timespan = 'month';
+      dayStart = this.stockHelperService.getDateNDaysAgo(720 + daytestBF);
+      range = 1;
+    } else{
+      return null
+    }
+    // return {
+    //   dayStart,range,timespan, dayend
+    // }
+    if(ticker.includes('USD') && ticker.length>3){
+      return
+    }
+    const urls = `https://api.massive.com/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${dayStart}/${dayend}?adjusted=true&sort=desc&limit=50000&apiKey=`;
+    // if (timefame.includes('weekly') || timefame.includes('monthly')) {
+    //   return this.alphavantageService.weekORmonthly(ticker, timefame);
+    // }
+    // const responsesArray = await this.tryCatchF(urls, 'POLYGON_STOCK_API_KEY');
+    console.log(urls)
+    const responsesArray = await this.tryCatchtPO(urls);
+    // return responsesArray.results
+    // const reversedData = [...responsesArray.results].reverse(); // clone + reverse
+    const response = plainToInstance(
+      DTO.ChartOutPolygonDto,
+      responsesArray.results, {
+        excludeExtraneousValues: true,
+      }
+    ) as any
+     const reversedData = [...response].reverse();
+    const newData = await this.stockHelperService.returnNewData(reversedData);
+    return newData.slice(-10); //
+    // const result = await this.stockHelperService.returnNewData(response);
+    // return  result.slice(0, 300);
+    return response;
+  }
   /**
    *
    * @param ticker : AAL , SMCI
@@ -662,6 +718,9 @@ export class LocalPLWR {
     // return null;
   }
 
+  async MassNOAPI(ticker: string, timefame: string) {
+
+  }
 
   async FMP_EOD_FULL(ticker: string) {
     const daytestBF = 0;
@@ -720,6 +779,14 @@ export class LocalPLWR {
     // console.table(this.washSell30)
     console.log(`✅ Loaded ${this.washSell30.length} wash-sell symbols`);
     return getwashsell30
+  }
+
+  async getArrSymbolFFire(endpoint:string) {
+    // const data = await dbrs.getData('post-wash-sell');
+    const data = await this.FireBaseApi('get',`stock-related/${endpoint}.json`,'')
+    const result = [...new Set(Object.values(data))];
+    console.log(`✅ Loaded ${endpoint}: has ${result.length} symbols`);
+    return result
   }
 
   async getRsilist(path:string,limit:number = 100,dayrange:number = 7) {
@@ -862,5 +929,73 @@ export class LocalPLWR {
         }
       }
     }
+  }
+
+
+  keysEod = this.configService.get<any>('EODHD_STOCK_API_KEY').split(',');
+  repeatEod = 0
+  indexEod = this.getRandomNumber(this.keysEod.length-1)
+  nextKeyEod(keys) {
+    const key = keys[this.indexEod];
+    this.repeatEod++;
+    if (this.repeatEod === 1) {
+      console.log(this.indexEod)
+      this.repeatEod = 0;
+      this.indexEod = (this.indexEod + 1) % keys.length; // loop back to start
+    }
+    return key;
+  }
+
+  async tryCatcht_Eodhd(BASE_URL: string, maxRetries = this.keysEod.length) {
+    let attempt = 0;
+    while (attempt < maxRetries) {
+      const nextKey = this.nextKeyEod(this.keysEod);
+      const url = `${BASE_URL}${nextKey}`;
+      console.log(`:EOD:Trying key: ${nextKey.slice(0, 4)}...`);
+  
+      try {
+        const response = await axios.get(url);
+        // const dir = './logs';
+        // if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+        // const successPath = `${dir}/successPath_tickers.txt`;
+        // fs.appendFileSync(successPath, `| :PO: | ${url}  |\n`, 'utf8');
+        
+        return response.data; // success!
+      } catch (error: any) {
+        attempt++;
+        console.error(`:EOD:Error with key ${nextKey.slice(0, 4)}...:`, error?.response);
+        // const successPath = `${dir}/error_tickers.txt`;
+        // fs.appendFileSync(successPath, `| :PO: | ${url}  |\n`, 'utf8');
+        // Only retry if we haven't exhausted all keys
+        if (attempt >= maxRetries) {
+          throw new Error(':EOD: All API keys failed');
+        }
+      }
+    }
+  }
+
+  async Eodhd_vn(ticker: string) {
+    const baseUrl= `https://eodhd.com/api/eod/${ticker}.VN?fmt=json&api_token=`
+    let responsesArray = await this.tryCatcht_Eodhd(baseUrl);
+    const path = `VN_MK/${ticker}`.toUpperCase();
+    const data = await this.FireBaseApi(
+      'put',
+      `stock-data/${path}.json`,
+      responsesArray,
+    );
+    const result = await this.stockHelperService.returnNewData(responsesArray)
+    const maxlength = result.length-1
+    return  result.slice(maxlength-100, maxlength);
+  }
+
+  async Eodhd_vnFB(ticker: string) {
+    const path = `VN_MK/${ticker}`.toUpperCase();
+    const data = await this.FireBaseApi(
+      'get',
+      `stock-data/${path}.json`,''
+    );
+    const result = await this.stockHelperService.returnNewData(data)
+    const maxlength = result.length-1
+    return  result.slice(maxlength-100, maxlength);
   }
 }

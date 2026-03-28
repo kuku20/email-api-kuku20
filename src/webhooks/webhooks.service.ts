@@ -8,6 +8,7 @@ import pLimit from 'p-limit';
 import { StockHelperService } from 'src/stock/stockHelper.service';
 
 import * as fs from 'fs';
+import { channel } from 'diagnostics_channel';
 @Injectable()
 export class WebhooksService {
   private webhookClient: WebhookClient;
@@ -30,10 +31,9 @@ export class WebhooksService {
     this.rsiChannels = channelsStr.split(',').map((c) => c.trim());
   }
 
-  async sendSlackNotification(message: string) {
-    const BASE_URL = `${this.configService.get<any>('SLACK_WEBHOOKS')}`;
-    const nexMsg = `*****************************************
-    ${message.replace(/\*\*/g, '*')}`;
+  async sendSlackNotification(message: string , other='1day') {
+    const BASE_URL = other ==='1day'?this.configService.get<any>('SLACK_WEBHOOKS'):other ==='4hour'?this.configService.get<any>('SLACK_WEBHOOKS_4h'):this.configService.get<any>(other);
+    const nexMsg = `*****************************************${message.replace(/\*\*/g, '*')}`;
     const payload = {
       type: 'mrkdwn',
       text: nexMsg,
@@ -82,7 +82,11 @@ export class WebhooksService {
     | **[sMk000-30m](https://stockmarkets000.web.app//price-log/${ticker}?daysRange=30)** \n
      | **[stock-chart-abc.web.app](https://stock-chart-abc.web.app/?stockTicker=${ticker})** 
      */
-    const origin = `**[4200-on1m](http://localhost:4200/price-log/${ticker})** | **[4200-5m](http://localhost:4200/price-log/${ticker}?daysRange=5)** | **[4200-15m](http://localhost:4200/price-log/${ticker}?daysRange=15)** \n **[3001-PO-day](http://localhost:3001/?stockTicker=${ticker}&endpoint=po&timeframe=1day)** | **[3001-FM-day](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[3001-fm-1m](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=1min)** | **[3001-fm-5m](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=5min)** | **[3001-fm-15m](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=15min)** \n **[PB-view](https://stock-chart-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`;
+    // const origin = `**[4200-on1m](https://stockmarkets000.web.app/price-log/${ticker})** | **[4200-5m](https://stockmarkets000.web.app/price-log/${ticker}?daysRange=5)** | **[4200-15m](https://stockmarkets000.web.app/price-log/${ticker}?daysRange=15)** \n **[3001-PO-day](https://new-site-for-stock-abc.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day)** | **[3001-FM-day](https://new-site-for-stock-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[3001-fm-1m](https://new-site-for-stock-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1min)** | **[3001-fm-5m](https://new-site-for-stock-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=5min)** | **[3001-fm-15m](https://new-site-for-stock-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=15min)** \n **[PB-view](https://stock-chart-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`;
+    // const origin = `**[4200-on1m](https://stockmarkets000.web.app/price-log/${ticker})** | **[4200-5m](https://stockmarkets000.web.app/price-log/${ticker}?daysRange=5)** | **[4200-15m](https://stockmarkets000.web.app/price-log/${ticker}?daysRange=15)** \n **[3001-PO-day](https://new-site-for-stock-abc.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day)** | \n **[PB-view](https://stock-chart-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`;
+    // const origin = `**[4200-on1m](http://localhost:4200/price-log/${ticker})** | **[4200-5m](http://localhost:4200/price-log/${ticker}?daysRange=5)** | **[4200-15m](http://localhost:4200/price-log/${ticker}?daysRange=15)** \n **[3001-PO-day](http://localhost:3001/?stockTicker=${ticker}&endpoint=po&timeframe=1day)** | **[3001-FM-day](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[3001-fm-1m](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=1min)** | **[3001-fm-5m](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=5min)** | **[3001-fm-15m](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=15min)** \n **[PB-view](https://stock-chart-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`;
+    const origin = `**[4200-on1m](http://localhost:4200/price-log/${ticker})** | **[prd-on1m](https://stockmarkets000.web.app/price-log/${ticker})** \n **[3001-PO-day](http://localhost:3001/?stockTicker=${ticker}&endpoint=po&timeframe=1day)** | **[prod-PO-day](https://new-site-for-stock-abc.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day)**  \n **[PB-view](https://stock-chart-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`;
+    
     let gptres;
     if (extra) {
       const parts = extra.split('/');
@@ -92,7 +96,7 @@ export class WebhooksService {
     let setmess = extra ? `${origin} | ${gptres}` : origin;
 
     if (!file && !message.includes('SELLCR')) {
-      setmess = `${setmess} | **[CHART MISSING](https://stockmarkets000.web.app/capture-click/${webhookCl}/${tickerON})**`;
+      setmess = `${setmess} | **[C.MISS.4200](http://localhost:4200/capture-click/${webhookCl}/${tickerON})** | **[C.MISS.PROD](https://stockmarkets000.web.app/capture-click/${webhookCl}/${tickerON})**`;
     }
     if (botdt.includes('RSIENDBOT')) {
       options = {
@@ -131,7 +135,7 @@ export class WebhooksService {
         .setColor(color)
         .addFields({ name: botdt, value: setmess, inline: false })
         .addFields(...this.createEmbedFields(lastDataJson, selectedFields));
-      // .addFields({ name: 'URL', value: `http://localhost:4200/price-prediction/${ticker}`, inline: true });
+      // .addFields({ name: 'URL', value: `https://stockmarkets000.web.app/price-prediction/${ticker}`, inline: true });
       options = {
         username: botdt,
         avatarURL: selectedAvatar,
@@ -216,7 +220,7 @@ export class WebhooksService {
     if (Ids.length === 0) return { msg: 'nothing to delete' };
 
     // Create a limit function to restrict concurrency to 20
-    const limit = pLimit(10); // This will allow only 20 promises to run in parallel
+    const limit = pLimit(8); // This will allow only 20 promises to run in parallel
 
     // Prepare the delete promises, wrapped in the limit function
     const deletePromises = Ids.map((messageId) =>
@@ -327,15 +331,29 @@ export class WebhooksService {
 
   async captureChart(
     chartData: any,
-    ticker: string,
+    tickerasall: string,
     channel: string,
     message: string,
   ) {
     if (!chartData || chartData.length === 0) {
       return null;
     }
-    const slicedData =
-      chartData && chartData.length > 0 ? chartData.slice(-200) : [];
+    const slicedData = chartData && chartData.length > 0 ? chartData.slice(-200) : [];
+    const ticker = tickerasall.split('-')[0];
+    if(ticker.includes('.VN')) {
+      return null; // skip if ticker contains a dot
+    }
+    const timeframe = tickerasall.split('-')[1];
+    const path = `${channel}/${ticker}-ON-${timeframe}`.toUpperCase();
+
+    // turn of on local
+    await this.FireBaseApi(
+      'put',
+      `stock-data/${path}.json`,
+      slicedData,
+    );
+    return null; 
+
     try {
       const browser = await puppeteer.launch({
         headless: true,
@@ -395,7 +413,7 @@ export class WebhooksService {
         </head>
         <body id="capture-target">
           <!-- Display the chart date dynamically if chartData is available -->
-          <h3 class="center">${ticker} | ${message} </h3>
+          <h3 class="center">${ticker} | ${message} | <span id="closePrice"></span> </h3>
           <!-- Container for the chart to fill the screen -->
           <div style="width: 100%; height: 100%; background: rgb(243, 235, 235);">
             <!-- Properly passing chartData using .stockData binding -->
@@ -411,6 +429,12 @@ export class WebhooksService {
     
             // Ensure the chartData is passed as a property to the component
             stockChartElement.stockData = chartData;
+
+            // Get the stock-chart-display element by its ID
+            const closePrice = document.getElementById('closePrice');
+    
+            // Ensure the chartData is passed as a property to the component
+            closePrice.textContent = ${slicedData[slicedData.length - 1].close};
           </script>
         </body>
       </html>
@@ -1113,12 +1137,12 @@ export class WebhooksService {
 
       fs.appendFileSync(
         successPathtxt,
-        ` | http://localhost:4200/price-log/${ticker}?daysRange=500 |\n`,
+        ` | https://stockmarkets000.web.app/price-log/${ticker}?daysRange=500 |\n`,
         'utf8',
       );
       fs.appendFileSync(
         successPathfeature,
-        ` | http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=1day|\n`,
+        ` | https://new-site-for-stock-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day|\n`,
         'utf8',
       );
       const successPath_cvs = `${dir}/upside.cvs`;
@@ -1139,12 +1163,12 @@ export class WebhooksService {
       const successPathfeature = `${dir}/upside-AB80.feature`;
       fs.appendFileSync(
         successPathtxt,
-        ` | http://localhost:4200/price-log/${ticker}?daysRange=500 |\n`,
+        ` | https://stockmarkets000.web.app/price-log/${ticker}?daysRange=500 |\n`,
         'utf8',
       );
       fs.appendFileSync(
         successPathfeature,
-        ` | http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=1day|\n`,
+        ` | https://new-site-for-stock-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day|\n`,
         'utf8',
       );
       const successPath_cvs = `${dir}/upsideAB80.cvs`;
@@ -1164,12 +1188,12 @@ export class WebhooksService {
     const successPathfeature = `${dir}/down-Fails.feature`;
     fs.appendFileSync(
       successPathtxt,
-      ` | http://localhost:4200/price-log/${ticker}?daysRange=500 |\n`,
+      ` | https://stockmarkets000.web.app/price-log/${ticker}?daysRange=500 |\n`,
       'utf8',
     );
     fs.appendFileSync(
       successPathfeature,
-      ` | http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=1day|\n`,
+      ` | https://new-site-for-stock-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day|\n`,
       'utf8',
     );
     const successPath_cvs = `${dir}/Fails.cvs`;
@@ -1199,16 +1223,16 @@ export class WebhooksService {
       );
       return;
     }
-    if (StochRSICross.crossDo) {
-      await this.sendDiscord(
-        `SELL-StochRSICrossDOWN -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
-        lastdata,
-        HT_Channel,
-        data,
-      );
-      return;
-    }
+    // if (StochRSICross.crossDo) {
+    //   await this.sendDiscord(
+    //     `SELL-StochRSICrossDOWN -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+    //     `${ticker}-ON-${timeframe}`,
+    //     lastdata,
+    //     HT_Channel,
+    //     data,
+    //   );
+    //   return;
+    // }
   }
 
   async BuyOnly_StochRSICrossAB200(
@@ -1225,27 +1249,38 @@ export class WebhooksService {
         lastdata,
         Secondlastdata,
       );
-    if (BuyOnly_StochRSICrossAB200.PriceCrMA200) {
+    // if(!timeframe.includes('m') && BuyOnly_StochRSICrossAB200.PriceCrMA50) {
+    if (BuyOnly_StochRSICrossAB200.PriceCrMA50) {
       await this.sendDiscord(
-        `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA200 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
+        `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA50 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-${timeframe}-CrMA50-${lastdata?.close}`,
         lastdata,
-        B_Channel,
+        HT_Channel,
         data,
       );
-      return;
+      return BuyOnly_StochRSICrossAB200;
     }
-
     if (BuyOnly_StochRSICrossAB200.PriceCrMA100) {
       await this.sendDiscord(
         `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA100 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
+        `${ticker}-${timeframe}-CrMA100-${lastdata?.close}`,
         lastdata,
         B_Channel,
         data,
       );
-      return;
+      return BuyOnly_StochRSICrossAB200;
     }
+    // if (BuyOnly_StochRSICrossAB200.PriceCrMA200) {
+    //   await this.sendDiscord(
+    //     `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA200 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+    //     `${ticker}-ON-${timeframe}`,
+    //     lastdata,
+    //     HT_Channel,
+    //     data,
+    //   );
+    //   return;
+    // }
+
     // if (BuyOnly_StochRSICrossAB200.CrUpMacdBl0) {
     //   await this.sendDiscord(
     //     `SBUY-BuyOnly_StochRSICrossAB200-CrUpMacdBl0 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
@@ -1287,6 +1322,7 @@ export class WebhooksService {
     //   return;
     // }
   }
+
   /**
    async sendDiscordNotificationImage(
   botname: string = 'Bot Alert',
@@ -1336,4 +1372,223 @@ export class WebhooksService {
 }
 
    */
+
+  async postdata(path, symbols){
+    const data = await this.FireBaseApi(
+      'post',
+      `stock-related/above-ma50/${path}.json`,
+      symbols,
+    );
+  }
+
+  async delete(){
+    const data = await this.FireBaseApi(
+      'delete',
+      `stock-related/above-ma50.json`,''
+    );
+  }
+
+  listsymbolB = [];
+  listsymbolBEarly = [];
+  listsymbolS = [];
+  maxListLength = 100;
+  async runALLOn_MA50(data, ticker, timeframe, B_Channel, HT_Channel) {
+    const lastData = data[data.length - 1];
+    const secondLastData = data[data.length - 2];
+    const thirdLastData = data[data.length - 3];
+    const fourthLastData = data[data.length - 4];
+    const fifthLastData = data[data.length - 5];
+    const aboveMA50 = lastData.close > lastData.MA50;
+    const MACDPositive = lastData.divergence > 0;
+    const aboveMA50Second = secondLastData.close > secondLastData.MA50;
+    const aboveMA50Third = thirdLastData.close > thirdLastData.MA50;
+    const aboveMA50Fourth = fourthLastData.close > fourthLastData.MA50;
+    const belowMA50Fifth = fifthLastData.close < fifthLastData.MA50;
+    const PriceCrMA50 = await this.stockHelperService.priceAbMABUY(
+      lastData,
+      secondLastData,
+      'MA50',
+    );
+    if (MACDPositive && PriceCrMA50) {
+      await this.sendDiscord(
+        `SBUY-BuyOnly_MACDPositive -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+        `${ticker}-${timeframe}-CrMA100-${lastData?.close}`,
+        lastData,
+        timeframe === '1day' ? '200AB_LESS_05' : '200AB_LESS_1',
+        data,
+      );
+    }
+    const aboveMA50Count = [
+      aboveMA50,
+      aboveMA50Second,
+      aboveMA50Third,
+      aboveMA50Fourth,
+    ].filter(Boolean).length;
+    if (aboveMA50Count >= 3 && MACDPositive) {
+      if (belowMA50Fifth) {
+        this.listsymbolBEarly.push(ticker);
+        await this.sendSlackNotificationURL([ticker], timeframe);
+        await this.postdata(`early/${timeframe}`, ticker);
+        if (this.listsymbolBEarly.length > this.maxListLength) {
+          await this.sendDiscordNotification(
+            `,${this.listsymbolBEarly.toString()}`,
+            // `200AB_LESS_1 RSIENDBOT`,
+            `${HT_Channel} RSIENDBOT`,
+            JSON.stringify('lastdata'),
+          );
+          this.listsymbolBEarly = [];
+        }
+      }
+      this.listsymbolB.push(ticker);
+      await this.postdata(`alldata/${timeframe}`, ticker);
+      if (timeframe === '1day') {
+        this.stockHelperService.ListMA50On1day.push(ticker);
+      } else if (timeframe.includes('4h')) {
+        this.stockHelperService.ListMA50On4hour.push(ticker);
+      }
+      if (this.listsymbolB.length > this.maxListLength) {
+        await this.sendDiscordNotification(
+          `,${this.listsymbolB.toString()}`,
+          `${B_Channel} RSIENDBOT`,
+          JSON.stringify('lastdata'),
+        );
+        this.listsymbolB = [];
+        return;
+      }
+    } else if (aboveMA50Count <= 1) {
+      // skip posting to for now, just log it
+      // this.listsymbolS.push(ticker);
+      // if (this.listsymbolS.length > this.maxListLength) {
+      //   await this.sendDiscordNotification(
+      //     `,${this.listsymbolS.toString()}`,
+      //     `${HT_Channel} RSIENDBOT`,
+      //     JSON.stringify('lastdata'),
+      //   );
+      //   this.listsymbolS = [];
+      //   return;
+      // }
+    }
+  }
+  async sendlast(B_Channel, HT_Channel) {
+    await this.sendDiscordNotification(
+      `,${this.listsymbolB.toString()}`,
+      `${B_Channel} RSIENDBOT`,
+      JSON.stringify('lastdata'),
+    );
+    await this.sendDiscordNotification(
+      `,${this.listsymbolBEarly.toString()}`,
+      `${HT_Channel} RSIENDBOT`,
+      JSON.stringify('lastdata'),
+    );
+    // await this.sendDiscordNotification(
+    //   `,${this.listsymbolS.toString()}`,
+    //   `${'200AB_LESS_1'} RSIENDBOT`,
+    //   JSON.stringify('lastdata'),
+    // );
+    this.listsymbolB = [];
+    this.listsymbolBEarly = [];
+    // this.listsymbolS = [];
+    return;
+  }
+
+  async runCrOn_MA50(data, ticker, timeframe, B_Channel, HT_Channel) {
+    const lastData = data[data.length - 1];
+    const secondLastData = data[data.length - 2];
+    const thirdLastData = data[data.length - 3];
+    const fourthLastData = data[data.length - 4];
+    const aboveMA50 = lastData.close > lastData.MA50;
+    const MACDPositive = lastData.divergence > 0;
+    const MACDNegative = lastData.divergence < 0;
+    const aboveMA50Second = secondLastData.close > secondLastData.MA50;
+    const aboveMA50Third = thirdLastData.close > thirdLastData.MA50;
+    const aboveMA50Fourth = fourthLastData.close > fourthLastData.MA50;
+    const PriceCrMA50 = await this.stockHelperService.priceAbMABUY(
+      lastData,
+      secondLastData,
+      'MA50',
+    );
+        const PriceCrMA50bl = await this.stockHelperService.priceAbMABUY(
+      secondLastData,lastData,
+      'MA50',
+    );
+    if (MACDPositive && PriceCrMA50) {
+      await this.sendDiscord(
+        `SBUY-BuyOnly_MACDPositive-PriceCrMA50 -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+        `${ticker}-${timeframe}-CrMA100-${lastData?.close}`,
+        lastData,
+        timeframe === '1day' ? B_Channel : HT_Channel,
+        data,
+      );
+      return;
+    }
+    const aboveMA50Count = [
+      aboveMA50,
+      aboveMA50Second,
+      aboveMA50Third,
+      aboveMA50Fourth,
+    ].filter(Boolean).length;
+    if (aboveMA50Count >= 3 && MACDPositive) {
+      await this.sendDiscord(
+        `SBUY-BuyOnly_MACDPositive -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+        `${ticker}-${timeframe}-${lastData?.close}`,
+        lastData,
+        timeframe === '1day' ? B_Channel : HT_Channel,
+        data,
+      );
+      return;
+    } else if ( MACDNegative && PriceCrMA50bl) {
+      await this.sendDiscord(
+        `SSELL-SellOnly_BL50 -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+        `${ticker}-${timeframe}-${lastData?.close}`,
+        lastData,
+        timeframe === '1day' ? HT_Channel : B_Channel,
+        data,
+      );
+      return;
+    }
+  }
+
+
+  async sendSlackNotificationURL(symbols: string[], other='1day') {
+    const BASE_URL = other ==='1day'?this.configService.get<any>('SLACK_WEBHOOKS'):this.configService.get<any>('SLACK_WEBHOOKS_4h');
+  
+    const formatted = symbols
+    .map(
+      (s) =>
+        `• ${s} → <http://localhost:4200/price-log/${s}?daysRange=5|5m> | <http://localhost:4200/price-log/${s}?daysRange=15|15m> | <http://localhost:4200/price-log/${s}?daysRange=30|30m> | <http://localhost:4200/price-log/${s}?daysRange=60|1hour> | <http://localhost:4200/price-log/${s}?daysRange=240|4hour> | <http://localhost:4200/price-log/${s}?daysRange=500|daily> ||=|| <https://stockmarkets000.web.app/price-log/${s}?daysRange=500|PROD-DAILY>`
+    )
+    .join('\n');
+
+  const payload = {
+    text: formatted,
+  };
+    try {
+      await axios.post(BASE_URL, payload);
+      return { msg: 'post to Slack success' };
+    } catch (error) {
+      return { msg: 'post to Slack fails:', error };
+    }
+  }
+
+
+  async sendSlackNotificationVN(symbols: string[], other='SLACK_WEBHOOKS_VN50') {
+    const BASE_URL = this.configService.get<any>(other);
+  
+    const formatted = symbols
+    .map(
+      (s) =>
+        `• ${s} → < <http://localhost:4200/price-log/${s}?daysRange=500|local> | <https://stockmarkets000.web.app/price-log/${s}?daysRange=500|production>`
+    )
+    .join('\n');
+
+  const payload = {
+    text: formatted,
+  };
+    try {
+      await axios.post(BASE_URL, payload);
+      return { msg: 'post to Slack success' };
+    } catch (error) {
+      return { msg: 'post to Slack fails:', error };
+    }
+  }
 }

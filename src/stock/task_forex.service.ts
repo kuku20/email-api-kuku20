@@ -37,16 +37,22 @@ export class TasksForexService {
         const secondLastData = data[1];
         // const lastData = data[data.length - 1];
         // const secondLastData = data[data.length - 2];
-
-        await this.webhooksService.compareAndSend1hour(
+        await this.webhooksService.runCrOn_MA50(
           data.reverse(),
-          lastData,
-          secondLastData,
           ticker,
           timeframe,
           buyChannel,
           sellChannel,
         );
+        // await this.webhooksService.compareAndSend1hour(
+        //   data.reverse(),
+        //   lastData,
+        //   secondLastData,
+        //   ticker,
+        //   timeframe,
+        //   buyChannel,
+        //   sellChannel,
+        // );
         this.logger.log(`${ticker} processed successfully.`);
       } catch (error) {
         const date = new Date();
@@ -62,17 +68,9 @@ export class TasksForexService {
       }
     }
   }
-  @Cron('*/15 * * * *') // every 15 minutes
+ // @Cron('*/15 * * * *') // every 15 minutes
   async handle15minForex() {
-    const tickers = [
-      'CHFUSD',
-      'EURUSD',
-      'CADUSD',
-      'AUDUSD',
-      'GBPUSD',
-      'JPYUSD',
-      'NZDUSD',
-    ];
+    const tickers = ['EURUSD', 'GBPUSD'];
     // const tickers = ['EURUSD'];
     await this.processTickers1hour(
       tickers,
@@ -85,15 +83,7 @@ export class TasksForexService {
   }
   @Cron(CronExpression.EVERY_30_MINUTES)
   async handle30minForex() {
-    const tickers = [
-      'CHFUSD',
-      'EURUSD',
-      'CADUSD',
-      'AUDUSD',
-      'GBPUSD',
-      'JPYUSD',
-      'NZDUSD',
-    ];
+    const tickers = ['EURUSD', 'GBPUSD'];
     // const tickers = ['EURUSD'];
     await this.processTickers1hour(
       tickers,
@@ -106,15 +96,7 @@ export class TasksForexService {
   }
   @Cron('0 * * * *') // every 1 hour
   async handle1hourForex() {
-    const tickers = [
-      'CHFUSD',
-      'EURUSD',
-      'CADUSD',
-      'AUDUSD',
-      'GBPUSD',
-      'JPYUSD',
-      'NZDUSD',
-    ];
+    const tickers = ['EURUSD', 'GBPUSD'];
     // const tickers = ['EURUSD'];
     await this.processTickers1hour(
       tickers,
@@ -127,15 +109,7 @@ export class TasksForexService {
   }
   @Cron(CronExpression.EVERY_4_HOURS)
   async handle4hourForex() {
-    const tickers = [
-      'CHFUSD',
-      'EURUSD',
-      'CADUSD',
-      'AUDUSD',
-      'GBPUSD',
-      'JPYUSD',
-      'NZDUSD',
-    ];
+    const tickers = ['EURUSD', 'GBPUSD'];
     // const tickers = ['EURUSD'];
     await this.processTickers1hour(
       tickers,

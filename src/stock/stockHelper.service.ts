@@ -3,6 +3,8 @@ import { StockData } from './dto/chartData';
 
 @Injectable()
 export class StockHelperService {
+  ListMA50On1day: string[] = [];
+  ListMA50On4hour: string[] = [];
   async returnNewData(dataIn: any[]) {
     if (!dataIn?.length) return [];
 
@@ -654,6 +656,7 @@ SELL ALL
     CrUpMacdBl0: boolean;
     PriceCrMA200: boolean;
     PriceCrMA100: boolean;
+    PriceCrMA50: boolean;
     macdCrAB: boolean;
   }> {
     if (!last || !prev)
@@ -662,6 +665,7 @@ SELL ALL
         CrUpMacdBl0: false,
         PriceCrMA200: false,
         PriceCrMA100: false,
+        PriceCrMA50: false,
         macdCrAB: false,
       }; // safety
     const lastAb50 = last.MA50 > last.close;
@@ -685,12 +689,14 @@ SELL ALL
     const CrUpMacdBl0 = CrUpAll && MACDbelow0;
     const PriceCrMA200 = await this.priceAbMA200BUY(last, prev);
     const PriceCrMA100 = await this.priceAbMABUY(last, prev, 'MA100') && lastBl200;
+    const PriceCrMA50 = await this.priceAbMABUY(last, prev, 'MA50') && lastBl200;
     const macdCrAB = await this.macdCrossAB(last, prev);
     return {
       CrUpAll,
       CrUpMacdBl0,
       PriceCrMA200,
       PriceCrMA100,
+      PriceCrMA50,
       macdCrAB,
     };
   }
@@ -698,7 +704,7 @@ SELL ALL
   async priceAbMABUY(
     last: StockData,
     prev: StockData,
-    maType: 'MA100' | 'MA200',
+    maType: 'MA100' | 'MA200' |'MA50' | 'MA20' | 'MA10' | 'MA5',
   ): Promise<boolean> {
     if (!last || !prev) return false; // safety
 
