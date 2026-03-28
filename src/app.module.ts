@@ -158,7 +158,7 @@ import { TasksUS_ALL_MK_MASS_Service } from './stock/task_usmkall_mass.service';
     AlphavantageService,
     // TasksUSMKService_SP500,
     //TasksUSMKService,
-    // TasksVNMKService,
+    TasksVNMKService,
     // TasksService,
     TaskCryptoService,
     // TasksUS_ALL_MKService,

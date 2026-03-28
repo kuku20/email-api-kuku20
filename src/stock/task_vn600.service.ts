@@ -40,7 +40,7 @@ export class TasksVNMKService {
           const secondLastData = data[data.length - 2];
 
           // Process the data
-          await this.webhooksService.BuyOnly_StochRSICrossAB200(
+          const BuyOnly_StochRSICrossAB200 =await this.webhooksService.BuyOnly_StochRSICrossAB200(
             data,
             lastData,
             secondLastData,
@@ -49,6 +49,12 @@ export class TasksVNMKService {
             B_Channel,
             HT_Channel,
           );
+          if (BuyOnly_StochRSICrossAB200.PriceCrMA50) {
+            await this.webhooksService.sendSlackNotificationVN([`${ticker}.VN`], 'SLACK_WEBHOOKS_VN50');
+          }
+          else if (BuyOnly_StochRSICrossAB200.PriceCrMA100) {
+            await this.webhooksService.sendSlackNotificationVN([`${ticker}.VN`], 'SLACK_WEBHOOKS_VN100');
+          }
           this.logger.log(`${ticker} processed successfully.`);
         } catch (error) {
           // Send error notification and log the error
@@ -69,11 +75,13 @@ export class TasksVNMKService {
 
   async onModuleInit() {
     // This runs ONCE when the app starts
-  //await this.runAllWatchLists();
+  // await this.runAllWatchLists();
     // console.log(  stock_500_symbols.length)
   }
   @Cron('*/15 14-21 * * 1-5', { timeZone: 'UTC' })
   async runAllWatchLists() {
+    await this.webhooksService.sendSlackNotification('', 'SLACK_WEBHOOKS_VN50');
+    await this.webhooksService.sendSlackNotification('', 'SLACK_WEBHOOKS_VN100');
     await Promise.all([
       this.processTickers(
         VN_Stock_symbols,

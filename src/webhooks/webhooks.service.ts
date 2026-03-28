@@ -1243,7 +1243,7 @@ export class WebhooksService {
         HT_Channel,
         data,
       );
-      return;
+      return BuyOnly_StochRSICrossAB200;
     }
     if (BuyOnly_StochRSICrossAB200.PriceCrMA100) {
       await this.sendDiscord(
@@ -1253,7 +1253,7 @@ export class WebhooksService {
         B_Channel,
         data,
       );
-      return;
+      return BuyOnly_StochRSICrossAB200;
     }
     // if (BuyOnly_StochRSICrossAB200.PriceCrMA200) {
     //   await this.sendDiscord(
@@ -1524,6 +1524,28 @@ export class WebhooksService {
     .map(
       (s) =>
         `• ${s} → <http://localhost:4200/price-log/${s}?daysRange=5|5m> | <http://localhost:4200/price-log/${s}?daysRange=15|15m> | <http://localhost:4200/price-log/${s}?daysRange=30|30m> | <http://localhost:4200/price-log/${s}?daysRange=60|1hour> | <http://localhost:4200/price-log/${s}?daysRange=240|4hour> | <http://localhost:4200/price-log/${s}?daysRange=500|daily>`
+    )
+    .join('\n');
+
+  const payload = {
+    text: formatted,
+  };
+    try {
+      await axios.post(BASE_URL, payload);
+      return { msg: 'post to Slack success' };
+    } catch (error) {
+      return { msg: 'post to Slack fails:', error };
+    }
+  }
+
+
+  async sendSlackNotificationVN(symbols: string[], other='SLACK_WEBHOOKS_VN50') {
+    const BASE_URL = this.configService.get<any>(other);
+  
+    const formatted = symbols
+    .map(
+      (s) =>
+        `• ${s} → < <http://localhost:4200/price-log/${s}?daysRange=500|local> | <https://stockmarkets000.web.app/price-log/${s}?daysRange=500|production>`
     )
     .join('\n');
 
