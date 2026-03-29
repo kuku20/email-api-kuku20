@@ -1538,7 +1538,7 @@ export class WebhooksService {
       return;
     } else if ( MACDNegative && PriceCrMA50bl) {
       await this.sendDiscord(
-        `SSELL-SellOnly_BL50 -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+        `SSELL-PriceCrMA50bl -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
         `${ticker}-${timeframe}-${lastData?.close}`,
         lastData,
         timeframe === '1day' ? HT_Channel : B_Channel,
