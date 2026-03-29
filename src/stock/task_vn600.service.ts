@@ -20,6 +20,12 @@ export class TasksVNMKService {
   ) {}
   private readonly logger = new Logger(TasksVNMKService.name);
 
+  async onModuleInit() {
+    // This runs ONCE when the app starts
+    //  await this.runAllWatchLists();
+    // console.log(  stock_500_symbols.length)
+  }
+  
   private async processTickers(tickers: string[], B_Channel, HT_Channel) {
     const limit = pLimit(4); // Limit the concurrency to 8 at a time
 
@@ -80,11 +86,7 @@ export class TasksVNMKService {
     await Promise.all(tickerPromises);
   }
 
-  async onModuleInit() {
-    // This runs ONCE when the app starts
-    //  await this.runAllWatchLists();
-    // console.log(  stock_500_symbols.length)
-  }
+
   @Cron('*/15 14-21 * * 1-5', { timeZone: 'UTC' })
   async runAllWatchLists() {
     const today = this.stockHelperService.getDateNDaysAgo(0); // Get today's date

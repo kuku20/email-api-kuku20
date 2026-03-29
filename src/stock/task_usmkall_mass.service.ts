@@ -21,6 +21,11 @@ export class TasksUS_ALL_MK_MASS_Service {
   ) {}
   private readonly logger = new Logger(TasksUS_ALL_MK_MASS_Service.name);
 
+  async onModuleInit() {
+    // This runs ONCE when the app starts
+    // await this.runfullonms();
+  }
+  
   async USTIMERUN(
     intickers: string[],
     B_Channel,
@@ -86,11 +91,6 @@ export class TasksUS_ALL_MK_MASS_Service {
 
     // Wait for all ticker promises to complete concurrently (with concurrency limit)
     await Promise.all(tickerPromises);
-  }
-
-  async onModuleInit() {
-    // This runs ONCE when the app starts
-    // await this.runfullonms();
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, {
