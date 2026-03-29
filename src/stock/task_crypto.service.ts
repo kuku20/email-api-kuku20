@@ -65,8 +65,8 @@ export class TaskCryptoService {
             data,
             ticker,
             timeframe,
-            B_Channel,
             HT_Channel,
+            B_Channel,
           );
         }
         this.logger.log(`${ticker} processed successfully.`);
