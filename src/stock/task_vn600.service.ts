@@ -20,11 +20,7 @@ export class TasksVNMKService {
   ) {}
   private readonly logger = new Logger(TasksVNMKService.name);
 
-  private async processTickers(
-    tickers: string[],
-    B_Channel,
-    HT_Channel,
-  ) {
+  private async processTickers(tickers: string[], B_Channel, HT_Channel) {
     const limit = pLimit(4); // Limit the concurrency to 8 at a time
 
     const date = new Date();
@@ -32,7 +28,6 @@ export class TasksVNMKService {
     // Prepare ticker promises with concurrency limit
     const tickerPromises = tickers.map((ticker) =>
       limit(async () => {
-
         try {
           let data = await this.LocalPLWR.Eodhd_vn(ticker);
 
@@ -40,20 +35,32 @@ export class TasksVNMKService {
           const secondLastData = data[data.length - 2];
 
           // Process the data
-          const BuyOnly_StochRSICrossAB200 =await this.webhooksService.BuyOnly_StochRSICrossAB200(
-            data,
-            lastData,
-            secondLastData,
-            `${ticker}.VN`,
-            '1day',
-            B_Channel,
-            HT_Channel,
-          );
-          if (BuyOnly_StochRSICrossAB200 && BuyOnly_StochRSICrossAB200?.PriceCrMA50) {
-            await this.webhooksService.sendSlackNotificationVN([`${ticker}.VN`], 'SLACK_WEBHOOKS_VN50');
-          }
-          else if (BuyOnly_StochRSICrossAB200 && BuyOnly_StochRSICrossAB200?.PriceCrMA100) {
-            await this.webhooksService.sendSlackNotificationVN([`${ticker}.VN`], 'SLACK_WEBHOOKS_VN100');
+          const BuyOnly_StochRSICrossAB200 =
+            await this.webhooksService.BuyOnly_StochRSICrossAB200(
+              data,
+              lastData,
+              secondLastData,
+              `${ticker}.VN`,
+              '1day',
+              B_Channel,
+              HT_Channel,
+            );
+          if (
+            BuyOnly_StochRSICrossAB200 &&
+            BuyOnly_StochRSICrossAB200?.PriceCrMA50
+          ) {
+            await this.webhooksService.sendSlackNotificationVN(
+              [`${ticker}.VN`],
+              'SLACK_WEBHOOKS_VN50',
+            );
+          } else if (
+            BuyOnly_StochRSICrossAB200 &&
+            BuyOnly_StochRSICrossAB200?.PriceCrMA100
+          ) {
+            await this.webhooksService.sendSlackNotificationVN(
+              [`${ticker}.VN`],
+              'SLACK_WEBHOOKS_VN100',
+            );
           }
           this.logger.log(`${ticker} processed successfully.`);
         } catch (error) {
@@ -75,21 +82,30 @@ export class TasksVNMKService {
 
   async onModuleInit() {
     // This runs ONCE when the app starts
-//  await this.runAllWatchLists();
+    //  await this.runAllWatchLists();
     // console.log(  stock_500_symbols.length)
   }
   @Cron('*/15 14-21 * * 1-5', { timeZone: 'UTC' })
   async runAllWatchLists() {
-    await this.webhooksService.sendSlackNotification('START', 'SLACK_WEBHOOKS_VN50');
-    await this.webhooksService.sendSlackNotification('START', 'SLACK_WEBHOOKS_VN100');
+    const today = this.stockHelperService.getDateNDaysAgo(0); // Get today's date
+    await this.webhooksService.sendSlackNotification(
+      `START*${today}START================================`,
+      'SLACK_WEBHOOKS_VN50',
+    );
+    await this.webhooksService.sendSlackNotification(
+      `START*${today}START================================`,
+      'SLACK_WEBHOOKS_VN100',
+    );
     await Promise.all([
-      this.processTickers(
-        VN_Stock_symbols,
-        'BUY_EARLY_DAY',
-        'SELL_EARLY_DAY',
-      ),
+      this.processTickers(VN_Stock_symbols, 'BUY_EARLY_DAY', 'SELL_EARLY_DAY'),
     ]);
-    await this.webhooksService.sendSlackNotification('END', 'SLACK_WEBHOOKS_VN50');
-    await this.webhooksService.sendSlackNotification('END', 'SLACK_WEBHOOKS_VN100');
+    await this.webhooksService.sendSlackNotification(
+      `END*${today}END================================`,
+      'SLACK_WEBHOOKS_VN50',
+    );
+    await this.webhooksService.sendSlackNotification(
+      `END*${today}END================================`,
+      'SLACK_WEBHOOKS_VN100',
+    );
   }
 }

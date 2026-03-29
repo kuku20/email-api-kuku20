@@ -90,7 +90,7 @@ export class TasksUS_ALL_MK_MASS_Service {
 
   async onModuleInit() {
     // This runs ONCE when the app starts
-// await this.runfullonms();
+    // await this.runfullonms();
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, {
@@ -98,17 +98,24 @@ export class TasksUS_ALL_MK_MASS_Service {
   })
   async runfullonms() {
     // delete old data from firebase
+    const today = this.stockHelperService.getDateNDaysAgo(0); // Get today's date
     await this.webhooksService.delete();
     this.stockHelperService.ListMA50On1day = []; // Clear the list at the start of each run
     await this.SendEverydayService('EARLY_AB200', '200AB_LESS_01', '1day');
     await this.send1chanel('200AB_LESS_05', '1day');
-    await this.webhooksService.sendSlackNotification('START', '1day');
+    await this.webhooksService.sendSlackNotification(
+      `START*${today}START================================`,
+      '1day',
+    );
 
     await this.runAllWatchLists();
 
     await this.SendEverydayService('EARLY_AB200', '200AB_LESS_01', '1day');
     await this.send1chanel('200AB_LESS_05', '1day');
-    await this.webhooksService.sendSlackNotification('END', '1day');
+    await this.webhooksService.sendSlackNotification(
+      `END*${today}END================================`,
+      '1day',
+    );
 
     this.stockHelperService.ListMA50On4hour = [];
     await this.SendEverydayService(
@@ -116,18 +123,24 @@ export class TasksUS_ALL_MK_MASS_Service {
       '200BL_OV_NEG_05',
       '4hour',
     );
-    await this.send1chanel( '200AB_LESS_1', '4hour');
-    await this.webhooksService.sendSlackNotification('START', '4hour');
+    await this.send1chanel('200AB_LESS_1', '4hour');
+    await this.webhooksService.sendSlackNotification(
+      `START*${today}START================================`,
+      '4hour',
+    );
 
     await this.runAllOn1h(this.stockHelperService.ListMA50On1day);
-    
-    await this.webhooksService.sendSlackNotification('END', '4hour');
+
+    await this.webhooksService.sendSlackNotification(
+      `END*${today}END================================`,
+      '4hour',
+    );
     await this.SendEverydayService(
       '200BL_OV_NEG_01',
       '200BL_OV_NEG_05',
       '4hour',
     );
-    await this.send1chanel( '200AB_LESS_1', '4hour');
+    await this.send1chanel('200AB_LESS_1', '4hour');
   }
 
   async runAllWatchLists() {
