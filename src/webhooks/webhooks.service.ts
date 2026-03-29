@@ -346,14 +346,16 @@ export class WebhooksService {
     const timeframe = tickerasall.split('-')[1];
     const path = `${channel}/${ticker}-ON-${timeframe}`.toUpperCase();
 
-    // turn of on local
-    await this.FireBaseApi(
-      'put',
-      `stock-data/${path}.json`,
-      slicedData,
-    );
-    return null; 
-
+    if (this.configService.get('NODE_ENV') === 'production') {
+    // // turn off on local
+      await this.FireBaseApi(
+        'put',
+        `stock-data/${path}.json`,
+        slicedData,
+      );
+      return null;
+    }
+    
     try {
       const browser = await puppeteer.launch({
         headless: true,
