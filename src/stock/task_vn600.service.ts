@@ -87,7 +87,7 @@ export class TasksVNMKService {
   }
 
 
-  @Cron('*/15 14-21 * * 1-5', { timeZone: 'UTC' })
+  @Cron('0 14 * * 1-5', { timeZone: 'UTC' })
   async runAllWatchLists() {
     const today = this.stockHelperService.getDateNDaysAgo(0); // Get today's date
     await this.webhooksService.sendSlackNotification(
