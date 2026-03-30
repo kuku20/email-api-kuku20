@@ -5030,7 +5030,6 @@ export const dayab50 = [
   "SLS",
   "ODV",
   "MIY",
-  "MQT",
   "MYD",
   "QEPC",
   "VLGEA",

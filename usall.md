@@ -2818,7 +2818,6 @@
 'BNTC',
 'BNY',
 'MIY',
-'MQT',
 'LEGT',
 'TRX',
 'FGFH',
