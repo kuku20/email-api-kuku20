@@ -1523,22 +1523,22 @@ export class WebhooksService {
       );
       return;
     }
-    const aboveMA50Count = [
-      aboveMA50,
-      aboveMA50Second,
-      // aboveMA50Third,
-      // aboveMA50Fourth,
-    ].filter(Boolean).length;
-    if (aboveMA50Count >= 2 && MACDPositive) {
-      await this.sendDiscord(
-        `SBUY-Continue-buy-keep-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-        `${ticker}-${timeframe}-${lastData?.close}`,
-        lastData,
-        timeframe === '1day' ? B_Channel : HT_Channel,
-        data,
-      );
-      return;
-    } else 
+    // const aboveMA50Count = [
+    //   aboveMA50,
+    //   aboveMA50Second,
+    //   // aboveMA50Third,
+    //   // aboveMA50Fourth,
+    // ].filter(Boolean).length;
+    // if (aboveMA50Count >= 2 && MACDPositive) {
+    //   await this.sendDiscord(
+    //     `SBUY-Continue-buy-keep-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+    //     `${ticker}-${timeframe}-${lastData?.close}`,
+    //     lastData,
+    //     timeframe === '1day' ? B_Channel : HT_Channel,
+    //     data,
+    //   );
+    //   return;
+    // } else 
     if ( MACDNegative && PriceCrMA50bl) {
       await this.sendDiscord(
         `SSELL-PriceCrMA50bl -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
