@@ -3041,7 +3041,6 @@
 'EFSI',
 'RBKB',
 'FINW',
-'PMHG',
 'CFFI',
 'FSFG',
 'STVN',
