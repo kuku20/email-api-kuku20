@@ -688,8 +688,10 @@ SELL ALL
     const CrUpAll = stockRSILast >= 0 && stockRSIPrev <= 0;
     const CrUpMacdBl0 = CrUpAll && MACDbelow0;
     const PriceCrMA200 = await this.priceAbMA200BUY(last, prev);
-    const PriceCrMA100 = await this.priceAbMABUY(last, prev, 'MA100') && lastBl200;
-    const PriceCrMA50 = await this.priceAbMABUY(last, prev, 'MA50') && lastBl200;
+    // const PriceCrMA100 = await this.priceAbMABUY(last, prev, 'MA100') && lastBl200;
+    // const PriceCrMA50 = await this.priceAbMABUY(last, prev, 'MA50') && lastBl200;    
+    const PriceCrMA100 = await this.priceAbMABUY(last, prev, 'MA100')
+    const PriceCrMA50 = await this.priceAbMABUY(last, prev, 'MA50')
     const macdCrAB = await this.macdCrossAB(last, prev);
     return {
       CrUpAll,

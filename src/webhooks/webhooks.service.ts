@@ -31,9 +31,17 @@ export class WebhooksService {
     this.rsiChannels = channelsStr.split(',').map((c) => c.trim());
   }
 
-  async sendSlackNotification(message: string , other='1day') {
-    const BASE_URL = other ==='1day'?this.configService.get<any>('SLACK_WEBHOOKS'):other ==='4hour'?this.configService.get<any>('SLACK_WEBHOOKS_4h'):this.configService.get<any>(other);
-    const nexMsg = `================================${message.replace(/\*\*/g, '*')}`;
+  async sendSlackNotification(message: string, other = '1day') {
+    const BASE_URL =
+      other === '1day'
+        ? this.configService.get<any>('SLACK_WEBHOOKS')
+        : other === '4hour'
+        ? this.configService.get<any>('SLACK_WEBHOOKS_4h')
+        : this.configService.get<any>(other);
+    const nexMsg = `================================${message.replace(
+      /\*\*/g,
+      '*',
+    )}`;
     const payload = {
       type: 'mrkdwn',
       text: nexMsg,
@@ -86,7 +94,7 @@ export class WebhooksService {
     // const origin = `**[4200-on1m](https://stockmarkets000.web.app/price-log/${ticker})** | **[4200-5m](https://stockmarkets000.web.app/price-log/${ticker}?daysRange=5)** | **[4200-15m](https://stockmarkets000.web.app/price-log/${ticker}?daysRange=15)** \n **[3001-PO-day](https://new-site-for-stock-abc.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day)** | \n **[PB-view](https://stock-chart-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`;
     // const origin = `**[4200-on1m](http://localhost:4200/price-log/${ticker})** | **[4200-5m](http://localhost:4200/price-log/${ticker}?daysRange=5)** | **[4200-15m](http://localhost:4200/price-log/${ticker}?daysRange=15)** \n **[3001-PO-day](http://localhost:3001/?stockTicker=${ticker}&endpoint=po&timeframe=1day)** | **[3001-FM-day](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[3001-fm-1m](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=1min)** | **[3001-fm-5m](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=5min)** | **[3001-fm-15m](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=15min)** \n **[PB-view](https://stock-chart-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`;
     const origin = `**[4200-daily](http://localhost:4200/price-log/${ticker}?daysRange=500)** | **[prd-daily](https://stockmarkets000.web.app/price-log/${ticker}?daysRange=500)** \n **[3001-fm-day](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[prod-fm-day](https://new-site-for-stock-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)**  \n **[PB-view](https://stock-chart-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`;
-    
+
     let gptres;
     if (extra) {
       const parts = extra.split('/');
@@ -338,21 +346,18 @@ export class WebhooksService {
     if (!chartData || chartData.length === 0) {
       return null;
     }
-    const slicedData = chartData && chartData.length > 0 ? chartData.slice(-200) : [];
+    const slicedData =
+      chartData && chartData.length > 0 ? chartData.slice(-200) : [];
     const ticker = tickerasall.split('-')[0];
-    if(ticker.includes('.VN')) {
+    if (ticker.includes('.VN')) {
       return null; // skip if ticker contains a dot
     }
     const timeframe = tickerasall.split('-')[1];
     const path = `${channel}/${ticker}-ON-${timeframe}`.toUpperCase();
 
     if (this.configService.get('NODE_ENV') === 'production') {
-    // // turn off on local
-      await this.FireBaseApi(
-        'put',
-        `stock-data/${path}.json`,
-        slicedData,
-      );
+      // // turn off on local
+      await this.FireBaseApi('put', `stock-data/${path}.json`, slicedData);
       return null;
     }
     
@@ -1254,7 +1259,7 @@ export class WebhooksService {
     // if(!timeframe.includes('m') && BuyOnly_StochRSICrossAB200.PriceCrMA50) {
     if (BuyOnly_StochRSICrossAB200.PriceCrMA50) {
       await this.sendDiscord(
-        `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA50 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `SBUY--PriceCrMA50 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-${timeframe}-CrMA50-${lastdata?.close}`,
         lastdata,
         HT_Channel,
@@ -1264,7 +1269,7 @@ export class WebhooksService {
     }
     if (BuyOnly_StochRSICrossAB200.PriceCrMA100) {
       await this.sendDiscord(
-        `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA100 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `SBUY--PriceCrMA100 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-${timeframe}-CrMA100-${lastdata?.close}`,
         lastdata,
         B_Channel,
@@ -1375,7 +1380,7 @@ export class WebhooksService {
 
    */
 
-  async postdata(path, symbols){
+  async postdata(path, symbols) {
     const data = await this.FireBaseApi(
       'post',
       `stock-related/above-ma50/${path}.json`,
@@ -1383,10 +1388,11 @@ export class WebhooksService {
     );
   }
 
-  async delete(){
+  async delete() {
     const data = await this.FireBaseApi(
       'delete',
-      `stock-related/above-ma50.json`,''
+      `stock-related/above-ma50.json`,
+      '',
     );
   }
 
@@ -1429,7 +1435,11 @@ export class WebhooksService {
     if (aboveMA50Count >= 3 && MACDPositive) {
       if (belowMA50Fifth) {
         this.listsymbolBEarly.push(ticker);
-        await this.sendSlackNotificationURL([ticker], timeframe);
+        await this.sendSlackNotificationURL(
+          [ticker],
+          lastData?.close,
+          timeframe,
+        );
         await this.postdata(`early/${timeframe}`, ticker);
         if (this.listsymbolBEarly.length > this.maxListLength) {
           await this.sendDiscordNotification(
@@ -1509,8 +1519,9 @@ export class WebhooksService {
       secondLastData,
       'MA50',
     );
-        const PriceCrMA50bl = await this.stockHelperService.priceAbMABUY(
-      secondLastData,lastData,
+    const PriceCrMA50bl = await this.stockHelperService.priceAbMABUY(
+      secondLastData,
+      lastData,
       'MA50',
     );
     if (MACDPositive && PriceCrMA50) {
@@ -1538,8 +1549,8 @@ export class WebhooksService {
     //     data,
     //   );
     //   return;
-    // } else 
-    if ( MACDNegative && PriceCrMA50bl) {
+    // } else
+    if (MACDNegative && PriceCrMA50bl) {
       await this.sendDiscord(
         `SSELL-PriceCrMA50bl -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
         `${ticker}-${timeframe}-${lastData?.close}`,
@@ -1551,20 +1562,27 @@ export class WebhooksService {
     }
   }
 
+  async sendSlackNotificationURL(
+    symbols: string[],
+    closePrice,
+    other = '1day',
+  ) {
+    const BASE_URL =
+      other === '1day'
+        ? this.configService.get<any>('SLACK_WEBHOOKS')
+        : this.configService.get<any>('SLACK_WEBHOOKS_4h');
 
-  async sendSlackNotificationURL(symbols: string[], other='1day') {
-    const BASE_URL = other ==='1day'?this.configService.get<any>('SLACK_WEBHOOKS'):this.configService.get<any>('SLACK_WEBHOOKS_4h');
-  
     const formatted = symbols
-    .map(
-      (s) =>
-        `• ${s} → <http://localhost:4200/price-log/${s}?daysRange=5|5m> | <http://localhost:4200/price-log/${s}?daysRange=15|15m> | <http://localhost:4200/price-log/${s}?daysRange=30|30m> | <http://localhost:4200/price-log/${s}?daysRange=60|1hour> | <http://localhost:4200/price-log/${s}?daysRange=240|4hour> | <http://localhost:4200/price-log/${s}?daysRange=500|daily> ||=|| <https://stockmarkets000.web.app/price-log/${s}?daysRange=500|PROD-DAILY>`
-    )
-    .join('\n');
+      .map(
+        (s) =>
+          `• *${s}* → ${closePrice}` +
+          ` <http://localhost:4200/price-log/${s}?daysRange=5|5m> | <http://localhost:4200/price-log/${s}?daysRange=15|15m> | <http://localhost:4200/price-log/${s}?daysRange=30|30m> | <http://localhost:4200/price-log/${s}?daysRange=60|1hour> | <http://localhost:4200/price-log/${s}?daysRange=240|4hour> | <http://localhost:4200/price-log/${s}?daysRange=500|daily> ||=|| <https://stockmarkets000.web.app/price-log/${s}?daysRange=500|PROD-DAILY>`,
+      )
+      .join('\n');
 
-  const payload = {
-    text: formatted,
-  };
+    const payload = {
+      text: formatted,
+    };
     try {
       await axios.post(BASE_URL, payload);
       return { msg: 'post to Slack success' };
@@ -1573,20 +1591,24 @@ export class WebhooksService {
     }
   }
 
-
-  async sendSlackNotificationVN(symbols: string[], other='SLACK_WEBHOOKS_VN50') {
+  async sendSlackNotificationVN(
+    symbols: string[],
+    closePrice,
+    other = 'SLACK_WEBHOOKS_VN50',
+  ) {
     const BASE_URL = this.configService.get<any>(other);
-  
-    const formatted = symbols
-    .map(
-      (s) =>
-        `• ${s} → < <http://localhost:4200/price-log/${s}?daysRange=500|local> | <https://stockmarkets000.web.app/price-log/${s}?daysRange=500|production>`
-    )
-    .join('\n');
 
-  const payload = {
-    text: formatted,
-  };
+    const formatted = symbols
+      .map(
+        (s) =>
+          `• *${s}* → ${closePrice}` +
+          `  < <http://localhost:4200/price-log/${s}?daysRange=500|local> | <https://stockmarkets000.web.app/price-log/${s}?daysRange=500|production>`,
+      )
+      .join('\n');
+
+    const payload = {
+      text: formatted,
+    };
     try {
       await axios.post(BASE_URL, payload);
       return { msg: 'post to Slack success' };

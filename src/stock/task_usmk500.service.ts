@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { StockHelperService } from './stockHelper.service';
 import { LocalPLWR } from './runlocal.service';
 import { WebhooksService } from 'src/webhooks/webhooks.service';
-import { stock_500_symbols } from './dto/chartData';
+import { stock_500_symbols,stock_usall_symbols } from './dto/chartData';
 import { dayab50 } from './dto/chartData';
 import * as Timer from './compareTime';
 import pLimit from 'p-limit';
@@ -45,7 +45,7 @@ export class TasksUSMKService_SP500 {
     this.logger.log(
       `✅ Market open — running ${timeframe} trading logic (${now} ET)`,
     );
-    await this.SendEverydayService();
+    await this.SendEverydayService([B_Channel, HT_Channel]);
     const tickers = intickers;
     await this.processTickers(
       tickers,
@@ -131,7 +131,7 @@ export class TasksUSMKService_SP500 {
   }
     
   // @Cron('*/30 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 30 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
-  @Cron('*/15 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 15 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
+  // @Cron('*/15 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 15 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
   async runAllWatchLists() {
     await Promise.all([
       this.USTIMERUN(
@@ -151,9 +151,10 @@ export class TasksUSMKService_SP500 {
   async runAllWatchLists30() {
     await Promise.all([
       this.USTIMERUN(
-        this.stockHelperService.ListMA50On4hour.length > 0
-          ? this.stockHelperService.ListMA50On4hour
-          : stock_500_symbols,
+        // this.stockHelperService.ListMA50On4hour.length > 0
+        //   ? this.stockHelperService.ListMA50On4hour
+        //   : stock_500_symbols,
+        stock_usall_symbols,
         this.allkeys,
         'US_ALL',
         'USSTOCK_WATCH',
@@ -163,7 +164,7 @@ export class TasksUSMKService_SP500 {
     ]);
   }
 
-  @Cron('10 13-21/4 * * 1-5', { timeZone: 'UTC' }) // Every 4 hours at 10 minutes past the hour between 13:00 and 21:00 UTC (9:10 AM to 5:10 PM ET) on weekdays
+ // @Cron('10 13-21/4 * * 1-5', { timeZone: 'UTC' }) // Every 4 hours at 10 minutes past the hour between 13:00 and 21:00 UTC (9:10 AM to 5:10 PM ET) on weekdays
   async runAllWatchLists4h() {
     await Promise.all([
       this.USTIMERUN(
@@ -179,7 +180,7 @@ export class TasksUSMKService_SP500 {
     ]);
   }
 
-  @Cron('6 9-15 * * 1-5', { timeZone: 'America/New_York' }) // Every day at 9:06 AM, 10:06 AM, ..., 3:06 PM ET on weekdays
+  //@Cron('6 9-15 * * 1-5', { timeZone: 'America/New_York' }) // Every day at 9:06 AM, 10:06 AM, ..., 3:06 PM ET on weekdays
   async runAllWatchLists1h() {
     await Promise.all([
       this.USTIMERUN(
@@ -194,11 +195,10 @@ export class TasksUSMKService_SP500 {
       ),
     ]);
   }
-  async SendEverydayService() {
+  async SendEverydayService(channels = ['US_ALL', 'USSTOCK_WATCH']) {
     const equal = `===========================================`;
-    const Channels = ['US_ALL', 'USSTOCK_WATCH']; // example list
 
-    for (const channel of Channels) {
+    for (const channel of channels) {
       // CLOSE YESTERDAY
       await this.webhooksService.sendDiscordNotification(
         `${equal}==${equal}`,
