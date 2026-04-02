@@ -1258,6 +1258,10 @@ export class WebhooksService {
       );
     // if(!timeframe.includes('m') && BuyOnly_StochRSICrossAB200.PriceCrMA50) {
     if (BuyOnly_StochRSICrossAB200.PriceCrMA50) {
+      await this.sendSlackNotificationVN(
+        [`${ticker}`],lastdata?.close,
+        'SLACK_WEBHOOKS_US50',
+      );
       await this.sendDiscord(
         `SBUY--PriceCrMA50 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-${timeframe}-CrMA50-${lastdata?.close}`,
@@ -1268,6 +1272,10 @@ export class WebhooksService {
       return BuyOnly_StochRSICrossAB200;
     }
     if (BuyOnly_StochRSICrossAB200.PriceCrMA100) {
+      await this.sendSlackNotificationVN(
+        [`${ticker}`],lastdata?.close,
+        'SLACK_WEBHOOKS_US100',
+      );
       await this.sendDiscord(
         `SBUY--PriceCrMA100 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-${timeframe}-CrMA100-${lastdata?.close}`,
