@@ -149,6 +149,15 @@ export class TasksUSMKService_SP500 {
 
   @Cron('*/30 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 30 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
   async runAllWatchLists30() {
+    const today = this.stockHelperService.getDateNDaysAgo(0); // Get today's date
+    await this.webhooksService.sendSlackNotification(
+      `END*${today}START================================`,
+      'SLACK_WEBHOOKS_US50',
+    );
+    await this.webhooksService.sendSlackNotification(
+      `END*${today}START================================`,
+      'SLACK_WEBHOOKS_US100',
+    );
     await Promise.all([
       this.USTIMERUN(
         // this.stockHelperService.ListMA50On4hour.length > 0
@@ -162,6 +171,15 @@ export class TasksUSMKService_SP500 {
         '30min',
       ),
     ]);
+
+    await this.webhooksService.sendSlackNotification(
+      `END*${today}END================================`,
+      'SLACK_WEBHOOKS_US50',
+    );
+    await this.webhooksService.sendSlackNotification(
+      `END*${today}END================================`,
+      'SLACK_WEBHOOKS_US100',
+    );
   }
 
  // @Cron('10 13-21/4 * * 1-5', { timeZone: 'UTC' }) // Every 4 hours at 10 minutes past the hour between 13:00 and 21:00 UTC (9:10 AM to 5:10 PM ET) on weekdays
