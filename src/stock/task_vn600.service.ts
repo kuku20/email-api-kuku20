@@ -56,7 +56,7 @@ export class TasksVNMKService {
             BuyOnly_StochRSICrossAB200?.PriceCrMA50
           ) {
             await this.webhooksService.sendSlackNotificationVN(
-              [`${ticker}.VN`],
+              [`${ticker}.VN`],lastData?.close,
               'SLACK_WEBHOOKS_VN50',
             );
           } else if (
@@ -64,7 +64,7 @@ export class TasksVNMKService {
             BuyOnly_StochRSICrossAB200?.PriceCrMA100
           ) {
             await this.webhooksService.sendSlackNotificationVN(
-              [`${ticker}.VN`],
+              [`${ticker}.VN`],lastData?.close,
               'SLACK_WEBHOOKS_VN100',
             );
           }
