@@ -95,7 +95,7 @@ export class TasksUSMKService_SP500 {
           const secondLastData = data[data.length - 2];
 
           // Process the data
-          await this.webhooksService.BuyOnly_StochRSICrossAB200(
+          const BuyOnly_StochRSICrossAB200 = await this.webhooksService.BuyOnly_StochRSICrossAB200(
             data,
             lastData,
             secondLastData,
@@ -104,6 +104,23 @@ export class TasksUSMKService_SP500 {
             B_Channel,
             HT_Channel,
           );
+          if (
+            BuyOnly_StochRSICrossAB200 &&
+            BuyOnly_StochRSICrossAB200?.PriceCrMA50
+          ) {
+            await this.webhooksService.sendSlackNotificationVN(
+              [`${ticker}`],lastData?.close,
+              'SLACK_WEBHOOKS_US50',
+            );
+          } else if (
+            BuyOnly_StochRSICrossAB200 &&
+            BuyOnly_StochRSICrossAB200?.PriceCrMA100
+          ) {
+            await this.webhooksService.sendSlackNotificationVN(
+              [`${ticker}`],lastData?.close,
+              'SLACK_WEBHOOKS_US100',
+            );
+          }
           this.logger.log(`${ticker} processed successfully.`);
         } catch (error) {
           // Send error notification and log the error
@@ -113,6 +130,7 @@ export class TasksUSMKService_SP500 {
             'Nono',
             'ERORR_CALL',
           );
+          
           this.logger.error(`Error processing ${ticker}: ${error.message}`);
         }
       }),
