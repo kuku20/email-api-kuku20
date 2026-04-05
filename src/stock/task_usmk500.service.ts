@@ -21,7 +21,7 @@ export class TasksUSMKService_SP500 {
   ) {}
   private readonly logger = new Logger(TasksUSMKService_SP500.name);
 
-  async USTIMERUN(
+  async  USTIMERUN(
     intickers: string[],
     api: any,
     B_Channel,
@@ -95,7 +95,7 @@ export class TasksUSMKService_SP500 {
           const secondLastData = data[data.length - 2];
 
           // Process the data
-          const BuyOnly_StochRSICrossAB200 = await this.webhooksService.BuyOnly_StochRSICrossAB200(
+          const signal = await this.webhooksService.BuyOnly_StochRSICrossAB200(
             data,
             lastData,
             secondLastData,
@@ -104,21 +104,22 @@ export class TasksUSMKService_SP500 {
             B_Channel,
             HT_Channel,
           );
-          if (
-            BuyOnly_StochRSICrossAB200 &&
-            BuyOnly_StochRSICrossAB200?.PriceCrMA50
-          ) {
+          
+          if (!signal) return;
+          
+          const webhookMap = [
+            { condition: signal.PriceCrMA50, hook: 'SLACK_WEBHOOKS_US50' },
+            { condition: signal.PriceCrMA100, hook: 'SLACK_WEBHOOKS_US100' },
+            { condition: signal.PriceCrMA200, hook: 'SLACK_WEBHOOKS_US200' },
+          ];
+          
+          const matched = webhookMap.find((w) => w.condition);
+          
+          if (matched) {
             await this.webhooksService.sendSlackNotificationVN(
-              [`${ticker}`],lastData?.close,
-              'SLACK_WEBHOOKS_US50',
-            );
-          } else if (
-            BuyOnly_StochRSICrossAB200 &&
-            BuyOnly_StochRSICrossAB200?.PriceCrMA100
-          ) {
-            await this.webhooksService.sendSlackNotificationVN(
-              [`${ticker}`],lastData?.close,
-              'SLACK_WEBHOOKS_US100',
+              [ticker],
+              lastData?.close,
+              matched.hook,
             );
           }
           this.logger.log(`${ticker} processed successfully.`);
@@ -146,6 +147,8 @@ export class TasksUSMKService_SP500 {
     // console.log(  stock_500_symbols.length)
     this.stockHelperService.ListMA50On4hour = await this.LocalPLWR.getArrSymbolFFire('above-ma50/alldata/4hour') as string[];
     this.stockHelperService.ListMA50On1day = await this.LocalPLWR.getArrSymbolFFire('above-ma50/alldata/1day')as string[];
+    // this.runAllWatchLists30(this.stockHelperService.ListMA50On4hour)
+    // this.runAllWatchLists30(this.stockHelperService.ListMA50On1day)
   }
     
   // @Cron('*/30 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 30 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
@@ -165,39 +168,39 @@ export class TasksUSMKService_SP500 {
     ]);
   }
 
-  @Cron('*/30 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 30 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
-  async runAllWatchLists30() {
-    const today = this.stockHelperService.getDateNDaysAgo(0); // Get today's date
-    await this.webhooksService.sendSlackNotification(
-      `END*${today}START================================`,
-      'SLACK_WEBHOOKS_US50',
-    );
-    await this.webhooksService.sendSlackNotification(
-      `END*${today}START================================`,
-      'SLACK_WEBHOOKS_US100',
-    );
-    await Promise.all([
-      this.USTIMERUN(
-        // this.stockHelperService.ListMA50On4hour.length > 0
-        //   ? this.stockHelperService.ListMA50On4hour
-        //   : stock_500_symbols,
-        stock_usall_symbols,
+  @Cron('5,35 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 30 minutes at 5 and 35 minutes past the hour between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
+  // @Cron('*/30 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 30 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
+  async runAllWatchLists30(symbols: string[] = stock_usall_symbols) {
+    const today = this.stockHelperService.getDateNDaysAgo(0);
+  
+    const webhooks = ['SLACK_WEBHOOKS_US50', 'SLACK_WEBHOOKS_US100','SLACK_WEBHOOKS_US200'];
+  
+    const sendBatchNotification = async (type: 'START' | 'END') => {
+      const message = `${type}*${today}*${type}${'='.repeat(32)}`;
+      await Promise.all(
+        webhooks.map((hook) =>
+          this.webhooksService.sendSlackNotification(message, hook),
+        ),
+      );
+    };
+  
+    try {
+      await sendBatchNotification('START');
+  
+      await this.USTIMERUN(
+        symbols,
         this.allkeys,
         'US_ALL',
         'USSTOCK_WATCH',
-        5,
+        0,
         '30min',
-      ),
-    ]);
-
-    await this.webhooksService.sendSlackNotification(
-      `END*${today}END================================`,
-      'SLACK_WEBHOOKS_US50',
-    );
-    await this.webhooksService.sendSlackNotification(
-      `END*${today}END================================`,
-      'SLACK_WEBHOOKS_US100',
-    );
+      );
+    } catch (error) {
+      console.error('runAllWatchLists30 failed:', error);
+      throw error;
+    } finally {
+      await sendBatchNotification('END');
+    }
   }
 
  // @Cron('10 13-21/4 * * 1-5', { timeZone: 'UTC' }) // Every 4 hours at 10 minutes past the hour between 13:00 and 21:00 UTC (9:10 AM to 5:10 PM ET) on weekdays
