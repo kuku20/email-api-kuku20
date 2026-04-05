@@ -1421,7 +1421,7 @@ export class WebhooksService {
     if (MACDPositive && PriceCrMA50) {
       await this.sendDiscord(
         `SBUY-BuyOnly_MACDPositive -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-        `${ticker}-${timeframe}-CrMA100-${lastData?.close}`,
+        `${ticker}-${timeframe}-CrMA50-${lastData?.close}`,
         lastData,
         timeframe === '1day' ? '200AB_LESS_05' : '200AB_LESS_1',
         data,
@@ -1528,7 +1528,7 @@ export class WebhooksService {
     if (MACDPositive && PriceCrMA50) {
       await this.sendDiscord(
         `SBUY-BuyOnly_MACDPositive-PriceCrMA50 -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-        `${ticker}-${timeframe}-CrMA100-${lastData?.close}`,
+        `${ticker}-${timeframe}-CrMA50-${lastData?.close}`,
         lastData,
         timeframe === '1day' ? B_Channel : HT_Channel,
         data,
