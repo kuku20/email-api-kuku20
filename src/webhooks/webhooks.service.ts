@@ -1455,7 +1455,7 @@ export class WebhooksService {
       this.listsymbolB.push(ticker);
       await this.postdata(`alldata/${timeframe}`, ticker);
       if (timeframe === '1day') {
-        this.stockHelperService.ListMA50On1day.push(ticker);
+        (this.stockHelperService.ListMA50On1day ??= []).push(ticker);
       } else if (timeframe.includes('4h')) {
         this.stockHelperService.ListMA50On4hour.push(ticker);
       }

@@ -165,7 +165,9 @@ export class TasksUS_ALL_MK_MASS_Service {
       '4hour',
     );
 
-    await this.runAllOn1h(this.stockHelperService.ListMA50On1day);
+    await this.runAllOn1h([
+      ...(this.stockHelperService.ListMA50On1day || []),
+    ]);
 
     await this.webhooksService.sendSlackNotification(
       `END*${today}END================================`,
@@ -180,6 +182,19 @@ export class TasksUS_ALL_MK_MASS_Service {
   }
 
   async runAllWatchLists() {
+    const today = this.stockHelperService.getDateNDaysAgo(0);
+  
+    const webhooks = ['SLACK_WEBHOOKS_D_US50', 'SLACK_WEBHOOKS_D_US100','SLACK_WEBHOOKS_D_US200'];
+  
+    const sendBatchNotification = async (type: 'START' | 'END') => {
+      const message = `${type}*${today}*${type}${'='.repeat(32)}`;
+      await Promise.all(
+        webhooks.map((hook) =>
+          this.webhooksService.sendSlackNotification(message, hook),
+        ),
+      );
+    };
+    await sendBatchNotification('START');
     await Promise.all([
       this.USTIMERUN(
         StockSymbols.stock_usall_symbols,
@@ -189,6 +204,7 @@ export class TasksUS_ALL_MK_MASS_Service {
         '1day',
       ),
     ]);
+    await sendBatchNotification('END');
     await this.webhooksService.sendlast('EARLY_AB200', '200AB_LESS_01');
   }
 
