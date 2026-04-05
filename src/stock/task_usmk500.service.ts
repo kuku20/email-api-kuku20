@@ -87,6 +87,7 @@ export class TasksUSMKService_SP500 {
           let data;
           if (apikey === 'all') {
             data = await this.LocalPLWR.TwReveseNOAPI(ticker, timeframe);
+            // data = await this.LocalPLWR.getTickerFullChart_POLYGON2(ticker, timeframe);
           } else {
             data = await this.LocalPLWR.get12for(ticker, timeframe, apikey);
           }
@@ -118,7 +119,7 @@ export class TasksUSMKService_SP500 {
           if (matched) {
             await this.webhooksService.sendSlackNotificationVN(
               [ticker],
-              lastData?.close,
+              lastData,
               matched.hook,
             );
           }
@@ -147,6 +148,7 @@ export class TasksUSMKService_SP500 {
     // console.log(  stock_500_symbols.length)
     this.stockHelperService.ListMA50On4hour = await this.LocalPLWR.getArrSymbolFFire('above-ma50/alldata/4hour') as string[];
     this.stockHelperService.ListMA50On1day = await this.LocalPLWR.getArrSymbolFFire('above-ma50/alldata/1day')as string[];
+    // this.runAllWatchLists30()
     // this.runAllWatchLists30(this.stockHelperService.ListMA50On4hour)
     // this.runAllWatchLists30(this.stockHelperService.ListMA50On1day)
   }

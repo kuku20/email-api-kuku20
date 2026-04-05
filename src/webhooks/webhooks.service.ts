@@ -1256,7 +1256,7 @@ export class WebhooksService {
         lastdata,
         Secondlastdata,
       );
-      const MACDPositive = lastdata.divergence > 0;
+    const MACDPositive = lastdata.divergence > 0;
     // if(!timeframe.includes('m') && BuyOnly_StochRSICrossAB200.PriceCrMA50) {
     if (BuyOnly_StochRSICrossAB200.PriceCrMA50 && MACDPositive) {
       await this.sendDiscord(
@@ -1283,7 +1283,7 @@ export class WebhooksService {
       //   `SBUY-PriceCrMA200 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
       //   `${ticker}-ON-${timeframe}`,
       //   lastdata,
-      //   HT_Channel,
+      //   'US_30M_HT',
       //   data,
       // );
       return BuyOnly_StochRSICrossAB200;
@@ -1438,7 +1438,7 @@ export class WebhooksService {
         this.listsymbolBEarly.push(ticker);
         await this.sendSlackNotificationURL(
           [ticker],
-          lastData?.close,
+          lastData,
           timeframe,
         );
         await this.postdata(`early/${timeframe}`, ticker);
@@ -1565,7 +1565,7 @@ export class WebhooksService {
 
   async sendSlackNotificationURL(
     symbols: string[],
-    closePrice,
+    lastData: any,
     other = '1day',
   ) {
     const BASE_URL =
@@ -1576,7 +1576,7 @@ export class WebhooksService {
     const formatted = symbols
       .map(
         (s) =>
-          `• *${s}* → ${closePrice}` +
+          `• *${s}* → ${lastData.close}` +
           ` <http://localhost:4200/price-log/${s}?daysRange=5|5m> | <http://localhost:4200/price-log/${s}?daysRange=15|15m> | <http://localhost:4200/price-log/${s}?daysRange=30|30m> | <http://localhost:4200/price-log/${s}?daysRange=60|1hour> | <http://localhost:4200/price-log/${s}?daysRange=240|4hour> | <http://localhost:4200/price-log/${s}?daysRange=500|daily> ||=|| <https://stockmarkets000.web.app/price-log/${s}?daysRange=500|PROD-DAILY>`,
       )
       .join('\n');
@@ -1594,7 +1594,7 @@ export class WebhooksService {
 
   async sendSlackNotificationVN(
     symbols: string[],
-    closePrice,
+    lastData: any,
     other = 'SLACK_WEBHOOKS_VN50',
   ) {
     const BASE_URL = this.configService.get<any>(other);
@@ -1602,7 +1602,7 @@ export class WebhooksService {
     const formatted = symbols
       .map(
         (s) =>
-          `• *${s}* → ${closePrice}` +
+          `• *${s}* → ${lastData.close}(${lastData.MA200.toFixed(2)})| ${lastData.date} |` +
           `  < <http://localhost:4200/price-log/${s}?daysRange=500|local> | <https://stockmarkets000.web.app/price-log/${s}?daysRange=500|production>`,
       )
       .join('\n');

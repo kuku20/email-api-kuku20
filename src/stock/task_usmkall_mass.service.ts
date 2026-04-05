@@ -25,7 +25,7 @@ export class TasksUS_ALL_MK_MASS_Service {
     // This runs ONCE when the app starts
     // await this.runfullonms();
   }
-  
+
   async USTIMERUN(
     intickers: string[],
     B_Channel,
@@ -75,6 +75,42 @@ export class TasksUS_ALL_MK_MASS_Service {
             B_Channel,
             HT_Channel,
           );
+          if (timeframe === '1day') {
+            const lastData = data[data.length - 1];
+            const secondLastData = data[data.length - 2];
+            const signal =
+              await this.stockHelperService.BuyOnly_StochRSICrossAB200(
+                lastData,
+                secondLastData,
+              );
+            const MACDPositive = lastData.divergence > 0;
+            if (!signal) return;
+
+            const webhookMap = [
+              {
+                condition: signal.PriceCrMA50 && MACDPositive,
+                hook: 'SLACK_WEBHOOKS_D_US50',
+              },
+              {
+                condition: signal.PriceCrMA100 && MACDPositive,
+                hook: 'SLACK_WEBHOOKS_D_US100',
+              },
+              {
+                condition: signal.PriceCrMA200 && MACDPositive,
+                hook: 'SLACK_WEBHOOKS_D_US200',
+              },
+            ];
+
+            const matched = webhookMap.find((w) => w.condition);
+
+            if (matched) {
+              await this.webhooksService.sendSlackNotificationVN(
+                [ticker],
+                lastData,
+                matched.hook,
+              );
+            }
+          }
           this.logger.log(`${ticker} processed successfully.`);
         } catch (error) {
           // Send error notification and log the error
