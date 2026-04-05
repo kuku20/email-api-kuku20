@@ -24,7 +24,7 @@ export class SendEverydayService {
     const equal = `===========================================`;
     const Channels = [
       'US_ALL',
-      'ERORR_CALL',
+      'ERORR_CALL','CR_5M_HT','CR_30M_BUY','CR_1H_BUY','CR_1H_HT','CR_4H_BUY','CR_4H_HT',
       'CRON_CHECK',
       '15MIN_BUY_FX',
       '15MIN_SELL_FX',
