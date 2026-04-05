@@ -93,7 +93,7 @@ export class TasksUS_ALL_MK_MASS_Service {
     await Promise.all(tickerPromises);
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, {
+  @Cron('0 0 * * 1-5', {
     timeZone: 'America/Los_Angeles',
   })
   async runfullonms() {
