@@ -41,31 +41,33 @@ export class TasksVNMKService {
           const secondLastData = data[data.length - 2];
 
           // Process the data
-          const BuyOnly_StochRSICrossAB200 =
-            await this.webhooksService.BuyOnly_StochRSICrossAB200(
-              data,
+          const symbol = `${ticker}.VN`;
+
+          const signal = await this.webhooksService.BuyOnly_StochRSICrossAB200(
+            data,
+            lastData,
+            secondLastData,
+            symbol,
+            '1day',
+            B_Channel,
+            HT_Channel,
+          );
+
+          if (!signal) return;
+
+          const webhookMap = [
+            { condition: signal.PriceCrMA50, hook: 'SLACK_WEBHOOKS_VN50' },
+            { condition: signal.PriceCrMA100, hook: 'SLACK_WEBHOOKS_VN100' },
+            { condition: signal.PriceCrMA200, hook: 'SLACK_WEBHOOKS_VN200' },
+          ];
+
+          const matched = webhookMap.find(({ condition }) => condition);
+
+          if (matched) {
+            await this.webhooksService.sendSlackNotificationVN(
+              [symbol],
               lastData,
-              secondLastData,
-              `${ticker}.VN`,
-              '1day',
-              B_Channel,
-              HT_Channel,
-            );
-          if (
-            BuyOnly_StochRSICrossAB200 &&
-            BuyOnly_StochRSICrossAB200?.PriceCrMA50
-          ) {
-            await this.webhooksService.sendSlackNotificationVN(
-              [`${ticker}.VN`],lastData?.close,
-              'SLACK_WEBHOOKS_VN50',
-            );
-          } else if (
-            BuyOnly_StochRSICrossAB200 &&
-            BuyOnly_StochRSICrossAB200?.PriceCrMA100
-          ) {
-            await this.webhooksService.sendSlackNotificationVN(
-              [`${ticker}.VN`],lastData?.close,
-              'SLACK_WEBHOOKS_VN100',
+              matched.hook,
             );
           }
           this.logger.log(`${ticker} processed successfully.`);
@@ -89,25 +91,31 @@ export class TasksVNMKService {
 
   @Cron('0 16 * * 1-5', { timeZone: 'America/New_York' })
   async runAllWatchLists() {
-    const today = this.stockHelperService.getDateNDaysAgo(0); // Get today's date
-    await this.webhooksService.sendSlackNotification(
-      `START*${today}START================================`,
-      'SLACK_WEBHOOKS_VN50',
-    );
-    await this.webhooksService.sendSlackNotification(
-      `START*${today}START================================`,
-      'SLACK_WEBHOOKS_VN100',
-    );
-    await Promise.all([
-      this.processTickers(VN_Stock_symbols, 'BUY_EARLY_DAY', 'SELL_EARLY_DAY'),
-    ]);
-    await this.webhooksService.sendSlackNotification(
-      `END*${today}END================================`,
-      'SLACK_WEBHOOKS_VN50',
-    );
-    await this.webhooksService.sendSlackNotification(
-      `END*${today}END================================`,
-      'SLACK_WEBHOOKS_VN100',
-    );
+    const today = this.stockHelperService.getDateNDaysAgo(0);
+
+    const webhooks = ['SLACK_WEBHOOKS_VN50', 'SLACK_WEBHOOKS_VN100','SLACK_WEBHOOKS_VN200']
+    const sendBatchNotification = async (type: 'START' | 'END') => {
+      const message = `${type}*${today}${type}${'='.repeat(32)}`;
+      await Promise.all(
+        webhooks.map((hook) =>
+          this.webhooksService.sendSlackNotification(message, hook),
+        ),
+      );
+    };
+    
+    try {
+      await sendBatchNotification('START');
+    
+      await this.processTickers(
+        VN_Stock_symbols,
+        'BUY_EARLY_DAY',
+        'SELL_EARLY_DAY',
+      );
+    } catch (error) {
+      console.error('VN processTickers failed:', error);
+      throw error;
+    } finally {
+      await sendBatchNotification('END');
+    }
   }
 }
