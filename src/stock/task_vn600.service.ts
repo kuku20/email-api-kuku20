@@ -56,9 +56,9 @@ export class TasksVNMKService {
           if (!signal) return;
 
           const webhookMap = [
-            { condition: signal.PriceCrMA50, hook: 'SLACK_WEBHOOKS_VN50' },
-            { condition: signal.PriceCrMA100, hook: 'SLACK_WEBHOOKS_VN100' },
-            { condition: signal.PriceCrMA200, hook: 'SLACK_WEBHOOKS_VN200' },
+            { condition: signal.PriceCrMA50 && signal.ContinueUp, hook: 'SLACK_WEBHOOKS_VN50' },
+            { condition: signal.PriceCrMA100 && signal.ContinueUp, hook: 'SLACK_WEBHOOKS_VN100' },
+            { condition: signal.PriceCrMA200 && signal.ContinueUp, hook: 'SLACK_WEBHOOKS_VN200' },
           ];
 
           const matched = webhookMap.find(({ condition }) => condition);
