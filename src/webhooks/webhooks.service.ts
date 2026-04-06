@@ -1264,7 +1264,7 @@ export class WebhooksService {
       );
     const MACDPositive = lastdata.divergence > 0;
     // if(!timeframe.includes('m') && BuyOnly_StochRSICrossAB200.PriceCrMA50) {
-    if (BuyOnly_StochRSICrossAB200.PriceCrMA50 && MACDPositive && BuyOnly_StochRSICrossAB200.CrUpAll) {
+    if (BuyOnly_StochRSICrossAB200.PriceCrMA50 && MACDPositive && BuyOnly_StochRSICrossAB200.ContinueUp) {
       await this.sendDiscord(
         `SBUY--PriceCrMA50 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-${timeframe}-CrMA50-${lastdata?.close}`,
@@ -1274,7 +1274,7 @@ export class WebhooksService {
       );
       return BuyOnly_StochRSICrossAB200;
     }
-    if (BuyOnly_StochRSICrossAB200.PriceCrMA100 && MACDPositive && BuyOnly_StochRSICrossAB200.CrUpAll) {
+    if (BuyOnly_StochRSICrossAB200.PriceCrMA100 && MACDPositive && BuyOnly_StochRSICrossAB200.ContinueUp) {
       await this.sendDiscord(
         `SBUY--PriceCrMA100 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-${timeframe}-CrMA100-${lastdata?.close}`,
@@ -1284,7 +1284,7 @@ export class WebhooksService {
       );
       return BuyOnly_StochRSICrossAB200;
     }
-    if (BuyOnly_StochRSICrossAB200.PriceCrMA200 && MACDPositive && BuyOnly_StochRSICrossAB200.CrUpAll) {
+    if (BuyOnly_StochRSICrossAB200.PriceCrMA200 && MACDPositive && BuyOnly_StochRSICrossAB200.ContinueUp) {
       await this.sendDiscord(
         `SBUY-PriceCrMA200 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
