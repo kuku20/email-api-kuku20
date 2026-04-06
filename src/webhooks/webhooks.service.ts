@@ -625,6 +625,12 @@ export class WebhooksService {
       return true;
     } else {
       console.log(ticker, `❌ Outside  ±${time} minutes of EST time: `, date);
+      await this.sendDiscord(
+        `ERROR \n url: http://localhost:4200/price-log/${ticker}?daysRange=30`,
+        `RSIENDBOT ${ticker} at ${date}`,
+        'Nono',
+        'ERORR_CALL',
+      );
       return false;
     }
   }
@@ -1258,7 +1264,7 @@ export class WebhooksService {
       );
     const MACDPositive = lastdata.divergence > 0;
     // if(!timeframe.includes('m') && BuyOnly_StochRSICrossAB200.PriceCrMA50) {
-    if (BuyOnly_StochRSICrossAB200.PriceCrMA50 && MACDPositive) {
+    if (BuyOnly_StochRSICrossAB200.PriceCrMA50 && MACDPositive && BuyOnly_StochRSICrossAB200.CrUpAll) {
       await this.sendDiscord(
         `SBUY--PriceCrMA50 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-${timeframe}-CrMA50-${lastdata?.close}`,
@@ -1268,7 +1274,7 @@ export class WebhooksService {
       );
       return BuyOnly_StochRSICrossAB200;
     }
-    if (BuyOnly_StochRSICrossAB200.PriceCrMA100 && MACDPositive) {
+    if (BuyOnly_StochRSICrossAB200.PriceCrMA100 && MACDPositive && BuyOnly_StochRSICrossAB200.CrUpAll) {
       await this.sendDiscord(
         `SBUY--PriceCrMA100 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-${timeframe}-CrMA100-${lastdata?.close}`,
@@ -1278,14 +1284,14 @@ export class WebhooksService {
       );
       return BuyOnly_StochRSICrossAB200;
     }
-    if (BuyOnly_StochRSICrossAB200.PriceCrMA200 && MACDPositive) {
-      // await this.sendDiscord(
-      //   `SBUY-PriceCrMA200 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-      //   `${ticker}-ON-${timeframe}`,
-      //   lastdata,
-      //   'US_30M_HT',
-      //   data,
-      // );
+    if (BuyOnly_StochRSICrossAB200.PriceCrMA200 && MACDPositive && BuyOnly_StochRSICrossAB200.CrUpAll) {
+      await this.sendDiscord(
+        `SBUY-PriceCrMA200 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        'US_30M_HT',
+        data,
+      );
       return BuyOnly_StochRSICrossAB200;
     }
 
@@ -1595,7 +1601,7 @@ export class WebhooksService {
   async sendSlackNotificationVN(
     symbols: string[],
     lastData: any,
-    other = 'SLACK_WEBHOOKS_VN50',
+    other = 'SLACK_WEBHOOKS_VN50',range=500
   ) {
     const BASE_URL = this.configService.get<any>(other);
 
@@ -1603,7 +1609,7 @@ export class WebhooksService {
       .map(
         (s) =>
           `• *${s}* → ${lastData.close}(${lastData.MA200.toFixed(2)})| ${lastData.date} |` +
-          `  < <http://localhost:4200/price-log/${s}?daysRange=500|local> | <https://stockmarkets000.web.app/price-log/${s}?daysRange=500|production>`,
+          `  < <http://localhost:4200/price-log/${s}?daysRange=${range}|local> | <https://stockmarkets000.web.app/price-log/${s}?daysRange==${range}|production>`,
       )
       .join('\n');
 

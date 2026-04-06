@@ -20,7 +20,7 @@ export class TasksUSMKService_SP500 {
     private readonly LocalPLWR: LocalPLWR,
   ) {}
   private readonly logger = new Logger(TasksUSMKService_SP500.name);
-
+  endpointFolder = 'stock-price-check';
   async  USTIMERUN(
     intickers: string[],
     api: any,
@@ -45,7 +45,7 @@ export class TasksUSMKService_SP500 {
     this.logger.log(
       `✅ Market open — running ${timeframe} trading logic (${now} ET)`,
     );
-    await this.SendEverydayService([B_Channel, HT_Channel]);
+
     const tickers = intickers;
     await this.processTickers(
       tickers,
@@ -55,6 +55,7 @@ export class TasksUSMKService_SP500 {
       HT_Channel,
       delay,
     );
+    await this.SendEverydayService([B_Channel, HT_Channel,'US_30M_HT']);
   }
 
   private async processTickers(
@@ -65,7 +66,7 @@ export class TasksUSMKService_SP500 {
     HT_Channel,
     delay = 2,
   ) {
-    const limit = pLimit(8); // Limit the concurrency to 8 at a time
+    const limit = pLimit(2); // Limit the concurrency to 8 at a time
 
     const date = new Date();
 
@@ -94,7 +95,14 @@ export class TasksUSMKService_SP500 {
 
           const lastData = data[data.length - 1];
           const secondLastData = data[data.length - 2];
-
+          const isWithinRange = this.webhooksService.checktimeMinutesEST(
+            ticker,
+            lastData?.date,
+            20,
+          );
+          if (!isWithinRange) {
+            return
+          }
           // Process the data
           const signal = await this.webhooksService.BuyOnly_StochRSICrossAB200(
             data,
@@ -109,25 +117,32 @@ export class TasksUSMKService_SP500 {
           if (!signal) return;
           
           const webhookMap = [
-            { condition: signal.PriceCrMA50, hook: 'SLACK_WEBHOOKS_US50' },
-            { condition: signal.PriceCrMA100, hook: 'SLACK_WEBHOOKS_US100' },
-            { condition: signal.PriceCrMA200, hook: 'SLACK_WEBHOOKS_US200' },
+            { condition: signal.PriceCrMA50 && signal.ContinueUp, hook: 'SLACK_WEBHOOKS_US50' },
+            { condition: signal.PriceCrMA100 && signal.ContinueUp, hook: 'SLACK_WEBHOOKS_US100' },
+            { condition: signal.PriceCrMA200 && signal.ContinueUp, hook: 'SLACK_WEBHOOKS_US200' },
           ];
           
           const matched = webhookMap.find((w) => w.condition);
-          
+          const dateOut = lastData.date
+          const timeput =dateOut.replace(/[: ]/g, '-');
           if (matched) {
             await this.webhooksService.sendSlackNotificationVN(
               [ticker],
               lastData,
-              matched.hook,
+              matched.hook,30
+            );
+
+            const data1 = await this.webhooksService.FireBaseApi(
+              'put',
+              `${this.endpointFolder}/${matched.hook}/${timeput}/${timeframe}/${ticker}.json`,
+              lastData.close,
             );
           }
           this.logger.log(`${ticker} processed successfully.`);
         } catch (error) {
           // Send error notification and log the error
           await this.webhooksService.sendDiscord(
-            `ERROR ON API AT: ${timeframe} On ${date}`,
+            `ERROR ${error.message} \n url: http://localhost:4200/price-log/${ticker}?daysRange=500`,
             `RSIENDBOT ${ticker} at ${timeframe}`,
             'Nono',
             'ERORR_CALL',

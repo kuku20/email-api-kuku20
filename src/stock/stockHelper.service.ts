@@ -652,7 +652,7 @@ SELL ALL
     last: StockData,
     prev: StockData,
   ): Promise<{
-    CrUpAll: boolean;
+    CrUpAll: boolean;ContinueUp:boolean;
     CrUpMacdBl0: boolean;
     PriceCrMA200: boolean;
     PriceCrMA100: boolean;
@@ -661,7 +661,7 @@ SELL ALL
   }> {
     if (!last || !prev)
       return {
-        CrUpAll: false,
+        CrUpAll: false,ContinueUp: false,
         CrUpMacdBl0: false,
         PriceCrMA200: false,
         PriceCrMA100: false,
@@ -686,6 +686,7 @@ SELL ALL
     const stockRSILast = last.StochRSI_K - last.StochRSI_D;
     const stockRSIPrev = prev.StochRSI_K - prev.StochRSI_D;
     const CrUpAll = stockRSILast >= 0 && stockRSIPrev <= 0;
+    const ContinueUp = stockRSILast >= 0 && stockRSIPrev >= 0;
     const CrUpMacdBl0 = CrUpAll && MACDbelow0;
     const PriceCrMA200 = await this.priceAbMA200BUY(last, prev);
     // const PriceCrMA100 = await this.priceAbMABUY(last, prev, 'MA100') && lastBl200;
@@ -694,7 +695,7 @@ SELL ALL
     const PriceCrMA50 = await this.priceAbMABUY(last, prev, 'MA50')
     const macdCrAB = await this.macdCrossAB(last, prev);
     return {
-      CrUpAll,
+      CrUpAll,ContinueUp,
       CrUpMacdBl0,
       PriceCrMA200,
       PriceCrMA100,
