@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { AttachmentBuilder, EmbedBuilder, WebhookClient } from 'discord.js';
 import pLimit from 'p-limit';
 import { StockHelperService } from 'src/stock/stockHelper.service';
-
+import { stock_500_symbols } from 'src/stock/dto/chartData';
 import * as fs from 'fs';
 import { channel } from 'diagnostics_channel';
 @Injectable()
@@ -625,12 +625,12 @@ export class WebhooksService {
       return true;
     } else {
       console.log(ticker, `❌ Outside  ±${time} minutes of EST time: `, date);
-      await this.sendDiscord(
-        `ERROR \n url: http://localhost:4200/price-log/${ticker}?daysRange=30`,
-        `RSIENDBOT ${ticker} at ${date}`,
-        'Nono',
-        'ERORR_CALL',
-      );
+      // await this.sendDiscord(
+      //   `ERROR \n url: http://localhost:4200/price-log/${ticker}?daysRange=30`,
+      //   `RSIENDBOT ${ticker} at ${date}`,
+      //   'Nono',
+      //   'ERORR_CALL',
+      // );
       return false;
     }
   }
@@ -1266,7 +1266,7 @@ export class WebhooksService {
     // if(!timeframe.includes('m') && BuyOnly_StochRSICrossAB200.PriceCrMA50) {
     if (BuyOnly_StochRSICrossAB200.PriceCrMA50 && MACDPositive && BuyOnly_StochRSICrossAB200.ContinueUp) {
       await this.sendDiscord(
-        `SBUY--PriceCrMA50 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `SBUY--PriceCrMA50-${stock_500_symbols.includes(ticker)?'(SP500)':''}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-${timeframe}-CrMA50-${lastdata?.close}`,
         lastdata,
         HT_Channel,
@@ -1276,7 +1276,7 @@ export class WebhooksService {
     }
     if (BuyOnly_StochRSICrossAB200.PriceCrMA100 && MACDPositive && BuyOnly_StochRSICrossAB200.ContinueUp) {
       await this.sendDiscord(
-        `SBUY--PriceCrMA100 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `SBUY--PriceCrMA100-${stock_500_symbols.includes(ticker)?'(SP500)':''}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-${timeframe}-CrMA100-${lastdata?.close}`,
         lastdata,
         B_Channel,
@@ -1286,7 +1286,7 @@ export class WebhooksService {
     }
     if (BuyOnly_StochRSICrossAB200.PriceCrMA200 && MACDPositive && BuyOnly_StochRSICrossAB200.ContinueUp) {
       await this.sendDiscord(
-        `SBUY-PriceCrMA200 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `SBUY-PriceCrMA200-${stock_500_symbols.includes(ticker)?'(SP500)':''}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
         'US_30M_HT',
@@ -1582,7 +1582,7 @@ export class WebhooksService {
     const formatted = symbols
       .map(
         (s) =>
-          `• *${s}* → ${lastData.close}` +
+          `• ${stock_500_symbols.includes(s)?'(SP500)':''}*${s}* → ${lastData.close}` +
           ` <http://localhost:4200/price-log/${s}?daysRange=5|5m> | <http://localhost:4200/price-log/${s}?daysRange=15|15m> | <http://localhost:4200/price-log/${s}?daysRange=30|30m> | <http://localhost:4200/price-log/${s}?daysRange=60|1hour> | <http://localhost:4200/price-log/${s}?daysRange=240|4hour> | <http://localhost:4200/price-log/${s}?daysRange=500|daily> ||=|| <https://stockmarkets000.web.app/price-log/${s}?daysRange=500|PROD-DAILY>`,
       )
       .join('\n');
@@ -1608,7 +1608,7 @@ export class WebhooksService {
     const formatted = symbols
       .map(
         (s) =>
-          `• *${s}* → ${lastData.close}(${lastData.MA200.toFixed(2)})| ${lastData.date} |` +
+          `•${stock_500_symbols.includes(s)?'(SP500)':''} *${s}* → ${lastData.close}(${lastData.MA200.toFixed(2)})| ${lastData.date} |` +
           `  < <http://localhost:4200/price-log/${s}?daysRange=${range}|local> | <https://stockmarkets000.web.app/price-log/${s}?daysRange==${range}|production>`,
       )
       .join('\n');
