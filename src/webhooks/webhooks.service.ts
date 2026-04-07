@@ -1266,7 +1266,7 @@ export class WebhooksService {
     // if(!timeframe.includes('m') && BuyOnly_StochRSICrossAB200.PriceCrMA50) {
     if (BuyOnly_StochRSICrossAB200.PriceCrMA50 && MACDPositive && BuyOnly_StochRSICrossAB200.ContinueUp) {
       await this.sendDiscord(
-        `${stock_500_symbols.includes(ticker)?'(SP500)':''}-SBUY--PriceCrMA50-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${stock_500_symbols.includes(ticker)?'(SP500)-':''}SBUY--PriceCrMA50-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-${timeframe}-CrMA50-${lastdata?.close}`,
         lastdata,
         HT_Channel,
@@ -1276,7 +1276,7 @@ export class WebhooksService {
     }
     if (BuyOnly_StochRSICrossAB200.PriceCrMA100 && MACDPositive && BuyOnly_StochRSICrossAB200.ContinueUp) {
       await this.sendDiscord(
-        `${stock_500_symbols.includes(ticker)?'(SP500)':''}-(SBUY--PriceCrMA100-MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${stock_500_symbols.includes(ticker)?'(SP500)-':''}(SBUY--PriceCrMA100-MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-${timeframe}-CrMA100-${lastdata?.close}`,
         lastdata,
         B_Channel,
@@ -1286,7 +1286,7 @@ export class WebhooksService {
     }
     if (BuyOnly_StochRSICrossAB200.PriceCrMA200 && MACDPositive && BuyOnly_StochRSICrossAB200.ContinueUp) {
       await this.sendDiscord(
-        `${stock_500_symbols.includes(ticker)?'(SP500)':''}-SBUY-PriceCrMA200-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${stock_500_symbols.includes(ticker)?'(SP500)-':''}SBUY-PriceCrMA200-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
         'US_30M_HT',
