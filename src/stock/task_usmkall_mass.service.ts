@@ -5,7 +5,7 @@ import { StockHelperService } from './stockHelper.service';
 import { LocalPLWR } from './runlocal.service';
 import { WebhooksService } from 'src/webhooks/webhooks.service';
 import * as StockSymbols from './dto/chartData';
-import { stock_usall_symbols } from './dto/chartData';
+import { stock_usall_symbols, watchlist } from './dto/chartData';
 import { stock_500_symbols } from './dto/chartData';
 import { dayab50 } from './dto/chartData';
 import pLimit from 'p-limit';
@@ -107,7 +107,7 @@ export class TasksUS_ALL_MK_MASS_Service {
               await this.webhooksService.sendSlackNotificationVN(
                 [ticker],
                 lastData,
-                matched.hook,
+              watchlist.includes(ticker)?'SLACK_WEBHOOKS_WATCHLIST':matched.hook,
               );
             }
           }
@@ -140,7 +140,7 @@ export class TasksUS_ALL_MK_MASS_Service {
     await this.SendEverydayService('EARLY_AB200', '200AB_LESS_01', '1day');
     await this.send1chanel('200AB_LESS_05', '1day');
     await this.webhooksService.sendSlackNotification(
-      `START*${today}START================================`,
+      `START+${today}+START================================`,
       '1day',
     );
 
@@ -149,7 +149,7 @@ export class TasksUS_ALL_MK_MASS_Service {
     await this.SendEverydayService('EARLY_AB200', '200AB_LESS_01', '1day');
     await this.send1chanel('200AB_LESS_05', '1day');
     await this.webhooksService.sendSlackNotification(
-      `END*${today}END================================`,
+      `END+${today}+END================================`,
       '1day',
     );
 
@@ -161,7 +161,7 @@ export class TasksUS_ALL_MK_MASS_Service {
     );
     await this.send1chanel('200AB_LESS_1', '4hour');
     await this.webhooksService.sendSlackNotification(
-      `START*${today}START================================`,
+      `START+${today}+START================================`,
       '4hour',
     );
 
@@ -170,7 +170,7 @@ export class TasksUS_ALL_MK_MASS_Service {
     ]);
 
     await this.webhooksService.sendSlackNotification(
-      `END*${today}END================================`,
+      `END+${today}+END================================`,
       '4hour',
     );
     await this.SendEverydayService(
@@ -184,10 +184,10 @@ export class TasksUS_ALL_MK_MASS_Service {
   async runAllWatchLists() {
     const today = this.stockHelperService.getDateNDaysAgo(0);
   
-    const webhooks = ['SLACK_WEBHOOKS_D_US50', 'SLACK_WEBHOOKS_D_US100','SLACK_WEBHOOKS_D_US200'];
+    const webhooks = ['SLACK_WEBHOOKS_D_US50', 'SLACK_WEBHOOKS_D_US100','SLACK_WEBHOOKS_D_US200','SLACK_WEBHOOKS_WATCHLIST'];
   
     const sendBatchNotification = async (type: 'START' | 'END') => {
-      const message = `${type}*${today}*${type}${'='.repeat(32)}`;
+      const message = `${type}+daily+${today}+${type}${'='.repeat(32)}`;
       await Promise.all(
         webhooks.map((hook) =>
           this.webhooksService.sendSlackNotification(message, hook),
