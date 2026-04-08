@@ -360,7 +360,7 @@ export class WebhooksService {
       await this.FireBaseApi('put', `stock-data/${path}.json`, slicedData);
       return null;
     }
-    
+
     try {
       const browser = await puppeteer.launch({
         headless: true,
@@ -1264,9 +1264,15 @@ export class WebhooksService {
       );
     const MACDPositive = lastdata.divergence > 0;
     // if(!timeframe.includes('m') && BuyOnly_StochRSICrossAB200.PriceCrMA50) {
-    if (BuyOnly_StochRSICrossAB200.PriceCrMA50 && MACDPositive && BuyOnly_StochRSICrossAB200.ContinueUp) {
+    if (
+      BuyOnly_StochRSICrossAB200.PriceCrMA50 &&
+      MACDPositive &&
+      BuyOnly_StochRSICrossAB200.ContinueUp
+    ) {
       await this.sendDiscord(
-        `${stock_500_symbols.includes(ticker)?'(SP500)-':''}SBUY--PriceCrMA50-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${
+          stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
+        }SBUY--PriceCrMA50-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-${timeframe}-CrMA50-${lastdata?.close}`,
         lastdata,
         HT_Channel,
@@ -1274,9 +1280,15 @@ export class WebhooksService {
       );
       return BuyOnly_StochRSICrossAB200;
     }
-    if (BuyOnly_StochRSICrossAB200.PriceCrMA100 && MACDPositive && BuyOnly_StochRSICrossAB200.ContinueUp) {
+    if (
+      BuyOnly_StochRSICrossAB200.PriceCrMA100 &&
+      MACDPositive &&
+      BuyOnly_StochRSICrossAB200.ContinueUp
+    ) {
       await this.sendDiscord(
-        `${stock_500_symbols.includes(ticker)?'(SP500)-':''}(SBUY--PriceCrMA100-MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${
+          stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
+        }(SBUY--PriceCrMA100-MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-${timeframe}-CrMA100-${lastdata?.close}`,
         lastdata,
         B_Channel,
@@ -1284,9 +1296,15 @@ export class WebhooksService {
       );
       return BuyOnly_StochRSICrossAB200;
     }
-    if (BuyOnly_StochRSICrossAB200.PriceCrMA200 && MACDPositive && BuyOnly_StochRSICrossAB200.ContinueUp) {
+    if (
+      BuyOnly_StochRSICrossAB200.PriceCrMA200 &&
+      MACDPositive &&
+      BuyOnly_StochRSICrossAB200.ContinueUp
+    ) {
       await this.sendDiscord(
-        `${stock_500_symbols.includes(ticker)?'(SP500)-':''}SBUY-PriceCrMA200-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${
+          stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
+        }SBUY-PriceCrMA200-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
         'US_30M_HT',
@@ -1442,11 +1460,7 @@ export class WebhooksService {
     if (aboveMA50Count >= 3 && MACDPositive) {
       if (belowMA50Fifth) {
         this.listsymbolBEarly.push(ticker);
-        await this.sendSlackNotificationURL(
-          [ticker],
-          lastData,
-          timeframe,
-        );
+        await this.sendSlackNotificationURL([ticker], lastData, timeframe);
         await this.postdata(`early/${timeframe}`, ticker);
         if (this.listsymbolBEarly.length > this.maxListLength) {
           await this.sendDiscordNotification(
@@ -1582,7 +1596,9 @@ export class WebhooksService {
     const formatted = symbols
       .map(
         (s) =>
-          `• ${stock_500_symbols.includes(s)?'(SP500)':''}*${s}* → ${lastData.close}` +
+          `• ${stock_500_symbols.includes(s) ? '(SP500)' : ''}*${s}* → ${
+            lastData.close
+          }` +
           ` <http://localhost:4200/price-log/${s}?daysRange=5|5m> | <http://localhost:4200/price-log/${s}?daysRange=15|15m> | <http://localhost:4200/price-log/${s}?daysRange=30|30m> | <http://localhost:4200/price-log/${s}?daysRange=60|1hour> | <http://localhost:4200/price-log/${s}?daysRange=240|4hour> | <http://localhost:4200/price-log/${s}?daysRange=500|daily> ||=|| <https://stockmarkets000.web.app/price-log/${s}?daysRange=500|PROD-DAILY>`,
       )
       .join('\n');
@@ -1601,15 +1617,18 @@ export class WebhooksService {
   async sendSlackNotificationVN(
     symbols: string[],
     lastData: any,
-    other = 'SLACK_WEBHOOKS_VN50',range=500
+    other = 'SLACK_WEBHOOKS_VN50',
+    range: 600 | 550 | 500 | 480 | 240 | 120 | 60 | 45 | 30 | 15 | 5 | 1 = 500,
   ) {
     const BASE_URL = this.configService.get<any>(other);
 
     const formatted = symbols
       .map(
         (s) =>
-          `•${stock_500_symbols.includes(s)?'(SP500)':''} *${s}* → ${lastData.close}(${lastData.MA200.toFixed(2)})| ${lastData.date} |` +
-          `  < <http://localhost:4200/price-log/${s}?daysRange=${range}|local> | <https://stockmarkets000.web.app/price-log/${s}?daysRange==${range}|production>`,
+          `•${stock_500_symbols.includes(s) ? '(SP500)' : ''} *${s}* → ${
+            lastData.close
+          }(${lastData.MA200.toFixed(2)})| ${lastData.date} |` +
+          `  < <http://localhost:4200/price-log/${s}?daysRange=${range}|local> | <https://stockmarkets000.web.app/price-log/${s}?daysRange=${range}|production>`,
       )
       .join('\n');
 

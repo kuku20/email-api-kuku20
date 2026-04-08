@@ -8286,3 +8286,59 @@ export const stock_usall_symbols= [
   'WKC',
   'PRI',
 ];
+
+export const watchlist = [
+  'SMCI',
+  'BULL',
+  'DJT',
+  'TTD',
+  'CNC',
+  'SNAP',
+  'INTC',
+  'HE',
+  'TSLA',
+  'UNH',
+  'AAPL',
+  'NVDA',
+  'AMZN',
+  'MSFT',
+  'MDB',
+  'SOXX',
+  'CRWV',
+  'MSTR',
+  'XOM',
+  'QQQ',
+  'PLTR',
+  'AVGO',
+  'ORCL',
+  'AMD',
+];
+interface Watchlist {
+  [key: string]: {
+    BULL: string[];
+    BEAR: string[];
+  };
+}
+
+export const watchlistBB: Watchlist = {
+  SMCI: { BULL: ['SMCX', 'SMCL'], BEAR: ['SMCZ'] },
+  TSLA: { BULL: ['TSLL', 'TSLR'], BEAR: ['TSLQ', 'TSLS', 'TSDD'] },
+  MSTR: { BULL: ['MSTX', 'MSTU'], BEAR: ['MSTZ'] },
+  SOXX: { BULL: ['SOXL'], BEAR: ['SOXS'] },
+  CRWV: { BULL: ['CWVX'], BEAR: ['CORD'] },
+  XOM: { BULL: ['XOMX'], BEAR: ['XOMZ'] },
+  AAPL: { BULL: ['AAPU'], BEAR: ['AAPB'] },
+  NVDA: { BULL: ['NVDL'], BEAR: ['NVD'] },
+  AMZN: { BULL: ['AMZU'], BEAR: ['AMZD'] },
+  MSFT: { BULL: ['MSFU'], BEAR: ['MSFD'] },
+  QQQ: { BULL: ['TQQQ', 'QLD'], BEAR: ['SQQQ', 'QID', 'PSQ'] },
+  DJT: { BULL: ['DJTU'], BEAR: [] },
+  TTD: { BULL: ['TTDU'], BEAR: [] },
+  INTC: { BULL: ['INTW'], BEAR: [] },
+  UNH: { BULL: ['UNHG'], BEAR: [] },
+  MDB: { BULL: ['MDBX'], BEAR: [] },
+  AMD: { BULL: ['AMDL'], BEAR: ['DAMD'] },
+  AVGO: { BULL: ['AVGX'], BEAR: [] },
+  ORCL: { BULL: ['ORCX'], BEAR: [] },
+  PLTR: { BULL: ['PLTD', 'PLTG', 'PLTU', 'PTIR'], BEAR: ['PLTZ'] },
+};
