@@ -45,7 +45,8 @@ export class TasksUSMKService_SP500 {
     this.logger.log(
       `✅ Market open — running ${timeframe} trading logic (${now} ET)`,
     );
-    await this.SendEverydayService([B_Channel, HT_Channel,'US_30M_HT','WATCHLIST'],'START');
+    const today = new Date().toLocaleString('sv-SE', { timeZone: 'America/Chicago' }).replace(/[^\d]/g, '-');
+    await this.SendEverydayService([B_Channel, HT_Channel,'US_30M_HT','WATCHLIST'],'START='+today);
     const tickers = intickers;
     await this.processTickers(
       tickers,
@@ -55,7 +56,7 @@ export class TasksUSMKService_SP500 {
       HT_Channel,
       delay,
     );
-    await this.SendEverydayService([B_Channel, HT_Channel,'US_30M_HT','WATCHLIST'],'END');
+    await this.SendEverydayService([B_Channel, HT_Channel,'US_30M_HT','WATCHLIST'],'END='+today);
   }
 
   private async processTickers(
@@ -255,13 +256,10 @@ export class TasksUSMKService_SP500 {
   }
   async SendEverydayService(channels = ['US_ALL', 'USSTOCK_WATCH'], transition?: string) {
     const equal = `===========================`;
-    const today = new Date()
-    .toLocaleString('sv-SE', { timeZone: 'America/Chicago' })
-    .replace(/[^\d]/g, '-');
     for (const channel of channels) {
       // CLOSE YESTERDAY
       await this.webhooksService.sendDiscordNotification(
-        `${equal}=${transition}=${today}=${equal}`,
+        `${equal}=${transition}=${equal}`,
         `${channel} RSIENDBOT`,
         JSON.stringify('lastdata'),
       );
