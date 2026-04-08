@@ -1350,7 +1350,7 @@ export class WebhooksService {
         }SBUY-macdCrAB-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
-        watchlist.includes(ticker)?'WATCHLIST':'US_15M_HT',
+        watchlist.includes(ticker)?'WATCHLIST':'US_30M_BUY',
         data,
       );
       return BuyOnly_StochRSICrossAB200;

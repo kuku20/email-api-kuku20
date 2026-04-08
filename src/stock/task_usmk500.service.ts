@@ -46,7 +46,7 @@ export class TasksUSMKService_SP500 {
       `✅ Market open — running ${timeframe} trading logic (${now} ET)`,
     );
     const today = new Date().toLocaleString('sv-SE', { timeZone: 'America/Chicago' }).replace(/[^\d]/g, '-');
-    await this.SendEverydayService([B_Channel, HT_Channel,'US_30M_HT','WATCHLIST'],'START='+today);
+    await this.SendEverydayService([B_Channel, HT_Channel,'US_30M_HT','WATCHLIST','US_30M_BUY'],'START='+today);
     const tickers = intickers;
     await this.processTickers(
       tickers,
@@ -56,7 +56,7 @@ export class TasksUSMKService_SP500 {
       HT_Channel,
       delay,
     );
-    await this.SendEverydayService([B_Channel, HT_Channel,'US_30M_HT','WATCHLIST','US_15M_HT'],'END='+today);
+    await this.SendEverydayService([B_Channel, HT_Channel,'US_30M_HT','WATCHLIST','US_30M_BUY'],'END='+today);
   }
 
   private async processTickers(
@@ -194,7 +194,7 @@ export class TasksUSMKService_SP500 {
     const today = new Date().toLocaleString('sv-SE', { timeZone: 'America/Chicago' }).replace(/[^\d]/g, '-');
     // const today = this.stockHelperService.getDateNDaysAgo(0);
   
-    const webhooks = ['SLACK_WEBHOOKS_US50', 'SLACK_WEBHOOKS_US100','SLACK_WEBHOOKS_US200','SLACK_WEBHOOKS_MACDCRAB'];
+    const webhooks = ['SLACK_WEBHOOKS_US50', 'SLACK_WEBHOOKS_US100','SLACK_WEBHOOKS_US200','SLACK_WEBHOOKS_MACDCRAB','SLACK_WEBHOOKS_WATCHLIST'];
   
     const sendBatchNotification = async (type: 'START' | 'END') => {
       const message = `${type}*${today}*${type}${'='.repeat(32)}`;
