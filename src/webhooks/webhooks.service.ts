@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { AttachmentBuilder, EmbedBuilder, WebhookClient } from 'discord.js';
 import pLimit from 'p-limit';
 import { StockHelperService } from 'src/stock/stockHelper.service';
-import { stock_500_symbols } from 'src/stock/dto/chartData';
+import { stock_500_symbols, watchlist, watchlistBB } from 'src/stock/dto/chartData';
 import * as fs from 'fs';
 import { channel } from 'diagnostics_channel';
 @Injectable()
@@ -1275,7 +1275,7 @@ export class WebhooksService {
         }SBUY--PriceCrMA50-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-${timeframe}-CrMA50-${lastdata?.close}`,
         lastdata,
-        HT_Channel,
+        watchlist.includes(ticker)?'WATCHLIST': HT_Channel,
         data,
       );
       return BuyOnly_StochRSICrossAB200;
@@ -1291,7 +1291,7 @@ export class WebhooksService {
         }(SBUY--PriceCrMA100-MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-${timeframe}-CrMA100-${lastdata?.close}`,
         lastdata,
-        B_Channel,
+        watchlist.includes(ticker)?'WATCHLIST':B_Channel,
         data,
       );
       return BuyOnly_StochRSICrossAB200;
@@ -1307,7 +1307,7 @@ export class WebhooksService {
         }SBUY-PriceCrMA200-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
-        'US_30M_HT',
+        watchlist.includes(ticker)?'WATCHLIST':'US_30M_HT',
         data,
       );
       return BuyOnly_StochRSICrossAB200;

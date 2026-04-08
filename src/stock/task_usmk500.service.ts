@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { StockHelperService } from './stockHelper.service';
 import { LocalPLWR } from './runlocal.service';
 import { WebhooksService } from 'src/webhooks/webhooks.service';
-import { stock_500_symbols,stock_usall_symbols } from './dto/chartData';
+import { stock_500_symbols,stock_usall_symbols,watchlist} from './dto/chartData';
 import { dayab50 } from './dto/chartData';
 import * as Timer from './compareTime';
 import pLimit from 'p-limit';
@@ -129,7 +129,8 @@ export class TasksUSMKService_SP500 {
             await this.webhooksService.sendSlackNotificationVN(
               [ticker],
               lastData,
-              matched.hook,30
+              watchlist.includes(ticker)?'SLACK_WEBHOOKS_WATCHLIST':matched.hook,
+              30
             );
 
             const data1 = await this.webhooksService.FireBaseApi(
