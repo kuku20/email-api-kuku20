@@ -45,7 +45,7 @@ export class TasksUSMKService_SP500 {
     this.logger.log(
       `✅ Market open — running ${timeframe} trading logic (${now} ET)`,
     );
-
+    await this.SendEverydayService([B_Channel, HT_Channel,'US_30M_HT','WATCHLIST'],'START');
     const tickers = intickers;
     await this.processTickers(
       tickers,
@@ -55,7 +55,7 @@ export class TasksUSMKService_SP500 {
       HT_Channel,
       delay,
     );
-    await this.SendEverydayService([B_Channel, HT_Channel,'US_30M_HT']);
+    await this.SendEverydayService([B_Channel, HT_Channel,'US_30M_HT','WATCHLIST'],'END');
   }
 
   private async processTickers(
@@ -189,7 +189,8 @@ export class TasksUSMKService_SP500 {
   @Cron('5,35 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 30 minutes at 5 and 35 minutes past the hour between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
   // @Cron('*/30 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 30 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
   async runAllWatchLists30(symbols: string[] = stock_usall_symbols) {
-    const today = this.stockHelperService.getDateNDaysAgo(0);
+    const today = new Date().toLocaleString('sv-SE', { timeZone: 'America/Chicago' }).replace(/[^\d]/g, '-');
+    // const today = this.stockHelperService.getDateNDaysAgo(0);
   
     const webhooks = ['SLACK_WEBHOOKS_US50', 'SLACK_WEBHOOKS_US100','SLACK_WEBHOOKS_US200'];
   
@@ -252,13 +253,15 @@ export class TasksUSMKService_SP500 {
       ),
     ]);
   }
-  async SendEverydayService(channels = ['US_ALL', 'USSTOCK_WATCH']) {
-    const equal = `===========================================`;
-
+  async SendEverydayService(channels = ['US_ALL', 'USSTOCK_WATCH'], transition?: string) {
+    const equal = `===========================`;
+    const today = new Date()
+    .toLocaleString('sv-SE', { timeZone: 'America/Chicago' })
+    .replace(/[^\d]/g, '-');
     for (const channel of channels) {
       // CLOSE YESTERDAY
       await this.webhooksService.sendDiscordNotification(
-        `${equal}==${equal}`,
+        `${equal}=${transition}=${today}=${equal}`,
         `${channel} RSIENDBOT`,
         JSON.stringify('lastdata'),
       );
