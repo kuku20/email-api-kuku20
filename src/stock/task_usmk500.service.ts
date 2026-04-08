@@ -121,6 +121,7 @@ export class TasksUSMKService_SP500 {
             { condition: signal.PriceCrMA50 && signal.ContinueUp, hook: 'SLACK_WEBHOOKS_US50' },
             { condition: signal.PriceCrMA100 && signal.ContinueUp, hook: 'SLACK_WEBHOOKS_US100' },
             { condition: signal.PriceCrMA200 && signal.ContinueUp, hook: 'SLACK_WEBHOOKS_US200' },
+            { condition: signal.macdCrAB , hook: 'SLACK_WEBHOOKS_MACDCRAB' },
           ];
           
           const matched = webhookMap.find((w) => w.condition);

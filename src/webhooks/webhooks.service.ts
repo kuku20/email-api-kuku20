@@ -1343,16 +1343,18 @@ export class WebhooksService {
     //   );
     //   return;
     // }
-    // if (BuyOnly_StochRSICrossAB200.macdCrAB) {
-    //   await this.sendDiscord(
-    //     `BUY-BuyOnly_StochRSICrossAB200-macdCrAB -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-    //     `${ticker}-ON-${timeframe}`,
-    //     lastdata,
-    //     HT_Channel,
-    //     data,
-    //   );
-    //   return;
-    // }
+    if (BuyOnly_StochRSICrossAB200.macdCrAB) {
+      await this.sendDiscord(
+        `${
+          stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
+        }SBUY-macdCrAB-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        watchlist.includes(ticker)?'WATCHLIST':'US_15M_HT',
+        data,
+      );
+      return BuyOnly_StochRSICrossAB200;
+    }
   }
 
   /**
