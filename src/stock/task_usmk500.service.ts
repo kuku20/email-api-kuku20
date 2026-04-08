@@ -56,7 +56,7 @@ export class TasksUSMKService_SP500 {
       HT_Channel,
       delay,
     );
-    await this.SendEverydayService([B_Channel, HT_Channel,'US_30M_HT','WATCHLIST'],'END='+today);
+    await this.SendEverydayService([B_Channel, HT_Channel,'US_30M_HT','WATCHLIST','US_15M_HT'],'END='+today);
   }
 
   private async processTickers(
@@ -67,7 +67,7 @@ export class TasksUSMKService_SP500 {
     HT_Channel,
     delay = 2,
   ) {
-    const limit = pLimit(2); // Limit the concurrency to 8 at a time
+    const limit = pLimit(3); // Limit the concurrency to 8 at a time
 
     const date = new Date();
 
@@ -99,7 +99,7 @@ export class TasksUSMKService_SP500 {
           const isWithinRange = this.webhooksService.checktimeMinutesEST(
             ticker,
             lastData?.date,
-            20,
+            30,
           );
           if (!isWithinRange) {
             return
@@ -194,7 +194,7 @@ export class TasksUSMKService_SP500 {
     const today = new Date().toLocaleString('sv-SE', { timeZone: 'America/Chicago' }).replace(/[^\d]/g, '-');
     // const today = this.stockHelperService.getDateNDaysAgo(0);
   
-    const webhooks = ['SLACK_WEBHOOKS_US50', 'SLACK_WEBHOOKS_US100','SLACK_WEBHOOKS_US200'];
+    const webhooks = ['SLACK_WEBHOOKS_US50', 'SLACK_WEBHOOKS_US100','SLACK_WEBHOOKS_US200','SLACK_WEBHOOKS_MACDCRAB'];
   
     const sendBatchNotification = async (type: 'START' | 'END') => {
       const message = `${type}*${today}*${type}${'='.repeat(32)}`;

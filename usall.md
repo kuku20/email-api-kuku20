@@ -3279,7 +3279,6 @@
 'BBAR',
 'USO',
 'WATT',
-'DSY',
 'NMAX',
 'MNDY',
 'BMA',
