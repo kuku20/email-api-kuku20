@@ -6,8 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { StockHelperService } from './stockHelper.service';
 import { LocalPLWR } from './runlocal.service';
 import { WebhooksService } from 'src/webhooks/webhooks.service';
-import { stock_500_symbols,stock_usall_symbols,watchlist} from './dto/chartData';
-import { dayab50 } from './dto/chartData';
+import * as DataSymbols from './dto/chartData';
 import * as Timer from './compareTime';
 import pLimit from 'p-limit';
 @Injectable()
@@ -131,8 +130,8 @@ export class TasksUSMKService_SP500 {
             await this.webhooksService.sendSlackNotificationVN(
               [ticker],
               lastData,
-              watchlist.includes(ticker)?'SLACK_WEBHOOKS_WATCHLIST':matched.hook,
-              30
+              DataSymbols.watchlist.includes(ticker)?'SLACK_WEBHOOKS_WATCHLIST':matched.hook,
+             30
             );
 
             const data1 = await this.webhooksService.FireBaseApi(
@@ -178,7 +177,7 @@ export class TasksUSMKService_SP500 {
       this.USTIMERUN(
         this.stockHelperService.ListMA50On4hour.length > 0
           ? this.stockHelperService.ListMA50On4hour
-          : stock_500_symbols,
+          : DataSymbols.stock_500_symbols,
         this.allkeys,
         'US_ALL',
         'USSTOCK_WATCH',
@@ -188,9 +187,10 @@ export class TasksUSMKService_SP500 {
     ]);
   }
 
-  @Cron('5,35 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 30 minutes at 5 and 35 minutes past the hour between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
-  // @Cron('*/30 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 30 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
-  async runAllWatchLists30(symbols: string[] = stock_usall_symbols) {
+  // @Cron('5,35 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 30 minutes at 5 and 35 minutes past the hour between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
+  @Cron('*/30 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 30 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
+    // @Cron('*/15 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 15 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
+  async runAllWatchLists30(symbols: string[] = DataSymbols.above2billion) {
     const today = new Date().toLocaleString('sv-SE', { timeZone: 'America/Chicago' }).replace(/[^\d]/g, '-');
     // const today = this.stockHelperService.getDateNDaysAgo(0);
   
@@ -213,7 +213,7 @@ export class TasksUSMKService_SP500 {
         this.allkeys,
         'US_ALL',
         'USSTOCK_WATCH',
-        0,
+        5,
         '30min',
       );
     } catch (error) {
@@ -230,7 +230,7 @@ export class TasksUSMKService_SP500 {
       this.USTIMERUN(
         this.stockHelperService.ListMA50On1day.length > 0
           ? this.stockHelperService.ListMA50On1day
-          : stock_500_symbols,
+          : DataSymbols.stock_500_symbols,
         this.allkeys,
         'US_15M_HT',
         'US_15M_HT',
@@ -246,7 +246,7 @@ export class TasksUSMKService_SP500 {
       this.USTIMERUN(
         this.stockHelperService.ListMA50On1day.length > 0
           ? this.stockHelperService.ListMA50On1day
-          : stock_500_symbols,
+          : DataSymbols.stock_500_symbols,
         this.allkeys,
         'US_30M_BUY',
         'US_30M_HT',
