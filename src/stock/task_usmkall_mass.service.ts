@@ -84,6 +84,47 @@ export class TasksUS_ALL_MK_MASS_Service {
                 secondLastData,
               );
             const MACDPositive = lastData.divergence > 0;
+            if(signal && signal.RSI15up){
+              await this.webhooksService.sendDiscord(
+                `${
+                  stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
+                }SBUY-RSI15AL-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+                `${ticker}-ON-${timeframe}`,
+                lastData,
+                'RSI15AL',
+                data,
+              );
+            }else if(signal && signal.RSI20up){
+              await this.webhooksService.sendDiscord(
+                `${
+                  stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
+                }SBUY-RSI20AL-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+                `${ticker}-ON-${timeframe}`,
+                lastData,
+                'RSIALERT',
+                data,
+              );
+            }else if(signal && signal.RSI25up){
+              await this.webhooksService.sendDiscord(
+                `${
+                  stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
+                }SBUY-RSI25AL-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+                `${ticker}-ON-${timeframe}`,
+                lastData,
+                'RSI25AL',
+                data,
+              );
+            }else if(signal && signal.RSI30up){
+              await this.webhooksService.sendDiscord(
+                `${
+                  stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
+                }SBUY-RSI30AL-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+                `${ticker}-ON-${timeframe}`,
+                lastData,
+                'RSI30AL',
+                data,
+              );
+            };
             if (!signal) return;
 
             const webhookMap = [

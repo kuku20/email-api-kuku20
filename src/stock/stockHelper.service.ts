@@ -658,6 +658,10 @@ SELL ALL
     PriceCrMA100: boolean;
     PriceCrMA50: boolean;
     macdCrAB: boolean;
+    RSI15up: boolean;
+    RSI20up: boolean;
+    RSI25up: boolean;
+    RSI30up: boolean;
   }> {
     if (!last || !prev)
       return {
@@ -667,6 +671,10 @@ SELL ALL
         PriceCrMA100: false,
         PriceCrMA50: false,
         macdCrAB: false,
+        RSI15up: false,
+        RSI20up: false,
+        RSI25up: false,
+        RSI30up: false,
       }; // safety
     const lastAb50 = last.MA50 > last.close;
     const lastBl200 = last.MA200 > last.close;
@@ -694,13 +702,17 @@ SELL ALL
     const PriceCrMA100 = await this.priceAbMABUY(last, prev, 'MA100')
     const PriceCrMA50 = await this.priceAbMABUY(last, prev, 'MA50')
     const macdCrAB = await this.macdCrossAB(last, prev);
+    const RSI15up = last.RSI > 15 && prev.RSI < 15;
+    const RSI20up = last.RSI > 20 && prev.RSI < 20;
+    const RSI25up = last.RSI > 25 && prev.RSI < 25;
+    const RSI30up = last.RSI > 30 && prev.RSI < 30;
     return {
       CrUpAll,ContinueUp,
       CrUpMacdBl0,
       PriceCrMA200,
       PriceCrMA100,
       PriceCrMA50,
-      macdCrAB,
+      macdCrAB,RSI15up,RSI20up,RSI25up,RSI30up
     };
   }
 
