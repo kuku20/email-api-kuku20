@@ -5,9 +5,7 @@ import { StockHelperService } from './stockHelper.service';
 import { LocalPLWR } from './runlocal.service';
 import { WebhooksService } from 'src/webhooks/webhooks.service';
 import * as StockSymbols from './dto/chartData';
-import { stock_usall_symbols, watchlist } from './dto/chartData';
-import { stock_500_symbols } from './dto/chartData';
-import { dayab50 } from './dto/chartData';
+import * as DataSymbols from './dto/chartData';
 import pLimit from 'p-limit';
 import { Cron, CronExpression } from '@nestjs/schedule';
 @Injectable()
@@ -23,7 +21,7 @@ export class TasksUS_ALL_MK_MASS_Service {
 
   async onModuleInit() {
     // This runs ONCE when the app starts
-    // await this.runfullonms();
+    await this.runfullonms();
     // await this.getMarket(stock_usall_symbols)
     // await this.writeAbove2BillionToFile();
   }
@@ -89,7 +87,7 @@ export class TasksUS_ALL_MK_MASS_Service {
             if(signal && signal.RSI15up){
               await this.webhooksService.sendDiscord(
                 `${
-                  stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
+                  DataSymbols.stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
                 }SBUY-RSI15AL-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
                 `${ticker}-ON-${timeframe}`,
                 lastData,
@@ -99,7 +97,7 @@ export class TasksUS_ALL_MK_MASS_Service {
             }else if(signal && signal.RSI20up){
               await this.webhooksService.sendDiscord(
                 `${
-                  stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
+                  DataSymbols.stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
                 }SBUY-RSI20AL-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
                 `${ticker}-ON-${timeframe}`,
                 lastData,
@@ -109,7 +107,7 @@ export class TasksUS_ALL_MK_MASS_Service {
             }else if(signal && signal.RSI25up){
               await this.webhooksService.sendDiscord(
                 `${
-                  stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
+                  DataSymbols.stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
                 }SBUY-RSI25AL-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
                 `${ticker}-ON-${timeframe}`,
                 lastData,
@@ -119,7 +117,7 @@ export class TasksUS_ALL_MK_MASS_Service {
             }else if(signal && signal.RSI30up){
               await this.webhooksService.sendDiscord(
                 `${
-                  stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
+                  DataSymbols.stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
                 }SBUY-RSI30AL-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
                 `${ticker}-ON-${timeframe}`,
                 lastData,
@@ -150,7 +148,7 @@ export class TasksUS_ALL_MK_MASS_Service {
               await this.webhooksService.sendSlackNotificationVN(
                 [ticker],
                 lastData,
-              watchlist.includes(ticker)?'SLACK_WEBHOOKS_WATCHLIST':matched.hook,
+                DataSymbols.watchlist.includes(ticker)?'SLACK_WEBHOOKS_WATCHLIST':matched.hook,
               );
             }
           }
@@ -181,6 +179,8 @@ export class TasksUS_ALL_MK_MASS_Service {
     await this.webhooksService.delete();
     this.stockHelperService.ListMA50On1day = []; // Clear the list at the start of each run
     await this.SendEverydayService('EARLY_AB200', '200AB_LESS_01', '1day');
+    await this.SendEverydayService('RSI15AL', 'RSIALERT', '1day');
+    await this.SendEverydayService('RSI25AL', 'RSI30AL', '1day');
     await this.send1chanel('200AB_LESS_05', '1day');
     await this.webhooksService.sendSlackNotification(
       `START+${today}+START================================`,
@@ -240,7 +240,7 @@ export class TasksUS_ALL_MK_MASS_Service {
     await sendBatchNotification('START');
     await Promise.all([
       this.USTIMERUN(
-        StockSymbols.stock_usall_symbols,
+        StockSymbols.above2billion,
         'EARLY_AB200',
         '200AB_LESS_01',
         0,

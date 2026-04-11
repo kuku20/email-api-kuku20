@@ -702,10 +702,14 @@ SELL ALL
     const PriceCrMA100 = await this.priceAbMABUY(last, prev, 'MA100')
     const PriceCrMA50 = await this.priceAbMABUY(last, prev, 'MA50')
     const macdCrAB = await this.macdCrossAB(last, prev);
-    const RSI15up = last.RSI > 15 && prev.RSI < 15;
-    const RSI20up = last.RSI > 20 && prev.RSI < 20;
-    const RSI25up = last.RSI > 25 && prev.RSI < 25;
-    const RSI30up = last.RSI > 30 && prev.RSI < 30;
+    // const RSI15up = last.RSI > 15 && prev.RSI < 15;
+    // const RSI20up = last.RSI > 20 && prev.RSI < 20;
+    // const RSI25up = last.RSI > 25 && prev.RSI < 25;
+    // const RSI30up = last.RSI > 30 && prev.RSI < 30;
+    const RSI15up = last.RSI < 15 
+    const RSI20up = last.RSI < 20 && last.RSI > 15
+    const RSI25up = last.RSI < 25 && last.RSI > 20
+    const RSI30up = last.RSI < 30 && last.RSI > 25
     return {
       CrUpAll,ContinueUp,
       CrUpMacdBl0,

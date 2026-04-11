@@ -1000,4 +1000,24 @@ export class LocalPLWR {
     const maxlength = result.length-1
     return  result.slice(maxlength-100, maxlength);
   }
+
+  async getMarketCap(ticker: string) {
+    const BASE_URL = `https://api.api-ninjas.com/v1/marketcap?ticker=${ticker}`;
+    try {
+      const response = await axios.get(BASE_URL);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching market cap:', error.message);
+      throw error;
+    }
+  }
+
+  async getMarketCap_FMP(
+    ticker: string,
+  ) {
+    const BASE_URL = `https://financialmodelingprep.com/stable/market-capitalization?symbol=${ticker}&apikey=`;
+    const response = await this.tryCatchF(BASE_URL, 'FMP_STOCK_API_KEY');
+    return response;
+  }
+
 }
