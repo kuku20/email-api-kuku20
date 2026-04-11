@@ -24,6 +24,8 @@ export class TasksUS_ALL_MK_MASS_Service {
   async onModuleInit() {
     // This runs ONCE when the app starts
     // await this.runfullonms();
+    // await this.getMarket(stock_usall_symbols)
+    // await this.writeAbove2BillionToFile();
   }
 
   async USTIMERUN(
@@ -287,5 +289,52 @@ export class TasksUS_ALL_MK_MASS_Service {
     );
     // Log completion
     this.logger.error(`✅ Finished sending for`, channel);
+  }
+
+  billion = 1000000000;
+  above2billion = []
+  private async getMarket(
+    tickers: string[],
+  ) {
+    const limit = pLimit(1); // Limit the concurrency to 1 at a time
+
+    const date = new Date();
+
+    // Prepare ticker promises with concurrency limit
+    const tickerPromises = tickers.map((ticker) =>
+      limit(async () => {
+
+
+        try {
+          let data = await this.LocalPLWR.getMarketCap(ticker);
+          // Process the data
+          // console.table(data);
+          const mkb = data.market_cap / this.billion; // Convert to billions
+          console.log(`Market Cap for ${ticker}: ${mkb.toFixed(2)} billion USD`);
+          if(mkb > 2){
+          this.above2billion.push(ticker)}
+          // this.logger.log(`${ticker} processed successfully.`);
+        } catch (error) {
+          // Send error notification and log the error
+          this.logger.error(`Error processing ${ticker}: ${error.message}`);
+        }
+      }),
+    );
+
+    // Wait for all ticker promises to complete concurrently (with concurrency limit)
+    await Promise.all(tickerPromises);
+  }
+
+  async writeAbove2BillionToFile() {
+    // write to file
+    const fs = require('fs');
+    const filePath = 'above2billion.json';
+    fs.writeFile(filePath, JSON.stringify(this.above2billion, null, 2), (err) => {
+      if (err) {
+        console.error('Error writing to file:', err);
+      } else {
+        console.log(`Above 2 billion tickers saved to ${filePath}`);
+      }
+    });
   }
 }
