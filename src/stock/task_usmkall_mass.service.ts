@@ -21,7 +21,7 @@ export class TasksUS_ALL_MK_MASS_Service {
 
   async onModuleInit() {
     // This runs ONCE when the app starts
-    await this.runfullonms();
+    // await this.runfullonms();
     // await this.getMarket(stock_usall_symbols)
     // await this.writeAbove2BillionToFile();
   }
