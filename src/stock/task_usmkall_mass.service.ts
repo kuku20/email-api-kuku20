@@ -22,8 +22,9 @@ export class TasksUS_ALL_MK_MASS_Service {
   async onModuleInit() {
     // This runs ONCE when the app starts
     // await this.runfullonms();
-    // await this.getMarket(stock_usall_symbols)
-    // await this.writeAbove2BillionToFile();
+    // await this.getMarket(StockSymbols.above2billion)
+    // await this.writeAbove2BillionToFile(this.above2billion,'above5billion');
+    // await this.writeAbove2BillionToFile(this.aotherbillion,'aotherbillion');
   }
 
   async USTIMERUN(
@@ -293,6 +294,7 @@ export class TasksUS_ALL_MK_MASS_Service {
 
   billion = 1000000000;
   above2billion = []
+  aotherbillion = []
   private async getMarket(
     tickers: string[],
   ) {
@@ -311,8 +313,10 @@ export class TasksUS_ALL_MK_MASS_Service {
           // console.table(data);
           const mkb = data.market_cap / this.billion; // Convert to billions
           console.log(`Market Cap for ${ticker}: ${mkb.toFixed(2)} billion USD`);
-          if(mkb > 2){
-          this.above2billion.push(ticker)}
+          if(mkb > 5){
+          this.above2billion.push(ticker)}else{
+            this.aotherbillion.push(ticker)
+          }
           // this.logger.log(`${ticker} processed successfully.`);
         } catch (error) {
           // Send error notification and log the error
@@ -325,15 +329,15 @@ export class TasksUS_ALL_MK_MASS_Service {
     await Promise.all(tickerPromises);
   }
 
-  async writeAbove2BillionToFile() {
+  async writeAbove2BillionToFile(tickers,filename = 'above5billion') {
     // write to file
     const fs = require('fs');
-    const filePath = 'above2billion.json';
-    fs.writeFile(filePath, JSON.stringify(this.above2billion, null, 2), (err) => {
+    const filePath = filename+'.json';
+    fs.writeFile(filePath, JSON.stringify(tickers, null, 2), (err) => {
       if (err) {
         console.error('Error writing to file:', err);
       } else {
-        console.log(`Above 2 billion tickers saved to ${filePath}`);
+        console.log(`Above 5 billion tickers saved to ${filePath}`);
       }
     });
   }
