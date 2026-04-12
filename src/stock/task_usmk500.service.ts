@@ -164,7 +164,8 @@ export class TasksUSMKService_SP500 {
     //await this.runAllWatchLists();
     // console.log(  stock_500_symbols.length)
     this.stockHelperService.ListMA50On4hour = await this.LocalPLWR.getArrSymbolFFire('above-ma50/alldata/4hour') as string[];
-    this.stockHelperService.ListMA50On1day = await this.LocalPLWR.getArrSymbolFFire('above-ma50/alldata/1day')as string[];
+    // this.stockHelperService.ListMA50On1day = await this.LocalPLWR.getArrSymbolFFire('above-ma50/alldata/1day')as string[];
+    this.stockHelperService.ListMA50On1day = await this.LocalPLWR.getArrSymbolFFire('above-ma50/alldata/lastab/1day')as string[];
     // this.runAllWatchLists30()
     // this.runAllWatchLists30(this.stockHelperService.ListMA50On4hour)
     // this.runAllWatchLists30(this.stockHelperService.ListMA50On1day)
@@ -190,7 +191,8 @@ export class TasksUSMKService_SP500 {
   // @Cron('5,35 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 30 minutes at 5 and 35 minutes past the hour between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
   @Cron('*/30 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 30 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
     // @Cron('*/15 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 15 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
-  async runAllWatchLists30(symbols: string[] = DataSymbols.above2billion) {
+  async runAllWatchLists30(symbols = this.stockHelperService.ListMA50On1day.length > 0 ? this.stockHelperService.ListMA50On1day : DataSymbols.above5billion) {
+    this.logger.warn('Running runAllWatchLists30 with stocklist length:', symbols.length);
     const today = new Date().toLocaleString('sv-SE', { timeZone: 'America/Chicago' }).replace(/[^\d]/g, '-');
     // const today = this.stockHelperService.getDateNDaysAgo(0);
   

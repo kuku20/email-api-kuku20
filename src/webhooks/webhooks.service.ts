@@ -1459,6 +1459,9 @@ export class WebhooksService {
       aboveMA50Third,
       aboveMA50Fourth,
     ].filter(Boolean).length;
+    if(aboveMA50){
+      await this.postdata(`alldata/lastab/${timeframe}`, ticker);
+    }
     if (aboveMA50Count >= 3 && MACDPositive) {
       if (belowMA50Fifth) {
         this.listsymbolBEarly.push(ticker);
