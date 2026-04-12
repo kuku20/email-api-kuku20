@@ -171,22 +171,22 @@ export class WebhooksService {
       `discord_slack_id/discord/${WEBHOOKS_CNA}/${current}/${sentMessage.id}.json`,
       `https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}`,
     );
-    if (
-      this.rsiChannels.some((channel) => WEBHOOKS_CNA.includes(channel)) &&
-      !botdt.includes('RSIENDBOT')
-    ) {
-      // store symbol of date
-      await this.RsiToDatabase(
-        'RSI/' + WEBHOOKS_CNA,
-        current + `/${ticker}`,
-        `${ticker}`,
-      );
-      // store data of the date of sym that sent to discord
-      await this.RsiToDatabase('RSI-DATE-DATA', ticker + `/${current}`, {
-        msglik: `https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}`,
-        ...options,
-      });
-    }
+    // if (
+    //   this.rsiChannels.some((channel) => WEBHOOKS_CNA.includes(channel)) &&
+    //   !botdt.includes('RSIENDBOT')
+    // ) {
+    //   // store symbol of date
+    //   await this.RsiToDatabase(
+    //     'RSI/' + WEBHOOKS_CNA,
+    //     current + `/${ticker}`,
+    //     `${ticker}`,
+    //   );
+    //   // store data of the date of sym that sent to discord
+    //   await this.RsiToDatabase('RSI-DATE-DATA', ticker + `/${current}`, {
+    //     msglik: `https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}`,
+    //     ...options,
+    //   });
+    // }
     return { msg: 'post to discord success', ...sentMessage };
   }
   async RsiToDatabase(target: any, current: any, data: any) {
@@ -1623,7 +1623,7 @@ export class WebhooksService {
     symbols: string[],
     lastData: any,
     other = 'SLACK_WEBHOOKS_VN50',
-    range: 600 | 550 | 500 | 480 | 240 | 120 | 60 | 45 | 30 | 15 | 5 | 1 = 500,
+    range: '600' | '550' | '500' | '480' | '240' | '120' | '60' | '45' | '30' | '15' | '5' | '1' = '500',
   ) {
     const BASE_URL = this.configService.get<any>(other);
 

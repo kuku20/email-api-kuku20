@@ -98,7 +98,7 @@ export class TasksUSMKService_SP500 {
           const isWithinRange = this.webhooksService.checktimeMinutesEST(
             ticker,
             lastData?.date,
-            30,
+            +this.runon15or30,
           );
           if (!isWithinRange) {
             return
@@ -131,7 +131,7 @@ export class TasksUSMKService_SP500 {
               [ticker],
               lastData,
               DataSymbols.watchlist.includes(ticker)?'SLACK_WEBHOOKS_WATCHLIST':matched.hook,
-             30
+              this.runon15or30
             );
 
             const data1 = await this.webhooksService.FireBaseApi(
@@ -166,7 +166,7 @@ export class TasksUSMKService_SP500 {
     this.stockHelperService.ListMA50On4hour = await this.LocalPLWR.getArrSymbolFFire('above-ma50/alldata/4hour') as string[];
     // this.stockHelperService.ListMA50On1day = await this.LocalPLWR.getArrSymbolFFire('above-ma50/alldata/1day')as string[];
     this.stockHelperService.ListMA50On1day = await this.LocalPLWR.getArrSymbolFFire('above-ma50/alldata/lastab/1day')as string[];
-    // this.runAllWatchLists30()
+    // this.runAllWatchLists30(DataSymbols.watchlist)
     // this.runAllWatchLists30(this.stockHelperService.ListMA50On4hour)
     // this.runAllWatchLists30(this.stockHelperService.ListMA50On1day)
   }
@@ -189,8 +189,11 @@ export class TasksUSMKService_SP500 {
   }
 
   // @Cron('5,35 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 30 minutes at 5 and 35 minutes past the hour between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
-  @Cron('*/30 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 30 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
-    // @Cron('*/15 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 15 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
+
+  runon15or30 :'30'|'15'= '15';
+  @Cron('*/15 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 15 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
+  // runon15or30 :'30'|'15'= '30';
+  // @Cron('*/30 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 30 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
   async runAllWatchLists30(symbols = this.stockHelperService.ListMA50On1day.length > 0 ? this.stockHelperService.ListMA50On1day : DataSymbols.above5billion) {
     this.logger.warn('Running runAllWatchLists30 with stocklist length:', symbols.length);
     const today = new Date().toLocaleString('sv-SE', { timeZone: 'America/Chicago' }).replace(/[^\d]/g, '-');
@@ -215,8 +218,8 @@ export class TasksUSMKService_SP500 {
         this.allkeys,
         'US_ALL',
         'USSTOCK_WATCH',
-        5,
-        '30min',
+        this.runon15or30 === '30'? 5 : 3,
+        `${this.runon15or30}min`,
       );
     } catch (error) {
       console.error('runAllWatchLists30 failed:', error);
