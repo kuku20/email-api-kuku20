@@ -586,6 +586,7 @@ SELL ALL
     const blMA50 = last.low < last.MA50 && prev.high > prev.MA50;
     const blMA100 = last.low < last.MA100 && prev.high > prev.MA100;
     const MacdLine_divergen = last.divergence < 0;
+    return (blMA20 || blMA50 || blMA100) && MacdLine_divergen
     return (blMA20 || blMA50 || blMA100) && MacdLine_divergen && BlMa200;
   }
 
