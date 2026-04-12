@@ -108,7 +108,6 @@ export class TaskHoldingService {
     await Promise.all(tickerPromises);
   }
 
-
   async getholdingList() {
     const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stock-related/holding.json`,'')
     this.stockHelperService.HoldingList = Object.keys(holdingObj);
@@ -117,7 +116,7 @@ export class TaskHoldingService {
   }
 
   runon15or30 :'30'|'15'= '15';
-  @Cron('*/15 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 15 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
+  // @Cron('*/15 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 15 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
   // runon15or30 :'30'|'15'= '30';
   // @Cron('*/30 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 30 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
   async runAllWatchLists30() {

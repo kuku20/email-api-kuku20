@@ -59,6 +59,8 @@ import { TasksUSMKService_SP500 } from './stock/task_usmk500.service';
 import { TasksVNMKService } from './stock/task_vn600.service';
 import { TasksUS_ALL_MKService } from './stock/task_usmkall.service';
 import { TasksUS_ALL_MK_MASS_Service } from './stock/task_usmkall_mass.service';
+import { TestOndata_service } from './stock/task_mass_test.service';
+import { TaskHoldingService } from './stock/task_holding.service';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -161,14 +163,15 @@ import { TasksUS_ALL_MK_MASS_Service } from './stock/task_usmkall_mass.service';
     TasksUS_ALL_MK_MASS_Service,
     TaskCryptoService,
     TasksForexService,
+    TaskHoldingService,
 
     // TasksUSMKService_SP500,
+    // TasksUS_ALL_MKService,
     // TasksUSMKService,
     // TasksService,
-    // TasksUS_ALL_MKService,
     // TasksUSMK_1MIN_Service,
     // TasksUSMKService_15MIN
-    
+    // TestOndata_service,
     SendEverydayService
   ],
 })
