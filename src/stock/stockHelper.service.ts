@@ -5,6 +5,7 @@ import { StockData } from './dto/chartData';
 export class StockHelperService {
   ListMA50On1day: string[] = [];
   ListMA50On4hour: string[] = [];
+  HoldingList: string[] = [];
   async returnNewData(dataIn: any[]) {
     if (!dataIn?.length) return [];
 
