@@ -1437,6 +1437,7 @@ export class WebhooksService {
     const MACDPositive = lastData.divergence > 0;
     const aboveMA50Second = secondLastData.close > secondLastData.MA50;
     const aboveMA50Third = thirdLastData.close > thirdLastData.MA50;
+    const belowMA50Third = thirdLastData.close < thirdLastData.MA50;
     const aboveMA50Fourth = fourthLastData.close > fourthLastData.MA50;
     const belowMA50Fifth = fifthLastData.close < fifthLastData.MA50;
     const PriceCrMA50 = await this.stockHelperService.priceAbMABUY(
@@ -1461,6 +1462,15 @@ export class WebhooksService {
     ].filter(Boolean).length;
     if(aboveMA50){
       await this.postdata(`alldata/lastab/${timeframe}`, ticker);
+    }
+    if(aboveMA50 && aboveMA50Second && belowMA50Third){
+      await this.sendSlackNotificationVN(
+        [ticker],
+        lastData,
+        'SLACK_WEBHOOKS_J2DAY',
+        '500'
+      );
+      await this.postdata(`alldata/twoday/${timeframe}`, ticker);
     }
     if (aboveMA50Count >= 3 && MACDPositive) {
       if (belowMA50Fifth) {
@@ -1631,8 +1641,8 @@ export class WebhooksService {
       .map(
         (s) =>
           `•${stock_500_symbols.includes(s) ? '(SP500)' : ''} *${s}* → ${
-            lastData.close
-          }(${lastData.MA200.toFixed(2)})| ${lastData.date} |` +
+            lastData?.close
+          }(${lastData?.MA200.toFixed(2)})| ${lastData?.date} |` +
           `  < <http://localhost:4200/price-log/${s}?daysRange=${range}|local> | <https://stockmarkets000.web.app/price-log/${s}?daysRange=${range}|production>`,
       )
       .join('\n');
