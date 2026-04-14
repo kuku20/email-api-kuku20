@@ -18,7 +18,7 @@ export class TasksUS_ALL_MK_MASS_Service {
     private readonly LocalPLWR: LocalPLWR,
   ) {}
   private readonly logger = new Logger(TasksUS_ALL_MK_MASS_Service.name);
-
+  today = this.stockHelperService.getDateNDaysAgo(0);
   async onModuleInit() {
     // This runs ONCE when the app starts
     // await this.runfullonms();
@@ -90,6 +90,7 @@ export class TasksUS_ALL_MK_MASS_Service {
               );
             const MACDPositive = lastData.divergence > 0;
             if(signal && signal.RSI15up){
+              await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSI15AL/${this.today}/${ticker}.json`, ticker)
               await this.webhooksService.sendDiscord(
                 `${
                   DataSymbols.stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
@@ -100,6 +101,7 @@ export class TasksUS_ALL_MK_MASS_Service {
                 data,
               );
             }else if(signal && signal.RSI20up){
+              await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSIALERT/${this.today}/${ticker}.json`, ticker)
               await this.webhooksService.sendDiscord(
                 `${
                   DataSymbols.stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
@@ -110,6 +112,7 @@ export class TasksUS_ALL_MK_MASS_Service {
                 data,
               );
             }else if(signal && signal.RSI25up){
+              await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSI25AL/${this.today}/${ticker}.json`, ticker)
               await this.webhooksService.sendDiscord(
                 `${
                   DataSymbols.stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
@@ -120,6 +123,7 @@ export class TasksUS_ALL_MK_MASS_Service {
                 data,
               );
             }else if(signal && signal.RSI30up){
+              await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSI30AL/${this.today}/${ticker}.json`, ticker)
               await this.webhooksService.sendDiscord(
                 `${
                   DataSymbols.stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
