@@ -6,6 +6,7 @@ export class StockHelperService {
   ListMA50On1day: string[] = [];
   ListMA50On4hour: string[] = [];
   HoldingList: string[] = [];
+  Just2day: string[] = [];
   async returnNewData(dataIn: any[]) {
     if (!dataIn?.length) return [];
 

@@ -2940,7 +2940,6 @@
 'AENT',
 'BUKS',
 'PRE',
-'ZGN',
 'PNI',
 'AXR',
 'FEIM',

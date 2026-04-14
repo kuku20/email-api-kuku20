@@ -1275,7 +1275,7 @@ export class WebhooksService {
         }SBUY--PriceCrMA50-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-${timeframe}-CrMA50-${lastdata?.close}`,
         lastdata,
-        watchlist.includes(ticker)?'WATCHLIST': HT_Channel,
+        watchlist.includes(ticker)?'WATCHLIST': this.stockHelperService.Just2day.includes(ticker)?'US_EARLY_15MIN': HT_Channel,
         data,
       );
       return BuyOnly_StochRSICrossAB200;
@@ -1291,7 +1291,7 @@ export class WebhooksService {
         }(SBUY--PriceCrMA100-MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-${timeframe}-CrMA100-${lastdata?.close}`,
         lastdata,
-        watchlist.includes(ticker)?'WATCHLIST':B_Channel,
+        watchlist.includes(ticker)?'WATCHLIST':this.stockHelperService.Just2day.includes(ticker)?'US_EARLY_15MIN':B_Channel,
         data,
       );
       return BuyOnly_StochRSICrossAB200;
@@ -1307,7 +1307,7 @@ export class WebhooksService {
         }SBUY-PriceCrMA200-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
-        watchlist.includes(ticker)?'WATCHLIST':'US_30M_HT',
+        watchlist.includes(ticker)?'WATCHLIST':this.stockHelperService.Just2day.includes(ticker)?'US_EARLY_15MIN':'US_30M_HT',
         data,
       );
       return BuyOnly_StochRSICrossAB200;
@@ -1439,6 +1439,7 @@ export class WebhooksService {
     const aboveMA50Third = thirdLastData.close > thirdLastData.MA50;
     const belowMA50Third = thirdLastData.close < thirdLastData.MA50;
     const aboveMA50Fourth = fourthLastData.close > fourthLastData.MA50;
+    const bellowMA50Fourth = fourthLastData.close < fourthLastData.MA50;
     const belowMA50Fifth = fifthLastData.close < fifthLastData.MA50;
     const PriceCrMA50 = await this.stockHelperService.priceAbMABUY(
       lastData,
@@ -1471,6 +1472,16 @@ export class WebhooksService {
         '500'
       );
       await this.postdata(`alldata/twoday/${timeframe}`, ticker);
+    }
+    if(aboveMA50 && aboveMA50Second && aboveMA50Third && bellowMA50Fourth){
+      await this.sendDiscord(
+        `SBUY-PriceCrMA50-3day -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+        `${ticker}-${timeframe}-CrMA50-${lastData?.close}`,
+        lastData,
+        'US_15M_HT',
+        data,
+      );
+      await this.postdata(`alldata/threeday/${timeframe}`, ticker);
     }
     if (aboveMA50Count >= 3 && MACDPositive) {
       if (belowMA50Fifth) {
@@ -1640,7 +1651,7 @@ export class WebhooksService {
     const formatted = symbols
       .map(
         (s) =>
-          `•${stock_500_symbols.includes(s) ? '(SP500)' : ''} *${s}* → ${
+          `•${stock_500_symbols.includes(s) ? '(SP500)' : ''} ${this.stockHelperService.Just2day.includes(s)?'(2day)':''}*${s}* → ${
             lastData?.close
           }(${lastData?.MA200.toFixed(2)})| ${lastData?.date} |` +
           `  < <http://localhost:4200/price-log/${s}?daysRange=${range}|local> | <https://stockmarkets000.web.app/price-log/${s}?daysRange=${range}|production>`,
