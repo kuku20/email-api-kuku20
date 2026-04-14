@@ -42,7 +42,7 @@ export class SendEverydayService {
       'USSTOCK_WATCH',
       'US_30M_BUY',
       'US_15M_HT',
-      'BUYSELL','CR_30MIN_HT'
+      'BUYSELL','CR_30MIN_HT','US_5M_HT'
     ]; // example list
 
     for (const channel of Channels) {
