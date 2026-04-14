@@ -735,4 +735,32 @@ SELL ALL
 
     return lastAbMA && prevBlMA;
   }
+
+  shouldRunTradingLogicUS(
+    intickers: string[],
+    timeframe: string,
+    logger
+  ): boolean {
+    const now = new Date().toLocaleString('en-US', {
+      timeZone: 'America/New_York',
+    });
+  
+    if (intickers.length < 1) {
+      logger.log(`Don't have symbol ${timeframe} check (${now} ET)`);
+      return false;
+    }
+  
+    if (!this.isMarketOpen()) {
+      logger.log(
+        `🕒 Market closed — skipping ${timeframe} check (${now} ET)`,
+      );
+      return false;
+    }
+  
+    logger.log(
+      `✅ Market open — running ${timeframe} trading logic (${now} ET)`,
+    );
+  
+    return true;
+  }
 }

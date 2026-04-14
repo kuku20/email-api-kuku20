@@ -55,9 +55,13 @@ function getRecentWashSellSymbols(list: { [x: string]: any }, days = 32, limit =
 }
 
 function turnto(firebaseData: Record<string, Record<string, string>>) {
+  if (!firebaseData || typeof firebaseData !== 'object') {
+    console.warn('⚠️ firebaseData is empty or invalid:', firebaseData);
+    return []; // or {} depending on your expected output
+  }
   const lists: Record<string, string[]> = {};
 
-  for (const [date, symbolsObj] of Object.entries(firebaseData)) {
+  for (const [date, symbolsObj] of Object?.entries(firebaseData)) {
     const key = `list_day_${date}`;
     const symbols = Object.values(symbolsObj);
     lists[key] = symbols;
