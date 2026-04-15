@@ -45,7 +45,7 @@ export class TasksUSMKService_SP500 {
       `✅ Market open — running ${timeframe} trading logic (${now} ET)`,
     );
     const today = new Date().toLocaleString('sv-SE', { timeZone: 'America/Chicago' }).replace(/[^\d]/g, '-');
-    await this.SendEverydayService([B_Channel, HT_Channel,'US_30M_HT','WATCHLIST','US_30M_BUY'],'START='+today);
+    await this.SendEverydayService([B_Channel, HT_Channel,'US_30M_HT','WATCHLIST','US_30M_BUY','US_EARLY_15MIN'],'START='+today);
     const tickers = intickers;
     await this.processTickers(
       tickers,
@@ -55,7 +55,7 @@ export class TasksUSMKService_SP500 {
       HT_Channel,
       delay,
     );
-    await this.SendEverydayService([B_Channel, HT_Channel,'US_30M_HT','WATCHLIST','US_30M_BUY'],'END='+today);
+    await this.SendEverydayService([B_Channel, HT_Channel,'US_30M_HT','WATCHLIST','US_30M_BUY','US_EARLY_15MIN'],'END='+today);
   }
 
   private async processTickers(
@@ -165,11 +165,16 @@ export class TasksUSMKService_SP500 {
     // console.log(  stock_500_symbols.length)
     this.stockHelperService.ListMA50On4hour = await this.LocalPLWR.getArrSymbolFFire('above-ma50/alldata/4hour') as string[];
     // this.stockHelperService.ListMA50On1day = await this.LocalPLWR.getArrSymbolFFire('above-ma50/alldata/1day')as string[];
-    this.stockHelperService.ListMA50On1day = await this.LocalPLWR.getArrSymbolFFire('above-ma50/alldata/lastab/1day')as string[];
+    const listlastab = await this.LocalPLWR.getArrSymbolFFire('above-ma50/alldata/lastab/1day')as string[];
+    const twoDay = await this.LocalPLWR.getArrSymbolFFire('above-ma50/alldata/twoday/1day')as string[];
+    const threeday = await this.LocalPLWR.getArrSymbolFFire('above-ma50/alldata/threeday/1day')as string[];
+    
+    this.stockHelperService.Just2day = this.stockHelperService.combineUnique(twoDay,threeday)
+    this.stockHelperService.ListMA50On1day = this.stockHelperService.combineUnique(listlastab,DataSymbols.watchlist, threeday, this.stockHelperService.Just2day);
+    console.log(`✅  this.stockHelperService.ListMA50On1day: has ${ this.stockHelperService.ListMA50On1day.length} symbols`);
     await this.getholdingList()
     // this.runAllWatchLists30(DataSymbols.watchlist)
     // this.runAllWatchLists30(this.stockHelperService.ListMA50On4hour)
-    // this.runAllWatchLists30(this.stockHelperService.ListMA50On1day)
   }
   async getholdingList() {
     const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stock-related/holding.json`,'')
@@ -202,6 +207,9 @@ export class TasksUSMKService_SP500 {
   // @Cron('*/30 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 30 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
   async runAllWatchLists30(symbols = this.stockHelperService.ListMA50On1day.length > 0 ? this.stockHelperService.ListMA50On1day : DataSymbols.above5billion) {
     this.logger.warn('Running runAllWatchLists30 with stocklist length:', symbols.length);
+    if (!this.stockHelperService.shouldRunTradingLogicUS( symbols,`${this.runon15or30}min`,this.logger)) {
+      return;
+    }
     const today = new Date().toLocaleString('sv-SE', { timeZone: 'America/Chicago' }).replace(/[^\d]/g, '-');
     // const today = this.stockHelperService.getDateNDaysAgo(0);
   

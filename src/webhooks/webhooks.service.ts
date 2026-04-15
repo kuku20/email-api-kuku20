@@ -1481,6 +1481,12 @@ export class WebhooksService {
         'US_15M_HT',
         data,
       );
+      await this.sendSlackNotificationVN(
+        [ticker],
+        lastData,
+        'SLACK_WEBHOOKS_J3DAY',
+        '500'
+      );
       await this.postdata(`alldata/threeday/${timeframe}`, ticker);
     }
     if (aboveMA50Count >= 3 && MACDPositive) {
@@ -1647,13 +1653,13 @@ export class WebhooksService {
     range: '600' | '550' | '500' | '480' | '240' | '120' | '60' | '45' | '30' | '15' | '5' | '1' = '500',
   ) {
     const BASE_URL = this.configService.get<any>(other);
-
+    const aboveOrBellow = lastData?.MA200 > lastData?.close ? 'BELLOW' : 'ABOVE';
     const formatted = symbols
       .map(
         (s) =>
           `•${stock_500_symbols.includes(s) ? '(SP500)' : ''}-${this.stockHelperService.Just2day.includes(s)?'(2day)':''} *${s}* → ${
             lastData?.close
-          }(${lastData?.MA200.toFixed(2)})| ${lastData?.date} |` +
+          }(${aboveOrBellow}-${lastData?.MA200.toFixed(2)})| ${lastData?.date} |` +
           `  < <http://localhost:4200/price-log/${s}?daysRange=${range}|local> | <https://stockmarkets000.web.app/price-log/${s}?daysRange=${range}|production>`,
       )
       .join('\n');
