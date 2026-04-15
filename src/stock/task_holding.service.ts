@@ -160,13 +160,19 @@ export class TaskHoldingService {
   })
   async runDaily() {
     const symbols = await this.getholdingList()
+    // await this.webhooksService.sendSlackNotificationVN(
+    //   symbols,
+    //   null,
+    //   'SLACK_WEBHOOKS_HOLDING',
+    //   '500'
+    // );
     this.logger.warn('Running getholdingList with stocklist length:', symbols.length);
     const today = new Date().toLocaleString('sv-SE', { timeZone: 'America/Chicago' }).replace(/[^\d]/g, '-');
     // const today = this.stockHelperService.getDateNDaysAgo(0);
   
     const webhooks = ['SLACK_WEBHOOKS_HOLDING'];
   
-    const sendBatchNotification = async (type: 'START' | 'END') => {
+    const sendBatchNotification = async (type: 'START-DAILY' | 'END-DAILY') => {
       const message = `${type}*${today}*${type}${'='.repeat(32)}`;
       await Promise.all(
         webhooks.map((hook) =>
@@ -176,7 +182,7 @@ export class TaskHoldingService {
     };
   
     try {
-      await sendBatchNotification('START');
+      await sendBatchNotification('START-DAILY');
   
       await this.USTIMERUN('MASS',
         symbols,
@@ -190,7 +196,7 @@ export class TaskHoldingService {
       console.error('runAllWatchLists30 failed:', error);
       throw error;
     } finally {
-      await sendBatchNotification('END');
+      await sendBatchNotification('END-DAILY');
     }
   }
 

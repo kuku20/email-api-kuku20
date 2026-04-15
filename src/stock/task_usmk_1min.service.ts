@@ -6,34 +6,11 @@ import { ConfigService } from '@nestjs/config';
 import { StockHelperService } from './stockHelper.service';
 import { LocalPLWR } from './runlocal.service';
 import { WebhooksService } from 'src/webhooks/webhooks.service';
+import * as DataSymbols from './dto/chartData';
 
 @Injectable()
 export class TasksUSMK_1MIN_Service {
   allkeys = 'all'; // test
-  mysymbols = [
-    'MSFT',
-    'PLTR',
-    'SOXX',
-    'NVDA',
-    'MSTR',
-    'ORCL',
-    'HE',
-    'AVGO',
-    'INTC',
-    'SMCI',
-    'BULL',
-    'RDW',
-    'CRWV',
-    'TSLA',
-    'BILL',
-    'QQQ',
-    'SPY',
-    'SNAP',
-    'BULL',
-    'UNH',
-    'TTD',
-    'CNC',
-  ]; // test symbols
   constructor(
     private readonly configService: ConfigService,
         private readonly webhooksService: WebhooksService,
@@ -256,9 +233,10 @@ export class TasksUSMK_1MIN_Service {
   }
   // @Cron('10 14-21 * * 1-5', { timeZone: 'UTC' })
 //@Cron('10 * * * * *', { timeZone: 'UTC' }) // every minute at the 10th second in UTC for testing
+@Cron(CronExpression.EVERY_5_MINUTES, { timeZone: 'UTC' }) // every 5 minutes at the 10th second in UTC
   async runAllWatchLists() {
     await Promise.all([
-      this.USTIMERUN(this.mysymbols, this.allkeys, 'US_EARLY_5MIN', 0, '1min'),
+      this.USTIMERUN(DataSymbols.watchlist, this.allkeys, 'US_EARLY_5MIN', 1, '5min'),
     ]);
   }
 }
