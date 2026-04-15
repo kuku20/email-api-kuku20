@@ -763,4 +763,8 @@ SELL ALL
   
     return true;
   }
+
+  combineUnique(...arrays) {
+    return [...new Set(arrays.flat())];
+  }
 }

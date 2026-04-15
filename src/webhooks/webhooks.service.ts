@@ -1651,7 +1651,7 @@ export class WebhooksService {
     const formatted = symbols
       .map(
         (s) =>
-          `•${stock_500_symbols.includes(s) ? '(SP500)' : ''} ${this.stockHelperService.Just2day.includes(s)?'(2day)':''}*${s}* → ${
+          `•${stock_500_symbols.includes(s) ? '(SP500)' : ''}-${this.stockHelperService.Just2day.includes(s)?'(2day)':''} *${s}* → ${
             lastData?.close
           }(${lastData?.MA200.toFixed(2)})| ${lastData?.date} |` +
           `  < <http://localhost:4200/price-log/${s}?daysRange=${range}|local> | <https://stockmarkets000.web.app/price-log/${s}?daysRange=${range}|production>`,
