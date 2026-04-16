@@ -19,14 +19,14 @@ export class TasksUS_ALL_MK_MASS_Service {
   ) {}
   private readonly logger = new Logger(TasksUS_ALL_MK_MASS_Service.name);
   today = this.stockHelperService.getDateNDaysAgo(0);
-  marketTarget = 300
+  marketTarget = 5
   async onModuleInit() {
     // This runs ONCE when the app starts
     // await this.runfullonms();
     // await this.runAllWatchLists();
     // await this.getMarket(StockSymbols.above2billion)
-    // await this.writeAbove2BillionToFile(this.aboveTarget,'aboveTarget');
-    // await this.writeAbove2BillionToFile(this.BelowTarget,'BelowTarget');
+    // await this.writeAbove2BillionToFile(this.aboveTarget,`Above_${this.marketTarget}_Billion`);
+    // await this.writeAbove2BillionToFile(this.BelowTarget,`Below_${this.marketTarget}_Billion`);
     // this.stockHelperService.ListMA50On1day = await this.LocalPLWR.getArrSymbolFFire('above-ma50/alldata/1day')as string[];
     // const x = await this.LocalPLWR.getArrSymbolFFire('above-ma50/alldata/lastab/1day')as string[];
     // await this.getMarket(this.stockHelperService.ListMA50On1day )
@@ -307,7 +307,7 @@ export class TasksUS_ALL_MK_MASS_Service {
   private async getMarket(
     tickers: string[],
   ) {
-    const limit = pLimit(1); // Limit the concurrency to 1 at a time
+    const limit = pLimit(8); // Limit the concurrency to 1 at a time
 
     const date = new Date();
 
