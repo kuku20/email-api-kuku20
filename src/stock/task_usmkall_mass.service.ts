@@ -19,13 +19,14 @@ export class TasksUS_ALL_MK_MASS_Service {
   ) {}
   private readonly logger = new Logger(TasksUS_ALL_MK_MASS_Service.name);
   today = this.stockHelperService.getDateNDaysAgo(0);
+  marketTarget = 300
   async onModuleInit() {
     // This runs ONCE when the app starts
     // await this.runfullonms();
     // await this.runAllWatchLists();
     // await this.getMarket(StockSymbols.above2billion)
-    // await this.writeAbove2BillionToFile(this.above2billion,'above5billion');
-    // await this.writeAbove2BillionToFile(this.aotherbillion,'aotherbillion');
+    // await this.writeAbove2BillionToFile(this.aboveTarget,'aboveTarget');
+    // await this.writeAbove2BillionToFile(this.BelowTarget,'BelowTarget');
     // this.stockHelperService.ListMA50On1day = await this.LocalPLWR.getArrSymbolFFire('above-ma50/alldata/1day')as string[];
     // const x = await this.LocalPLWR.getArrSymbolFFire('above-ma50/alldata/lastab/1day')as string[];
     // await this.getMarket(this.stockHelperService.ListMA50On1day )
@@ -301,8 +302,8 @@ export class TasksUS_ALL_MK_MASS_Service {
   }
 
   billion = 1000000000;
-  above2billion = []
-  aotherbillion = []
+  aboveTarget = []
+  BelowTarget = []
   private async getMarket(
     tickers: string[],
   ) {
@@ -321,9 +322,9 @@ export class TasksUS_ALL_MK_MASS_Service {
           // console.table(data);
           const mkb = data.market_cap / this.billion; // Convert to billions
           console.log(`Market Cap for ${ticker}: ${mkb.toFixed(2)} billion USD`);
-          if(mkb > 5){
-          this.above2billion.push(ticker)}else{
-            this.aotherbillion.push(ticker)
+          if(mkb > this.marketTarget){
+          this.aboveTarget.push(ticker)}else{
+            this.BelowTarget.push(ticker)
           }
           // this.logger.log(`${ticker} processed successfully.`);
         } catch (error) {
