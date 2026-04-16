@@ -1462,13 +1462,13 @@ export class WebhooksService {
       aboveMA50Third,
       aboveMA50Fourth,
     ].filter(Boolean).length;
-    if(aboveMA50){
+    if(aboveMA50 && timeframe === '1day'){
       await this.postdata(`alldata/lastab/${timeframe}`, ticker);
       if(belowA50Second){
         await this.postdata(`alldata/oneday/${timeframe}`, ticker);
       }
     }
-    if(aboveMA50 && aboveMA50Second && belowMA50Third){
+    if(aboveMA50 && aboveMA50Second && belowMA50Third && timeframe === '1day'){
       await this.sendSlackNotificationVN(
         [ticker],
         lastData,
@@ -1477,7 +1477,7 @@ export class WebhooksService {
       );
       await this.postdata(`alldata/twoday/${timeframe}`, ticker);
     }
-    if(aboveMA50 && aboveMA50Second && aboveMA50Third && bellowMA50Fourth){
+    if(aboveMA50 && aboveMA50Second && aboveMA50Third && bellowMA50Fourth && timeframe === '1day'){
       await this.sendDiscord(
         `SBUY-PriceCrMA50-3day -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
         `${ticker}-${timeframe}-CrMA50-${lastData?.close}`,

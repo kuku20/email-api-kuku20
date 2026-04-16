@@ -19,7 +19,7 @@ export class TasksUS_ALL_MK_MASS_Service {
   ) {}
   private readonly logger = new Logger(TasksUS_ALL_MK_MASS_Service.name);
   today = this.stockHelperService.getDateNDaysAgo(0);
-  marketTarget = 5
+  marketTarget = 100
   async onModuleInit() {
     // This runs ONCE when the app starts
     // await this.runfullonms();
