@@ -1436,6 +1436,7 @@ export class WebhooksService {
     const aboveMA50 = lastData.close > lastData.MA50;
     const MACDPositive = lastData.divergence > 0;
     const aboveMA50Second = secondLastData.close > secondLastData.MA50;
+    const belowA50Second = secondLastData.close < secondLastData.MA50;
     const aboveMA50Third = thirdLastData.close > thirdLastData.MA50;
     const belowMA50Third = thirdLastData.close < thirdLastData.MA50;
     const aboveMA50Fourth = fourthLastData.close > fourthLastData.MA50;
@@ -1463,6 +1464,9 @@ export class WebhooksService {
     ].filter(Boolean).length;
     if(aboveMA50){
       await this.postdata(`alldata/lastab/${timeframe}`, ticker);
+      if(belowA50Second){
+        await this.postdata(`alldata/oneday/${timeframe}`, ticker);
+      }
     }
     if(aboveMA50 && aboveMA50Second && belowMA50Third){
       await this.sendSlackNotificationVN(

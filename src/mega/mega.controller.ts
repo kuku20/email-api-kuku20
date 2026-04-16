@@ -36,4 +36,50 @@ export class MegaController {
   
     file.download({ start, end }).pipe(res);
   }
+
+  @Get('pdf')
+  async streamPdf(
+    @Query('url') megaUrl: string,
+    @Req() req: Request,
+    @Res() res: Response
+  ) {
+
+    const megaRoot = 'https://mega.nz/file/';
+    const file = File.fromURL(megaRoot + megaUrl);
+    console.log(`Loading attributes for file: ${megaUrl}`);
+    await file.loadAttributes();
+
+    const fileSize = file.size;
+    const range = req.headers.range;
+
+    // 📄 FULL PDF (no range request)
+    if (!range) {
+      res.writeHead(200, {
+        'Content-Length': fileSize,
+        'Content-Type': 'application/pdf',
+        'Accept-Ranges': 'bytes',
+        'Cross-Origin-Resource-Policy': 'cross-origin',
+      });
+
+      return file.download({}).pipe(res);
+    }
+
+    // 📄 PARTIAL PDF (for fast scrolling / browser preview)
+    const [startStr, endStr] = range.replace(/bytes=/, '').split('-');
+
+    const start = parseInt(startStr, 10);
+    const end = endStr ? parseInt(endStr, 10) : fileSize - 1;
+
+    const chunkSize = end - start + 1;
+
+    res.writeHead(206, {
+      'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+      'Accept-Ranges': 'bytes',
+      'Content-Length': chunkSize,
+      'Content-Type': 'application/pdf',
+      'Cross-Origin-Resource-Policy': 'cross-origin',
+    });
+
+    file.download({ start, end }).pipe(res);
+  }
 }  
