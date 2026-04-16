@@ -237,7 +237,7 @@ export class TasksUS_ALL_MK_MASS_Service {
   async runAllWatchLists() {
     const today = this.stockHelperService.getDateNDaysAgo(0);
   
-    const webhooks = ['SLACK_WEBHOOKS_D_US50', 'SLACK_WEBHOOKS_D_US100','SLACK_WEBHOOKS_D_US200','SLACK_WEBHOOKS_WATCHLIST'];
+    const webhooks = ['SLACK_WEBHOOKS_D_US50', 'SLACK_WEBHOOKS_D_US100','SLACK_WEBHOOKS_D_US200','SLACK_WEBHOOKS_WATCHLIST','SLACK_WEBHOOKS_J2DAY','SLACK_WEBHOOKS_J3DAY'];
   
     const sendBatchNotification = async (type: 'START' | 'END') => {
       const message = `${type}+daily+${today}+${type}${'='.repeat(32)}`;

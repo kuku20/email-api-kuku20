@@ -1467,32 +1467,33 @@ export class WebhooksService {
       if(belowA50Second){
         await this.postdata(`alldata/oneday/${timeframe}`, ticker);
       }
+      if(aboveMA50Second && belowMA50Third){
+        await this.sendSlackNotificationVN(
+          [ticker],
+          lastData,
+          'SLACK_WEBHOOKS_J2DAY',
+          '500'
+        );
+        await this.postdata(`alldata/twoday/${timeframe}`, ticker);
+      }
+      if(aboveMA50Second && aboveMA50Third && bellowMA50Fourth){
+        await this.sendDiscord(
+          `SBUY-PriceCrMA50-3day -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+          `${ticker}-${timeframe}-CrMA50-${lastData?.close}`,
+          lastData,
+          'US_15M_HT',
+          data,
+        );
+        await this.sendSlackNotificationVN(
+          [ticker],
+          lastData,
+          'SLACK_WEBHOOKS_J3DAY',
+          '500'
+        );
+        await this.postdata(`alldata/threeday/${timeframe}`, ticker);
+      }
     }
-    if(aboveMA50 && aboveMA50Second && belowMA50Third && timeframe === '1day'){
-      await this.sendSlackNotificationVN(
-        [ticker],
-        lastData,
-        'SLACK_WEBHOOKS_J2DAY',
-        '500'
-      );
-      await this.postdata(`alldata/twoday/${timeframe}`, ticker);
-    }
-    if(aboveMA50 && aboveMA50Second && aboveMA50Third && bellowMA50Fourth && timeframe === '1day'){
-      await this.sendDiscord(
-        `SBUY-PriceCrMA50-3day -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-        `${ticker}-${timeframe}-CrMA50-${lastData?.close}`,
-        lastData,
-        'US_15M_HT',
-        data,
-      );
-      await this.sendSlackNotificationVN(
-        [ticker],
-        lastData,
-        'SLACK_WEBHOOKS_J3DAY',
-        '500'
-      );
-      await this.postdata(`alldata/threeday/${timeframe}`, ticker);
-    }
+
     if (aboveMA50Count >= 3 && MACDPositive) {
       if (belowMA50Fifth) {
         this.listsymbolBEarly.push(ticker);
