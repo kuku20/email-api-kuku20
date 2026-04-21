@@ -1450,7 +1450,7 @@ export class WebhooksService {
     if(MACDDivergence === 'bullish'){
       await this.FireBaseApi("put", `stock-related/${basePath}/MACDDivergence/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
     }
-    if (MACDPositive && PriceCrMA50) {
+    if (PriceCrMA50) {
       await this.sendDiscord(
         `SBUY-BuyOnly_MACDPositive -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
         `${ticker}-${timeframe}-CrMA50-${lastData?.close}`,
@@ -1465,7 +1465,7 @@ export class WebhooksService {
       aboveMA50Third,
       aboveMA50Fourth,
     ].filter(Boolean).length;
-    if(aboveMA50 && MACDPositive){
+    if(aboveMA50){
       await this.FireBaseApi("put", `stock-related/${basePath}/alldata/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
       if(belowA50Second){
         await this.FireBaseApi("put", `stock-related/${basePath}/oneday/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
