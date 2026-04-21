@@ -1407,10 +1407,10 @@ export class WebhooksService {
 
    */
 
-  async delete() {
+  async delete(path: string) {
     const data = await this.FireBaseApi(
       'delete',
-      `stock-related/${this.stockHelperService.aboveMA50api}.json`,
+      `stock-related/${path}.json`,
       '',
     );
   }
@@ -1436,7 +1436,10 @@ export class WebhooksService {
     const belowMA50Fifth = fifthLastData.close < fifthLastData.MA50;
 
     const blowMA200 = lastData.close < lastData.MA200;
-
+    const basePath = blowMA200
+    ? this.stockHelperService.aboveMA50api
+    : `${this.stockHelperService.aboveMA50api}-blowMA200`;
+    
     const PriceCrMA50 = await this.stockHelperService.priceAbMABUY(
       lastData,
       secondLastData,
@@ -1444,7 +1447,7 @@ export class WebhooksService {
     );
     const MACDDivergence = lastData?.MACDDivergence //bullish
     if(MACDDivergence === 'bullish'){
-      await this.FireBaseApi("put", `stock-related/${blowMA200?this.stockHelperService.aboveMA50api:'blowMA200'+this.stockHelperService.aboveMA50api}/MACDDivergence/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
+      await this.FireBaseApi("put", `stock-related/${basePath}/MACDDivergence/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
     }
     if (MACDPositive && PriceCrMA50) {
       await this.sendDiscord(
@@ -1462,9 +1465,9 @@ export class WebhooksService {
       aboveMA50Fourth,
     ].filter(Boolean).length;
     if(aboveMA50 && MACDPositive){
-      await this.FireBaseApi("put", `stock-related/${blowMA200?this.stockHelperService.aboveMA50api:'blowMA200'+this.stockHelperService.aboveMA50api}/alldata/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
+      await this.FireBaseApi("put", `stock-related/${basePath}/alldata/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
       if(belowA50Second){
-        await this.FireBaseApi("put", `stock-related/${blowMA200?this.stockHelperService.aboveMA50api:'blowMA200'+this.stockHelperService.aboveMA50api}/oneday/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
+        await this.FireBaseApi("put", `stock-related/${basePath}/oneday/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
       }
       if(aboveMA50Second && belowMA50Third){
         if(timeframe === '1day'){
@@ -1475,7 +1478,7 @@ export class WebhooksService {
             '500'
           );
         }
-        await this.FireBaseApi("put", `stock-related/${blowMA200?this.stockHelperService.aboveMA50api:'blowMA200'+this.stockHelperService.aboveMA50api}/twoday/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
+        await this.FireBaseApi("put", `stock-related/${basePath}/twoday/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
       }
       if(aboveMA50Second && aboveMA50Third && bellowMA50Fourth){
         if(timeframe === '1day'){
@@ -1493,18 +1496,20 @@ export class WebhooksService {
             '500'
           );
         }
-        await this.FireBaseApi("put", `stock-related/${blowMA200?this.stockHelperService.aboveMA50api:'blowMA200'+this.stockHelperService.aboveMA50api}/threeday/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
+        await this.FireBaseApi("put", `stock-related/${basePath}/threeday/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
       }
       if(aboveMA50Second && aboveMA50Third && aboveMA50Fourth && belowMA50Fifth){
-        await this.FireBaseApi("put", `stock-related/${blowMA200?this.stockHelperService.aboveMA50api:'blowMA200'+this.stockHelperService.aboveMA50api}/fourday/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
+        await this.FireBaseApi("put", `stock-related/${basePath}/fourday/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
       }
+    }else{
+      await this.FireBaseApi("put", `stock-related/${basePath}/belowMA50/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
     }
 
     if (aboveMA50Count >= 3 && MACDPositive) {
       if (belowMA50Fifth) {
         this.listsymbolBEarly.push(ticker);
         await this.sendSlackNotificationURL([ticker], lastData, timeframe);
-        await this.FireBaseApi("put", `stock-related/${blowMA200?this.stockHelperService.aboveMA50api:'blowMA200'+this.stockHelperService.aboveMA50api}/all3count-early/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
+        await this.FireBaseApi("put", `stock-related/${basePath}/all3count-early/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
         if (this.listsymbolBEarly.length > this.maxListLength) {
           await this.sendDiscordNotification(
             `,${this.listsymbolBEarly.toString()}`,
@@ -1516,7 +1521,7 @@ export class WebhooksService {
         }
       }
       this.listsymbolB.push(ticker);
-      await this.FireBaseApi("put", `stock-related/${blowMA200?this.stockHelperService.aboveMA50api:'blowMA200'+this.stockHelperService.aboveMA50api}/all3count/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
+      await this.FireBaseApi("put", `stock-related/${basePath}/all3count/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
       if (timeframe === '1day') {
         (this.stockHelperService.ListMA50On1day ??= []).push(ticker);
       } else if (timeframe.includes('4h')) {

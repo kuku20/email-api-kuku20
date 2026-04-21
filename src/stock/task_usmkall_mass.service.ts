@@ -25,8 +25,9 @@ export class TasksUS_ALL_MK_MASS_Service {
   async onModuleInit() {
     // This runs ONCE when the app starts
     // this.stockHelperService.aboveMA50api = `dayago-${this.dayago}-` +this.rundayaogo;
+    // await this.webhooksService.delete(this.stockHelperService.aboveMA50api); // reset firebase data for the day
+    // await this.webhooksService.delete(this.stockHelperService.aboveMA50api+'-blowMA200'); // reset firebase data for the day
     // await this.runfullonms();
-   //  await this.webhooksService.delete(); 
   //  await this.runAllOn1day();
   //  await this.runAllOn4h()
     // await this.getMarket(StockSymbols.above2billion);
@@ -194,7 +195,8 @@ export class TasksUS_ALL_MK_MASS_Service {
   async runfullonms(stocklist = StockSymbols.allabove500million){
     // delete old data from firebase
     const today = this.stockHelperService.getDateNDaysAgo(0); // Get today's date
-    await this.webhooksService.delete(); // reset firebase data for the day
+    await this.webhooksService.delete(this.stockHelperService.aboveMA50api); // reset firebase data for the day
+    await this.webhooksService.delete(this.stockHelperService.aboveMA50api+'-blowMA200'); // reset firebase data for the day
     this.stockHelperService.ListMA50On1day = []; // Clear the list at the start of each run
     await this.SendEverydayService('EARLY_AB200', '200AB_LESS_01', '1day');
     await this.SendEverydayService('RSI15AL', 'RSIALERT', '1day');
