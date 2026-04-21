@@ -3,8 +3,13 @@ import { StockData } from './dto/chartData';
 
 @Injectable()
 export class StockHelperService {
-  ListMA50On1day: string[] = [];
-  ListMA50On4hour: string[] = [];
+  aboveMA50api: string = `sun-04-19-2026-blowMA200`;
+Just1Candle: string[] = [];
+Just2Candle: string[] = [];
+Just3Candle: string[] = [];
+Just5Candle: string[] = [];
+ListMA50On1day: string[] = [];
+ListMA50On4hour: string[] = [];
   HoldingList: string[] = [];
   Just2day: string[] = [];
   async returnNewData(dataIn: any[]) {
