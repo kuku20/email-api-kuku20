@@ -1275,7 +1275,7 @@ export class WebhooksService {
         }SBUY--PriceCrMA50-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-${timeframe}-CrMA50-${lastdata?.close}`,
         lastdata,
-        DataSymbols.watchlist.includes(ticker)?'WATCHLIST': this.stockHelperService.Just2Candle.includes(ticker)?'US_EARLY_15MIN': HT_Channel,
+        DataSymbols.watchlist.includes(ticker)?'WATCHLIST': this.stockHelperService.ab50_bl200_3Candles.includes(ticker)?'US_EARLY_15MIN': HT_Channel,
         data,
       );
       return BuyOnly_StochRSICrossAB200;
@@ -1291,7 +1291,7 @@ export class WebhooksService {
         }(SBUY--PriceCrMA100-MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-${timeframe}-CrMA100-${lastdata?.close}`,
         lastdata,
-        DataSymbols.watchlist.includes(ticker)?'WATCHLIST':this.stockHelperService.Just2Candle.includes(ticker)?'US_EARLY_15MIN':B_Channel,
+        DataSymbols.watchlist.includes(ticker)?'WATCHLIST':this.stockHelperService.ab50_bl200_3Candles.includes(ticker)?'US_EARLY_15MIN':B_Channel,
         data,
       );
       return BuyOnly_StochRSICrossAB200;
@@ -1307,7 +1307,7 @@ export class WebhooksService {
         }SBUY-PriceCrMA200-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
-        DataSymbols.watchlist.includes(ticker)?'WATCHLIST':this.stockHelperService.Just2Candle.includes(ticker)?'US_EARLY_15MIN':'US_30M_HT',
+        DataSymbols.watchlist.includes(ticker)?'WATCHLIST':this.stockHelperService.ab50_bl200_3Candles.includes(ticker)?'US_EARLY_15MIN':'US_30M_HT',
         data,
       );
       return BuyOnly_StochRSICrossAB200;
@@ -1439,7 +1439,7 @@ export class WebhooksService {
     // const basePath = this.stockHelperService.aboveMA50api
     const basePath = blowMA200
     ? this.stockHelperService.aboveMA50api
-    : `${this.stockHelperService.aboveMA50api}-blowMA200`;
+    : `${this.stockHelperService.aboveMA50api}-aboveMA200`;
 
     const PriceCrMA50 = await this.stockHelperService.priceAbMABUY(
       lastData,
@@ -1495,6 +1495,20 @@ export class WebhooksService {
             lastData,
             'SLACK_WEBHOOKS_J3DAY',
             '500'
+          );
+        }else if(timeframe.includes('4hour')){
+          await this.sendSlackNotificationVN(
+            [ticker],
+            lastData,
+            'SLACK_WEBHOOKS_4h',
+            '500'
+          );
+          await this.sendDiscord(
+            `BUY BUYBUY-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+            `${ticker}-ON-${timeframe}`,
+            lastData,
+            'TSLA',
+            data,
           );
         }
         await this.FireBaseApi("put", `stock-related/${basePath}/threeday/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
@@ -1641,12 +1655,20 @@ export class WebhooksService {
       other === '1day'
         ? this.configService.get<any>('SLACK_WEBHOOKS')
         : this.configService.get<any>('SLACK_WEBHOOKS_4h');
-        const mkaboveOrBellow2 = DataSymbols.above2billion.includes(symbols[0]) ? '🟢 *2B*-' : '';
-    const sp500 = DataSymbols.stock_500_symbols.includes(symbols[0]) ? '(SP500)-' : ''
+    let hourIn4 = '';
+    if(this.stockHelperService.above50andBelow200.length > 0){
+      hourIn4 = this.stockHelperService.above50andBelow200.includes(symbols[0]) ? '4️⃣ *BL200* 🟢🟢' : '4️⃣ *AB200* 🟢';
+    }
+    const aboveOrBellow =
+    lastData?.MA200 < lastData?.close
+      ? '🟢 *ABOVE*'
+      : '🔴 *BELOW*';
+    const mkaboveOrBellow2 = DataSymbols.above2billion.includes(symbols[0]) ? '💰-' : '';
+    const sp500 = DataSymbols.stock_500_symbols.includes(symbols[0]) ? '(🇺🇸)-' : ''
     const formatted = symbols
       .map(
         (s) =>
-          `• ${sp500}${mkaboveOrBellow2} *${s}* → ${
+          `• ${sp500}${mkaboveOrBellow2}${hourIn4} *${s}* → ${
             lastData.close
           }` +
           ` <http://localhost:4200/price-log/${s}?daysRange=5|5m> | <http://localhost:4200/price-log/${s}?daysRange=15|15m> | <http://localhost:4200/price-log/${s}?daysRange=30|30m> | <http://localhost:4200/price-log/${s}?daysRange=60|1hour> | <http://localhost:4200/price-log/${s}?daysRange=240|4hour> | <http://localhost:4200/price-log/${s}?daysRange=500|daily> ||=|| <https://stockmarkets000.web.app/price-log/${s}?daysRange=500|PROD-DAILY>`,
@@ -1671,16 +1693,20 @@ export class WebhooksService {
     range: '600' | '550' | '500' | '480' | '240' | '120' | '60' | '45' | '30' | '15' | '5' | '1' = '500',
   ) {
     const BASE_URL = this.configService.get<any>(other);
+    let hourIn4 = '';
+    if(this.stockHelperService.above50andBelow200.length > 0){
+      hourIn4 = this.stockHelperService.above50andBelow200.includes(symbols[0]) ? '4️⃣ *BL200* 🟢🟢' : '4️⃣ *AB200* 🟢';
+    }
     const aboveOrBellow =
     lastData?.MA200 < lastData?.close
-      ? '🔴 *ABOVE*'
-      : '👀 *BELOW*';
-    const mkaboveOrBellow2 = DataSymbols.above2billion.includes(symbols[0]) ? '🟢 *2B*-' : '';
-    const sp500 = DataSymbols.stock_500_symbols.includes(symbols[0]) ? '(SP500)-' : ''
+      ? '🟢 *ABOVE*'
+      : '🔴 *BELOW*';
+    const mkaboveOrBellow2 = DataSymbols.above2billion.includes(symbols[0]) ? '💰-' : '';
+    const sp500 = DataSymbols.stock_500_symbols.includes(symbols[0]) ? '(🇺🇸)-' : ''
     const formatted = symbols
       .map(
         (s) =>
-          `•${sp500}${mkaboveOrBellow2}${this.stockHelperService.Just2Candle.includes(s)?'(2day)':''} *${s}* → ${
+          `•${sp500}${mkaboveOrBellow2}${hourIn4}${this.stockHelperService.ab50_bl200_3Candles.includes(s)?'(2day)':''} *${s}* → ${
             lastData?.close
           }(${aboveOrBellow}-${lastData?.MA200.toFixed(2)})| ${lastData?.date} |` +
           `  < <http://localhost:4200/price-log/${s}?daysRange=${range}|local> | <https://stockmarkets000.web.app/price-log/${s}?daysRange=${range}|production> | <https://www.tradingview.com/chart/mWoCISmu/?symbol=${s}|tradingview> >`,

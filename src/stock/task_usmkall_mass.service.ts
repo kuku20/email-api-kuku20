@@ -29,6 +29,9 @@ export class TasksUS_ALL_MK_MASS_Service {
     // await this.webhooksService.delete(this.stockHelperService.aboveMA50api+'-blowMA200'); // reset firebase data for the day
     // await this.runfullonms();
   //  await this.runAllOn1day();
+  // await this.webhooksService.delete(this.stockHelperService.aboveMA50api); // reset firebase data for the day
+  // await this.webhooksService.delete(this.stockHelperService.aboveMA50api+'-blowMA200'); // reset firebase data for the day
+  // await this.webhooksService.delete('runOn4hourInday'); // reset firebase data for the day
   //  await this.runAllOn4h()
     // await this.getMarket(StockSymbols.above2billion);
     // await this.stockHelperService.writeAbove2BillionToFile(this.aboveTarget,`Above_${this.marketTarget}_Billion`);
@@ -148,15 +151,15 @@ export class TasksUS_ALL_MK_MASS_Service {
 
             const webhookMap = [
               {
-                condition: signal.PriceCrMA50 && MACDPositive,
+                condition: signal.PriceCrMA50 ,
                 hook: 'SLACK_WEBHOOKS_D_US50',
               },
               {
-                condition: signal.PriceCrMA100 && MACDPositive,
+                condition: signal.PriceCrMA100 ,
                 hook: 'SLACK_WEBHOOKS_D_US100',
               },
               {
-                condition: signal.PriceCrMA200 && MACDPositive,
+                condition: signal.PriceCrMA200 ,
                 hook: 'SLACK_WEBHOOKS_D_US200',
               },
             ];
@@ -196,7 +199,8 @@ export class TasksUS_ALL_MK_MASS_Service {
     // delete old data from firebase
     const today = this.stockHelperService.getDateNDaysAgo(0); // Get today's date
     await this.webhooksService.delete(this.stockHelperService.aboveMA50api); // reset firebase data for the day
-    await this.webhooksService.delete(this.stockHelperService.aboveMA50api+'-blowMA200'); // reset firebase data for the day
+    await this.webhooksService.delete(this.stockHelperService.aboveMA50api+'-aboveMA200'); // reset firebase data for the day
+    await this.webhooksService.delete('runOn4hourInday'); // reset firebase data for the day
     this.stockHelperService.ListMA50On1day = []; // Clear the list at the start of each run
     await this.SendEverydayService('EARLY_AB200', '200AB_LESS_01', '1day');
     await this.SendEverydayService('RSI15AL', 'RSIALERT', '1day');
@@ -277,6 +281,9 @@ export class TasksUS_ALL_MK_MASS_Service {
     ]);
   }
   async runAllOn4h(stocklist = StockSymbols.allabove500million) {
+    const message = `${'='.repeat(32)}`;
+    this.webhooksService.sendSlackNotification(message, 'SLACK_WEBHOOKS_US50');
+    await this.send1chanel(['TSLA'],'START');
     await Promise.all([
       this.USTIMERUN(
         stocklist,
@@ -287,6 +294,8 @@ export class TasksUS_ALL_MK_MASS_Service {
       ),
     ]);
     await this.webhooksService.sendlast('200BL_OV_NEG_01', '200BL_OV_NEG_05');
+    this.webhooksService.sendSlackNotification(message, 'SLACK_WEBHOOKS_US50');
+    await this.send1chanel(['TSLA'],'END');
   }
 
   async SendEverydayService(chanel1, chanel2, timeframe = '1day') {

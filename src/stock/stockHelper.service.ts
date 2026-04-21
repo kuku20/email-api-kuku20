@@ -5,10 +5,11 @@ import { StockData } from './dto/chartData';
 export class StockHelperService {
   // aboveMA50api: string = `sun-04-19-2026-blowMA200`;
   aboveMA50api: string = `week-04-20-2026`;
-Just1Candle: string[] = [];
-Just2Candle: string[] = [];
-Just3Candle: string[] = [];
-Just5Candle: string[] = [];
+ab50_bl200_3Candles: string[] = [];
+ab50_ab200_3Candles: string[] = [];
+above50andBelow200: string[] = [];
+above50andAbove200: string[] = [];
+runOn4hourInday: string[] = [];
 ListMA50On1day: string[] = [];
 ListMA50On4hour: string[] = [];
   HoldingList: string[] = [];
@@ -743,19 +744,12 @@ SELL ALL
   }
 
   shouldRunTradingLogicUS(
-    intickers: string[],
     timeframe: string,
     logger
   ): boolean {
     const now = new Date().toLocaleString('en-US', {
       timeZone: 'America/New_York',
     });
-  
-    if (intickers.length < 1) {
-      logger.log(`Don't have symbol ${timeframe} check (${now} ET)`);
-      return false;
-    }
-  
     if (!this.isMarketOpen()) {
       logger.log(
         `🕒 Market closed — skipping ${timeframe} check (${now} ET)`,
