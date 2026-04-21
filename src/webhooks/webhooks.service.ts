@@ -1415,8 +1415,8 @@ export class WebhooksService {
     );
   }
 
-  listsymbolB = [];
-  listsymbolBEarly = [];
+  listsymbolB: string[] = [];
+  listsymbolBEarly: string[] = [];
   listsymbolS = [];
   maxListLength = 100;
   async runALLOn_MA50(data, ticker, timeframe, B_Channel, HT_Channel) {
@@ -1436,10 +1436,11 @@ export class WebhooksService {
     const belowMA50Fifth = fifthLastData.close < fifthLastData.MA50;
 
     const blowMA200 = lastData.close < lastData.MA200;
-    const basePath = blowMA200
-    ? this.stockHelperService.aboveMA50api
-    : `${this.stockHelperService.aboveMA50api}-blowMA200`;
-    
+    const basePath = this.stockHelperService.aboveMA50api
+    // const basePath = blowMA200
+    // ? this.stockHelperService.aboveMA50api
+    // : `${this.stockHelperService.aboveMA50api}-aboveMA200`;
+
     const PriceCrMA50 = await this.stockHelperService.priceAbMABUY(
       lastData,
       secondLastData,
@@ -1525,7 +1526,7 @@ export class WebhooksService {
       if (timeframe === '1day') {
         (this.stockHelperService.ListMA50On1day ??= []).push(ticker);
       } else if (timeframe.includes('4h')) {
-        this.stockHelperService.ListMA50On4hour.push(ticker);
+        (this.stockHelperService.ListMA50On4hour ??= []).push(ticker);
       }
       if (this.listsymbolB.length > this.maxListLength) {
         await this.sendDiscordNotification(
@@ -1673,10 +1674,12 @@ export class WebhooksService {
     lastData?.MA200 < lastData?.close
       ? '🔴 *ABOVE*'
       : '🟢👀 *BELOW*';
+    const mkaboveOrBellow2 = DataSymbols.above2billion.includes(symbols[0]) ? '>2bl-' : '<2bl-';
+    const sp500 = DataSymbols.stock_500_symbols.includes(symbols[0]) ? '(SP500)-' : ''
     const formatted = symbols
       .map(
         (s) =>
-          `•${DataSymbols.stock_500_symbols.includes(s) ? '(SP500)' : ''}-${this.stockHelperService.Just2Candle.includes(s)?'(2day)':''} *${s}* → ${
+          `•${sp500}${mkaboveOrBellow2}${this.stockHelperService.Just2Candle.includes(s)?'(2day)':''} *${s}* → ${
             lastData?.close
           }(${aboveOrBellow}-${lastData?.MA200.toFixed(2)})| ${lastData?.date} |` +
           `  < <http://localhost:4200/price-log/${s}?daysRange=${range}|local> | <https://stockmarkets000.web.app/price-log/${s}?daysRange=${range}|production> | <https://www.tradingview.com/chart/mWoCISmu/?symbol=${s}|tradingview> >`,
