@@ -1497,19 +1497,36 @@ export class WebhooksService {
             '500'
           );
         }else if(timeframe.includes('4hour')){
-          await this.sendSlackNotificationVN(
-            [ticker],
-            lastData,
-            'SLACK_WEBHOOKS_4h',
-            '500'
-          );
-          await this.sendDiscord(
-            `BUY BUYBUY-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-            `${ticker}-ON-${timeframe}`,
-            lastData,
-            'TSLA',
-            data,
-          );
+          const aboveOrBellow = lastData?.MA200 < lastData?.close
+          if(aboveOrBellow){
+            await this.sendSlackNotificationVN(
+              [ticker],
+              lastData,
+              'SLACK_WEBHOOKS_US50',
+              '500'
+            );
+            await this.sendDiscord(
+              `BUY BUYBUY-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+              `${ticker}-ON-${timeframe}`,
+              lastData,
+              'TSLA',
+              data,
+            );
+          }else{
+            await this.sendSlackNotificationVN(
+              [ticker],
+              lastData,
+              'SLACK_WEBHOOKS_US100',
+              '500'
+            );
+            await this.sendDiscord(
+              `BUY BUYBUY-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+              `${ticker}-ON-${timeframe}`,
+              lastData,
+              'SMCI',
+              data,
+            );
+          }
         }
         await this.FireBaseApi("put", `stock-related/${basePath}/threeday/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
       }
@@ -1668,9 +1685,7 @@ export class WebhooksService {
     const formatted = symbols
       .map(
         (s) =>
-          `• ${sp500}${mkaboveOrBellow2}${hourIn4} *${s}* → ${
-            lastData.close
-          }` +
+          `• ${sp500}${mkaboveOrBellow2}${hourIn4} *${s}* → ${lastData.close}(${aboveOrBellow}-${lastData?.MA200.toFixed(2)})` +
           ` <http://localhost:4200/price-log/${s}?daysRange=5|5m> | <http://localhost:4200/price-log/${s}?daysRange=15|15m> | <http://localhost:4200/price-log/${s}?daysRange=30|30m> | <http://localhost:4200/price-log/${s}?daysRange=60|1hour> | <http://localhost:4200/price-log/${s}?daysRange=240|4hour> | <http://localhost:4200/price-log/${s}?daysRange=500|daily> ||=|| <https://stockmarkets000.web.app/price-log/${s}?daysRange=500|PROD-DAILY>`,
       )
       .join('\n');
