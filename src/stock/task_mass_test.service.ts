@@ -22,7 +22,7 @@ export class TestOndata_service {
   daytestBF = 0;
   dayend = this.stockHelperService.getDateNDaysAgo(-1 + this.daytestBF);
   endpointFolder = 'stock-price-check';
-  timeframe = '1day';
+  timeframe = '4hour';
   async onModuleInit() {
     // This runs ONCE when the app starts
     // const symbols =  await this.LocalPLWR.getArrSymbolFFire('${this.stockHelperService.aboveMA50api}/alldata/4hour') as string[];
@@ -39,15 +39,15 @@ export class TestOndata_service {
     // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.stockHelperService.aboveMA50api}/fourday/${this.timeframe}.json`,'')
     // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.stockHelperService.aboveMA50api}/threeday/${this.timeframe}.json`,'')
     // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.stockHelperService.aboveMA50api}/twoday/${this.timeframe}.json`,'')
-    const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.stockHelperService.aboveMA50api}/oneday/${this.timeframe}.json`,'')
-
+    // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.stockHelperService.aboveMA50api}/oneday/${this.timeframe}.json`,'')
+    const SLACK_WEBHOOKS_US50  =await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.stockHelperService.aboveMA50api}/threeday/${this.timeframe}.json`,'')
     // const data = await this.LocalPLWR.FireBaseApi('get','stock-related/post-wash-sell.json','')
     const tickers = Object.keys(SLACK_WEBHOOKS_US50);
     console.log(tickers);
     console.log(tickers.length);
 
     // this.stockHelperService.writeAbove2BillionToFile(tickers,'alldata-4hour-3-${this.stockHelperService.aboveMA50api}');
-    // this.comparePrice(45, SLACK_WEBHOOKS_US50);
+    this.comparePrice(0, SLACK_WEBHOOKS_US50);
     // const SLACK_WEBHOOKS_US50 = await this.webhooksService.FireBaseApi(
     //   'get',
     //   path,

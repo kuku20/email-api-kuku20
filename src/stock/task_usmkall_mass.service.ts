@@ -29,7 +29,7 @@ export class TasksUS_ALL_MK_MASS_Service {
     // await this.webhooksService.delete(this.stockHelperService.aboveMA50api+'-blowMA200'); // reset firebase data for the day
     // await this.runfullonms();
   //  await this.runAllOn1day();
-   await this.runAllOn4h()
+  //  await this.runAllOn4h()
     // await this.getMarket(StockSymbols.above2billion);
     // await this.stockHelperService.writeAbove2BillionToFile(this.aboveTarget,`Above_${this.marketTarget}_Billion`);
     // await this.stockHelperService.writeAbove2BillionToFile(this.BelowTarget,`Below_${this.marketTarget}_Billion`);

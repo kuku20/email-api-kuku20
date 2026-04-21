@@ -1641,11 +1641,12 @@ export class WebhooksService {
       other === '1day'
         ? this.configService.get<any>('SLACK_WEBHOOKS')
         : this.configService.get<any>('SLACK_WEBHOOKS_4h');
-
+        const mkaboveOrBellow2 = DataSymbols.above2billion.includes(symbols[0]) ? '🟢 *2B*-' : '';
+    const sp500 = DataSymbols.stock_500_symbols.includes(symbols[0]) ? '(SP500)-' : ''
     const formatted = symbols
       .map(
         (s) =>
-          `• ${DataSymbols.stock_500_symbols.includes(s) ? '(SP500)' : ''}*${s}* → ${
+          `• ${sp500}${mkaboveOrBellow2} *${s}* → ${
             lastData.close
           }` +
           ` <http://localhost:4200/price-log/${s}?daysRange=5|5m> | <http://localhost:4200/price-log/${s}?daysRange=15|15m> | <http://localhost:4200/price-log/${s}?daysRange=30|30m> | <http://localhost:4200/price-log/${s}?daysRange=60|1hour> | <http://localhost:4200/price-log/${s}?daysRange=240|4hour> | <http://localhost:4200/price-log/${s}?daysRange=500|daily> ||=|| <https://stockmarkets000.web.app/price-log/${s}?daysRange=500|PROD-DAILY>`,
@@ -1673,8 +1674,8 @@ export class WebhooksService {
     const aboveOrBellow =
     lastData?.MA200 < lastData?.close
       ? '🔴 *ABOVE*'
-      : '🟢👀 *BELOW*';
-    const mkaboveOrBellow2 = DataSymbols.above2billion.includes(symbols[0]) ? '>2bl-' : '<2bl-';
+      : '👀 *BELOW*';
+    const mkaboveOrBellow2 = DataSymbols.above2billion.includes(symbols[0]) ? '🟢 *2B*-' : '';
     const sp500 = DataSymbols.stock_500_symbols.includes(symbols[0]) ? '(SP500)-' : ''
     const formatted = symbols
       .map(
