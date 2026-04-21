@@ -4,7 +4,7 @@ import { StockData } from './dto/chartData';
 @Injectable()
 export class StockHelperService {
   // aboveMA50api: string = `sun-04-19-2026-blowMA200`;
-  aboveMA50api: string = `week-04-20-2026-all`;
+  aboveMA50api: string = `week-04-20-2026`;
 Just1Candle: string[] = [];
 Just2Candle: string[] = [];
 Just3Candle: string[] = [];

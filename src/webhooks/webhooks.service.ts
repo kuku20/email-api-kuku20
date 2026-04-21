@@ -1436,10 +1436,10 @@ export class WebhooksService {
     const belowMA50Fifth = fifthLastData.close < fifthLastData.MA50;
 
     const blowMA200 = lastData.close < lastData.MA200;
-    const basePath = this.stockHelperService.aboveMA50api
-    // const basePath = blowMA200
-    // ? this.stockHelperService.aboveMA50api
-    // : `${this.stockHelperService.aboveMA50api}-aboveMA200`;
+    // const basePath = this.stockHelperService.aboveMA50api
+    const basePath = blowMA200
+    ? this.stockHelperService.aboveMA50api
+    : `${this.stockHelperService.aboveMA50api}-blowMA200`;
 
     const PriceCrMA50 = await this.stockHelperService.priceAbMABUY(
       lastData,
@@ -1503,7 +1503,7 @@ export class WebhooksService {
         await this.FireBaseApi("put", `stock-related/${basePath}/fourday/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
       }
     }else{
-      await this.FireBaseApi("put", `stock-related/${basePath}/belowMA50/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
+      await this.FireBaseApi("put", `stock-related/runOn4hourInday/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
     }
 
     if (aboveMA50Count >= 3 && MACDPositive) {
