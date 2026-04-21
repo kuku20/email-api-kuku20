@@ -103,6 +103,28 @@ export class TasksUSMKService_SP500 {
           if (!isWithinRange) {
             return
           }
+          if(this.stockHelperService.HoldingList.includes(ticker)){
+            const BlMA200_MA20_MA50_MA100_SELL = await this.stockHelperService.BlMA200_MA20_MA50_MA100_SELL(
+              lastData,
+              secondLastData,
+            );
+            if(BlMA200_MA20_MA50_MA100_SELL){
+              await this.webhooksService.sendSlackNotificationVN(
+                [ticker],
+                lastData,
+                'SLACK_WEBHOOKS_HOLDING',
+                this.runon15or30
+              );
+              await this.webhooksService.sendDiscord(
+                `SELLLLLL BlMA200_MA20_MA50_MA100_SELL-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+                `${ticker}-ON-${timeframe}`,
+                lastData,
+                'US_EARLY_5MIN',
+                data,
+              );
+              return;
+            }
+          }
           // Process the data
           const signal = await this.webhooksService.BuyOnly_StochRSICrossAB200(
             data,
@@ -120,7 +142,7 @@ export class TasksUSMKService_SP500 {
             { condition: signal.PriceCrMA50 && signal.ContinueUp, hook: 'SLACK_WEBHOOKS_US50' },
             { condition: signal.PriceCrMA100 && signal.ContinueUp, hook: 'SLACK_WEBHOOKS_US100' },
             { condition: signal.PriceCrMA200 && signal.ContinueUp, hook: 'SLACK_WEBHOOKS_US200' },
-            { condition: signal.macdCrAB , hook: 'SLACK_WEBHOOKS_MACDCRAB' },
+            { condition: signal.macdCrAB && lastData.MACDLine > 0, hook: 'SLACK_WEBHOOKS_MACDCRAB' },
           ];
           
           const matched = webhookMap.find((w) => w.condition);
@@ -134,11 +156,11 @@ export class TasksUSMKService_SP500 {
               this.runon15or30
             );
 
-            const data1 = await this.webhooksService.FireBaseApi(
-              'put',
-              `${this.endpointFolder}/${matched.hook}/${timeput}/${timeframe}/${ticker}.json`,
-              lastData.close,
-            );
+            // const data1 = await this.webhooksService.FireBaseApi(
+            //   'put',
+            //   `${this.endpointFolder}/${matched.hook}/${timeput}/${timeframe}/${ticker}.json`,
+            //   lastData.close,
+            // );
           }
           this.logger.log(`${ticker} processed successfully.`);
         } catch (error) {
@@ -163,18 +185,33 @@ export class TasksUSMKService_SP500 {
     // This runs ONCE when the app starts
     //await this.runAllWatchLists();
     // console.log(  stock_500_symbols.length)
-    this.stockHelperService.ListMA50On4hour = await this.LocalPLWR.getArrSymbolFFire('above-ma50/alldata/4hour') as string[];
-    // this.stockHelperService.ListMA50On1day = await this.LocalPLWR.getArrSymbolFFire('above-ma50/alldata/1day')as string[];
-    const listlastab = await this.LocalPLWR.getArrSymbolFFire('above-ma50/alldata/lastab/1day')as string[];
-    const twoDay = await this.LocalPLWR.getArrSymbolFFire('above-ma50/alldata/twoday/1day')as string[];
-    const threeday = await this.LocalPLWR.getArrSymbolFFire('above-ma50/alldata/threeday/1day')as string[];
-    
-    this.stockHelperService.Just2day = this.stockHelperService.combineUnique(twoDay,threeday)
-    this.stockHelperService.ListMA50On1day = this.stockHelperService.combineUnique(listlastab,DataSymbols.watchlist, threeday, this.stockHelperService.Just2day);
-    console.log(`✅  this.stockHelperService.ListMA50On1day: has ${ this.stockHelperService.ListMA50On1day.length} symbols`);
     await this.getholdingList()
+    this.stockHelperService.ListMA50On4hour = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/all3count/4hour`) as string[];
+    // this.stockHelperService.ListMA50On1day = await this.LocalPLWR.getArrSymbolFFire('${this.stockHelperService.aboveMA50api}/all3count-early/1day')as string[];
+    // const listlastab = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/alldata/4hour`)as string[];
+    // const allon4h = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/alldata/4hour`)as string[];
+    this.stockHelperService.Just5Candle = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/alldata/4hour`)as string[];
+    const lastdatadaily = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/alldata/1day`)as string[];
+    // this.stockHelperService.Just5Candle  = this.stockHelperService.combineUnique(lastdatadaily, allon4h);
+    this.stockHelperService.Just1Candle = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/oneday/4hour`)as string[];
+    this.stockHelperService.Just3Candle = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/twoday/4hour`)as string[];
+    this.stockHelperService.Just2Candle = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/threeday/4hour`)as string[];
+    
+    // console.table(this.stockHelperService.Just2Candle )
+    const twoandthreeC = this.stockHelperService.combineUnique(this.stockHelperService.Just2Candle ,this.stockHelperService.Just3Candle )
+    this.stockHelperService.ListMA50On1day = this.stockHelperService.combineUnique( this.stockHelperService.Just5Candle,DataSymbols.watchlist,this.stockHelperService.HoldingList);
+    console.log(`✅  this.stockHelperService.ListMA50On1day: has ${ this.stockHelperService.ListMA50On1day.length} symbols`);
+
+    // this.stockHelperService.writeAbove2BillionToFile(this.stockHelperService.ListMA50On1day,'today-runing');
     // this.runAllWatchLists30(DataSymbols.watchlist)
     // this.runAllWatchLists30(this.stockHelperService.ListMA50On4hour)
+    // console.table(this.stockHelperService.Just2Candle)
+    // this.justSend(
+    //   this.stockHelperService.Just2Candle,
+    //   '4hour',
+    //    'all',
+    //   //
+    // )
   }
   async getholdingList() {
     const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stock-related/holding.json`,'')
@@ -210,6 +247,8 @@ export class TasksUSMKService_SP500 {
     if (!this.stockHelperService.shouldRunTradingLogicUS( symbols,`${this.runon15or30}min`,this.logger)) {
       return;
     }
+    await this.getholdingList()
+    this.stockHelperService.ListMA50On1day = this.stockHelperService.combineUnique(this.stockHelperService.HoldingList,DataSymbols.watchlist,  this.stockHelperService.Just5Candle);
     const today = new Date().toLocaleString('sv-SE', { timeZone: 'America/Chicago' }).replace(/[^\d]/g, '-');
     // const today = this.stockHelperService.getDateNDaysAgo(0);
   
@@ -228,7 +267,7 @@ export class TasksUSMKService_SP500 {
       await sendBatchNotification('START');
   
       await this.USTIMERUN(
-        symbols,
+        this.stockHelperService.ListMA50On1day,
         this.allkeys,
         'US_ALL',
         'USSTOCK_WATCH',
@@ -286,5 +325,80 @@ export class TasksUSMKService_SP500 {
       // Log completion
       this.logger.error(`✅ Finished sending for`, channel);
     }
+  }
+
+
+  private async justSend(
+    tickers: string[],
+    timeframe: string,
+    apikey: string,
+    delay = 0,
+  ) {
+    const limit = pLimit(3); // Limit the concurrency to 8 at a time
+
+    const date = new Date();
+
+    const washselllists =
+      (await this.LocalPLWR.loadWashSellList()) ||
+      this.LocalPLWR.getWashSellList();
+    // Delay 2 minutes before processing
+    await new Promise((resolve) => setTimeout(resolve, delay * 60 * 1000));
+    const message = `${'='.repeat(32)}`;
+    this.webhooksService.sendSlackNotification(message, 'SLACK_WEBHOOKS_4h');
+    await this.SendEverydayService(['TSLA'],'START');
+    // Prepare ticker promises with concurrency limit
+    const tickerPromises = tickers.map((ticker) =>
+      limit(async () => {
+        if (washselllists.includes(ticker)) {
+          console.log(`⏭️ Skipping ${ticker} — in wash sell list`);
+          return; // Skip this ticker and move on
+        }
+
+        try {
+          let data;
+          if (apikey === 'all') {
+            data = await this.LocalPLWR.TwReveseNOAPI(ticker, timeframe);
+            // data = await this.LocalPLWR.getTickerFullChart_POLYGON2(ticker, timeframe);
+          } else {
+            data = await this.LocalPLWR.get12for(ticker, timeframe, apikey);
+          }
+
+          const lastData = data[data.length - 1];
+         
+          if (true) {
+            await this.webhooksService.sendSlackNotificationVN(
+              [ticker],
+              lastData,
+              'SLACK_WEBHOOKS_4h',
+              this.runon15or30
+            );
+            await this.webhooksService.sendDiscord(
+              `BUY BUYBUY-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+              `${ticker}-ON-${timeframe}`,
+              lastData,
+              'TSLA',
+              data,
+            );
+          }
+          this.logger.log(`${ticker} processed successfully.`);
+        } catch (error) {
+          // Send error notification and log the error
+          await this.webhooksService.sendDiscord(
+            `ERROR ${error.message} \n url: http://localhost:4200/price-log/${ticker}?daysRange=500`,
+            `RSIENDBOT ${ticker} at ${timeframe}`,
+            'Nono',
+            'ERORR_CALL',
+          );
+          
+          this.logger.error(`Error processing ${ticker}: ${error.message}`);
+        }
+      }),
+    );
+
+    // Wait for all ticker promises to complete concurrently (with concurrency limit)
+    await Promise.all(tickerPromises);
+
+    this.webhooksService.sendSlackNotification(message, 'SLACK_WEBHOOKS_4h');
+    await this.SendEverydayService(['TSLA'],'END');
   }
 }
