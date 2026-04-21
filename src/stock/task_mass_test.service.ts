@@ -7,7 +7,6 @@ import { WebhooksService } from 'src/webhooks/webhooks.service';
 import * as StockSymbols from './dto/chartData';
 import { stock_usall_symbols } from './dto/chartData';
 import { stock_500_symbols } from './dto/chartData';
-import { dayab50 } from './dto/chartData';
 import pLimit from 'p-limit';
 import { Cron, CronExpression } from '@nestjs/schedule';
 @Injectable()
@@ -20,34 +19,52 @@ export class TestOndata_service {
     private readonly LocalPLWR: LocalPLWR,
   ) {}
   private readonly logger = new Logger(TestOndata_service.name);
-  daytestBF = 30;
+  daytestBF = 0;
   dayend = this.stockHelperService.getDateNDaysAgo(-1 + this.daytestBF);
   endpointFolder = 'stock-price-check';
-  timeframe = '30min';
+  timeframe = '1day';
   async onModuleInit() {
     // This runs ONCE when the app starts
-    // const symbols =  await this.LocalPLWR.getArrSymbolFFire('above-ma50/alldata/4hour') as string[];
+    // const symbols =  await this.LocalPLWR.getArrSymbolFFire('${this.stockHelperService.aboveMA50api}/alldata/4hour') as string[];
     // await this.runAllWatchLists30(symbols);
-    const endpon = '2026-04-06-12-00-00'
+    const endpon = '2026-04-08-15-00-00'
     // await this.runAllWatchLists30();
-    const path = `${this.endpointFolder}/SLACK_WEBHOOKS_US50/${endpon}/${this.timeframe}.json`;
-    const SLACK_WEBHOOKS_US50 = await this.webhooksService.FireBaseApi(
-      'get',
-      path,
-      '',
-    );
-    console.log('SLACK_WEBHOOKS_US50:', SLACK_WEBHOOKS_US50);
-    const SLACK_WEBHOOKS_US100 = await this.webhooksService.FireBaseApi(
-      'get',
-      path.replace('SLACK_WEBHOOKS_US50', 'SLACK_WEBHOOKS_US100'),
-      '',
-    );
-    const SLACK_WEBHOOKS_US200 = await this.webhooksService.FireBaseApi(
-      'get',
-      path.replace('SLACK_WEBHOOKS_US50', 'SLACK_WEBHOOKS_US200'),
-      '',
-    );
-    this.comparePrice(0, SLACK_WEBHOOKS_US50);
+    const path = `${this.endpointFolder}/stock-related/${this.stockHelperService.aboveMA50api}/${endpon}/${this.timeframe}.json`;
+     
+    // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.stockHelperService.aboveMA50api}/threeday/${this.timeframe}.json`,'')
+    // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.stockHelperService.aboveMA50api}/alldata/${this.timeframe}.json`,'')
+    // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.stockHelperService.aboveMA50api}/all3count/${this.timeframe}.json`,'')
+    // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.stockHelperService.aboveMA50api}/all3count-early/${this.timeframe}.json`,'')
+    // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.stockHelperService.aboveMA50api}/MACDDivergence/${this.timeframe}.json`,'')
+    // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.stockHelperService.aboveMA50api}/fourday/${this.timeframe}.json`,'')
+    // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.stockHelperService.aboveMA50api}/threeday/${this.timeframe}.json`,'')
+    // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.stockHelperService.aboveMA50api}/twoday/${this.timeframe}.json`,'')
+    const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.stockHelperService.aboveMA50api}/oneday/${this.timeframe}.json`,'')
+
+    // const data = await this.LocalPLWR.FireBaseApi('get','stock-related/post-wash-sell.json','')
+    const tickers = Object.keys(SLACK_WEBHOOKS_US50);
+    console.log(tickers);
+    console.log(tickers.length);
+
+    // this.stockHelperService.writeAbove2BillionToFile(tickers,'alldata-4hour-3-${this.stockHelperService.aboveMA50api}');
+    // this.comparePrice(45, SLACK_WEBHOOKS_US50);
+    // const SLACK_WEBHOOKS_US50 = await this.webhooksService.FireBaseApi(
+    //   'get',
+    //   path,
+    //   '',
+    // );
+    // console.log('SLACK_WEBHOOKS_US50:', SLACK_WEBHOOKS_US50);
+    // const SLACK_WEBHOOKS_US100 = await this.webhooksService.FireBaseApi(
+    //   'get',
+    //   path.replace('SLACK_WEBHOOKS_US50', 'SLACK_WEBHOOKS_US100'),
+    //   '',
+    // );
+    // const SLACK_WEBHOOKS_US200 = await this.webhooksService.FireBaseApi(
+    //   'get',
+    //   path.replace('SLACK_WEBHOOKS_US50', 'SLACK_WEBHOOKS_US200'),
+    //   '',
+    // );
+
     // this.comparePrice(5, SLACK_WEBHOOKS_US100);
     // this.comparePrice(30, SLACK_WEBHOOKS_US200);
   }
@@ -200,6 +217,10 @@ export class TestOndata_service {
     timeframe = '5min',
   ) {
     const tickers = Object.keys(symbolsNprice);
+    const tickerLength = tickers.length;
+    let goUpCount = 0;
+    let goDownCount = 0;
+    console.log('Comparing prices for tickers:', tickerLength);
     const limit = pLimit(2); // Limit the concurrency to 8 at a time
 
     const date = new Date();
@@ -217,60 +238,80 @@ export class TestOndata_service {
           console.log(`⏭️ Skipping ${ticker} — in wash sell list`);
           return; // Skip this ticker and move on
         }
-
+        const tickerHolder = symbolsNprice[ticker];
+        const tickerData = tickerHolder.lastData;
+        const ticker2ndData = tickerHolder.secondLastData;
+        const stockRSILAUP = tickerData.StochRSI_K - tickerData.StochRSI_D > 0;
+        const stockRSIPRUP = ticker2ndData.StochRSI_K - ticker2ndData.StochRSI_D > 0;
+        const compare2day = stockRSILAUP >= stockRSIPRUP;
+        // const macdNeutral = tickerData.MACDLine > 0 && tickerData.MACDLine < 0.5; // Adjust the range as needed
+        const rsiNeutral = tickerData.RSI > 40 && tickerData.RSI < 60; // Adjust the range as needed
+        const macdNeutral =tickerData?.MACDDivergence 
+        const isBadSetup =
+        tickerData.StochRSI_K > 0.9 &&
+        tickerData.StochRSI_D > 0.85 &&
+        tickerData.RSI > 58 &&
+        tickerData.divergence > 0.12 &&
+        (tickerData.close - tickerData.MA10) / tickerData.MA10 > 0.01;
+        const isBadSetup2 =
+        tickerData.StochRSI_K > 0.9 &&
+        tickerData.StochRSI_D > 0.8 &&
+        tickerData.RSI > 60 &&
+        tickerData.close > tickerData.MA5 &&
+        tickerData.divergence > 0.1;
+        // Go Up Percentage: 79.74683544303798% | Go Down Percentage: 20.253164556962027%
+  if(isBadSetup2 || isBadSetup){
+    return
+  }
+  if(!(stockRSILAUP)){
+    return  this.logger.log(`⏭️ Skipping ${ticker} — MACD Divergence: ${tickerData.MACDDivergence}`);
+  }
+      //   if(!inrange2080 )    {     
+      //      return 
+      //     return this.logger.log(`⏭️ Skipping ${ticker} — MACD Divergence: ${tickerData.MACDDivergence}`);
+      //   }
+      //   if(!rsiNeutral )    {     
+      //     return 
+      //    return this.logger.log(`⏭️ Skipping ${ticker} — MACD Divergence: ${tickerData.MACDDivergence}`);
+      //  }
         try {
           let data;
           if (apikey === 'all') {
             data = await this.LocalPLWR.getTickerFullChart_POLYGON2(
               ticker,
               timeframe,
-              dayin,
+              dayin
             );
+            // data = await this.LocalPLWR.TwReveseNOAPI(ticker, timeframe);
           } else {
             data = await this.LocalPLWR.get12for(ticker, timeframe, apikey);
           }
 
           const lastData = data[data.length - 1];
           const secondLastData = data[data.length - 2];
-          const setDateValue = symbolsNprice[ticker];
-          const lastestPrice = lastData.close;
+
+          const setDateValue = tickerData.high;
+          const lastestPrice = lastData.low;
           console.log(`Data for ${ticker}:`, lastData.date);
-          // Process the data
-          // const signal =
-          // await this.stockHelperService.BuyOnly_StochRSICrossAB200(
-          //   lastData,
-          //   secondLastData,
-          // );
-          // if (!signal) return;
-
-          // const webhookMap = [
-          //   { condition: signal.PriceCrMA50, hook: 'SLACK_WEBHOOKS_US50' },
-          //   { condition: signal.PriceCrMA100, hook: 'SLACK_WEBHOOKS_US100' },
-          //   { condition: signal.PriceCrMA200, hook: 'SLACK_WEBHOOKS_US200' },
-          // ];
-
-          // const matched = webhookMap.find((w) => w.condition);
-          // const daytestBF = 5;
-          // const dayend = this.stockHelperService.getDateNDaysAgo(-1 + daytestBF);
-          // if (matched) {
-          //   const data1 = await this.webhooksService.FireBaseApi(
-          //     'put',
-          //     `${this.endpointFolder}/${matched.hook}/${dayend}/${ticker}.json`,
-          //     lastData.close,
-          //   );
-          // }
+          const linedetail = `volume(${tickerData.volume}) MA200(${tickerData.MA200}), MA100: ${tickerData.MA100}, MA50: ${tickerData.MA50} close: ${tickerData.close} vs ${lastestPrice} MACDDivergence: ${tickerData?.MACDDivergence} RSI: ${tickerData?.RSI} MACDLine: ${tickerData?.MACDLine}`;
           if (lastestPrice > setDateValue) {
             this.logger.log(
-              `${ticker} ${stock_500_symbols.includes(ticker)?'(Sp500)':''} go Up: ${
-                lastestPrice > setDateValue
-              } | lastestPrice: ${lastestPrice} | Set Price: ${setDateValue}`,
+              linedetail
+              // `${ticker} ${stock_500_symbols.includes(ticker)?'(Sp500)':''} go Up: ${
+              //   lastestPrice > setDateValue
+              // } | lastestPrice: ${lastestPrice} | Set Price: ${setDateValue}`,
             );
+            goUpCount++;
           } else {
-            this.logger.error(
-              `${ticker} ${stock_500_symbols.includes(ticker)?'(Sp500)':''}  go Down: ${
-                lastestPrice > setDateValue
-              } | lastestPrice: ${lastestPrice} | Set Price: ${setDateValue}`,
+            // let data = await this.LocalPLWR.getMarketCap(ticker);
+            // const mkb = data.market_cap / 1000000000; // Convert to billions
+            // console.log(`Market Cap for ${ticker}: ${mkb.toFixed(2)} billion USD`);
+            this.logger.error(linedetail
+              // `${ticker} ${stock_500_symbols.includes(ticker)?'(Sp500)':''}  go Down: ${
+              //   lastestPrice > setDateValue
+              // } | lastestPrice: ${lastestPrice} | Set Price: ${setDateValue}`,
             );
+            goDownCount++;
           }
         } catch (error) {
           // Send error notification and log the error
@@ -288,5 +329,9 @@ export class TestOndata_service {
 
     // Wait for all ticker promises to complete concurrently (with concurrency limit)
     await Promise.all(tickerPromises);
+
+    console.log(`Price comparison completed. Total tickers: ${tickerLength}`);
+    console.log(`Go Up: ${goUpCount} | Go Down: ${goDownCount}`); 
+    console.log(`Go Up Percentage: ${(goUpCount / (goUpCount+goDownCount)) * 100}% | Go Down Percentage: ${(goDownCount / (goDownCount+goUpCount)) * 100}%`);
   }
 }

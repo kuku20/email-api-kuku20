@@ -7,7 +7,7 @@ import { WebhooksService } from 'src/webhooks/webhooks.service';
 import * as StockSymbols from './dto/chartData';
 import { stock_usall_symbols } from './dto/chartData';
 import { stock_500_symbols } from './dto/chartData';
-import { dayab50 } from './dto/chartData';
+
 import pLimit from 'p-limit';
 @Injectable()
 export class TasksUS_ALL_MKService {
@@ -125,7 +125,7 @@ export class TasksUS_ALL_MKService {
   async runAllOn1h() {
     await Promise.all([
       this.USTIMERUN(
-        StockSymbols.dayab50,
+        StockSymbols.above5billion,
         this.allkeys,
         '200BL_OV_NEG_01',
         '200BL_OV_NEG_05',

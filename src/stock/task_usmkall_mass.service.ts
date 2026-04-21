@@ -19,16 +19,21 @@ export class TasksUS_ALL_MK_MASS_Service {
   ) {}
   private readonly logger = new Logger(TasksUS_ALL_MK_MASS_Service.name);
   today = this.stockHelperService.getDateNDaysAgo(0);
-  marketTarget = 100
+  dayago = 0
+  rundayaogo = this.stockHelperService.getDateNDaysAgo(this.dayago);
+  marketTarget = 2
   async onModuleInit() {
     // This runs ONCE when the app starts
+    // this.stockHelperService.aboveMA50api = `dayago-${this.dayago}-` +this.rundayaogo;
     // await this.runfullonms();
-    // await this.runAllWatchLists();
-    // await this.getMarket(StockSymbols.above2billion)
-    // await this.writeAbove2BillionToFile(this.aboveTarget,`Above_${this.marketTarget}_Billion`);
-    // await this.writeAbove2BillionToFile(this.BelowTarget,`Below_${this.marketTarget}_Billion`);
-    // this.stockHelperService.ListMA50On1day = await this.LocalPLWR.getArrSymbolFFire('above-ma50/alldata/1day')as string[];
-    // const x = await this.LocalPLWR.getArrSymbolFFire('above-ma50/alldata/lastab/1day')as string[];
+   //  await this.webhooksService.delete(); 
+  //  await this.runAllOn1day();
+  //  await this.runAllOn4h()
+    // await this.getMarket(StockSymbols.above2billion);
+    // await this.stockHelperService.writeAbove2BillionToFile(this.aboveTarget,`Above_${this.marketTarget}_Billion`);
+    // await this.stockHelperService.writeAbove2BillionToFile(this.BelowTarget,`Below_${this.marketTarget}_Billion`);
+    // this.stockHelperService.ListMA50On1day = await this.LocalPLWR.getArrSymbolFFire('${this.stockHelperService.aboveMA50api}/alldata/1day')as string[];
+    // const x = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/alldata/lastab/1day`)as string[];
     // await this.getMarket(this.stockHelperService.ListMA50On1day )
   }
 
@@ -50,7 +55,7 @@ export class TasksUS_ALL_MK_MASS_Service {
     HT_Channel,
     delay = 2,
   ) {
-    const limit = pLimit(1); // Limit the concurrency to 1 at a time
+    const limit = pLimit(2); // Limit the concurrency to 1 at a time
 
     const date = new Date();
 
@@ -71,8 +76,12 @@ export class TasksUS_ALL_MK_MASS_Service {
         try {
           let data = await this.LocalPLWR.getTickerFullChart_POLYGON2(
             ticker,
-            timeframe,
+            timeframe,this.dayago
           );
+          const lastData = data[data.length - 1];
+          const secondLastData = data[data.length - 2];
+
+          console.log(`✅ Processing ${ticker} on ${timeframe} at ${lastData.date}`);
           // Process the data
           await this.webhooksService.runALLOn_MA50(
             data,
@@ -82,8 +91,7 @@ export class TasksUS_ALL_MK_MASS_Service {
             HT_Channel,
           );
           if (timeframe === '1day') {
-            const lastData = data[data.length - 1];
-            const secondLastData = data[data.length - 2];
+
             const signal =
               await this.stockHelperService.BuyOnly_StochRSICrossAB200(
                 lastData,
@@ -91,7 +99,7 @@ export class TasksUS_ALL_MK_MASS_Service {
               );
             const MACDPositive = lastData.divergence > 0;
             if(signal && signal.RSI15up){
-              await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSI15AL/${this.today}/${ticker}.json`, ticker)
+              await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSI15AL/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
               await this.webhooksService.sendDiscord(
                 `${
                   DataSymbols.stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
@@ -102,7 +110,7 @@ export class TasksUS_ALL_MK_MASS_Service {
                 data,
               );
             }else if(signal && signal.RSI20up){
-              await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSIALERT/${this.today}/${ticker}.json`, ticker)
+              await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSIALERT/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
               await this.webhooksService.sendDiscord(
                 `${
                   DataSymbols.stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
@@ -113,7 +121,7 @@ export class TasksUS_ALL_MK_MASS_Service {
                 data,
               );
             }else if(signal && signal.RSI25up){
-              await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSI25AL/${this.today}/${ticker}.json`, ticker)
+              await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSI25AL/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
               await this.webhooksService.sendDiscord(
                 `${
                   DataSymbols.stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
@@ -124,7 +132,7 @@ export class TasksUS_ALL_MK_MASS_Service {
                 data,
               );
             }else if(signal && signal.RSI30up){
-              await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSI30AL/${this.today}/${ticker}.json`, ticker)
+              await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSI30AL/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
               await this.webhooksService.sendDiscord(
                 `${
                   DataSymbols.stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
@@ -183,7 +191,7 @@ export class TasksUS_ALL_MK_MASS_Service {
   @Cron('0 0 * * 1-5', {
     timeZone: 'America/Los_Angeles',
   })
-  async runfullonms() {
+  async runfullonms(stocklist = StockSymbols.allabove500million){
     // delete old data from firebase
     const today = this.stockHelperService.getDateNDaysAgo(0); // Get today's date
     await this.webhooksService.delete(); // reset firebase data for the day
@@ -197,7 +205,7 @@ export class TasksUS_ALL_MK_MASS_Service {
       '1day',
     );
 
-    await this.runAllWatchLists();
+    await this.runAllWatchLists(stocklist);
 
     await this.SendEverydayService('EARLY_AB200', '200AB_LESS_01', '1day');
     await this.send1chanel('200AB_LESS_05', '1day');
@@ -218,9 +226,11 @@ export class TasksUS_ALL_MK_MASS_Service {
       '4hour',
     );
 
-    await this.runAllOn1h([
-      ...(this.stockHelperService.ListMA50On1day || []),
-    ]);
+    // await this.runAllOn4h([
+    //   ...(this.stockHelperService.ListMA50On1day || []),
+    // ]);
+
+    await this.runAllOn4h(stocklist);
 
     await this.webhooksService.sendSlackNotification(
       `END+${today}+END================================`,
@@ -234,7 +244,7 @@ export class TasksUS_ALL_MK_MASS_Service {
     await this.send1chanel('200AB_LESS_1', '4hour');
   }
 
-  async runAllWatchLists() {
+  async runAllWatchLists(stocklist = StockSymbols.above2billion) {
     const today = this.stockHelperService.getDateNDaysAgo(0);
   
     const webhooks = ['SLACK_WEBHOOKS_D_US50', 'SLACK_WEBHOOKS_D_US100','SLACK_WEBHOOKS_D_US200','SLACK_WEBHOOKS_WATCHLIST','SLACK_WEBHOOKS_J2DAY','SLACK_WEBHOOKS_J3DAY'];
@@ -248,20 +258,23 @@ export class TasksUS_ALL_MK_MASS_Service {
       );
     };
     await sendBatchNotification('START');
+    await this.runAllOn1day(stocklist);
+    await sendBatchNotification('END');
+    await this.webhooksService.sendlast('EARLY_AB200', '200AB_LESS_01');
+  }
+
+  async runAllOn1day(stocklist = StockSymbols.above2billion) {
     await Promise.all([
       this.USTIMERUN(
-        StockSymbols.above2billion,
+        stocklist,
         'EARLY_AB200',
         '200AB_LESS_01',
         0,
         '1day',
       ),
     ]);
-    await sendBatchNotification('END');
-    await this.webhooksService.sendlast('EARLY_AB200', '200AB_LESS_01');
   }
-
-  async runAllOn1h(stocklist = StockSymbols.stock_500_symbols) {
+  async runAllOn4h(stocklist = StockSymbols.above2billion) {
     await Promise.all([
       this.USTIMERUN(
         stocklist,
@@ -336,18 +349,5 @@ export class TasksUS_ALL_MK_MASS_Service {
 
     // Wait for all ticker promises to complete concurrently (with concurrency limit)
     await Promise.all(tickerPromises);
-  }
-
-  async writeAbove2BillionToFile(tickers,filename = 'above5billion') {
-    // write to file
-    const fs = require('fs');
-    const filePath = filename+'.json';
-    fs.writeFile(filePath, JSON.stringify(tickers, null, 2), (err) => {
-      if (err) {
-        console.error('Error writing to file:', err);
-      } else {
-        console.log(`Above 5 billion tickers saved to ${filePath}`);
-      }
-    });
   }
 }
