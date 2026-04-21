@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { AttachmentBuilder, EmbedBuilder, WebhookClient } from 'discord.js';
 import pLimit from 'p-limit';
 import { StockHelperService } from 'src/stock/stockHelper.service';
-import { stock_500_symbols, watchlist, watchlistBB } from 'src/stock/dto/chartData';
+import * as DataSymbols from '../stock/dto/chartData';
 import * as fs from 'fs';
 import { channel } from 'diagnostics_channel';
 @Injectable()
@@ -1271,11 +1271,11 @@ export class WebhooksService {
     ) {
       await this.sendDiscord(
         `${
-          stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
+          DataSymbols.stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
         }SBUY--PriceCrMA50-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-${timeframe}-CrMA50-${lastdata?.close}`,
         lastdata,
-        watchlist.includes(ticker)?'WATCHLIST': this.stockHelperService.Just2day.includes(ticker)?'US_EARLY_15MIN': HT_Channel,
+        DataSymbols.watchlist.includes(ticker)?'WATCHLIST': this.stockHelperService.Just2Candle.includes(ticker)?'US_EARLY_15MIN': HT_Channel,
         data,
       );
       return BuyOnly_StochRSICrossAB200;
@@ -1287,11 +1287,11 @@ export class WebhooksService {
     ) {
       await this.sendDiscord(
         `${
-          stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
+          DataSymbols.stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
         }(SBUY--PriceCrMA100-MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-${timeframe}-CrMA100-${lastdata?.close}`,
         lastdata,
-        watchlist.includes(ticker)?'WATCHLIST':this.stockHelperService.Just2day.includes(ticker)?'US_EARLY_15MIN':B_Channel,
+        DataSymbols.watchlist.includes(ticker)?'WATCHLIST':this.stockHelperService.Just2Candle.includes(ticker)?'US_EARLY_15MIN':B_Channel,
         data,
       );
       return BuyOnly_StochRSICrossAB200;
@@ -1303,11 +1303,11 @@ export class WebhooksService {
     ) {
       await this.sendDiscord(
         `${
-          stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
+          DataSymbols.stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
         }SBUY-PriceCrMA200-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
-        watchlist.includes(ticker)?'WATCHLIST':this.stockHelperService.Just2day.includes(ticker)?'US_EARLY_15MIN':'US_30M_HT',
+        DataSymbols.watchlist.includes(ticker)?'WATCHLIST':this.stockHelperService.Just2Candle.includes(ticker)?'US_EARLY_15MIN':'US_30M_HT',
         data,
       );
       return BuyOnly_StochRSICrossAB200;
@@ -1343,14 +1343,14 @@ export class WebhooksService {
     //   );
     //   return;
     // }
-    if (BuyOnly_StochRSICrossAB200.macdCrAB) {
+    if (BuyOnly_StochRSICrossAB200.macdCrAB && lastdata.MACDLine > 0) {
       await this.sendDiscord(
         `${
-          stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
+          DataSymbols.stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
         }SBUY-macdCrAB-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
-        watchlist.includes(ticker)?'WATCHLIST':'US_30M_BUY',
+        DataSymbols.watchlist.includes(ticker)?'WATCHLIST':'US_30M_BUY',
         data,
       );
       return BuyOnly_StochRSICrossAB200;
@@ -1410,7 +1410,7 @@ export class WebhooksService {
   async postdata(path, symbols) {
     const data = await this.FireBaseApi(
       'post',
-      `stock-related/above-ma50/${path}.json`,
+      `stock-related/${this.stockHelperService.aboveMA50api}/${path}.json`,
       symbols,
     );
   }
@@ -1418,7 +1418,7 @@ export class WebhooksService {
   async delete() {
     const data = await this.FireBaseApi(
       'delete',
-      `stock-related/above-ma50.json`,
+      `stock-related/${this.stockHelperService.aboveMA50api}.json`,
       '',
     );
   }
@@ -1447,6 +1447,10 @@ export class WebhooksService {
       secondLastData,
       'MA50',
     );
+    const MACDDivergence = lastData?.MACDDivergence //bullish
+    if(MACDDivergence === 'bullish'){
+      await this.FireBaseApi("put", `stock-related/${this.stockHelperService.aboveMA50api}/MACDDivergence/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
+    }
     if (MACDPositive && PriceCrMA50) {
       await this.sendDiscord(
         `SBUY-BuyOnly_MACDPositive -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
@@ -1462,35 +1466,42 @@ export class WebhooksService {
       aboveMA50Third,
       aboveMA50Fourth,
     ].filter(Boolean).length;
-    if(aboveMA50 && timeframe === '1day'){
-      await this.postdata(`alldata/lastab/${timeframe}`, ticker);
+    if(aboveMA50 && MACDPositive){
+      await this.FireBaseApi("put", `stock-related/${this.stockHelperService.aboveMA50api}/alldata/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
       if(belowA50Second){
-        await this.postdata(`alldata/oneday/${timeframe}`, ticker);
+        await this.FireBaseApi("put", `stock-related/${this.stockHelperService.aboveMA50api}/oneday/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
       }
       if(aboveMA50Second && belowMA50Third){
-        await this.sendSlackNotificationVN(
-          [ticker],
-          lastData,
-          'SLACK_WEBHOOKS_J2DAY',
-          '500'
-        );
-        await this.postdata(`alldata/twoday/${timeframe}`, ticker);
+        if(timeframe === '1day'){
+          await this.sendSlackNotificationVN(
+            [ticker],
+            lastData,
+            'SLACK_WEBHOOKS_J2DAY',
+            '500'
+          );
+        }
+        await this.FireBaseApi("put", `stock-related/${this.stockHelperService.aboveMA50api}/twoday/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
       }
       if(aboveMA50Second && aboveMA50Third && bellowMA50Fourth){
-        await this.sendDiscord(
-          `SBUY-PriceCrMA50-3day -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-          `${ticker}-${timeframe}-CrMA50-${lastData?.close}`,
-          lastData,
-          'US_15M_HT',
-          data,
-        );
-        await this.sendSlackNotificationVN(
-          [ticker],
-          lastData,
-          'SLACK_WEBHOOKS_J3DAY',
-          '500'
-        );
-        await this.postdata(`alldata/threeday/${timeframe}`, ticker);
+        if(timeframe === '1day'){
+          await this.sendDiscord(
+            `SBUY-PriceCrMA50-3day -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+            `${ticker}-${timeframe}-CrMA50-${lastData?.close}`,
+            lastData,
+            'US_15M_HT',
+            data,
+          );
+          await this.sendSlackNotificationVN(
+            [ticker],
+            lastData,
+            'SLACK_WEBHOOKS_J3DAY',
+            '500'
+          );
+        }
+        await this.FireBaseApi("put", `stock-related/${this.stockHelperService.aboveMA50api}/threeday/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
+      }
+      if(aboveMA50Second && aboveMA50Third && aboveMA50Fourth && belowMA50Fifth){
+        await this.FireBaseApi("put", `stock-related/${this.stockHelperService.aboveMA50api}/fourday/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
       }
     }
 
@@ -1498,7 +1509,7 @@ export class WebhooksService {
       if (belowMA50Fifth) {
         this.listsymbolBEarly.push(ticker);
         await this.sendSlackNotificationURL([ticker], lastData, timeframe);
-        await this.postdata(`early/${timeframe}`, ticker);
+        await this.FireBaseApi("put", `stock-related/${this.stockHelperService.aboveMA50api}/all3count-early/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
         if (this.listsymbolBEarly.length > this.maxListLength) {
           await this.sendDiscordNotification(
             `,${this.listsymbolBEarly.toString()}`,
@@ -1510,7 +1521,7 @@ export class WebhooksService {
         }
       }
       this.listsymbolB.push(ticker);
-      await this.postdata(`alldata/${timeframe}`, ticker);
+      await this.FireBaseApi("put", `stock-related/${this.stockHelperService.aboveMA50api}/all3count/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
       if (timeframe === '1day') {
         (this.stockHelperService.ListMA50On1day ??= []).push(ticker);
       } else if (timeframe.includes('4h')) {
@@ -1633,7 +1644,7 @@ export class WebhooksService {
     const formatted = symbols
       .map(
         (s) =>
-          `• ${stock_500_symbols.includes(s) ? '(SP500)' : ''}*${s}* → ${
+          `• ${DataSymbols.stock_500_symbols.includes(s) ? '(SP500)' : ''}*${s}* → ${
             lastData.close
           }` +
           ` <http://localhost:4200/price-log/${s}?daysRange=5|5m> | <http://localhost:4200/price-log/${s}?daysRange=15|15m> | <http://localhost:4200/price-log/${s}?daysRange=30|30m> | <http://localhost:4200/price-log/${s}?daysRange=60|1hour> | <http://localhost:4200/price-log/${s}?daysRange=240|4hour> | <http://localhost:4200/price-log/${s}?daysRange=500|daily> ||=|| <https://stockmarkets000.web.app/price-log/${s}?daysRange=500|PROD-DAILY>`,
@@ -1662,7 +1673,7 @@ export class WebhooksService {
     const formatted = symbols
       .map(
         (s) =>
-          `•${stock_500_symbols.includes(s) ? '(SP500)' : ''}-${this.stockHelperService.Just2day.includes(s)?'(2day)':''} *${s}* → ${
+          `•${DataSymbols.stock_500_symbols.includes(s) ? '(SP500)' : ''}-${this.stockHelperService.Just2Candle.includes(s)?'(2day)':''} *${s}* → ${
             lastData?.close
           }(${aboveOrBellow}-${lastData?.MA200.toFixed(2)})| ${lastData?.date} |` +
           `  < <http://localhost:4200/price-log/${s}?daysRange=${range}|local> | <https://stockmarkets000.web.app/price-log/${s}?daysRange=${range}|production> | <https://www.tradingview.com/chart/mWoCISmu/?symbol=${s}|tradingview> >`,
