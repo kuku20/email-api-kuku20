@@ -767,4 +767,17 @@ SELL ALL
   combineUnique(...arrays) {
     return [...new Set(arrays.flat())];
   }
+
+  async writeAbove2BillionToFile(tickers,filename = 'above5billion') {
+    // write to file
+    const fs = require('fs');
+    const filePath = filename+'.json';
+    fs.writeFile(filePath, JSON.stringify(tickers, null, 2), (err) => {
+      if (err) {
+        console.error('Error writing to file:', err);
+      } else {
+        console.log(`Above 5 billion tickers saved to ${filePath}`);
+      }
+    });
+  }
 }
