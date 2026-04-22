@@ -139,9 +139,9 @@ export class TasksUSMKService_SP500 {
           if (!signal) return;
           
           const webhookMap = [
-            { condition: signal.PriceCrMA50 && signal.ContinueUp, hook: 'SLACK_WEBHOOKS_US50' },
-            { condition: signal.PriceCrMA100 && signal.ContinueUp, hook: 'SLACK_WEBHOOKS_US100' },
-            { condition: signal.PriceCrMA200 && signal.ContinueUp, hook: 'SLACK_WEBHOOKS_US200' },
+            { condition: signal.PriceCrMA50 && signal.ContinueUp && lastData.divergence > 0, hook: 'SLACK_WEBHOOKS_US50' },
+            { condition: signal.PriceCrMA100 && signal.ContinueUp && lastData.divergence > 0, hook: 'SLACK_WEBHOOKS_US100' },
+            { condition: signal.PriceCrMA200 && signal.ContinueUp && lastData.divergence > 0, hook: 'SLACK_WEBHOOKS_US200' },
             { condition: signal.macdCrAB && lastData.MACDLine > 0, hook: 'SLACK_WEBHOOKS_MACDCRAB' },
           ];
           
@@ -183,17 +183,20 @@ export class TasksUSMKService_SP500 {
   async getReapList(){
     this.stockHelperService.ListMA50On4hour = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/all3count/4hour`) as string[];
     this.stockHelperService.above50andBelow200 = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/alldata/4hour`)as string[];
+    this.stockHelperService.above50andAbove200 = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}-aboveMA200/alldata/4hour`)as string[];
+
     this.stockHelperService.ab50_bl200_3Candles = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/threeday/4hour`)as string[];
     this.stockHelperService.ab50_ab200_3Candles = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}-aboveMA200/threeday/4hour`)as string[];
-    this.stockHelperService.above50andAbove200 = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}-aboveMA200/alldata/4hour`)as string[];
-    this.stockHelperService.runOn4hourInday = await this.LocalPLWR.getArrSymbolFFire(`runOn4hourInday/4hour`)as string[];
+    this.stockHelperService.ab50_3Candles_ALL = this.stockHelperService.combineUnique( this.stockHelperService.ab50_bl200_3Candles,this.stockHelperService.ab50_ab200_3Candles);
+
+    // this.stockHelperService.ListMA50On1day = this.stockHelperService.combineUnique(this.stockHelperService.HoldingList,DataSymbols.watchlist,this.stockHelperService.above50andBelow200)
+    this.stockHelperService.ListMA50On1day = this.stockHelperService.combineUnique(this.stockHelperService.HoldingList,DataSymbols.watchlist,this.stockHelperService.above50andBelow200,this.stockHelperService.above50andAbove200);
+    console.log( this.stockHelperService.ListMA50On1day.length,);
   }
   async onModuleInit() {
     await this.getholdingList()
-    // await this.getReapList()
-    // this.stockHelperService.runOn4hourInday = await this.LocalPLWR.getArrSymbolFFire(`runOn4hourInday/4hour`)as string[];
-    // this.stockHelperService.above50andAbove200 = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}-aboveMA200/alldata/4hour`)as string[];
-    // this.stockHelperService.writeAbove2BillionToFile(this.stockHelperService.above50andAbove200,'above50andAbove200');
+    await this.getReapList()
+
 
     // this.runAllWatchLists30(DataSymbols.watchlist)
     // this.runAllWatchLists30(this.stockHelperService.ListMA50On4hour)
@@ -242,10 +245,12 @@ export class TasksUSMKService_SP500 {
     }
     await this.getholdingList()
     await this.getReapList()
-    this.stockHelperService.ListMA50On1day = this.stockHelperService.combineUnique(this.stockHelperService.HoldingList,DataSymbols.watchlist,  this.stockHelperService.above50andBelow200);
+    if(this.stockHelperService.ListMA50On1day.length === 0){
+      this.logger.warn('No stocks to process for 15/30-minute run.');
+      return;
+    }
     const today = new Date().toLocaleString('sv-SE', { timeZone: 'America/Chicago' }).replace(/[^\d]/g, '-');
     // const today = this.stockHelperService.getDateNDaysAgo(0);
-  
     const webhooks = ['SLACK_WEBHOOKS_US50', 'SLACK_WEBHOOKS_US100','SLACK_WEBHOOKS_US200','SLACK_WEBHOOKS_MACDCRAB','SLACK_WEBHOOKS_WATCHLIST'];
   
     const sendBatchNotification = async (type: 'START' | 'END') => {
@@ -277,21 +282,21 @@ export class TasksUSMKService_SP500 {
   }
 
  // @Cron('10 13-21/4 * * 1-5', { timeZone: 'UTC' }) // Every 4 hours at 10 minutes past the hour between 13:00 and 21:00 UTC (9:10 AM to 5:10 PM ET) on weekdays
-  async runAllWatchLists4h() {
-    // runOn4hourInday
-    const runonday = await this.LocalPLWR.getArrSymbolFFire(`runOn4hourInday/4hour`)as string[];
+  // async runAllWatchLists4h() {
+  //   // runOn4hourInday
+  //   const runonday = await this.LocalPLWR.getArrSymbolFFire(`runOn4hourInday/4hour`)as string[];
 
-    await Promise.all([
-      this.USTIMERUN(
-        runonday,
-        this.allkeys,
-        'US_15M_HT',
-        'US_15M_HT',
-        0,
-        '4h',
-      ),
-    ]);
-  }
+  //   await Promise.all([
+  //     this.USTIMERUN(
+  //       runonday,
+  //       this.allkeys,
+  //       'US_15M_HT',
+  //       'US_15M_HT',
+  //       0,
+  //       '4h',
+  //     ),
+  //   ]);
+  // }
 
   //@Cron('6 9-15 * * 1-5', { timeZone: 'America/New_York' }) // Every day at 9:06 AM, 10:06 AM, ..., 3:06 PM ET on weekdays
   async runAllWatchLists1h() {

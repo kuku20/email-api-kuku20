@@ -5,13 +5,17 @@ import { StockData } from './dto/chartData';
 export class StockHelperService {
   // aboveMA50api: string = `sun-04-19-2026-blowMA200`;
   aboveMA50api: string = `week-04-20-2026`;
-ab50_bl200_3Candles: string[] = [];
-ab50_ab200_3Candles: string[] = [];
-above50andBelow200: string[] = [];
-above50andAbove200: string[] = [];
-runOn4hourInday: string[] = [];
-ListMA50On1day: string[] = [];
-ListMA50On4hour: string[] = [];
+  ab50_bl200_3Candles: string[] = [];
+  ab50_ab200_3Candles: string[] = [];
+  ab50_3Candles_ALL: string[] = [];
+
+  above50andBelow200: string[] = [];
+  above50andAbove200: string[] = [];
+  above50All: string[] = [];
+
+  runOn4hourInday: string[] = [];
+  ListMA50On1day: string[] = [];
+  ListMA50On4hour: string[] = [];
   HoldingList: string[] = [];
   Just2day: string[] = [];
   async returnNewData(dataIn: any[]) {
