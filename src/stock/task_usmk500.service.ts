@@ -181,6 +181,7 @@ export class TasksUSMKService_SP500 {
     await Promise.all(tickerPromises);
   }
   async getReapList(){
+    await this.getholdingList()
     this.stockHelperService.ListMA50On4hour = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/all3count/4hour`) as string[];
     this.stockHelperService.above50andBelow200 = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/alldata/4hour`)as string[];
     this.stockHelperService.above50andAbove200 = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}-aboveMA200/alldata/4hour`)as string[];
@@ -194,10 +195,7 @@ export class TasksUSMKService_SP500 {
     console.log( this.stockHelperService.ListMA50On1day.length,);
   }
   async onModuleInit() {
-    await this.getholdingList()
     await this.getReapList()
-
-
     // this.runAllWatchLists30(DataSymbols.watchlist)
     // this.runAllWatchLists30(this.stockHelperService.ListMA50On4hour)
     // console.table(this.stockHelperService.ab50_bl200_3Candles)
@@ -243,7 +241,6 @@ export class TasksUSMKService_SP500 {
     if (!this.stockHelperService.shouldRunTradingLogicUS(`${this.runon15or30}min`,this.logger)) {
       return;
     }
-    await this.getholdingList()
     await this.getReapList()
     if(this.stockHelperService.ListMA50On1day.length === 0){
       this.logger.warn('No stocks to process for 15/30-minute run.');

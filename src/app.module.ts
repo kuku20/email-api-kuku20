@@ -61,6 +61,7 @@ import { TasksUS_ALL_MKService } from './stock/task_usmkall.service';
 import { TasksUS_ALL_MK_MASS_Service } from './stock/task_usmkall_mass.service';
 import { TestOndata_service } from './stock/task_mass_test.service';
 import { TaskHoldingService } from './stock/task_holding.service';
+import { TasksUS_ALL_MK_4HOUR_Service } from './stock/task_usmkall_4hour_daily.service';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -160,19 +161,21 @@ import { TaskHoldingService } from './stock/task_holding.service';
     AlphavantageService,
 
     TasksVNMKService,
-    TasksUS_ALL_MK_MASS_Service,
     TaskCryptoService,
     TasksForexService,
     TaskHoldingService,
+    SendEverydayService,
+    TasksUS_ALL_MK_MASS_Service,
 
-    // TasksUSMKService_SP500,
     // TasksUS_ALL_MKService,
-    // TasksUSMKService,
     // TasksService,
-    // TasksUSMK_1MIN_Service,
     // TasksUSMKService_15MIN
     // TestOndata_service,
-    SendEverydayService
+    // TasksUSMKService,
+    // TasksUSMK_1MIN_Service,
+
+    TasksUSMKService_SP500,
+    TasksUS_ALL_MK_4HOUR_Service,
   ],
 })
 export class AppModule {}
