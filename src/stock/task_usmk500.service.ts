@@ -249,7 +249,7 @@ export class TasksUSMKService_SP500 {
     }
     const today = new Date().toLocaleString('sv-SE', { timeZone: 'America/Chicago' }).replace(/[^\d]/g, '-');
     // const today = this.stockHelperService.getDateNDaysAgo(0);
-    const webhooks = ['SLACK_WEBHOOKS_US50', 'SLACK_WEBHOOKS_US100','SLACK_WEBHOOKS_US200','SLACK_WEBHOOKS_MACDCRAB','SLACK_WEBHOOKS_WATCHLIST'];
+    const webhooks = ['SLACK_WEBHOOKS_US50', 'SLACK_WEBHOOKS_US100','SLACK_WEBHOOKS_US200','SLACK_WEBHOOKS_MACDCRAB','SLACK_WEBHOOKS_WATCHLIST','SLACK_WEBHOOKS_HOLDING'];
   
     const sendBatchNotification = async (type: 'START' | 'END') => {
       const message = `${type}*${today}*${type}${'='.repeat(32)}`;
