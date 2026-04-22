@@ -357,7 +357,7 @@ export class WebhooksService {
 
     if (this.configService.get('NODE_ENV') === 'production') {
       // // turn off on local
-      await this.FireBaseApi('put', `stock-data/${path}.json`, slicedData);
+      // await this.FireBaseApi('put', `stock-data/${path}.json`, slicedData);
       return null;
     }
 
