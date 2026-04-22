@@ -1447,12 +1447,13 @@ export class WebhooksService {
       'MA50',
     );
     const MACDDivergence = lastData?.MACDDivergence //bullish
+    const sp500 = DataSymbols.stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
     if(MACDDivergence === 'bullish'){
       await this.FireBaseApi("put", `stock-related/${basePath}/MACDDivergence/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
     }
     if (PriceCrMA50) {
       await this.sendDiscord(
-        `SBUY-BuyOnly_MACDPositive -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+        `${sp500}SBUY-BuyOnly_MACDPositive -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
         `${ticker}-${timeframe}-CrMA50-${lastData?.close}`,
         lastData,
         timeframe === '1day' ? '200AB_LESS_05' : '200AB_LESS_1',
@@ -1484,7 +1485,7 @@ export class WebhooksService {
       if(aboveMA50Second && aboveMA50Third && bellowMA50Fourth){
         if(timeframe === '1day'){
           await this.sendDiscord(
-            `SBUY-PriceCrMA50-3day -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+            `${sp500}SBUY-PriceCrMA50-3day -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
             `${ticker}-${timeframe}-CrMA50-${lastData?.close}`,
             lastData,
             'US_15M_HT',
@@ -1506,7 +1507,7 @@ export class WebhooksService {
               '500'
             );
             await this.sendDiscord(
-              `BUY BUYBUY-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+              `${sp500}BUY BUYBUY-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
               `${ticker}-ON-${timeframe}`,
               lastData,
               'TSLA',
@@ -1520,7 +1521,7 @@ export class WebhooksService {
               '500'
             );
             await this.sendDiscord(
-              `BUY BUYBUY-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+              `${sp500}BUY BUYBUY-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
               `${ticker}-ON-${timeframe}`,
               lastData,
               'SMCI',

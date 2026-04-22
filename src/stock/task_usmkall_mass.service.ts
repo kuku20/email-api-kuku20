@@ -4,7 +4,6 @@ import { ConfigService } from '@nestjs/config';
 import { StockHelperService } from './stockHelper.service';
 import { LocalPLWR } from './runlocal.service';
 import { WebhooksService } from 'src/webhooks/webhooks.service';
-import * as StockSymbols from './dto/chartData';
 import * as DataSymbols from './dto/chartData';
 import pLimit from 'p-limit';
 import { Cron, CronExpression } from '@nestjs/schedule';
@@ -33,7 +32,7 @@ export class TasksUS_ALL_MK_MASS_Service {
   // await this.webhooksService.delete(this.stockHelperService.aboveMA50api+'-blowMA200'); // reset firebase data for the day
   // await this.webhooksService.delete('runOn4hourInday'); // reset firebase data for the day
   //  await this.runAllOn4h()
-    // await this.getMarket(StockSymbols.above2billion);
+    // await this.getMarket(DataSymbols.above2billion);
     // await this.stockHelperService.writeAbove2BillionToFile(this.aboveTarget,`Above_${this.marketTarget}_Billion`);
     // await this.stockHelperService.writeAbove2BillionToFile(this.BelowTarget,`Below_${this.marketTarget}_Billion`);
     // this.stockHelperService.ListMA50On1day = await this.LocalPLWR.getArrSymbolFFire('${this.stockHelperService.aboveMA50api}/alldata/1day')as string[];
@@ -102,12 +101,11 @@ export class TasksUS_ALL_MK_MASS_Service {
                 secondLastData,
               );
             const MACDPositive = lastData.divergence > 0;
+            const sp500 = DataSymbols.stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
             if(signal && signal.RSI15up){
               await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSI15AL/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
               await this.webhooksService.sendDiscord(
-                `${
-                  DataSymbols.stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
-                }SBUY-RSI15AL-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+                `${sp500}SBUY-RSI15AL-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
                 `${ticker}-ON-${timeframe}`,
                 lastData,
                 'RSI15AL',
@@ -116,9 +114,7 @@ export class TasksUS_ALL_MK_MASS_Service {
             }else if(signal && signal.RSI20up){
               await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSIALERT/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
               await this.webhooksService.sendDiscord(
-                `${
-                  DataSymbols.stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
-                }SBUY-RSI20AL-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+                `${sp500}SBUY-RSI20AL-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
                 `${ticker}-ON-${timeframe}`,
                 lastData,
                 'RSIALERT',
@@ -127,9 +123,7 @@ export class TasksUS_ALL_MK_MASS_Service {
             }else if(signal && signal.RSI25up){
               await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSI25AL/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
               await this.webhooksService.sendDiscord(
-                `${
-                  DataSymbols.stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
-                }SBUY-RSI25AL-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+                `${ sp500}SBUY-RSI25AL-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
                 `${ticker}-ON-${timeframe}`,
                 lastData,
                 'RSI25AL',
@@ -138,9 +132,7 @@ export class TasksUS_ALL_MK_MASS_Service {
             }else if(signal && signal.RSI30up){
               await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSI30AL/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
               await this.webhooksService.sendDiscord(
-                `${
-                  DataSymbols.stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
-                }SBUY-RSI30AL-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+                `${sp500}SBUY-RSI30AL-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
                 `${ticker}-ON-${timeframe}`,
                 lastData,
                 'RSI30AL',
@@ -195,7 +187,7 @@ export class TasksUS_ALL_MK_MASS_Service {
   @Cron('0 0 * * 1-5', {
     timeZone: 'America/Los_Angeles',
   })
-  async runfullonms(stocklist = StockSymbols.allabove500million){
+  async runfullonms(stocklist = DataSymbols.allabove500million){
     // delete old data from firebase
     const today = this.stockHelperService.getDateNDaysAgo(0); // Get today's date
     await this.webhooksService.delete(this.stockHelperService.aboveMA50api); // reset firebase data for the day
@@ -236,7 +228,7 @@ export class TasksUS_ALL_MK_MASS_Service {
     await this.webhooksService.SendDcChannels(['200BL_OV_NEG_01','200BL_OV_NEG_05','200AB_LESS_1'],this.logger,'4hour',);
   }
 
-  async runAllWatchLists(stocklist = StockSymbols.above2billion) {
+  async runAllWatchLists(stocklist = DataSymbols.allabove500million) {
     const today = this.stockHelperService.getDateNDaysAgo(0);
   
     const webhooks = ['SLACK_WEBHOOKS_D_US50', 'SLACK_WEBHOOKS_D_US100','SLACK_WEBHOOKS_D_US200','SLACK_WEBHOOKS_WATCHLIST','SLACK_WEBHOOKS_J2DAY','SLACK_WEBHOOKS_J3DAY'];
@@ -255,7 +247,7 @@ export class TasksUS_ALL_MK_MASS_Service {
     await this.webhooksService.sendlast('EARLY_AB200', '200AB_LESS_01');
   }
 
-  async runAllOn1day(stocklist = StockSymbols.allabove500million) {
+  async runAllOn1day(stocklist = DataSymbols.allabove500million) {
     await Promise.all([
       this.USTIMERUN(
         stocklist,
@@ -266,7 +258,7 @@ export class TasksUS_ALL_MK_MASS_Service {
       ),
     ]);
   }
-  async runAllOn4h(stocklist = StockSymbols.allabove500million) {
+  async runAllOn4h(stocklist = DataSymbols.allabove500million) {
     const tslaDc = `<https://discord.com/channels/1306113720979689523/1380037316143349922|4HOUR_RUN_LOOK_TSLA_DC>`
     const smciDc = `<https://discord.com/channels/1306113720979689523/1348653615992143924|4HOUR_RUN_LOOK_SMCI_DC>`
     const message_tsla = `${tslaDc}${'='.repeat(32)}`;
