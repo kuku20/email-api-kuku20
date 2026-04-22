@@ -1738,4 +1738,17 @@ export class WebhooksService {
       return { msg: 'post to Slack fails:', error };
     }
   }
+
+  async SendEverydayService(channels = ['US_ALL', 'USSTOCK_WATCH'], logger, transition?: string) {
+    const equal = `===========================`;
+    for (const channel of channels) {
+      await this.sendDiscordNotification(
+        `${equal}=${transition}=${equal}`,
+        `${channel} RSIENDBOT`,
+        JSON.stringify('lastdata'),
+      );
+      // Log completion
+      logger.error(`✅ Finished sending for`, channel);
+    }
+  }
 }

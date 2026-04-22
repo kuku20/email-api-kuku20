@@ -45,7 +45,7 @@ export class TasksUSMKService_SP500 {
       `✅ Market open — running ${timeframe} trading logic (${now} ET)`,
     );
     const today = new Date().toLocaleString('sv-SE', { timeZone: 'America/Chicago' }).replace(/[^\d]/g, '-');
-    await this.SendEverydayService([B_Channel, HT_Channel,'US_30M_HT','WATCHLIST','US_30M_BUY','US_EARLY_15MIN'],'START='+today);
+    await this.webhooksService.SendEverydayService([B_Channel, HT_Channel,'US_30M_HT','WATCHLIST','US_30M_BUY','US_EARLY_15MIN'],this.logger,'START='+today);
     const tickers = intickers;
     await this.processTickers(
       tickers,
@@ -55,7 +55,7 @@ export class TasksUSMKService_SP500 {
       HT_Channel,
       delay,
     );
-    await this.SendEverydayService([B_Channel, HT_Channel,'US_30M_HT','WATCHLIST','US_30M_BUY','US_EARLY_15MIN'],'END='+today);
+    await this.webhooksService.SendEverydayService([B_Channel, HT_Channel,'US_30M_HT','WATCHLIST','US_30M_BUY','US_EARLY_15MIN'],this.logger,'END='+today);
   }
 
   private async processTickers(
@@ -190,8 +190,11 @@ export class TasksUSMKService_SP500 {
   }
   async onModuleInit() {
     await this.getholdingList()
-    await this.getReapList()
-    // this.stockHelperService.writeAbove2BillionToFile(this.stockHelperService.ListMA50On1day,'today-runing');
+    // await this.getReapList()
+    // this.stockHelperService.runOn4hourInday = await this.LocalPLWR.getArrSymbolFFire(`runOn4hourInday/4hour`)as string[];
+    // this.stockHelperService.above50andAbove200 = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}-aboveMA200/alldata/4hour`)as string[];
+    // this.stockHelperService.writeAbove2BillionToFile(this.stockHelperService.above50andAbove200,'above50andAbove200');
+
     // this.runAllWatchLists30(DataSymbols.watchlist)
     // this.runAllWatchLists30(this.stockHelperService.ListMA50On4hour)
     // console.table(this.stockHelperService.ab50_bl200_3Candles)
@@ -305,19 +308,7 @@ export class TasksUSMKService_SP500 {
       ),
     ]);
   }
-  async SendEverydayService(channels = ['US_ALL', 'USSTOCK_WATCH'], transition?: string) {
-    const equal = `===========================`;
-    for (const channel of channels) {
-      // CLOSE YESTERDAY
-      await this.webhooksService.sendDiscordNotification(
-        `${equal}=${transition}=${equal}`,
-        `${channel} RSIENDBOT`,
-        JSON.stringify('lastdata'),
-      );
-      // Log completion
-      this.logger.error(`✅ Finished sending for`, channel);
-    }
-  }
+
 
 
   private async justSend(
@@ -337,7 +328,7 @@ export class TasksUSMKService_SP500 {
     await new Promise((resolve) => setTimeout(resolve, delay * 60 * 1000));
     const message = `${'='.repeat(32)}`;
     this.webhooksService.sendSlackNotification(message, 'SLACK_WEBHOOKS_4h');
-    await this.SendEverydayService(['TSLA'],'START');
+    await this.webhooksService.SendEverydayService(['TSLA'],this.logger,'START');
     // Prepare ticker promises with concurrency limit
     const tickerPromises = tickers.map((ticker) =>
       limit(async () => {
@@ -391,6 +382,6 @@ export class TasksUSMKService_SP500 {
     await Promise.all(tickerPromises);
 
     this.webhooksService.sendSlackNotification(message, 'SLACK_WEBHOOKS_4h');
-    await this.SendEverydayService(['TSLA'],'END');
+    await this.webhooksService.SendEverydayService(['TSLA'],this.logger,'END');
   }
 }
