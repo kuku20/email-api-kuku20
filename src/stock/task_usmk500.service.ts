@@ -191,7 +191,7 @@ export class TasksUSMKService_SP500 {
     this.stockHelperService.ab50_3Candles_ALL = this.stockHelperService.combineUnique( this.stockHelperService.ab50_bl200_3Candles,this.stockHelperService.ab50_ab200_3Candles);
     // console.table(this.stockHelperService.ab50_bl200_3Candles);
     // console.table(this.stockHelperService.above50andBelow200);
-    this.stockHelperService.ListMA50On1day = this.stockHelperService.combineUnique(this.stockHelperService.HoldingList,DataSymbols.watchlist,this.stockHelperService.above50andBelow200)
+    this.stockHelperService.ListMA50On1day = this.stockHelperService.combineUnique(this.stockHelperService.HoldingList,DataSymbols.watchlist,this.stockHelperService.above50andBelow200,this.stockHelperService.ab50_ab200_3Candles)
     // this.stockHelperService.ListMA50On1day = this.stockHelperService.combineUnique(this.stockHelperService.HoldingList,DataSymbols.watchlist,this.stockHelperService.above50andBelow200,this.stockHelperService.above50andAbove200);
     console.log( this.stockHelperService.ListMA50On1day.length,);
   }
