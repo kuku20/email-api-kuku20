@@ -26,7 +26,7 @@ export class TasksUS_ALL_MK_MASS_Service {
     // this.stockHelperService.aboveMA50api = `dayago-${this.dayago}-` +this.rundayaogo;
     // await this.webhooksService.delete(this.stockHelperService.aboveMA50api); // reset firebase data for the day
     // await this.webhooksService.delete(this.stockHelperService.aboveMA50api+'-blowMA200'); // reset firebase data for the day
-    // await this.runfullonms();
+   // await this.runfullonms();
   //  await this.runAllOn1day();
   // await this.webhooksService.delete(this.stockHelperService.aboveMA50api); // reset firebase data for the day
   // await this.webhooksService.delete(this.stockHelperService.aboveMA50api+'-blowMA200'); // reset firebase data for the day
@@ -81,6 +81,11 @@ export class TasksUS_ALL_MK_MASS_Service {
             ticker,
             timeframe,this.dayago
           );
+
+          if (!Array.isArray(data) || data.length < 2) {
+            this.logger.warn(`⚠️ No valid data for ${ticker} (${timeframe})`);
+            return;
+          }
           const lastData = data[data.length - 1];
           const secondLastData = data[data.length - 2];
 
@@ -100,6 +105,7 @@ export class TasksUS_ALL_MK_MASS_Service {
                 lastData,
                 secondLastData,
               );
+            // console.log(`Signal for ${ticker} on ${timeframe}:`, signal);
             const MACDPositive = lastData.divergence > 0;
             const sp500 = DataSymbols.stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
             if(signal && signal.RSI15up){
@@ -267,7 +273,7 @@ export class TasksUS_ALL_MK_MASS_Service {
     this.webhooksService.sendSlackNotification(message_smci, 'SLACK_WEBHOOKS_US100');
     const slma50 = `**[LOOK_US30ABMA50_SL](https://atllc-workspace.slack.com/archives/C0AQJHR0BC6)**`
     const slma100 = `**[LOOK_US30ABMA100_SL](https://atllc-workspace.slack.com/archives/C0AQH7LDM1B)**`
-    await this.webhooksService.SendDcChannels(['TSLA'],`START_4OUR_${slma50}`);
+    await this.webhooksService.SendDcChannels(['TSLA'],this.logger,`START_4OUR_${slma50}`);
     await this.webhooksService.SendDcChannels(['SMCI'],this.logger,`START_4OUR_${slma100}`);
     await Promise.all([
       this.USTIMERUN(
