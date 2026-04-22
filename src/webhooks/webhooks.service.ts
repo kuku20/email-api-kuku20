@@ -1675,7 +1675,7 @@ export class WebhooksService {
         : this.configService.get<any>('SLACK_WEBHOOKS_4h');
     let hourIn4 = '';
     if(this.stockHelperService.above50andBelow200.length > 0){
-      hourIn4 = this.stockHelperService.above50andBelow200.includes(symbols[0]) ? '4️⃣ *BL200* 🟢🟢' : '4️⃣ *AB200* 🟢';
+      hourIn4 = this.stockHelperService.above50andBelow200.includes(symbols[0]) ? '4️⃣ *BL200* 🟢🟢' : '';
     }
     const aboveOrBellow =
     lastData?.MA200 < lastData?.close
@@ -1711,7 +1711,7 @@ export class WebhooksService {
     const BASE_URL = this.configService.get<any>(other);
     let hourIn4 = '';
     if(this.stockHelperService.above50andBelow200.length > 0){
-      hourIn4 = this.stockHelperService.above50andBelow200.includes(symbols[0]) ? '4️⃣ *BL200* 🟢🟢' : '4️⃣ *AB200* 🟢';
+      hourIn4 = this.stockHelperService.above50andBelow200.includes(symbols[0]) ? '4️⃣ *BL200* 🟢🟢' : '';
     }
     const aboveOrBellow =
     lastData?.MA200 < lastData?.close
