@@ -207,7 +207,7 @@ export class TasksUS_ALL_MK_MASS_Service {
     await this.SendEverydayService('RSI25AL', 'RSI30AL', '1day');
     await this.send1chanel('200AB_LESS_05', '1day');
     await this.webhooksService.sendSlackNotification(
-      `START+${today}+START==(aboveMA50Count >= 3 && MACDPositive)==`,
+      `START+${today}+START=1day=(aboveMA50Count >= 3 && MACDPositive)==`,
       '1day',
     );
 
@@ -216,7 +216,7 @@ export class TasksUS_ALL_MK_MASS_Service {
     await this.SendEverydayService('EARLY_AB200', '200AB_LESS_01', '1day');
     await this.send1chanel('200AB_LESS_05', '1day');
     await this.webhooksService.sendSlackNotification(
-      `END+${today}+END==(aboveMA50Count >= 3 && MACDPositive)===`,
+      `END+${today}+END=1day=(aboveMA50Count >= 3 && MACDPositive)===`,
       '1day',
     );
 
@@ -228,7 +228,7 @@ export class TasksUS_ALL_MK_MASS_Service {
     );
     await this.send1chanel('200AB_LESS_1', '4hour');
     await this.webhooksService.sendSlackNotification(
-      `START+${today}+START=(aboveMA50Count >= 3 && MACDPositive)===`,
+      `START+${today}+START=4hour=(aboveMA50Count >= 3 && MACDPositive)===`,
       '4hour',
     );
 
@@ -239,7 +239,7 @@ export class TasksUS_ALL_MK_MASS_Service {
     await this.runAllOn4h(stocklist);
 
     await this.webhooksService.sendSlackNotification(
-      `END+${today}+END==(aboveMA50Count >= 3 && MACDPositive)==`,
+      `END+${today}+END=4hour=(aboveMA50Count >= 3 && MACDPositive)==`,
       '4hour',
     );
     await this.SendEverydayService(
@@ -281,26 +281,30 @@ export class TasksUS_ALL_MK_MASS_Service {
     ]);
   }
   async runAllOn4h(stocklist = StockSymbols.allabove500million) {
-    const message_tsla = `${'='.repeat(32)}_4HOUR_RUN_LOOK_TSLA_DC_Detail`;
-    const message_smci = `${'='.repeat(32)}_4HOUR_RUN_LOOK_TSLA_DC_Detail`;
+    const tslaDc = `<https://discord.com/channels/1306113720979689523/1380037316143349922|4HOUR_RUN_LOOK_TSLA_DC>`
+    const smciDc = `<https://discord.com/channels/1306113720979689523/1348653615992143924|4HOUR_RUN_LOOK_SMCI_DC>`
+    const message_tsla = `${tslaDc}${'='.repeat(32)}`;
+    const message_smci = `${smciDc}${'='.repeat(32)}`;
     this.webhooksService.sendSlackNotification(message_tsla, 'SLACK_WEBHOOKS_US50');
     this.webhooksService.sendSlackNotification(message_smci, 'SLACK_WEBHOOKS_US100');
-    await this.send1chanel(['TSLA'],'START_LOOK_US30ABMA50_SL');
-    await this.send1chanel(['SMCI'],'START_LOOK_US30ABMA100_SL');
-    await Promise.all([
-      this.USTIMERUN(
-        stocklist,
-        '200BL_OV_NEG_01',
-        '200BL_OV_NEG_05',
-        0,
-        '4hour',
-      ),
-    ]);
-    await this.webhooksService.sendlast('200BL_OV_NEG_01', '200BL_OV_NEG_05');
+    const slma50 = `**[LOOK_US30ABMA50_SL](https://atllc-workspace.slack.com/archives/C0AQJHR0BC6)**`
+    const slma100 = `**[LOOK_US30ABMA100_SL](https://atllc-workspace.slack.com/archives/C0AQH7LDM1B)**`
+    await this.send1chanel(['TSLA'],`START_4OUR_${slma50}`);
+    await this.send1chanel(['SMCI'],`START_4OUR_${slma100}`);
+    // await Promise.all([
+    //   this.USTIMERUN(
+    //     stocklist,
+    //     '200BL_OV_NEG_01',
+    //     '200BL_OV_NEG_05',
+    //     0,
+    //     '4hour',
+    //   ),
+    // ]);
+    // await this.webhooksService.sendlast('200BL_OV_NEG_01', '200BL_OV_NEG_05');
     this.webhooksService.sendSlackNotification(message_tsla, 'SLACK_WEBHOOKS_US50');
     this.webhooksService.sendSlackNotification(message_smci, 'SLACK_WEBHOOKS_US100');
-    await this.send1chanel(['TSLA'],'END_START_LOOK_US30ABMA50_SL');
-    await this.send1chanel(['SMCI'],'END_START_LOOK_US30ABMA100_SL');
+    await this.send1chanel(['TSLA'],`END_4HOUR${slma50}`);
+    await this.send1chanel(['SMCI'],`END_4HOUR${slma100}`);
   }
 
   async SendEverydayService(chanel1, chanel2, timeframe = '1day') {
@@ -327,7 +331,7 @@ export class TasksUS_ALL_MK_MASS_Service {
       JSON.stringify('lastdata'),
     );
     // Log completion
-    this.logger.error(`✅ Finished sending for`, channel);
+    // this.logger.error(`✅ Finished sending for`, channel);
   }
 
   billion = 1000000000;
