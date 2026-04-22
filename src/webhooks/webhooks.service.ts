@@ -1739,7 +1739,7 @@ export class WebhooksService {
     }
   }
 
-  async SendEverydayService(channels = ['US_ALL', 'USSTOCK_WATCH'], logger, transition?: string) {
+  async SendDcChannels(channels = ['US_ALL', 'USSTOCK_WATCH'], logger, transition?: string) {
     const equal = `===========================`;
     for (const channel of channels) {
       await this.sendDiscordNotification(

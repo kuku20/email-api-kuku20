@@ -202,7 +202,7 @@ export class TasksUS_ALL_MK_MASS_Service {
     await this.webhooksService.delete(this.stockHelperService.aboveMA50api+'-aboveMA200'); // reset firebase data for the day
     await this.webhooksService.delete('runOn4hourInday'); // reset firebase data for the day
     this.stockHelperService.ListMA50On1day = []; // Clear the list at the start of each run
-    await this.webhooksService.SendEverydayService(['EARLY_AB200', '200AB_LESS_01', 'RSI15AL', 'RSIALERT','RSI25AL', 'RSI30AL','200AB_LESS_05'],this.logger,'1day');
+    await this.webhooksService.SendDcChannels(['EARLY_AB200', '200AB_LESS_01', 'RSI15AL', 'RSIALERT','RSI25AL', 'RSI30AL','200AB_LESS_05'],this.logger,'1day');
     await this.webhooksService.sendSlackNotification(
       `START+${today}+START=1day=(aboveMA50Count >= 3 && MACDPositive)==`,
       '1day',
@@ -210,14 +210,14 @@ export class TasksUS_ALL_MK_MASS_Service {
 
     await this.runAllWatchLists(stocklist);
 
-    await this.webhooksService.SendEverydayService(['EARLY_AB200', '200AB_LESS_01', 'RSI15AL', 'RSIALERT','RSI25AL', 'RSI30AL','200AB_LESS_05'],this.logger, '1day');
+    await this.webhooksService.SendDcChannels(['EARLY_AB200', '200AB_LESS_01', 'RSI15AL', 'RSIALERT','RSI25AL', 'RSI30AL','200AB_LESS_05'],this.logger, '1day');
     await this.webhooksService.sendSlackNotification(
       `END+${today}+END=1day=(aboveMA50Count >= 3 && MACDPositive)===`,
       '1day',
     );
 
     this.stockHelperService.ListMA50On4hour = [];
-    await this.webhooksService.SendEverydayService(['200BL_OV_NEG_01','200BL_OV_NEG_05','200AB_LESS_1'],this.logger,'4hour',);
+    await this.webhooksService.SendDcChannels(['200BL_OV_NEG_01','200BL_OV_NEG_05','200AB_LESS_1'],this.logger,'4hour',);
     await this.webhooksService.sendSlackNotification(
       `START+${today}+START=4hour=(aboveMA50Count >= 3 && MACDPositive)===`,
       '4hour',
@@ -233,7 +233,7 @@ export class TasksUS_ALL_MK_MASS_Service {
       `END+${today}+END=4hour=(aboveMA50Count >= 3 && MACDPositive)==`,
       '4hour',
     );
-    await this.webhooksService.SendEverydayService(['200BL_OV_NEG_01','200BL_OV_NEG_05','200AB_LESS_1'],this.logger,'4hour',);
+    await this.webhooksService.SendDcChannels(['200BL_OV_NEG_01','200BL_OV_NEG_05','200AB_LESS_1'],this.logger,'4hour',);
   }
 
   async runAllWatchLists(stocklist = StockSymbols.above2billion) {
@@ -275,8 +275,8 @@ export class TasksUS_ALL_MK_MASS_Service {
     this.webhooksService.sendSlackNotification(message_smci, 'SLACK_WEBHOOKS_US100');
     const slma50 = `**[LOOK_US30ABMA50_SL](https://atllc-workspace.slack.com/archives/C0AQJHR0BC6)**`
     const slma100 = `**[LOOK_US30ABMA100_SL](https://atllc-workspace.slack.com/archives/C0AQH7LDM1B)**`
-    await this.webhooksService.SendEverydayService(['TSLA'],`START_4OUR_${slma50}`);
-    await this.webhooksService.SendEverydayService(['SMCI'],this.logger,`START_4OUR_${slma100}`);
+    await this.webhooksService.SendDcChannels(['TSLA'],`START_4OUR_${slma50}`);
+    await this.webhooksService.SendDcChannels(['SMCI'],this.logger,`START_4OUR_${slma100}`);
     await Promise.all([
       this.USTIMERUN(
         stocklist,
@@ -289,8 +289,8 @@ export class TasksUS_ALL_MK_MASS_Service {
     await this.webhooksService.sendlast('200BL_OV_NEG_01', '200BL_OV_NEG_05');
     this.webhooksService.sendSlackNotification(message_tsla, 'SLACK_WEBHOOKS_US50');
     this.webhooksService.sendSlackNotification(message_smci, 'SLACK_WEBHOOKS_US100');
-    await this.webhooksService.SendEverydayService(['TSLA'],this.logger,`END_4HOUR${slma50}`);
-    await this.webhooksService.SendEverydayService(['SMCI'],this.logger,`END_4HOUR${slma100}`);
+    await this.webhooksService.SendDcChannels(['TSLA'],this.logger,`END_4HOUR${slma50}`);
+    await this.webhooksService.SendDcChannels(['SMCI'],this.logger,`END_4HOUR${slma100}`);
   }
 
   

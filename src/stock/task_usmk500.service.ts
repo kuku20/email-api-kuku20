@@ -45,7 +45,7 @@ export class TasksUSMKService_SP500 {
       `✅ Market open — running ${timeframe} trading logic (${now} ET)`,
     );
     const today = new Date().toLocaleString('sv-SE', { timeZone: 'America/Chicago' }).replace(/[^\d]/g, '-');
-    await this.webhooksService.SendEverydayService([B_Channel, HT_Channel,'US_30M_HT','WATCHLIST','US_30M_BUY','US_EARLY_15MIN'],this.logger,'START='+today);
+    await this.webhooksService.SendDcChannels([B_Channel, HT_Channel,'US_30M_HT','WATCHLIST','US_30M_BUY','US_EARLY_15MIN'],this.logger,'START='+today);
     const tickers = intickers;
     await this.processTickers(
       tickers,
@@ -55,7 +55,7 @@ export class TasksUSMKService_SP500 {
       HT_Channel,
       delay,
     );
-    await this.webhooksService.SendEverydayService([B_Channel, HT_Channel,'US_30M_HT','WATCHLIST','US_30M_BUY','US_EARLY_15MIN'],this.logger,'END='+today);
+    await this.webhooksService.SendDcChannels([B_Channel, HT_Channel,'US_30M_HT','WATCHLIST','US_30M_BUY','US_EARLY_15MIN'],this.logger,'END='+today);
   }
 
   private async processTickers(
@@ -328,7 +328,7 @@ export class TasksUSMKService_SP500 {
     await new Promise((resolve) => setTimeout(resolve, delay * 60 * 1000));
     const message = `${'='.repeat(32)}`;
     this.webhooksService.sendSlackNotification(message, 'SLACK_WEBHOOKS_4h');
-    await this.webhooksService.SendEverydayService(['TSLA'],this.logger,'START');
+    await this.webhooksService.SendDcChannels(['TSLA'],this.logger,'START');
     // Prepare ticker promises with concurrency limit
     const tickerPromises = tickers.map((ticker) =>
       limit(async () => {
@@ -382,6 +382,6 @@ export class TasksUSMKService_SP500 {
     await Promise.all(tickerPromises);
 
     this.webhooksService.sendSlackNotification(message, 'SLACK_WEBHOOKS_4h');
-    await this.webhooksService.SendEverydayService(['TSLA'],this.logger,'END');
+    await this.webhooksService.SendDcChannels(['TSLA'],this.logger,'END');
   }
 }

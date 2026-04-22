@@ -200,19 +200,6 @@ export class TaskHoldingService {
     }
   }
 
-  async SendEverydayService(channels = ['US_ALL', 'USSTOCK_WATCH'], transition?: string) {
-    const equal = `===========================`;
-    for (const channel of channels) {
-      // CLOSE YESTERDAY
-      await this.webhooksService.sendDiscordNotification(
-        `${equal}=${transition}=${equal}`,
-        `${channel} RSIENDBOT`,
-        JSON.stringify('lastdata'),
-      );
-      // Log completion
-      this.logger.error(`✅ Finished sending for`, channel);
-    }
-  }
   async  USTIMERUN(
     dataForm: string,
     intickers: string[],
@@ -239,7 +226,7 @@ export class TaskHoldingService {
       `✅ Market open — running ${timeframe} trading logic (${now} ET)`,
     );
     const today = new Date().toLocaleString('sv-SE', { timeZone: 'America/Chicago' }).replace(/[^\d]/g, '-');
-    await this.SendEverydayService([B_Channel, HT_Channel],'START='+today);
+    await this.webhooksService.SendDcChannels([B_Channel, HT_Channel],this.logger,'START='+today);
     const tickers = intickers;
     await this.processTickers(dataForm,
       tickers,
@@ -249,7 +236,7 @@ export class TaskHoldingService {
       HT_Channel,
       delay,
     );
-    await this.SendEverydayService([B_Channel, HT_Channel],'END='+today);
+    await this.webhooksService.SendDcChannels([B_Channel, HT_Channel],this.logger,'END='+today);
   }
 
 }
