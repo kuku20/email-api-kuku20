@@ -164,7 +164,7 @@ import { TasksUS_ALL_MK_4HOUR_Service } from './stock/task_usmkall_4hour_daily.s
     TaskCryptoService,
     TasksForexService,
     TaskHoldingService,
-    SendEverydayService,
+    // SendEverydayService,
     TasksUS_ALL_MK_MASS_Service,
 
     // TasksUS_ALL_MKService,
