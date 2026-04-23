@@ -1587,6 +1587,61 @@ export class WebhooksService {
       // }
     }
   }
+
+
+  async StochRSIBuy_HOLD(data, ticker, timeframe, B_Channel, HT_Channel){
+    const lastData = data[data.length - 1];
+    const secondLastData = data[data.length - 2];
+    const StochRSIBuy_HOLD = await this.stockHelperService.StochRSIBuy_HOLD(
+      lastData,
+      secondLastData,
+    );
+    if (StochRSIBuy_HOLD.upside80) {
+      await this.FireBaseApi("put", `stock-related/StochRSIBuy_HOLD_upside80/alldata/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
+      await this.sendDiscord(
+        `BUY-upside80-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastData,
+        'MA_AB_5_200',
+        data,
+      );
+      return;
+    } 
+    else  if (StochRSIBuy_HOLD.upside) {
+      await this.FireBaseApi("put", `stock-related/StochRSIBuy_HOLD_upside/alldata/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
+      await this.sendDiscord(
+        `BUY-upside-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastData,
+        'MA_AB_5_20',
+        data,
+      );
+      return;
+    }
+    else if (StochRSIBuy_HOLD.lowWatch_buyOp) {
+      await this.FireBaseApi("put", `stock-related/StochRSIBuy_HOLD_lowWatch_buyOp/alldata/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
+
+      await this.sendDiscord(
+        `SELL-highWatch_sellOp-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastData,
+        'MA_AB_20_50',
+        data,
+      );
+      return;
+    }
+     else if (StochRSIBuy_HOLD.highWatch_sellOp) {
+      await this.FireBaseApi("put", `stock-related/StochRSIBuy_HOLD_highWatch_sellOp/alldata/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
+      await this.sendDiscord(
+        `SELL-highWatch_sellOp-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastData,
+        'MA_AB_50_100',
+        data,
+      );
+      return;
+     }
+  }
   async sendlast(B_Channel, HT_Channel) {
     await this.sendDiscordNotification(
       `,${this.listsymbolB.toString()}`,

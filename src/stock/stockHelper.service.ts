@@ -629,15 +629,19 @@ SELL ALL
   async StochRSIBuy_HOLD(
     last: StockData,
     prev: StockData,
-  ): Promise<{ upside: boolean; upside80: boolean }> {
-    if (!last || !prev) return { upside: false, upside80: false }; // safety
+  ): Promise<{ upside: boolean; upside80: boolean ,lowWatch_buyOp,highWatch_sellOp}> {
+    if (!last || !prev) return { upside: false, upside80: false, lowWatch_buyOp: false, highWatch_sellOp: false }; // safety
     const stockRSILAUP = last.StochRSI_K - last.StochRSI_D > 0;
     const stockRSIPRUP = prev.StochRSI_K - prev.StochRSI_D > 0;
     const compare2day = stockRSILAUP >= stockRSIPRUP;
-    const inrange2080 = last.StochRSI_K < 80 && prev.StochRSI_K < 80;
+    const inrange2080 = last.StochRSI_K < 0.8 && prev.StochRSI_K < 0.8 && last.StochRSI_K > 0.2 && prev.StochRSI_K > 0.2;
+    const lowWatch_buyOp = last.StochRSI_K < 0.2 || prev.StochRSI_K < 0.2;
+    const highWatch_sellOp = last.StochRSI_K > 0.85 || prev.StochRSI_K > 0.85;
     return {
       upside: stockRSILAUP && compare2day,
       upside80: stockRSILAUP && stockRSIPRUP && inrange2080,
+      lowWatch_buyOp:lowWatch_buyOp && stockRSILAUP,
+      highWatch_sellOp :highWatch_sellOp && !stockRSILAUP
     };
   }
 
