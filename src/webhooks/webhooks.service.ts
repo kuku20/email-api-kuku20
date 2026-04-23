@@ -1429,15 +1429,15 @@ export class WebhooksService {
     const thirdLastData = data[data.length - 3];
     const fourthLastData = data[data.length - 4];
     const fifthLastData = data[data.length - 5];
-    const aboveMA50 = lastData.close > lastData.MA50;
+    const aboveMA50 = lastData.close > lastData.MA100;
     const MACDPositive = lastData.divergence > 0;
-    const aboveMA50Second = secondLastData.close > secondLastData.MA50;
-    const belowA50Second = secondLastData.close < secondLastData.MA50;
-    const aboveMA50Third = thirdLastData.close > thirdLastData.MA50;
-    const belowMA50Third = thirdLastData.close < thirdLastData.MA50;
-    const aboveMA50Fourth = fourthLastData.close > fourthLastData.MA50;
-    const bellowMA50Fourth = fourthLastData.close < fourthLastData.MA50;
-    const belowMA50Fifth = fifthLastData.close < fifthLastData.MA50;
+    const aboveMA50Second = secondLastData.close > secondLastData.MA100;
+    const belowA50Second = secondLastData.close < secondLastData.MA100;
+    const aboveMA50Third = thirdLastData.close > thirdLastData.MA100;
+    const belowMA50Third = thirdLastData.close < thirdLastData.MA100;
+    const aboveMA50Fourth = fourthLastData.close > fourthLastData.MA100;
+    const bellowMA50Fourth = fourthLastData.close < fourthLastData.MA100;
+    const belowMA50Fifth = fifthLastData.close < fifthLastData.MA100;
 
     const blowMA200 = lastData.close < lastData.MA200;
     // const basePath = this.stockHelperService.aboveMA50api
