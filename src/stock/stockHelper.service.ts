@@ -4,7 +4,7 @@ import { StockData } from './dto/chartData';
 @Injectable()
 export class StockHelperService {
   // aboveMA50api: string = `sun-04-19-2026-blowMA200`;
-  aboveMA50api: string = `week-04-20-2026`;
+  aboveMA50api: string = `run-daily`;
   ab50_bl200_3Candles: string[] = [];
   ab50_ab200_3Candles: string[] = [];
   ab50_3Candles_ALL: string[] = [];
@@ -458,6 +458,13 @@ export class StockHelperService {
         prev.SignalLine < 0)
     );
   }
+  async macdCross(last: StockData, prev: StockData): Promise<{AB: boolean;AB_BL0:boolean, BL: boolean}> {
+    if (!last || !prev) return {AB:false,AB_BL0:false, BL:false}; // safety
+    const AB = last.divergence > 0 && prev.divergence < 0;
+    const AB_BL0 = AB && (last.MACDLine < 0 || last.SignalLine < 0 || prev.MACDLine < 0 || prev.SignalLine < 0);
+    const BL = last.divergence < 0 && prev.divergence > 0;
+    return {AB,AB_BL0, BL};
+  }
   private readonly forexHolidays = [
     '2026-01-01', // New Year's Day (global)
     '2026-12-25', // Christmas
@@ -629,19 +636,24 @@ SELL ALL
   async StochRSIBuy_HOLD(
     last: StockData,
     prev: StockData,
-  ): Promise<{ upside: boolean; upside80: boolean ,lowWatch_buyOp,highWatch_sellOp}> {
-    if (!last || !prev) return { upside: false, upside80: false, lowWatch_buyOp: false, highWatch_sellOp: false }; // safety
+  ): Promise<{ upside: boolean; upside80: boolean ,lowWatch_buyOp,highWatch_sellOp,LLW_BuyOp,SLW_BuyOp}> {
+    if (!last || !prev) return { upside: false, upside80: false, lowWatch_buyOp: false, highWatch_sellOp: false ,LLW_BuyOp:false, SLW_BuyOp:false}; // safety
     const stockRSILAUP = last.StochRSI_K - last.StochRSI_D > 0;
     const stockRSIPRUP = prev.StochRSI_K - prev.StochRSI_D > 0;
     const compare2day = stockRSILAUP >= stockRSIPRUP;
     const inrange2080 = last.StochRSI_K < 0.8 && prev.StochRSI_K < 0.8 && last.StochRSI_K > 0.2 && prev.StochRSI_K > 0.2;
     const lowWatch_buyOp = last.StochRSI_K < 0.2 || prev.StochRSI_K < 0.2;
+    const LLW_BuyOp = last.StochRSI_K < 0.1 || prev.StochRSI_K < 0.1;
+    const SLW_BuyOp = last.StochRSI_K < 0.05 || prev.StochRSI_K < 0.05;
     const highWatch_sellOp = last.StochRSI_K > 0.85 || prev.StochRSI_K > 0.85;
+    const macdBuy = last.MACDLine > last.SignalLine
     return {
       upside: stockRSILAUP && compare2day,
       upside80: stockRSILAUP && stockRSIPRUP && inrange2080,
       lowWatch_buyOp:lowWatch_buyOp && stockRSILAUP,
-      highWatch_sellOp :highWatch_sellOp && !stockRSILAUP
+      highWatch_sellOp :highWatch_sellOp && !stockRSILAUP,
+      LLW_BuyOp:LLW_BuyOp && stockRSILAUP,
+      SLW_BuyOp:SLW_BuyOp && stockRSILAUP
     };
   }
 
