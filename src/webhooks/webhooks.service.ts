@@ -1615,7 +1615,7 @@ export class WebhooksService {
       await this.sendSlackNotificationVN(
         [ticker],
         lastData,
-        DataSymbols.watchlist.includes(ticker)?'SLACK_WEBHOOKS_WATCHLIST':'SLACK_WEBHOOKS_US_MACDCR'
+        DataSymbols.watchlist.includes(ticker)?'SLACK_WEBHOOKS_WATCHLIST':sltimeframeKey
       );
       return;
     }
