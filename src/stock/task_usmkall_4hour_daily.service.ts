@@ -22,6 +22,8 @@ export class TasksUS_ALL_MK_4HOUR_Service {
   // await this.runAllWatchLists2h()
   // await this.runOnly2h()
   // await this.runOnly1h()
+  // await this.runAllOn4h()
+  // await this.runAllWatchLists2h()
   // // this.stockHelperService.NextRound_2hourALL  = await this.LocalPLWR.getArrSymbolFFire(`NextRound/2hour`,'stockRSILAUP') || DataSymbols.allabove500million
   // this.stockHelperService.NextRound_2hourALL  = await this.LocalPLWR.getArrSymbolFFire(`macdCross_AB/All/2hour`,'stockRSILAUP')
   // console.log('NextRound_2hourALL:', this.stockHelperService.NextRound_2hourALL);
@@ -106,12 +108,13 @@ export class TasksUS_ALL_MK_4HOUR_Service {
   async runAllOn4h() {
     // this.stockHelperService.runOn4hourInday = await this.LocalPLWR.getArrSymbolFFire(`runOn4hourInday/4hour`)as string[];
     // await this.webhooksService.deleteFirebase('macdCross_AB','stockRSILAUP');
-    this.stockHelperService.NextRound_4hourALL  =await this.LocalPLWR.getArrSymbolFFire(`NextRound/4hour`,'stockRSILAUP') || DataSymbols.allabove500million
+    // this.stockHelperService.NextRound_4hourALL  =await this.LocalPLWR.getArrSymbolFFire(`NextRound/4hour`,'stockRSILAUP') || DataSymbols.allabove500million
+    this.stockHelperService.NextRound_4hourALL  = DataSymbols.allabove500million
     if( this.stockHelperService.NextRound_4hourALL.length === 0){
       this.logger.warn('No stocks to process for 4-hour run.');
       return;
     }
-    await this.webhooksService.deleteFirebase('NextRound/4hour','stockRSILAUP');
+    // await this.webhooksService.deleteFirebase('NextRound/4hour','stockRSILAUP');
 
     const tslaDc = `<https://discord.com/channels/1306113720979689523/1380037316143349922|4HOUR_RUN_LOOK_TSLA_DC>`
     const smciDc = `<https://discord.com/channels/1306113720979689523/1348653615992143924|4HOUR_RUN_LOOK_SMCI_DC>`
@@ -153,9 +156,10 @@ export class TasksUS_ALL_MK_4HOUR_Service {
 
   // @Cron('6 9-15 * * 1-5', { timeZone: 'America/New_York' }) // Every day at 9:06 AM, 10:06 AM, ..., 3:06 PM ET on weekdays
 
-  @Cron('36 9-13/2 * * 1-5', { timeZone: 'America/New_York' }) // 9:36 AM, 11:36 AM, 1:36 PM ET (weekdays)
+  @Cron('36 9-15/2 * * 1-5', { timeZone: 'America/New_York' }) // 9:36 AM, 11:36 AM, 1:36 PM ET (weekdays)
  async runAllWatchLists2h() {
-    this.stockHelperService.NextRound_2hourALL  = await this.LocalPLWR.getArrSymbolFFire(`NextRound/2hour`,'stockRSILAUP') || DataSymbols.allabove500million
+    // this.stockHelperService.NextRound_2hourALL  = await this.LocalPLWR.getArrSymbolFFire(`NextRound/2hour`,'stockRSILAUP') || DataSymbols.allabove500million
+    this.stockHelperService.NextRound_2hourALL  = DataSymbols.allabove500million
     console.log('NextRound_2hourALL:', this.stockHelperService.NextRound_2hourALL.length);
 
     const sl1hourCr = `**[LOOK_US30ABMA50_SL](https://atllc-workspace.slack.com/archives/C081A4CHMJ4)**`
@@ -164,7 +168,7 @@ export class TasksUS_ALL_MK_4HOUR_Service {
     this.webhooksService.sendSlackNotification('START_'+dcMA_AB_20_50, 'SLACK_WEBHOOKS_2h_CROSS');
     await this.webhooksService.SendDcChannels(['MA_AB_20_50'],this.logger,`START_2HOUR_${message_sl1hourCr}`);
 
-    await  this.runOnly2h()
+    await  this.runOnly2h(this.stockHelperService.NextRound_2hourALL)
 
     await this.webhooksService.SendDcChannels(['MA_AB_20_50'],this.logger,`END_2HOUR_${message_sl1hourCr}`);
     this.webhooksService.sendSlackNotification('END_'+dcMA_AB_20_50, 'SLACK_WEBHOOKS_2h_CROSS');

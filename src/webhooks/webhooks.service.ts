@@ -1610,7 +1610,7 @@ export class WebhooksService {
     if (stockRSILAUP && macdCross.AB) {
       await this.FireBaseApi("put", `stockRSILAUP/macdCross_AB/${basePath}/${timeframe}/${ticker}.json`, {lastData: lastData})
       await this.FireBaseApi("put", `stockRSILAUP/macdCross_AB/All/${timeframe}/${ticker}.json`, {lastData: lastData})
-      await this.FireBaseApi("put", `stockRSILAUP/macdCross_AB/All/${timeframe}/${lastDataOnTime}/${ticker}.json`, {lastData: lastData})
+      await this.FireBaseApi("put", `stockRSILAUP/macdCross_AB/DyDay/${timeframe}/${lastDataOnTime}/${ticker}.json`, {lastData: lastData})
       await this.sendDiscord(
         `BUYY-macdCross_AB-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
         `${ticker}-ON-${timeframe}`,
