@@ -781,9 +781,9 @@ export class LocalPLWR {
     return getwashsell30
   }
 
-  async getArrSymbolFFire(endpoint:string) {
+  async getArrSymbolFFire(endpoint:string, stockRelated ='stock-related') {
     // const data = await dbrs.getData('post-wash-sell');
-    const data = await this.FireBaseApi('get',`stock-related/${endpoint}.json`,'')
+    const data = await this.FireBaseApi('get',`${stockRelated}/${endpoint}.json`,'')
     if(data){
       const result = [...new Set(Object?.keys(data))];
       console.log(`✅ Loaded ${endpoint}: has ${result.length} symbols`);

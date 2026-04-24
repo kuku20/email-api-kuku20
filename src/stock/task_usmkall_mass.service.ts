@@ -308,9 +308,9 @@ export class TasksUS_ALL_MK_MASS_Service {
     this.webhooksService.sendSlackNotification('END_'+message_tsla, 'SLACK_WEBHOOKS_US50');
     this.webhooksService.sendSlackNotification('END_'+message_smci, 'SLACK_WEBHOOKS_US100');
     this.webhooksService.sendSlackNotification('END_'+macd4huorDc, 'SLACK_WEBHOOKS_MACDCRAB');
-    await this.webhooksService.SendDcChannels(['TSLA'],this.logger,`END_4HOUR${slma50}`);
-    await this.webhooksService.SendDcChannels(['SMCI'],this.logger,`START_4OUR_${slma100}`);
-    await this.webhooksService.SendDcChannels(['MA_AB_5_200'],this.logger,`END_4HOUR${slmacd}`);
+    await this.webhooksService.SendDcChannels(['TSLA'],this.logger,`END_4HOUR_${slma50}`);
+    await this.webhooksService.SendDcChannels(['SMCI'],this.logger,`END_4OUR_${slma100}`);
+    await this.webhooksService.SendDcChannels(['MA_AB_5_200'],this.logger,`END_4HOUR_${slmacd}`);
   }
 
   

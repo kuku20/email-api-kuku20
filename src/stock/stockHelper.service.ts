@@ -6,6 +6,10 @@ export class StockHelperService {
   // aboveMA50api: string = `sun-04-19-2026-blowMA200`;
   aboveMA50api: string = `run-daily`;
   ab50_bl200_3Candles: string[] = [];
+  stockRSILAUP_4hourALL: string[] = [];
+  NextRound_4hourALL: string[] = [];
+  NextRound_1hourALL: string[] = [];
+  stockRSILAUP_1dayALL: string[] = [];
   ab50_ab200_3Candles: string[] = [];
   ab50_3Candles_ALL: string[] = [];
 
