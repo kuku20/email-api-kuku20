@@ -9,6 +9,23 @@ import { StockHelperService } from 'src/stock/stockHelper.service';
 import * as DataSymbols from '../stock/dto/chartData';
 import * as fs from 'fs';
 import { channel } from 'diagnostics_channel';
+type Timeframe = '1month' | '1week' | '1day' | '8hour' | '4hour' | '2hour' | '1hour' | '45min' | '30min' | '15min' | '5min' | '1min';
+
+const timeframeScoreMap: Record<Timeframe, number> = {
+  '1month': 600,
+  '1week': 550,
+  '1day': 500,
+  '8hour': 480,
+  '4hour': 240,
+  '2hour': 120,
+  '1hour': 60,
+  '45min': 45,
+  '30min': 30,
+  '15min': 15,
+  '5min': 5,
+  '1min': 1,
+};
+
 @Injectable()
 export class WebhooksService {
   private webhookClient: WebhookClient;
@@ -1588,10 +1605,12 @@ export class WebhooksService {
     const  downtrend = lastData.divergence < 0 
     const basePath = blowMA200 ? this.stockHelperService.aboveMA50api : `${this.stockHelperService.aboveMA50api}-aboveMA200`;
     const timeframeKey = timeframe === '1day' ? 'MA_AB_5_20' :timeframe === '4hour'  ? 'MA_AB_5_200' : timeframe === '1hour' ? 'MA_AB_20_50' : 'MA_AB_100_200';
-    const sltimeframeKey = timeframe === '1day' ? 'SLACK_WEBHOOKS_US_MACDCR' :timeframe === '4hour'  ? 'SLACK_WEBHOOKS_4h_CROSS' : 'SLACK_WEBHOOKS';
+    const sltimeframeKey = timeframe === '1day' ? 'SLACK_WEBHOOKS_US_MACDCR' :timeframe === '4hour'  ? 'SLACK_WEBHOOKS_4h_CROSS' : 'SLACK_WEBHOOKS_2h_CROSS';
+    const lastDataOnTime = await this.stockHelperService.TurnDateToUnderFM(lastData.date);
     if (stockRSILAUP && macdCross.AB) {
       await this.FireBaseApi("put", `stockRSILAUP/macdCross_AB/${basePath}/${timeframe}/${ticker}.json`, {lastData: lastData})
       await this.FireBaseApi("put", `stockRSILAUP/macdCross_AB/All/${timeframe}/${ticker}.json`, {lastData: lastData})
+      await this.FireBaseApi("put", `stockRSILAUP/macdCross_AB/All/${timeframe}/${lastDataOnTime}/${ticker}.json`, {lastData: lastData})
       await this.sendDiscord(
         `BUYY-macdCross_AB-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
         `${ticker}-ON-${timeframe}`,
@@ -1616,8 +1635,8 @@ export class WebhooksService {
       );
       return;
     }  
-    if(downtrend && timeframe === '4hour' || timeframe === '1hour'){
-      await this.FireBaseApi("put", `stockRSILAUP/NextRound/${timeframe}/${ticker}.json`, {lastData: lastData})
+    if(downtrend && timeframe === '4hour' || timeframe === '2hour'){
+      await this.FireBaseApi("put", `stockRSILAUP/NextRound/${timeframe}/${lastDataOnTime}/${ticker}.json`, {lastData: lastData})
     }
   }
   async sendlast(B_Channel, HT_Channel) {
@@ -1763,13 +1782,15 @@ export class WebhooksService {
     const sp500 = DataSymbols.stock_500_symbols.includes(symbols[0]) ? '(🇺🇸)-' : ''
 
     const last = in3candles + hourIn4;
+
+    const timeframeScore = timeframeScoreMap[timeframe];
     const formatted = symbols
       .map(
         (s) =>
           `${timeframe} •${sp500}${mkaboveOrBellow2}${hourIn4}${last} *${s}* → ${
             lastData?.close
           }(${aboveOrBellow}-${lastData?.MA200?.toFixed(2)})| ${lastData?.date} |` +
-          `  < <http://localhost:4200/price-log/${s}?daysRange=${range}|local> | <https://stockmarkets000.web.app/price-log/${s}?daysRange=${range}|production> | <https://www.tradingview.com/chart/mWoCISmu/?symbol=${s}|tradingview> | < <http://localhost:4200/price-log/${s}?daysRange=240|4hour> >`,
+          `  < <http://localhost:4200/price-log/${s}?daysRange=${timeframeScore}|local> | <https://stockmarkets000.web.app/price-log/${s}?daysRange=${timeframeScore}|production> | <https://www.tradingview.com/chart/mWoCISmu/?symbol=${s}|tradingview> | < <http://localhost:4200/price-log/${s}?daysRange=240|4hour> >`,
       )
       .join('\n');
 
@@ -1784,7 +1805,7 @@ export class WebhooksService {
       return { msg: 'post to Slack fails:', error };
     }
   }
-
+  
   async SendDcChannels(channels = ['US_ALL', 'USSTOCK_WATCH'], logger, transition?: string) {
     const equal = `===========================`;
     for (const channel of channels) {

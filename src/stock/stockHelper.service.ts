@@ -8,7 +8,7 @@ export class StockHelperService {
   ab50_bl200_3Candles: string[] = [];
   stockRSILAUP_4hourALL: string[] = [];
   NextRound_4hourALL: string[] = [];
-  NextRound_1hourALL: string[] = [];
+  NextRound_2hourALL: string[] = [];
   stockRSILAUP_1dayALL: string[] = [];
   ab50_ab200_3Candles: string[] = [];
   ab50_3Candles_ALL: string[] = [];
@@ -803,5 +803,17 @@ SELL ALL
         console.log(`Above 5 billion tickers saved to ${filePath}`);
       }
     });
+  }
+
+  TurnDateToUnderFM(inputDate: string): string { //"2025-10-07 13:30:00";
+    const formatted = inputDate.replace(/[-:\s]/g, "_");
+    return formatted; // Output: "2025_10_07_13_30_00"
+  }
+  TurnDateToDashFormat(inputDate: string): string {
+    // "2025_10_07_13_30_00"
+    const parts = inputDate.split("_");
+  
+    const formatted = `${parts[0]}-${parts[1]}-${parts[2]} ${parts[3]}:${parts[4]}:${parts[5]}`;
+    return formatted; // "2025-10-07 13:30:00"
   }
 }

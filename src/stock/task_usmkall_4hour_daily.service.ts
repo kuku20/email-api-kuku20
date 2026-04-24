@@ -5,7 +5,7 @@ import { LocalPLWR } from './runlocal.service';
 import { WebhooksService } from 'src/webhooks/webhooks.service';
 import pLimit from 'p-limit';
 import { Cron, CronExpression } from '@nestjs/schedule';
-
+import * as DataSymbols from './dto/chartData';
 @Injectable()
 export class TasksUS_ALL_MK_4HOUR_Service {
   allkeys = 'all'; // test
@@ -18,9 +18,13 @@ export class TasksUS_ALL_MK_4HOUR_Service {
   private readonly logger = new Logger(TasksUS_ALL_MK_4HOUR_Service.name);
   async onModuleInit() {
   //   this.stockHelperService.runOn4hourInday = await this.LocalPLWR.getArrSymbolFFire(`runOn4hourInday/4hour`)as string[];
-  //  await this.runAllOn4h()
+  // await this.runAllOn4h()
+  // await this.runAllWatchLists2h()
+  // await this.runOnly2h()
   // await this.runOnly1h()
-  // await this.runAllWatchLists1h();
+  // // this.stockHelperService.NextRound_2hourALL  = await this.LocalPLWR.getArrSymbolFFire(`NextRound/2hour`,'stockRSILAUP') || DataSymbols.allabove500million
+  // this.stockHelperService.NextRound_2hourALL  = await this.LocalPLWR.getArrSymbolFFire(`macdCross_AB/All/2hour`,'stockRSILAUP')
+  // console.log('NextRound_2hourALL:', this.stockHelperService.NextRound_2hourALL);
   }
 
   async USTIMERUN(
@@ -98,10 +102,11 @@ export class TasksUS_ALL_MK_4HOUR_Service {
     // Wait for all ticker promises to complete concurrently (with concurrency limit)
     await Promise.all(tickerPromises);
   }
- @Cron('10 13-21/4 * * 1-5', { timeZone: 'UTC' }) // Every 4 hours at 10 minutes past the hour between 13:00 and 21:00 UTC (9:10 AM to 5:10 PM ET) on weekdays
+  @Cron('40 9,13 * * 1-5', { timeZone: 'America/New_York' }) // Every day at 9:40 AM and 1:40 PM ET on weekdays
   async runAllOn4h() {
     // this.stockHelperService.runOn4hourInday = await this.LocalPLWR.getArrSymbolFFire(`runOn4hourInday/4hour`)as string[];
-    this.stockHelperService.NextRound_4hourALL  =await this.LocalPLWR.getArrSymbolFFire(`NextRound/4hour`,'stockRSILAUP') ||[]
+    // await this.webhooksService.deleteFirebase('macdCross_AB','stockRSILAUP');
+    this.stockHelperService.NextRound_4hourALL  =await this.LocalPLWR.getArrSymbolFFire(`NextRound/4hour`,'stockRSILAUP') || DataSymbols.allabove500million
     if( this.stockHelperService.NextRound_4hourALL.length === 0){
       this.logger.warn('No stocks to process for 4-hour run.');
       return;
@@ -147,36 +152,39 @@ export class TasksUS_ALL_MK_4HOUR_Service {
   }
 
   // @Cron('6 9-15 * * 1-5', { timeZone: 'America/New_York' }) // Every day at 9:06 AM, 10:06 AM, ..., 3:06 PM ET on weekdays
-  async runAllWatchLists1h() {
+
+  @Cron('36 9-13/2 * * 1-5', { timeZone: 'America/New_York' }) // 9:36 AM, 11:36 AM, 1:36 PM ET (weekdays)
+ async runAllWatchLists2h() {
+    this.stockHelperService.NextRound_2hourALL  = await this.LocalPLWR.getArrSymbolFFire(`NextRound/2hour`,'stockRSILAUP') || DataSymbols.allabove500million
+    console.log('NextRound_2hourALL:', this.stockHelperService.NextRound_2hourALL.length);
+
     const sl1hourCr = `**[LOOK_US30ABMA50_SL](https://atllc-workspace.slack.com/archives/C081A4CHMJ4)**`
     const dcMA_AB_20_50 = `<https://discord.com/channels/1306113720979689523/1436948534346911904|1HOUR_RUN_LOOK_MACDCRAB_DC>`
     const message_sl1hourCr = `${sl1hourCr}${'='.repeat(32)}`;
-    this.webhooksService.sendSlackNotification('START_'+dcMA_AB_20_50, 'SLACK_WEBHOOKS');
-    await this.webhooksService.SendDcChannels(['MA_AB_20_50'],this.logger,`START_1HOUR_${message_sl1hourCr}`);
+    this.webhooksService.sendSlackNotification('START_'+dcMA_AB_20_50, 'SLACK_WEBHOOKS_2h_CROSS');
+    await this.webhooksService.SendDcChannels(['MA_AB_20_50'],this.logger,`START_2HOUR_${message_sl1hourCr}`);
 
-    await  this.runOnly1h()
+    await  this.runOnly2h()
 
-    await this.webhooksService.SendDcChannels(['MA_AB_20_50'],this.logger,`END_1HOUR_${message_sl1hourCr}`);
-    this.webhooksService.sendSlackNotification('END_'+dcMA_AB_20_50, 'SLACK_WEBHOOKS');
+    await this.webhooksService.SendDcChannels(['MA_AB_20_50'],this.logger,`END_2HOUR_${message_sl1hourCr}`);
+    this.webhooksService.sendSlackNotification('END_'+dcMA_AB_20_50, 'SLACK_WEBHOOKS_2h_CROSS');
   }
 
 
 
-  async runOnly1h(stocklist: string[] = this.stockHelperService.NextRound_1hourALL) {
-    this.stockHelperService.NextRound_1hourALL  = await this.LocalPLWR.getArrSymbolFFire(`NextRound/1hour`,'stockRSILAUP')||[]
-    console.log('NextRound_1hourALL:', this.stockHelperService.NextRound_1hourALL.length);
-    if( this.stockHelperService.NextRound_1hourALL.length === 0){
-      this.logger.warn('No stocks to process for 1-hour run.');
+  async runOnly2h(stocklist: string[] = this.stockHelperService.NextRound_2hourALL) {
+    if( stocklist.length === 0){
+      this.logger.warn('No stocks to process for 2-hour run.');
       return;
     }
-    await this.webhooksService.deleteFirebase('NextRound/1hour','stockRSILAUP');
+    // await this.webhooksService.deleteFirebase('NextRound/1hour','stockRSILAUP');
     await Promise.all([
       this.USTIMERUN(
-        this.stockHelperService.NextRound_1hourALL,
+        stocklist,
         '200BL_OV_NEG_01',
         '200BL_OV_NEG_05',
         0,
-        '1hour',
+        '2hour',
       ),
     ]);
   }
