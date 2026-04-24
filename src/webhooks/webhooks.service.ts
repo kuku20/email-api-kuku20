@@ -1352,7 +1352,7 @@ export class WebhooksService {
         `${
           sp500
         }SBUY-macdCrAB-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
+        `${ticker}-ON-${timeframe}-macdCrAB`,
         lastdata,
         DataSymbols.watchlist.includes(ticker)?'WATCHLIST':'US_30M_BUY',
         data,
