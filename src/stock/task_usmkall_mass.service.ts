@@ -31,7 +31,9 @@ export class TasksUS_ALL_MK_MASS_Service {
   // await this.webhooksService.delete(this.stockHelperService.aboveMA50api); // reset firebase data for the day
   // await this.webhooksService.delete(this.stockHelperService.aboveMA50api+'-blowMA200'); // reset firebase data for the day
   // await this.webhooksService.delete('runOn4hourInday'); // reset firebase data for the day
-  //  await this.runAllOn4h()
+  // this.stockHelperService.aboveMA50api= this.rundayaogo
+  //  await this.runOnly4h()
+     //  await this.runAllOn4h()
     // await this.getMarket(DataSymbols.above2billion);
     // await this.stockHelperService.writeAbove2BillionToFile(this.aboveTarget,`Above_${this.marketTarget}_Billion`);
     // await this.stockHelperService.writeAbove2BillionToFile(this.BelowTarget,`Below_${this.marketTarget}_Billion`);
@@ -91,6 +93,13 @@ export class TasksUS_ALL_MK_MASS_Service {
 
           console.log(`✅ Processing ${ticker} on ${timeframe} at ${lastData.date}`);
           // Process the data
+          await this.webhooksService.stockRSILAUP(
+            data,
+            ticker,
+            timeframe,
+            B_Channel,
+            HT_Channel,
+          );
           await this.webhooksService.runALLOn_MA50(
             data,
             ticker,
@@ -146,7 +155,11 @@ export class TasksUS_ALL_MK_MASS_Service {
               );
             };
             if (!signal) return;
-
+            const stockRSILAUP = lastData.StochRSI_K - lastData.StochRSI_D > 0;
+            const macdCross = await this.stockHelperService.macdCross(
+              lastData,
+              secondLastData,
+            );
             const webhookMap = [
               {
                 condition: signal.PriceCrMA50 ,
@@ -159,6 +172,10 @@ export class TasksUS_ALL_MK_MASS_Service {
               {
                 condition: signal.PriceCrMA200 ,
                 hook: 'SLACK_WEBHOOKS_D_US200',
+              },
+              {
+                condition: stockRSILAUP && macdCross.AB, 
+                hook: 'SLACK_WEBHOOKS_US_MACDCR',
               },
             ];
 
@@ -200,7 +217,7 @@ export class TasksUS_ALL_MK_MASS_Service {
     await this.webhooksService.delete(this.stockHelperService.aboveMA50api+'-aboveMA200'); // reset firebase data for the day
     await this.webhooksService.delete('runOn4hourInday'); // reset firebase data for the day
     this.stockHelperService.ListMA50On1day = []; // Clear the list at the start of each run
-    await this.webhooksService.SendDcChannels(['EARLY_AB200', '200AB_LESS_01', 'RSI15AL', 'RSIALERT','RSI25AL', 'RSI30AL','200AB_LESS_05'],this.logger,'1day');
+    await this.webhooksService.SendDcChannels(['EARLY_AB200', '200AB_LESS_01', 'RSI15AL', 'RSIALERT','RSI25AL', 'RSI30AL','200AB_LESS_05','MA_AB_5_20'],this.logger,'1day');
     await this.webhooksService.sendSlackNotification(
       `START+${today}+START=1day=(aboveMA50Count >= 3 && MACDPositive)==`,
       '1day',
@@ -208,7 +225,7 @@ export class TasksUS_ALL_MK_MASS_Service {
 
     await this.runAllWatchLists(stocklist);
 
-    await this.webhooksService.SendDcChannels(['EARLY_AB200', '200AB_LESS_01', 'RSI15AL', 'RSIALERT','RSI25AL', 'RSI30AL','200AB_LESS_05'],this.logger, '1day');
+    await this.webhooksService.SendDcChannels(['EARLY_AB200', '200AB_LESS_01', 'RSI15AL', 'RSIALERT','RSI25AL', 'RSI30AL','200AB_LESS_05','MA_AB_5_20'],this.logger, '1day');
     await this.webhooksService.sendSlackNotification(
       `END+${today}+END=1day=(aboveMA50Count >= 3 && MACDPositive)===`,
       '1day',
@@ -237,7 +254,7 @@ export class TasksUS_ALL_MK_MASS_Service {
   async runAllWatchLists(stocklist = DataSymbols.allabove500million) {
     const today = this.stockHelperService.getDateNDaysAgo(0);
   
-    const webhooks = ['SLACK_WEBHOOKS_D_US50', 'SLACK_WEBHOOKS_D_US100','SLACK_WEBHOOKS_D_US200','SLACK_WEBHOOKS_WATCHLIST','SLACK_WEBHOOKS_J2DAY','SLACK_WEBHOOKS_J3DAY'];
+    const webhooks = ['SLACK_WEBHOOKS_D_US50', 'SLACK_WEBHOOKS_D_US100','SLACK_WEBHOOKS_D_US200','SLACK_WEBHOOKS_WATCHLIST','SLACK_WEBHOOKS_J2DAY','SLACK_WEBHOOKS_J3DAY','SLACK_WEBHOOKS_US_MACDCR','SLACK_WEBHOOKS_US_MACDCR'];
   
     const sendBatchNotification = async (type: 'START' | 'END') => {
       const message = `${type}+daily+${today}+${type}${'='.repeat(32)}`;
@@ -264,17 +281,7 @@ export class TasksUS_ALL_MK_MASS_Service {
       ),
     ]);
   }
-  async runAllOn4h(stocklist = DataSymbols.allabove500million) {
-    const tslaDc = `<https://discord.com/channels/1306113720979689523/1380037316143349922|4HOUR_RUN_LOOK_TSLA_DC>`
-    const smciDc = `<https://discord.com/channels/1306113720979689523/1348653615992143924|4HOUR_RUN_LOOK_SMCI_DC>`
-    const message_tsla = `${tslaDc}${'='.repeat(32)}`;
-    const message_smci = `${smciDc}${'='.repeat(32)}`;
-    this.webhooksService.sendSlackNotification(message_tsla, 'SLACK_WEBHOOKS_US50');
-    this.webhooksService.sendSlackNotification(message_smci, 'SLACK_WEBHOOKS_US100');
-    const slma50 = `**[LOOK_US30ABMA50_SL](https://atllc-workspace.slack.com/archives/C0AQJHR0BC6)**`
-    const slma100 = `**[LOOK_US30ABMA100_SL](https://atllc-workspace.slack.com/archives/C0AQH7LDM1B)**`
-    await this.webhooksService.SendDcChannels(['TSLA'],this.logger,`START_4OUR_${slma50}`);
-    await this.webhooksService.SendDcChannels(['SMCI'],this.logger,`START_4OUR_${slma100}`);
+  async runOnly4h(stocklist = DataSymbols.allabove500million) {
     await Promise.all([
       this.USTIMERUN(
         stocklist,
@@ -284,11 +291,30 @@ export class TasksUS_ALL_MK_MASS_Service {
         '4hour',
       ),
     ]);
+  }
+  async runAllOn4h(stocklist = DataSymbols.allabove500million) {
+    const tslaDc = `<https://discord.com/channels/1306113720979689523/1380037316143349922|4HOUR_RUN_LOOK_TSLA_DC>`
+    const smciDc = `<https://discord.com/channels/1306113720979689523/1348653615992143924|4HOUR_RUN_LOOK_SMCI_DC>`
+    const macd4huorDc = `<https://discord.com/channels/1306113720979689523/1436948457247080589|4HOUR_RUN_LOOK_MACDCRAB_DC>`
+    const message_tsla = `${tslaDc}${'='.repeat(32)}`;
+    const message_smci = `${smciDc}${'='.repeat(32)}`;
+    this.webhooksService.sendSlackNotification(message_tsla, 'SLACK_WEBHOOKS_US50');
+    this.webhooksService.sendSlackNotification(message_smci, 'SLACK_WEBHOOKS_US100');
+    this.webhooksService.sendSlackNotification(macd4huorDc, 'SLACK_WEBHOOKS_MACDCRAB');
+    const slma50 = `**[LOOK_US30ABMA50_SL](https://atllc-workspace.slack.com/archives/C0AQJHR0BC6)**`
+    const slma100 = `**[LOOK_US30ABMA100_SL](https://atllc-workspace.slack.com/archives/C0AQH7LDM1B)**`
+    const slmacd = `**[LOOK_US30ABMA100_SL](https://atllc-workspace.slack.com/archives/C0ASE94TZ08)**`
+    await this.webhooksService.SendDcChannels(['TSLA'],this.logger,`START_4OUR_${slma50}`);
+    await this.webhooksService.SendDcChannels(['SMCI'],this.logger,`START_4OUR_${slma100}`);
+    await this.webhooksService.SendDcChannels(['MA_AB_5_200'],this.logger,`START_4OUR_${slmacd}`);
+    await this.runOnly4h(stocklist);
     await this.webhooksService.sendlast('200BL_OV_NEG_01', '200BL_OV_NEG_05');
     this.webhooksService.sendSlackNotification(message_tsla, 'SLACK_WEBHOOKS_US50');
     this.webhooksService.sendSlackNotification(message_smci, 'SLACK_WEBHOOKS_US100');
+    this.webhooksService.sendSlackNotification(macd4huorDc, 'SLACK_WEBHOOKS_MACDCRAB');
     await this.webhooksService.SendDcChannels(['TSLA'],this.logger,`END_4HOUR${slma50}`);
-    await this.webhooksService.SendDcChannels(['SMCI'],this.logger,`END_4HOUR${slma100}`);
+    await this.webhooksService.SendDcChannels(['SMCI'],this.logger,`START_4OUR_${slma100}`);
+    await this.webhooksService.SendDcChannels(['MA_AB_5_200'],this.logger,`END_4HOUR${slmacd}`);
   }
 
   

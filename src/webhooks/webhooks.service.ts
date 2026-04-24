@@ -1589,58 +1589,48 @@ export class WebhooksService {
   }
 
 
-  async StochRSIBuy_HOLD(data, ticker, timeframe, B_Channel, HT_Channel){
+  async stockRSILAUP(data, ticker, timeframe, B_Channel, HT_Channel){
     const lastData = data[data.length - 1];
     const secondLastData = data[data.length - 2];
-    const StochRSIBuy_HOLD = await this.stockHelperService.StochRSIBuy_HOLD(
+    const stockRSILAUP = lastData.StochRSI_K - lastData.StochRSI_D > 0;
+    const macdCross = await this.stockHelperService.macdCross(
       lastData,
       secondLastData,
     );
-    if (StochRSIBuy_HOLD.upside80) {
-      await this.FireBaseApi("put", `stock-related/StochRSIBuy_HOLD_upside80/alldata/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
+    const blowMA200 = lastData.close < lastData.MA200;
+    const  downtrend = lastData.divergence < 0 
+    const basePath = blowMA200 ? this.stockHelperService.aboveMA50api : `${this.stockHelperService.aboveMA50api}-aboveMA200`;
+    const timeframeKey = timeframe === '1day' ? 'MA_AB_5_20' :timeframe === '4hour'  ? 'MA_AB_5_200' : timeframe === '1hour' ? 'MA_AB_20_50' : 'MA_AB_100_200';
+    if (stockRSILAUP && macdCross.AB) {
+      await this.FireBaseApi("put", `stockRSILAUP/macdCross_AB/${basePath}/${timeframe}/${ticker}.json`, {lastData: lastData})
+      await this.FireBaseApi("put", `stockRSILAUP/macdCross_AB/All/${timeframe}/${ticker}.json`, {lastData: lastData})
       await this.sendDiscord(
-        `BUY-upside80-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+        `BUYY-macdCross_AB-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastData,
-        'MA_AB_5_200',
+        DataSymbols.watchlist.includes(ticker)?'WATCHLIST':timeframeKey,
         data,
       );
-      return;
-    } 
-    else  if (StochRSIBuy_HOLD.upside) {
-      await this.FireBaseApi("put", `stock-related/StochRSIBuy_HOLD_upside/alldata/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
-      await this.sendDiscord(
-        `BUY-upside-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-        `${ticker}-ON-${timeframe}`,
+      await this.sendSlackNotificationVN(
+        [ticker],
         lastData,
-        'MA_AB_5_20',
-        data,
-      );
-      return;
-    }
-    else if (StochRSIBuy_HOLD.lowWatch_buyOp) {
-      await this.FireBaseApi("put", `stock-related/StochRSIBuy_HOLD_lowWatch_buyOp/alldata/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
-
-      await this.sendDiscord(
-        `SELL-highWatch_sellOp-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-        `${ticker}-ON-${timeframe}`,
-        lastData,
-        'MA_AB_20_50',
-        data,
+        DataSymbols.watchlist.includes(ticker)?'SLACK_WEBHOOKS_WATCHLIST':'SLACK_WEBHOOKS_US_MACDCR'
       );
       return;
     }
-     else if (StochRSIBuy_HOLD.highWatch_sellOp) {
-      await this.FireBaseApi("put", `stock-related/StochRSIBuy_HOLD_highWatch_sellOp/alldata/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
+    if (stockRSILAUP && macdCross.BL && this.stockHelperService.HoldingList.includes(ticker)) {
       await this.sendDiscord(
-        `SELL-highWatch_sellOp-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+        `SELL-macdCross_AB-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastData,
         'MA_AB_50_100',
         data,
       );
       return;
-     }
+    }  
+    if(downtrend && timeframe === '4hour' || timeframe === '1hour'){
+      await this.FireBaseApi("put", `stockRSILAUP/NextRound/${timeframe}/${ticker}.json`, {lastData: lastData})
+    }
   }
   async sendlast(B_Channel, HT_Channel) {
     await this.sendDiscordNotification(
@@ -1787,7 +1777,7 @@ export class WebhooksService {
         (s) =>
           `•${sp500}${mkaboveOrBellow2}${hourIn4}${last} *${s}* → ${
             lastData?.close
-          }(${aboveOrBellow}-${lastData?.MA200.toFixed(2)})| ${lastData?.date} |` +
+          }(${aboveOrBellow}-${lastData?.MA200?.toFixed(2)})| ${lastData?.date} |` +
           `  < <http://localhost:4200/price-log/${s}?daysRange=${range}|local> | <https://stockmarkets000.web.app/price-log/${s}?daysRange=${range}|production> | <https://www.tradingview.com/chart/mWoCISmu/?symbol=${s}|tradingview> | < <http://localhost:4200/price-log/${s}?daysRange=240|4hour> >`,
       )
       .join('\n');
