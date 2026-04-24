@@ -1504,7 +1504,7 @@ export class WebhooksService {
           );
         }else if(timeframe.includes('4hour')){
           const aboveOrBellow = lastData?.MA200 < lastData?.close ?'above':'bellow';
-          const slackWebhook = lastData?.MA200 < lastData?.close ? 'SLACK_WEBHOOKS_US50' : 'SLACK_WEBHOOKS_US100';
+          const slackWebhook = lastData?.MA200 < lastData?.close ? 'SLACK_WEBHOOKS_4h_3C_AB' : 'SLACK_WEBHOOKS_4h_3C_BL';
           const discordChannel = lastData?.MA200 < lastData?.close ? 'TSLA' : 'SMCI';
           await this.sendSlackNotificationVN(timeframe,
             [ticker],
@@ -1588,7 +1588,7 @@ export class WebhooksService {
     const  downtrend = lastData.divergence < 0 
     const basePath = blowMA200 ? this.stockHelperService.aboveMA50api : `${this.stockHelperService.aboveMA50api}-aboveMA200`;
     const timeframeKey = timeframe === '1day' ? 'MA_AB_5_20' :timeframe === '4hour'  ? 'MA_AB_5_200' : timeframe === '1hour' ? 'MA_AB_20_50' : 'MA_AB_100_200';
-    const sltimeframeKey = timeframe === '1day' ? 'SLACK_WEBHOOKS_US_MACDCR' :timeframe === '4hour'  ? 'SLACK_WEBHOOKS_MACDCRAB' : 'SLACK_WEBHOOKS';
+    const sltimeframeKey = timeframe === '1day' ? 'SLACK_WEBHOOKS_US_MACDCR' :timeframe === '4hour'  ? 'SLACK_WEBHOOKS_4h_CROSS' : 'SLACK_WEBHOOKS';
     if (stockRSILAUP && macdCross.AB) {
       await this.FireBaseApi("put", `stockRSILAUP/macdCross_AB/${basePath}/${timeframe}/${ticker}.json`, {lastData: lastData})
       await this.FireBaseApi("put", `stockRSILAUP/macdCross_AB/All/${timeframe}/${ticker}.json`, {lastData: lastData})
@@ -1602,7 +1602,7 @@ export class WebhooksService {
       await this.sendSlackNotificationVN(timeframe,
         [ticker],
         lastData,
-        DataSymbols.watchlist.includes(ticker)?'SLACK_WEBHOOKS_WATCHLIST':sltimeframeKey
+        DataSymbols.watchlist.includes(ticker)?'SLACK_WEBHOOKS_WATCHLIST':sltimeframeKey,'15'
       );
       return;
     }
