@@ -1347,7 +1347,7 @@ export class WebhooksService {
     //   );
     //   return;
     // }
-    if (BuyOnly_StochRSICrossAB200.macdCrAB && lastdata.MACDLine > 0) {
+    if (BuyOnly_StochRSICrossAB200.macdCrAB) {
       await this.sendDiscord(
         `${
           sp500
@@ -1792,6 +1792,163 @@ export class WebhooksService {
       );
       // Log completion
       logger.error(`✅ Finished sending for`, channel);
+    }
+  }
+
+
+  private get headers() {
+    const slackToken = this.configService.get<any>('SLACK_BOT_TOKEN');
+    return {
+      Authorization: `Bearer ${slackToken}`,
+      'Content-Type': 'application/json; charset=utf-8',
+    };
+  }
+// =========================
+  // POST MESSAGE
+  // =========================
+  async post_SLack(channel: string, text: string) {
+    try {
+      const { data } = await axios.post(
+        'https://slack.com/api/chat.postMessage',
+        { channel, text },
+        { headers: this.headers },
+      );
+
+      if (!data.ok) {
+        console.error('Slack post error', data);
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Slack post exception', error);
+      throw error;
+    }
+  }
+
+  // =========================
+  // DELETE MESSAGE
+  // =========================
+  async deleteMessage_SLack(channel: string, tsList: string[]) {
+    const results: {
+      ts: string;
+      success: boolean;
+      data?: any;
+      error?: any;
+    }[] = [];
+  
+    for (const ts of tsList) {
+      try {
+        const { data } = await axios.post(
+          'https://slack.com/api/chat.delete',
+          { channel, ts },
+          { headers: this.headers },
+        );
+  
+        if (!data.ok) {
+          console.error('❌ Slack delete error', data);
+  
+          results.push({
+            ts,
+            success: false,
+            error: data,
+          });
+  
+          continue;
+        }
+  
+        console.log(`✅ Deleted message: ${ts}`);
+  
+        results.push({
+          ts,
+          success: true,
+          data,
+        });
+      } catch (error) {
+        console.error('🔥 Slack delete exception', error);
+  
+        results.push({
+          ts,
+          success: false,
+          error,
+        });
+      }
+    }
+  
+    return results;
+  }
+
+  // =========================
+  // GET ALL MESSAGES (PAGINATED)
+  // =========================
+  async getAllMessages_SLack(channel: string): Promise<string[]> {
+    let cursor: string | undefined;
+    const allTs: string[] = [];
+  
+    try {
+      do {
+        const { data } = await axios.post(
+          'https://slack.com/api/conversations.history',
+          {
+            channel,
+            cursor,
+          },
+          { headers: this.headers },
+        );
+  
+        if (!data.ok) break;
+  
+        const messages = data.messages || [];
+  
+        for (const msg of messages) {
+          if (msg?.ts) {
+            allTs.push(msg.ts);
+          }
+        }
+  
+        cursor = data.response_metadata?.next_cursor;
+      } while (cursor);
+  
+      return allTs;
+    } catch (error) {
+      console.error('Slack history error', error);
+      throw error;
+    }
+  }
+
+  async deleteAllMessages_SLack(channel: string) {
+    try {
+      // 1. Get all message timestamps
+      const tsList = await this.getAllMessages_SLack(channel);
+  
+      if (!tsList.length) {
+        return {
+          success: true,
+          message: 'No messages found',
+          deleted: [],
+        };
+      }
+  
+      // 2. Delete all messages
+      const results = await this.deleteMessage_SLack(channel, tsList);
+  
+      // 3. Summary
+      const successCount = results.filter(r => r.success).length;
+      const failCount = results.length - successCount;
+  
+      return {
+        success: failCount === 0,
+        total: tsList.length,
+        successCount,
+        failCount,
+        results,
+      };
+    } catch (error) {
+      console.error('🔥 deleteAllMessages error', error);
+  
+      return {
+        success: false,
+        error,
+      };
     }
   }
 }
