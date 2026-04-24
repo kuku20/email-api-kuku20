@@ -26,7 +26,7 @@ export class TasksUS_ALL_MK_MASS_Service {
     // this.stockHelperService.aboveMA50api = `dayago-${this.dayago}-` +this.rundayaogo;
     // await this.webhooksService.delete(this.stockHelperService.aboveMA50api); // reset firebase data for the day
     // await this.webhooksService.delete(this.stockHelperService.aboveMA50api+'-blowMA200'); // reset firebase data for the day
-   await this.runfullonms();
+  //  await this.runfullonms();
   //  await this.runAllOn1day();
   // await this.webhooksService.delete(this.stockHelperService.aboveMA50api); // reset firebase data for the day
   // await this.webhooksService.delete(this.stockHelperService.aboveMA50api+'-blowMA200'); // reset firebase data for the day
