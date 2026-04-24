@@ -19,6 +19,7 @@ export class TasksUS_ALL_MK_4HOUR_Service {
   async onModuleInit() {
   //   this.stockHelperService.runOn4hourInday = await this.LocalPLWR.getArrSymbolFFire(`runOn4hourInday/4hour`)as string[];
   //  await this.runAllOn4h()
+  // await this.runOnly1h()
   // await this.runAllWatchLists1h();
   }
 
@@ -100,11 +101,13 @@ export class TasksUS_ALL_MK_4HOUR_Service {
  @Cron('10 13-21/4 * * 1-5', { timeZone: 'UTC' }) // Every 4 hours at 10 minutes past the hour between 13:00 and 21:00 UTC (9:10 AM to 5:10 PM ET) on weekdays
   async runAllOn4h() {
     // this.stockHelperService.runOn4hourInday = await this.LocalPLWR.getArrSymbolFFire(`runOn4hourInday/4hour`)as string[];
-    this.stockHelperService.NextRound_4hourALL  =await this.LocalPLWR.getArrSymbolFFire(`NextRound/4hour`,'stockRSILAUP')
-    if( this.stockHelperService.runOn4hourInday.length === 0){
+    this.stockHelperService.NextRound_4hourALL  =await this.LocalPLWR.getArrSymbolFFire(`NextRound/4hour`,'stockRSILAUP') ||[]
+    if( this.stockHelperService.NextRound_4hourALL.length === 0){
       this.logger.warn('No stocks to process for 4-hour run.');
       return;
     }
+    await this.webhooksService.deleteFirebase('NextRound/4hour','stockRSILAUP');
+
     const tslaDc = `<https://discord.com/channels/1306113720979689523/1380037316143349922|4HOUR_RUN_LOOK_TSLA_DC>`
     const smciDc = `<https://discord.com/channels/1306113720979689523/1348653615992143924|4HOUR_RUN_LOOK_SMCI_DC>`
     const macd4huorDc = `<https://discord.com/channels/1306113720979689523/1436948457247080589|4HOUR_RUN_LOOK_MACDCRAB_DC>`
@@ -146,22 +149,27 @@ export class TasksUS_ALL_MK_4HOUR_Service {
   @Cron('6 9-15 * * 1-5', { timeZone: 'America/New_York' }) // Every day at 9:06 AM, 10:06 AM, ..., 3:06 PM ET on weekdays
   async runAllWatchLists1h() {
     const sl1hourCr = `**[LOOK_US30ABMA50_SL](https://atllc-workspace.slack.com/archives/C081A4CHMJ4)**`
-    const dcMA_AB_20_50 = `<https://discord.com/channels/1306113720979689523/1436948534346911904|1HOUR_RUN_LOOK_DC>`
+    const dcMA_AB_20_50 = `<https://discord.com/channels/1306113720979689523/1436948534346911904|1HOUR_RUN_LOOK_MACDCRAB_DC>`
     const message_sl1hourCr = `${sl1hourCr}${'='.repeat(32)}`;
-    this.webhooksService.sendSlackNotification('START_'+message_sl1hourCr, 'SLACK_WEBHOOKS');
-    await this.webhooksService.SendDcChannels(['MA_AB_20_50'],this.logger,`END_4HOUR_${dcMA_AB_20_50}`);
-      this.runOnly1h()
-    await this.webhooksService.SendDcChannels(['MA_AB_20_50'],this.logger,`END_4HOUR_${dcMA_AB_20_50}`);
-    this.webhooksService.sendSlackNotification('END_'+message_sl1hourCr, 'SLACK_WEBHOOKS');
+    this.webhooksService.sendSlackNotification('START_'+dcMA_AB_20_50, 'SLACK_WEBHOOKS');
+    await this.webhooksService.SendDcChannels(['MA_AB_20_50'],this.logger,`START_1HOUR_${message_sl1hourCr}`);
+
+    await  this.runOnly1h()
+
+    await this.webhooksService.SendDcChannels(['MA_AB_20_50'],this.logger,`END_1HOUR_${message_sl1hourCr}`);
+    this.webhooksService.sendSlackNotification('END_'+dcMA_AB_20_50, 'SLACK_WEBHOOKS');
   }
 
-  async runOnly1h(stocklist: string[] = this.stockHelperService.NextRound_4hourALL) {
-    this.stockHelperService.NextRound_1hourALL  =await this.LocalPLWR.getArrSymbolFFire(`NextRound/4hour`,'stockRSILAUP')||[]
-    console.log('NextRound_1hourALL:', this.stockHelperService.NextRound_1hourALL);
+
+
+  async runOnly1h(stocklist: string[] = this.stockHelperService.NextRound_1hourALL) {
+    this.stockHelperService.NextRound_1hourALL  = await this.LocalPLWR.getArrSymbolFFire(`NextRound/1hour`,'stockRSILAUP')||[]
+    console.log('NextRound_1hourALL:', this.stockHelperService.NextRound_1hourALL.length);
     if( this.stockHelperService.NextRound_1hourALL.length === 0){
       this.logger.warn('No stocks to process for 1-hour run.');
       return;
     }
+    await this.webhooksService.deleteFirebase('NextRound/1hour','stockRSILAUP');
     await Promise.all([
       this.USTIMERUN(
         this.stockHelperService.NextRound_1hourALL,

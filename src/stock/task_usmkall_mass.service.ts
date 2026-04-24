@@ -209,9 +209,9 @@ export class TasksUS_ALL_MK_MASS_Service {
   async runfullonms(stocklist = DataSymbols.allabove500million){
     // delete old data from firebase
     const today = this.stockHelperService.getDateNDaysAgo(0); // Get today's date
-    await this.webhooksService.delete(this.stockHelperService.aboveMA50api); // reset firebase data for the day
-    await this.webhooksService.delete(this.stockHelperService.aboveMA50api+'-aboveMA200'); // reset firebase data for the day
-    await this.webhooksService.delete('runOn4hourInday'); // reset firebase data for the day
+    await this.webhooksService.deleteFirebase(this.stockHelperService.aboveMA50api); // reset firebase data for the day
+    await this.webhooksService.deleteFirebase(this.stockHelperService.aboveMA50api+'-aboveMA200'); // reset firebase data for the day
+    await this.webhooksService.deleteFirebase('runOn4hourInday'); // reset firebase data for the day
     this.stockHelperService.ListMA50On1day = []; // Clear the list at the start of each run
     await this.webhooksService.SendDcChannels(['EARLY_AB200', '200AB_LESS_01', 'RSI15AL', 'RSIALERT','RSI25AL', 'RSI30AL','200AB_LESS_05','MA_AB_5_20'],this.logger,'1day');
     await this.webhooksService.sendSlackNotification(
@@ -289,6 +289,7 @@ export class TasksUS_ALL_MK_MASS_Service {
     ]);
   }
   async runAllOn4h(stocklist = DataSymbols.allabove500million) {
+    await this.webhooksService.deleteFirebase('NextRound/4hour','stockRSILAUP');
     const tslaDc = `<https://discord.com/channels/1306113720979689523/1380037316143349922|4HOUR_RUN_LOOK_TSLA_DC>`
     const smciDc = `<https://discord.com/channels/1306113720979689523/1348653615992143924|4HOUR_RUN_LOOK_SMCI_DC>`
     const macd4huorDc = `<https://discord.com/channels/1306113720979689523/1436948457247080589|4HOUR_RUN_LOOK_MACDCRAB_DC>`

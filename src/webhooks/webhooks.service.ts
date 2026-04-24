@@ -1411,7 +1411,7 @@ export class WebhooksService {
 
    */
 
-  async delete(path: string, stockRelated ='stock-related') {
+  async deleteFirebase(path: string, stockRelated ='stock-related') {
     const data = await this.FireBaseApi(
       'delete',
       `${stockRelated}/${path}.json`,
