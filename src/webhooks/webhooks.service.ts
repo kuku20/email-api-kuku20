@@ -48,7 +48,8 @@ export class WebhooksService {
     };
 
     try {
-      await axios.post(BASE_URL, payload);
+      // await axios.post(BASE_URL, payload);
+      await this.post_SLack(BASE_URL, nexMsg);
       return { msg: 'post to Slack success' };
     } catch (error) {
       return { msg: 'post to Slack fails:', error };
@@ -1732,7 +1733,8 @@ export class WebhooksService {
       text: formatted,
     };
     try {
-      await axios.post(BASE_URL, payload);
+      // await axios.post(BASE_URL, payload);
+      await this.post_SLack(BASE_URL, formatted);
       return { msg: 'post to Slack success' };
     } catch (error) {
       return { msg: 'post to Slack fails:', error };
@@ -1775,7 +1777,8 @@ export class WebhooksService {
       text: formatted,
     };
     try {
-      await axios.post(BASE_URL, payload);
+      // await axios.post(BASE_URL, payload);
+      await this.post_SLack(BASE_URL, formatted);
       return { msg: 'post to Slack success' };
     } catch (error) {
       return { msg: 'post to Slack fails:', error };
