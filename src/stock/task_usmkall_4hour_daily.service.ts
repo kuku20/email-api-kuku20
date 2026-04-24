@@ -146,7 +146,7 @@ export class TasksUS_ALL_MK_4HOUR_Service {
     ]);
   }
 
-  @Cron('6 9-15 * * 1-5', { timeZone: 'America/New_York' }) // Every day at 9:06 AM, 10:06 AM, ..., 3:06 PM ET on weekdays
+  // @Cron('6 9-15 * * 1-5', { timeZone: 'America/New_York' }) // Every day at 9:06 AM, 10:06 AM, ..., 3:06 PM ET on weekdays
   async runAllWatchLists1h() {
     const sl1hourCr = `**[LOOK_US30ABMA50_SL](https://atllc-workspace.slack.com/archives/C081A4CHMJ4)**`
     const dcMA_AB_20_50 = `<https://discord.com/channels/1306113720979689523/1436948534346911904|1HOUR_RUN_LOOK_MACDCRAB_DC>`
