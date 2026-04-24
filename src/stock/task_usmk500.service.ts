@@ -191,12 +191,17 @@ export class TasksUSMKService_SP500 {
     this.stockHelperService.ab50_3Candles_ALL = this.stockHelperService.combineUnique( this.stockHelperService.ab50_bl200_3Candles,this.stockHelperService.ab50_ab200_3Candles);
     // console.table(this.stockHelperService.ab50_bl200_3Candles);
     // console.table(this.stockHelperService.above50andBelow200);
-    this.stockHelperService.ListMA50On1day = this.stockHelperService.combineUnique(this.stockHelperService.HoldingList,DataSymbols.watchlist,this.stockHelperService.above50andBelow200,this.stockHelperService.ab50_ab200_3Candles)
-    // this.stockHelperService.ListMA50On1day = this.stockHelperService.combineUnique(this.stockHelperService.HoldingList,DataSymbols.watchlist,this.stockHelperService.above50andBelow200,this.stockHelperService.above50andAbove200);
+    // this.stockHelperService.ListMA50On1day = this.stockHelperService.combineUnique(this.stockHelperService.HoldingList,DataSymbols.watchlist,this.stockHelperService.above50andBelow200,this.stockHelperService.ab50_ab200_3Candles)
+    this.stockHelperService.stockRSILAUP_4hourALL  =await this.LocalPLWR.getArrSymbolFFire(`macdCross_AB/All/4hour`,'stockRSILAUP')
+    this.stockHelperService.stockRSILAUP_1dayALL  =await this.LocalPLWR.getArrSymbolFFire(`macdCross_AB/All/1day`,'stockRSILAUP')
+    const combinedRSILAUP = this.stockHelperService.combineUnique(this.stockHelperService.stockRSILAUP_4hourALL, this.stockHelperService.stockRSILAUP_1dayALL);
+    // console.log('combinedRSILAUP',combinedRSILAUP);
+    this.stockHelperService.ListMA50On1day = this.stockHelperService.combineUnique(this.stockHelperService.HoldingList,DataSymbols.watchlist,combinedRSILAUP)
     console.log( this.stockHelperService.ListMA50On1day.length,);
   }
   async onModuleInit() {
     await this.getReapList()
+    // this.runAllWatchLists30()
     // this.runAllWatchLists30(DataSymbols.watchlist)
     // this.runAllWatchLists30(this.stockHelperService.ListMA50On4hour)
     // console.table(this.stockHelperService.ab50_bl200_3Candles)
