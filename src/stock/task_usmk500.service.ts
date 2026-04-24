@@ -109,7 +109,7 @@ export class TasksUSMKService_SP500 {
               secondLastData,
             );
             if(BlMA200_MA20_MA50_MA100_SELL){
-              await this.webhooksService.sendSlackNotificationVN(
+              await this.webhooksService.sendSlackNotificationVN(timeframe,
                 [ticker],
                 lastData,
                 'SLACK_WEBHOOKS_HOLDING',
@@ -149,7 +149,7 @@ export class TasksUSMKService_SP500 {
           const dateOut = lastData.date
           const timeput =dateOut.replace(/[: ]/g, '-');
           if (matched) {
-            await this.webhooksService.sendSlackNotificationVN(
+            await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               lastData,
               DataSymbols.watchlist.includes(ticker)?'SLACK_WEBHOOKS_WATCHLIST':matched.hook,
@@ -352,7 +352,7 @@ export class TasksUSMKService_SP500 {
           const lastData = data[data.length - 1];
          
           if (true) {
-            await this.webhooksService.sendSlackNotificationVN(
+            await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               lastData,
               'SLACK_WEBHOOKS_4h',

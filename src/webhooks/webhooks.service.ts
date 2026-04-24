@@ -1457,7 +1457,7 @@ export class WebhooksService {
     }
     if (PriceCrMA50) {
       await this.sendDiscord(
-        `${sp500}SBUY-BuyOnly_MACDPositive -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+        `${sp500}SBUY-PriceCrMA50 -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
         `${ticker}-${timeframe}-CrMA50-${lastData?.close}`,
         lastData,
         timeframe === '1day' ? '200AB_LESS_05' : '200AB_LESS_1',
@@ -1477,7 +1477,7 @@ export class WebhooksService {
       }
       if(aboveMA50Second && belowMA50Third){
         if(timeframe === '1day'){
-          await this.sendSlackNotificationVN(
+          await this.sendSlackNotificationVN(timeframe,
             [ticker],
             lastData,
             'SLACK_WEBHOOKS_J2DAY',
@@ -1495,43 +1495,29 @@ export class WebhooksService {
             'US_15M_HT',
             data,
           );
-          await this.sendSlackNotificationVN(
+          await this.sendSlackNotificationVN(timeframe,
             [ticker],
             lastData,
             'SLACK_WEBHOOKS_J3DAY',
             '500'
           );
         }else if(timeframe.includes('4hour')){
-          const aboveOrBellow = lastData?.MA200 < lastData?.close
-          if(aboveOrBellow){
-            await this.sendSlackNotificationVN(
-              [ticker],
-              lastData,
-              'SLACK_WEBHOOKS_US50',
-              '500'
-            );
-            await this.sendDiscord(
-              `${sp500}BUY BUYBUY-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-              `${ticker}-ON-${timeframe}`,
-              lastData,
-              'TSLA',
-              data,
-            );
-          }else{
-            await this.sendSlackNotificationVN(
-              [ticker],
-              lastData,
-              'SLACK_WEBHOOKS_US100',
-              '500'
-            );
-            await this.sendDiscord(
-              `${sp500}BUY BUYBUY-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-              `${ticker}-ON-${timeframe}`,
-              lastData,
-              'SMCI',
-              data,
-            );
-          }
+          const aboveOrBellow = lastData?.MA200 < lastData?.close ?'above':'bellow';
+          const slackWebhook = lastData?.MA200 < lastData?.close ? 'SLACK_WEBHOOKS_US50' : 'SLACK_WEBHOOKS_US100';
+          const discordChannel = lastData?.MA200 < lastData?.close ? 'TSLA' : 'SMCI';
+          await this.sendSlackNotificationVN(timeframe,
+            [ticker],
+            lastData,
+            slackWebhook,
+            '500'
+          );
+          await this.sendDiscord(
+            `${sp500}BUY-PriceCrMA50_3C_${aboveOrBellow}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+            `${ticker}-ON-${timeframe}`,
+            lastData,
+            discordChannel,
+            data,
+          );
         }
         await this.FireBaseApi("put", `stock-related/${basePath}/threeday/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
       }
@@ -1545,7 +1531,7 @@ export class WebhooksService {
     if (aboveMA50Count >= 3 && MACDPositive) {
       if (belowMA50Fifth) {
         this.listsymbolBEarly = [...(this.listsymbolBEarly ?? []), ticker];
-        await this.sendSlackNotificationURL([ticker], lastData, timeframe);
+        await this.sendSlackNotificationURL(timeframe,[ticker], lastData, timeframe);
         await this.FireBaseApi("put", `stock-related/${basePath}/all3count-early/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
         if (this.listsymbolBEarly.length > this.maxListLength) {
           await this.sendDiscordNotification(
@@ -1612,7 +1598,7 @@ export class WebhooksService {
         DataSymbols.watchlist.includes(ticker)?'WATCHLIST':timeframeKey,
         data,
       );
-      await this.sendSlackNotificationVN(
+      await this.sendSlackNotificationVN(timeframe,
         [ticker],
         lastData,
         DataSymbols.watchlist.includes(ticker)?'SLACK_WEBHOOKS_WATCHLIST':sltimeframeKey
@@ -1715,6 +1701,7 @@ export class WebhooksService {
   }
 
   async sendSlackNotificationURL(
+    timeframe: string,
     symbols: string[],
     lastData: any,
     other = '1day',
@@ -1736,7 +1723,7 @@ export class WebhooksService {
     const formatted = symbols
       .map(
         (s) =>
-          `• ${sp500}${mkaboveOrBellow2}${hourIn4} *${s}* → ${lastData.close}(${aboveOrBellow}-${lastData?.MA200.toFixed(2)})` +
+          `${timeframe} • ${sp500}${mkaboveOrBellow2}${hourIn4} *${s}* → ${lastData.close}(${aboveOrBellow}-${lastData?.MA200.toFixed(2)})` +
           ` <http://localhost:4200/price-log/${s}?daysRange=5|5m> | <http://localhost:4200/price-log/${s}?daysRange=15|15m> | <http://localhost:4200/price-log/${s}?daysRange=30|30m> | <http://localhost:4200/price-log/${s}?daysRange=60|1hour> | <http://localhost:4200/price-log/${s}?daysRange=240|4hour> | <http://localhost:4200/price-log/${s}?daysRange=500|daily> ||=|| <https://stockmarkets000.web.app/price-log/${s}?daysRange=500|PROD-DAILY>`,
       )
       .join('\n');
@@ -1753,6 +1740,7 @@ export class WebhooksService {
   }
 
   async sendSlackNotificationVN(
+    timeframe: string,
     symbols: string[],
     lastData: any,
     other = 'SLACK_WEBHOOKS_VN50',
@@ -1776,7 +1764,7 @@ export class WebhooksService {
     const formatted = symbols
       .map(
         (s) =>
-          `•${sp500}${mkaboveOrBellow2}${hourIn4}${last} *${s}* → ${
+          `${timeframe} •${sp500}${mkaboveOrBellow2}${hourIn4}${last} *${s}* → ${
             lastData?.close
           }(${aboveOrBellow}-${lastData?.MA200?.toFixed(2)})| ${lastData?.date} |` +
           `  < <http://localhost:4200/price-log/${s}?daysRange=${range}|local> | <https://stockmarkets000.web.app/price-log/${s}?daysRange=${range}|production> | <https://www.tradingview.com/chart/mWoCISmu/?symbol=${s}|tradingview> | < <http://localhost:4200/price-log/${s}?daysRange=240|4hour> >`,

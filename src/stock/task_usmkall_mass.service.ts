@@ -178,7 +178,7 @@ export class TasksUS_ALL_MK_MASS_Service {
             const matched = webhookMap.find((w) => w.condition);
 
             if (matched) {
-              await this.webhooksService.sendSlackNotificationVN(
+              await this.webhooksService.sendSlackNotificationVN(timeframe,
                 [ticker],
                 lastData,
                 DataSymbols.watchlist.includes(ticker)?'SLACK_WEBHOOKS_WATCHLIST':matched.hook,
