@@ -1601,6 +1601,7 @@ export class WebhooksService {
     const  downtrend = lastData.divergence < 0 
     const basePath = blowMA200 ? this.stockHelperService.aboveMA50api : `${this.stockHelperService.aboveMA50api}-aboveMA200`;
     const timeframeKey = timeframe === '1day' ? 'MA_AB_5_20' :timeframe === '4hour'  ? 'MA_AB_5_200' : timeframe === '1hour' ? 'MA_AB_20_50' : 'MA_AB_100_200';
+    const sltimeframeKey = timeframe === '1day' ? 'SLACK_WEBHOOKS_US_MACDCR' :timeframe === '4hour'  ? 'SLACK_WEBHOOKS_MACDCRAB' : 'SLACK_WEBHOOKS_4h';
     if (stockRSILAUP && macdCross.AB) {
       await this.FireBaseApi("put", `stockRSILAUP/macdCross_AB/${basePath}/${timeframe}/${ticker}.json`, {lastData: lastData})
       await this.FireBaseApi("put", `stockRSILAUP/macdCross_AB/All/${timeframe}/${ticker}.json`, {lastData: lastData})
