@@ -22,7 +22,12 @@ export class TasksUS_ALL_MK_MASS_Service {
   rundayaogo = this.stockHelperService.getDateNDaysAgo(this.dayago);
   marketTarget = 2
   async onModuleInit() {
-
+    // const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/NextRound/2hour.json`,'')
+    // const holdingObj2 = Object.keys(holdingObj);
+    // const dkd = this.stockHelperService.getKeysFromLastN(holdingObj)
+    // console.log(`✅ Loaded stock-related/holding: has ${this.stockHelperService.HoldingList.length} symbols`);
+    // console.table(dkd);
+    
 // await this.webhooksService.deleteAllMessages_SLack('C0AUN3H0JR5');
     // This runs ONCE when the app starts
     // this.stockHelperService.aboveMA50api = `dayago-${this.dayago}-` +this.rundayaogo;
@@ -240,7 +245,8 @@ export class TasksUS_ALL_MK_MASS_Service {
     //   ...(this.stockHelperService.ListMA50On1day || []),
     // ]);
 
-    await this.runAllOn4h(stocklist);
+    // skip to this week 
+    // await this.runAllOn4h(stocklist);
 
     await this.webhooksService.sendSlackNotification(
       `END+${today}+END=4hour=(aboveMA50Count >= 3 && MACDPositive)==`,
