@@ -9,6 +9,7 @@ import { stock_usall_symbols } from './dto/chartData';
 import { stock_500_symbols } from './dto/chartData';
 import pLimit from 'p-limit';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import * as DataSymbols from './dto/chartData';
 @Injectable()
 export class TestOndata_service {
   allkeys = 'all'; // test
@@ -21,16 +22,20 @@ export class TestOndata_service {
   private readonly logger = new Logger(TestOndata_service.name);
   daytestBF = 0;
   dayend = this.stockHelperService.getDateNDaysAgo(-1 + this.daytestBF);
+  dayago = 0
+  rundayaogo = this.stockHelperService.getDateNDaysAgo(this.dayago);
   endpointFolder = 'stock-price-check';
+  //2h 2026_03_26_15_30_00 , 2026_04_16_15_30_00,2026_04_17_15_30_00,2026_04_23_15_30_00
+  // 4h 2026_03_25_13_30_00 2026_04_17_13_30_00,2026_02_18_15_30_00
+  endpointDate = `2026_03_25_13_30_00`
+  
   timeframe = '4hour';
   async onModuleInit() {
     // This runs ONCE when the app starts
     // const symbols =  await this.LocalPLWR.getArrSymbolFFire('${this.stockHelperService.aboveMA50api}/alldata/4hour') as string[];
     // await this.runAllWatchLists30(symbols);
-    const endpon = '2026-04-08-15-00-00'
+    // this.stockHelperService.aboveMA50api= this.rundayaogo
     // await this.runAllWatchLists30();
-    const path = `${this.endpointFolder}/stock-related/${this.stockHelperService.aboveMA50api}/${endpon}/${this.timeframe}.json`;
-     
     // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.stockHelperService.aboveMA50api}/threeday/${this.timeframe}.json`,'')
     // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.stockHelperService.aboveMA50api}/alldata/${this.timeframe}.json`,'')
     // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.stockHelperService.aboveMA50api}/all3count/${this.timeframe}.json`,'')
@@ -40,14 +45,23 @@ export class TestOndata_service {
     // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.stockHelperService.aboveMA50api}/threeday/${this.timeframe}.json`,'')
     // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.stockHelperService.aboveMA50api}/twoday/${this.timeframe}.json`,'')
     // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.stockHelperService.aboveMA50api}/oneday/${this.timeframe}.json`,'')
-    const SLACK_WEBHOOKS_US50  =await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.stockHelperService.aboveMA50api}/threeday/${this.timeframe}.json`,'')
+    // const SLACK_WEBHOOKS_US50  =await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.stockHelperService.aboveMA50api}/threeday/${this.timeframe}.json`,'')
+    // const SLACK_WEBHOOKS_US50  =await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/${this.stockHelperService.aboveMA50api}-aboveMA200/${this.timeframe}.json`,'')
     // const data = await this.LocalPLWR.FireBaseApi('get','stock-related/post-wash-sell.json','')
-    const tickers = Object.keys(SLACK_WEBHOOKS_US50);
-    console.log(tickers);
-    console.log(tickers.length);
+    const SLACK_WEBHOOKS_US50 = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/DyDay/${this.timeframe}/${this.endpointDate}.json`,'')
 
+    const tickers = Object.keys(SLACK_WEBHOOKS_US50);
+    console.log(tickers.length);
+    // // console.log(tickers.length);
+    // this.comparePrice(0, SLACK_WEBHOOKS_US50);
     // this.stockHelperService.writeAbove2BillionToFile(tickers,'alldata-4hour-3-${this.stockHelperService.aboveMA50api}');
-    this.comparePrice(0, SLACK_WEBHOOKS_US50);
+    // this.comparePrice(9, SLACK_WEBHOOKS_US50); 
+    // this.comparePrice(8, SLACK_WEBHOOKS_US50);
+    // this.comparePrice(7, SLACK_WEBHOOKS_US50);
+    // this.comparePrice(6, SLACK_WEBHOOKS_US50);
+    // this.comparePrice(5, SLACK_WEBHOOKS_US50);
+    // this.comparePrice(4, SLACK_WEBHOOKS_US50);
+    // this.comparePrice(0, SLACK_WEBHOOKS_US50);
     // const SLACK_WEBHOOKS_US50 = await this.webhooksService.FireBaseApi(
     //   'get',
     //   path,
@@ -118,18 +132,19 @@ export class TestOndata_service {
           let data;
           if (apikey === 'all') {
             // data = await this.LocalPLWR.TwReveseNOAPI(ticker, timeframe);
-            data = await this.LocalPLWR.getTickerFullChart_POLYGON2(
-              ticker,
-              timeframe,
-              this.daytestBF,
-            );
+            // data = await this.LocalPLWR.getTickerFullChart_POLYGON2(
+            //   ticker,
+            //   timeframe,
+            //   this.daytestBF,
+            // );
+            data =  await this.LocalPLWR.OtherFirebaseData("get", `https://angularitv-default-rtdb.firebaseio.com/stockRSILAUP/TWELLALL/${timeframe}/${ticker}/data.json`, {data: data})
           } else {
             data = await this.LocalPLWR.get12for(ticker, timeframe, apikey);
           }
 
           const lastData = data[data.length - 1];
           const secondLastData = data[data.length - 2];
-          console.log(`Data for ${ticker}:`, lastData.date);
+          console.log(`Data for ${ticker}: ${lastData.date}(${lastData.close})` );
           // Process the data
           const signal =
             await this.stockHelperService.BuyOnly_StochRSICrossAB200(
@@ -217,11 +232,12 @@ export class TestOndata_service {
     timeframe = '5min',
   ) {
     const tickers = Object.keys(symbolsNprice);
+    // const tickers = ['AAPL'];
     const tickerLength = tickers.length;
     let goUpCount = 0;
     let goDownCount = 0;
     console.log('Comparing prices for tickers:', tickerLength);
-    const limit = pLimit(2); // Limit the concurrency to 8 at a time
+    const limit = pLimit(8); // Limit the concurrency to 8 at a time
 
     const date = new Date();
 
@@ -230,7 +246,7 @@ export class TestOndata_service {
       this.LocalPLWR.getWashSellList();
     // Delay 2 minutes before processing
     await new Promise((resolve) => setTimeout(resolve, delay * 60 * 1000));
-
+    const listDown = []
     // Prepare ticker promises with concurrency limit
     const tickerPromises = tickers.map((ticker) =>
       limit(async () => {
@@ -240,78 +256,73 @@ export class TestOndata_service {
         }
         const tickerHolder = symbolsNprice[ticker];
         const tickerData = tickerHolder.lastData;
-        const ticker2ndData = tickerHolder.secondLastData;
-        const stockRSILAUP = tickerData.StochRSI_K - tickerData.StochRSI_D > 0;
-        const stockRSIPRUP = ticker2ndData.StochRSI_K - ticker2ndData.StochRSI_D > 0;
-        const compare2day = stockRSILAUP >= stockRSIPRUP;
-        // const macdNeutral = tickerData.MACDLine > 0 && tickerData.MACDLine < 0.5; // Adjust the range as needed
-        const rsiNeutral = tickerData.RSI > 40 && tickerData.RSI < 60; // Adjust the range as needed
-        const macdNeutral =tickerData?.MACDDivergence 
-        const isBadSetup =
-        tickerData.StochRSI_K > 0.9 &&
-        tickerData.StochRSI_D > 0.85 &&
-        tickerData.RSI > 58 &&
-        tickerData.divergence > 0.12 &&
-        (tickerData.close - tickerData.MA10) / tickerData.MA10 > 0.01;
-        const isBadSetup2 =
-        tickerData.StochRSI_K > 0.9 &&
-        tickerData.StochRSI_D > 0.8 &&
-        tickerData.RSI > 60 &&
-        tickerData.close > tickerData.MA5 &&
-        tickerData.divergence > 0.1;
-        // Go Up Percentage: 79.74683544303798% | Go Down Percentage: 20.253164556962027%
-  if(isBadSetup2 || isBadSetup){
-    return
-  }
-  if(!(stockRSILAUP)){
-    return  this.logger.log(`⏭️ Skipping ${ticker} — MACD Divergence: ${tickerData.MACDDivergence}`);
-  }
-      //   if(!inrange2080 )    {     
-      //      return 
-      //     return this.logger.log(`⏭️ Skipping ${ticker} — MACD Divergence: ${tickerData.MACDDivergence}`);
-      //   }
-      //   if(!rsiNeutral )    {     
-      //     return 
-      //    return this.logger.log(`⏭️ Skipping ${ticker} — MACD Divergence: ${tickerData.MACDDivergence}`);
-      //  }
         try {
           let data;
           if (apikey === 'all') {
-            data = await this.LocalPLWR.getTickerFullChart_POLYGON2(
-              ticker,
-              timeframe,
-              dayin
-            );
+            // data = await this.LocalPLWR.getTickerFullChart_POLYGON2(
+            //   ticker,
+            //   timeframe,
+            //   dayin
+            // );
             // data = await this.LocalPLWR.TwReveseNOAPI(ticker, timeframe);
+            data =  await this.LocalPLWR.OtherFirebaseData("get", `https://angularitv-default-rtdb.firebaseio.com/stockRSILAUP/TWELLALL/${timeframe}/${ticker}/data.json`, '')
           } else {
             data = await this.LocalPLWR.get12for(ticker, timeframe, apikey);
           }
-
-          const lastData = data[data.length - 1];
-          const secondLastData = data[data.length - 2];
-
-          const setDateValue = tickerData.high;
-          const lastestPrice = lastData.low;
-          console.log(`Data for ${ticker}:`, lastData.date);
+          const testDateqq = this.stockHelperService.TurnDateToDashFormat(this.endpointDate)
+          const getIndexByDate = (data, testDateqq) => {
+            return data.findIndex(item => item.date === testDateqq);
+          };
+          const index = getIndexByDate(data, testDateqq);
+          // console.log(data.length - index); // 0
+          const compareAt = (data.length - index -3)
+          const lastData = data[data.length - compareAt];
+          const secondLastData = data[data.length - compareAt-1];
+          const thirdLast = data[data.length - compareAt-2];
+          const maxOfClose = Math.max(
+            lastData?.high ?? 0,
+            secondLastData?.high ?? 0,
+            thirdLast?.high ?? 0
+          );
+          const minOfClose = Math.min(lastData?.low,secondLastData?.low, thirdLast?.low)
+          // console.log(lastData.date, secondLastData.date,thirdLast.date,)
+          const setDateValue = tickerData.close;
+          const lastestPrice = lastData?.high;
+          const increasePr = (maxOfClose- setDateValue)/setDateValue *100
+          // console.log(`Data for ${ticker}: ${lastData.date}(${lastData.close}) V||S setClose:${tickerData.date}(${tickerData.close})` );
           const linedetail = `volume(${tickerData.volume}) MA200(${tickerData.MA200}), MA100: ${tickerData.MA100}, MA50: ${tickerData.MA50} close: ${tickerData.close} vs ${lastestPrice} MACDDivergence: ${tickerData?.MACDDivergence} RSI: ${tickerData?.RSI} MACDLine: ${tickerData?.MACDLine}`;
-          if (lastestPrice > setDateValue) {
-            this.logger.log(
-              linedetail
-              // `${ticker} ${stock_500_symbols.includes(ticker)?'(Sp500)':''} go Up: ${
+          
+          const urlcheck = `http://localhost:4200/price-log/${ticker}?daysRange=120`
+
+    const mkaboveOrBellow2 = DataSymbols.above2billion.includes(ticker) ? '💰-' : '';
+    const sp500 = DataSymbols.stock_500_symbols.includes(ticker) ? '(🇺🇸)-' : ''
+
+          if (maxOfClose > setDateValue) {
+            this.logger.log(increasePr,`${ticker} -${tickerData.date}-${sp500}${mkaboveOrBellow2}`, linedetail,
+              // `${ticker} ${stock_500_symbols.includes(ticker)?'(Sp500)':''}  go Down: ${
               //   lastestPrice > setDateValue
               // } | lastestPrice: ${lastestPrice} | Set Price: ${setDateValue}`,
             );
+            // this.logger.log(lastData?.low,secondLastData?.low, thirdLast?.low)
+            // this.logger.log(
+            //   increasePr, lastData?.high,secondLastData?.high, thirdLast?.high
+            //   // `${ticker} ${stock_500_symbols.includes(ticker)?'(Sp500)':''} go Up: ${
+            //   //   lastestPrice > setDateValue
+            //   // } | lastestPrice: ${lastestPrice} | Set Price: ${setDateValue}`,
+            // );
             goUpCount++;
           } else {
             // let data = await this.LocalPLWR.getMarketCap(ticker);
             // const mkb = data.market_cap / 1000000000; // Convert to billions
             // console.log(`Market Cap for ${ticker}: ${mkb.toFixed(2)} billion USD`);
-            this.logger.error(linedetail
+            this.logger.error(increasePr,`${ticker} -${tickerData.date}-${sp500}${mkaboveOrBellow2}`, linedetail,
               // `${ticker} ${stock_500_symbols.includes(ticker)?'(Sp500)':''}  go Down: ${
               //   lastestPrice > setDateValue
               // } | lastestPrice: ${lastestPrice} | Set Price: ${setDateValue}`,
             );
+            // this.logger.log(lastData?.low,secondLastData?.low, thirdLast?.low)
             goDownCount++;
+            listDown.push(ticker)
           }
         } catch (error) {
           // Send error notification and log the error
@@ -332,6 +343,7 @@ export class TestOndata_service {
 
     console.log(`Price comparison completed. Total tickers: ${tickerLength}`);
     console.log(`Go Up: ${goUpCount} | Go Down: ${goDownCount}`); 
+    console.log(dayin,`List of tickers that went down: ${listDown.join(', ')}`);
     console.log(`Go Up Percentage: ${(goUpCount / (goUpCount+goDownCount)) * 100}% | Go Down Percentage: ${(goDownCount / (goDownCount+goUpCount)) * 100}%`);
   }
 }

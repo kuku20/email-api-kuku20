@@ -1593,9 +1593,9 @@ export class WebhooksService {
   }
 
 
-  async stockRSILAUP(data, ticker, timeframe, B_Channel, HT_Channel){
-    const lastData = data[data.length - 1];
-    const secondLastData = data[data.length - 2];
+  async stockRSILAUP(data, ticker, timeframe, B_Channel, HT_Channel, getdataAt= 1){
+    const lastData = data[data.length - getdataAt];
+    const secondLastData = data[data.length - getdataAt-1];
     const stockRSILAUP = lastData.StochRSI_K - lastData.StochRSI_D > 0;
     const macdCross = await this.stockHelperService.macdCross(
       lastData,
@@ -1604,7 +1604,7 @@ export class WebhooksService {
     const blowMA200 = lastData.close < lastData.MA200;
     const  downtrend = lastData.divergence < 0 
     const basePath = blowMA200 ? this.stockHelperService.aboveMA50api : `${this.stockHelperService.aboveMA50api}-aboveMA200`;
-    const timeframeKey = timeframe === '1day' ? 'MA_AB_5_20' :timeframe === '4hour'  ? 'MA_AB_5_200' : timeframe === '1hour' ? 'MA_AB_20_50' : 'MA_AB_100_200';
+    const timeframeKey = timeframe === '1day' ? 'MA_AB_5_20' :timeframe === '4hour'  ? 'MA_AB_5_200' : timeframe === '2hour' ? 'MA_AB_20_50' : 'MA_AB_100_200';
     const sltimeframeKey = timeframe === '1day' ? 'SLACK_WEBHOOKS_US_MACDCR' :timeframe === '4hour'  ? 'SLACK_WEBHOOKS_4h_CROSS' : 'SLACK_WEBHOOKS_2h_CROSS';
     const lastDataOnTime = await this.stockHelperService.TurnDateToUnderFM(lastData.date);
     if (stockRSILAUP && macdCross.AB) {

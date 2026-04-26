@@ -21,7 +21,8 @@ export class TasksUS_ALL_MK_4HOUR_Service {
   // await this.runAllOn4h()
   // await this.runAllWatchLists2h()
   // await this.runOnly2h()
-  // await this.runOnly1h()
+  // await this.runOnly4h(DataSymbols.allabove500million)
+  // await this.runOnly2h(DataSymbols.allabove500million)
   // await this.runAllOn4h()
   // await this.runAllWatchLists2h()
   // // this.stockHelperService.NextRound_2hourALL  = await this.LocalPLWR.getArrSymbolFFire(`NextRound/2hour`,'stockRSILAUP') || DataSymbols.allabove500million
@@ -47,7 +48,7 @@ export class TasksUS_ALL_MK_4HOUR_Service {
     HT_Channel,
     delay = 2,
   ) {
-    const limit = pLimit(2); // Limit the concurrency to 1 at a time
+    const limit = pLimit(1); // Limit the concurrency to 1 at a time
 
     const date = new Date();
 
@@ -67,6 +68,13 @@ export class TasksUS_ALL_MK_4HOUR_Service {
 
         try {
           let  data = await this.LocalPLWR.TwReveseNOAPI(ticker, timeframe);
+          // let  data = await this.LocalPLWR.getTickerFullChart_POLYGON2(
+          //     ticker,
+          //     timeframe,
+          //   );
+          //  let data =  await this.LocalPLWR.OtherFirebaseData("get", `https://angularitv-default-rtdb.firebaseio.com/stockRSILAUP/TWELLALL/${timeframe}/${ticker}/data.json`, '')
+          // await this.LocalPLWR.OtherFirebaseData("put", `https://angularitv-default-rtdb.firebaseio.com/stockRSILAUP/TWELLALL/${timeframe}/${ticker}.json`, {data: data.slice(-400)})
+
           const lastData = data[data.length - 1];
           const secondLastData = data[data.length - 2];
 
@@ -80,13 +88,15 @@ export class TasksUS_ALL_MK_4HOUR_Service {
             B_Channel,
             HT_Channel,
           );}
-          await this.webhooksService.stockRSILAUP(
-            data,
-            ticker,
-            timeframe,
-            B_Channel,
-            HT_Channel,
-          );
+            for (let index = 1; index < 2; index++) {
+            await this.webhooksService.stockRSILAUP(
+              data,
+              ticker,
+              timeframe,
+              B_Channel,
+              HT_Channel,index
+            );
+          }
           this.logger.log(`${ticker} processed successfully.`);
         } catch (error) {
           // Send error notification and log the error
@@ -104,7 +114,7 @@ export class TasksUS_ALL_MK_4HOUR_Service {
     // Wait for all ticker promises to complete concurrently (with concurrency limit)
     await Promise.all(tickerPromises);
   }
-  @Cron('40 9,13 * * 1-5', { timeZone: 'America/New_York' }) // Every day at 9:40 AM and 1:40 PM ET on weekdays
+  @Cron('35 9,13 * * 1-5', { timeZone: 'America/New_York' }) // Every day at 9:40 AM and 1:40 PM ET on weekdays
   async runAllOn4h() {
     // this.stockHelperService.runOn4hourInday = await this.LocalPLWR.getArrSymbolFFire(`runOn4hourInday/4hour`)as string[];
     // await this.webhooksService.deleteFirebase('macdCross_AB','stockRSILAUP');

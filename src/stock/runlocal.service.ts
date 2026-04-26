@@ -1020,4 +1020,29 @@ export class LocalPLWR {
     return response;
   }
 
+  async OtherFirebaseData(method:'post'|'patch'|'put'|'delete'|'get',endpoint:string, data: any,) {
+    try {
+      const response = await axios.request({
+        method: method || 'get',
+        url: endpoint,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        data: data,
+        maxBodyLength: Infinity,
+      });
+    
+      // Axios automatically parses JSON, so just return response.data
+      return response.data;
+    
+    } catch (error) {
+      // Match fetch's "return 'skipped'" behavior
+      if (error.response) {
+        console.error(`❌ Failed request. Status: ${error.response.status}`);
+      } else {
+        console.error(`❌ Network or Axios error: ${error.message}`);
+      }
+      return 'skipped';
+    }
+  }
 }

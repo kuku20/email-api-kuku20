@@ -816,4 +816,16 @@ SELL ALL
     const formatted = `${parts[0]}-${parts[1]}-${parts[2]} ${parts[3]}:${parts[4]}:${parts[5]}`;
     return formatted; // "2025-10-07 13:30:00"
   }
+
+  getKeysFromLastN(data: any, n: number = 3): string[] {
+    const latestDates = Object.keys(data)
+      .sort()        // lexicographically correct for your format
+      .reverse()     // newest first
+      .slice(0, n);
+    
+    console.log(latestDates)
+    return [...new Set(
+      latestDates.flatMap(date => Object.keys(data[date] || {}))
+    )];
+  }
 }
