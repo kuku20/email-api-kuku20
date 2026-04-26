@@ -182,6 +182,7 @@ export class TasksUSMKService_SP500 {
   }
   async getReapList(){
     await this.getholdingList()
+    // need to clean this up
     this.stockHelperService.ListMA50On4hour = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/all3count/4hour`) as string[];
     this.stockHelperService.above50andBelow200 = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/alldata/4hour`)as string[];
     this.stockHelperService.above50andAbove200 = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}-aboveMA200/alldata/4hour`)as string[];
@@ -197,12 +198,16 @@ export class TasksUSMKService_SP500 {
     // const combinedRSILAUP = this.stockHelperService.combineUnique(this.stockHelperService.stockRSILAUP_4hourALL, this.stockHelperService.stockRSILAUP_1dayALL);
     const combinedRSILAUP = this.stockHelperService.combineUnique(this.stockHelperService.stockRSILAUP_4hourALL);
     // console.log('combinedRSILAUP',combinedRSILAUP);
-    this.stockHelperService.ListMA50On1day = this.stockHelperService.combineUnique(this.stockHelperService.HoldingList,DataSymbols.watchlist,combinedRSILAUP)
+    const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/DyDay/2hour.json`,'')
+    const macdCross_AB = this.stockHelperService.getKeysFromLastN(holdingObj,2)
+    console.log(`✅ Loaded stockRSILAUP/macdCross_AB/DyDay/2hour: has ${macdCross_AB.length} symbols`);
+    // this is all run
+    this.stockHelperService.ListMA50On1day = this.stockHelperService.combineUnique(this.stockHelperService.HoldingList,DataSymbols.watchlist,macdCross_AB)
     console.log( this.stockHelperService.ListMA50On1day.length,);
   }
   async onModuleInit() {
-    await this.getReapList()
-    // this.runAllWatchLists30()
+    // await this.getReapList()
+    this.runAllWatchLists30()
     // this.runAllWatchLists30(DataSymbols.watchlist)
     // this.runAllWatchLists30(this.stockHelperService.ListMA50On4hour)
     // console.table(this.stockHelperService.ab50_bl200_3Candles)
