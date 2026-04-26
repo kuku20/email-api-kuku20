@@ -1740,11 +1740,12 @@ export class WebhooksService {
       : '🔴 *BELOW*';
     const mkaboveOrBellow2 = DataSymbols.above2billion.includes(symbols[0]) ? '💰-' : '';
     const sp500 = DataSymbols.stock_500_symbols.includes(symbols[0]) ? '(🇺🇸)-' : ''
+    const display = `${sp500}${mkaboveOrBellow2}${hourIn4}${lastData?.close}(${aboveOrBellow}-${lastData?.MA200?.toFixed(2)})| ${lastData?.date} |`
     const formatted = symbols
       .map(
         (s) =>
-          `${timeframe} • ${sp500}${mkaboveOrBellow2}${hourIn4} *${s}* → ${lastData.close}(${aboveOrBellow}-${lastData?.MA200.toFixed(2)})` +
-          ` <http://localhost:4200/price-log/${s}?daysRange=5|5m> | <http://localhost:4200/price-log/${s}?daysRange=15|15m> | <http://localhost:4200/price-log/${s}?daysRange=30|30m> | <http://localhost:4200/price-log/${s}?daysRange=60|1hour> | <http://localhost:4200/price-log/${s}?daysRange=240|4hour> | <http://localhost:4200/price-log/${s}?daysRange=500|daily> ||=|| <https://stockmarkets000.web.app/price-log/${s}?daysRange=500|PROD-DAILY>`,
+          `• *${s}* → ${display}` +
+          ` <http://localhost:4200/price-log/${s}?daysRange=5|5m> | <http://localhost:4200/price-log/${s}?daysRange=15|15m> | <http://localhost:4200/price-log/${s}?daysRange=30|30m> | <http://localhost:4200/price-log/${s}?daysRange=60|1hour> | <http://localhost:4200/price-log/${s}?daysRange=240|4hour> | <http://localhost:4200/price-log/${s}?daysRange=500|daily> ||=|| <https://stockmarkets000.web.app/price-log/${s}?daysRange=500|PROD-DAILY> | ${timeframe}`,
       )
       .join('\n');
 
@@ -1774,23 +1775,22 @@ export class WebhooksService {
       hourIn4 = this.stockHelperService.above50andBelow200.includes(symbols[0]) ? '4️⃣ *BL200* 🟢🟢' : '';
       in3candles = this.stockHelperService.ab50_bl200_3Candles.includes(symbols[0])?'(3C_4H_BL200)-':this.stockHelperService.ab50_ab200_3Candles.includes(symbols[0])?'(3C_4H_AB200)-':'';
     }
-    const aboveOrBellow =
-    lastData?.MA200 < lastData?.close
+    const aboveOrBellow = lastData?.MA200 < lastData?.close
       ? '🟢 *ABOVE*'
       : '🔴 *BELOW*';
     const mkaboveOrBellow2 = DataSymbols.above2billion.includes(symbols[0]) ? '💰-' : '';
     const sp500 = DataSymbols.stock_500_symbols.includes(symbols[0]) ? '(🇺🇸)-' : ''
-
+    const HoldingList = this.stockHelperService.HoldingList.includes(symbols[0])?'💼':''
     const last = in3candles + hourIn4;
 
     const timeframeScore = timeframeScoreMap[timeframe];
+
+    const display = `${sp500}${mkaboveOrBellow2}${HoldingList}${hourIn4}${last}${lastData?.close}(${aboveOrBellow}-${lastData?.MA200?.toFixed(2)})| ${lastData?.date} |`
     const formatted = symbols
       .map(
         (s) =>
-          `${timeframe} •${sp500}${mkaboveOrBellow2}${hourIn4}${last} *${s}* → ${
-            lastData?.close
-          }(${aboveOrBellow}-${lastData?.MA200?.toFixed(2)})| ${lastData?.date} |` +
-          `  < <http://localhost:4200/price-log/${s}?daysRange=${timeframeScore}|local> | <https://stockmarkets000.web.app/price-log/${s}?daysRange=${timeframeScore}|production> | <https://www.tradingview.com/chart/mWoCISmu/?symbol=${s}|tradingview> | < <http://localhost:4200/price-log/${s}?daysRange=240|4hour> >`,
+          `• *${s}* → ${display}` +
+          `  < <http://localhost:4200/price-log/${s}?daysRange=${timeframeScore}|local> | <https://stockmarkets000.web.app/price-log/${s}?daysRange=${timeframeScore}|production> | <https://www.tradingview.com/chart/mWoCISmu/?symbol=${s}|tradingview> |  <http://localhost:4200/price-log/${s}?daysRange=240|4hour> | ${timeframe}`,
       )
       .join('\n');
 
