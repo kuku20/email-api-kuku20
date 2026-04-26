@@ -114,7 +114,7 @@ export class TasksUS_ALL_MK_4HOUR_Service {
     // Wait for all ticker promises to complete concurrently (with concurrency limit)
     await Promise.all(tickerPromises);
   }
-  @Cron('35 9,13 * * 1-5', { timeZone: 'America/New_York' }) // Every day at 9:40 AM and 1:40 PM ET on weekdays
+  @Cron('35 9,13 * * 1-5', { timeZone: 'America/New_York' }) // Every day at 9:35 AM and 1:35 PM ET on weekdays
   async runAllOn4h() {
     // this.stockHelperService.runOn4hourInday = await this.LocalPLWR.getArrSymbolFFire(`runOn4hourInday/4hour`)as string[];
     // await this.webhooksService.deleteFirebase('macdCross_AB','stockRSILAUP');
@@ -126,14 +126,13 @@ export class TasksUS_ALL_MK_4HOUR_Service {
     }
     // await this.webhooksService.deleteFirebase('NextRound/4hour','stockRSILAUP');
 
-    const tslaDc = `<https://discord.com/channels/1306113720979689523/1380037316143349922|4HOUR_RUN_LOOK_TSLA_DC>`
-    const smciDc = `<https://discord.com/channels/1306113720979689523/1348653615992143924|4HOUR_RUN_LOOK_SMCI_DC>`
-    const macd4huorDc = `<https://discord.com/channels/1306113720979689523/1436948457247080589|4HOUR_RUN_LOOK_MACDCRAB_DC>`
-    const message_tsla = `${tslaDc}${'='.repeat(32)}`;
-    const message_smci = `${smciDc}${'='.repeat(32)}`;
-    this.webhooksService.sendSlackNotification('START_'+message_tsla, 'SLACK_WEBHOOKS_4h_3C_AB');
-    this.webhooksService.sendSlackNotification('START_'+message_smci, 'SLACK_WEBHOOKS_4h_3C_BL');
+    const tslaDc = `<https://discord.com/channels/1306113720979689523/1380037316143349922|4HOUR_RUN_LOOK_TSLA_DC> ${'='.repeat(32)}`
+    const smciDc = `<https://discord.com/channels/1306113720979689523/1348653615992143924|4HOUR_RUN_LOOK_SMCI_DC>${'='.repeat(32)}`
+    const macd4huorDc = `<https://discord.com/channels/1306113720979689523/1436948457247080589|4HOUR_RUN_LOOK_MACDCRAB_DC> ${'='.repeat(32)}`
+    this.webhooksService.sendSlackNotification('START_'+tslaDc, 'SLACK_WEBHOOKS_4h_3C_AB');
+    this.webhooksService.sendSlackNotification('START_'+smciDc, 'SLACK_WEBHOOKS_4h_3C_BL');
     this.webhooksService.sendSlackNotification('START_'+macd4huorDc, 'SLACK_WEBHOOKS_4h_CROSS');
+
     const slma50 = `**[LOOK_US30ABMA50_SL](https://atllc-workspace.slack.com/archives/C0AQJHR0BC6)**`
     const slma100 = `**[LOOK_US30ABMA100_SL](https://atllc-workspace.slack.com/archives/C0AQH7LDM1B)**`
     const slmacd = `**[LOOK_US30ABMA100_SL](https://atllc-workspace.slack.com/archives/C0ASE94TZ08)**`
@@ -144,8 +143,8 @@ export class TasksUS_ALL_MK_4HOUR_Service {
     await this.runOnly4h(this.stockHelperService.NextRound_4hourALL);
 
     await this.webhooksService.sendlast('200BL_OV_NEG_01', '200BL_OV_NEG_05');
-    this.webhooksService.sendSlackNotification('END_'+message_tsla, 'SLACK_WEBHOOKS_4h_3C_AB');
-    this.webhooksService.sendSlackNotification('END_'+message_smci, 'SLACK_WEBHOOKS_4h_3C_BL');
+    this.webhooksService.sendSlackNotification('END_'+tslaDc, 'SLACK_WEBHOOKS_4h_3C_AB');
+    this.webhooksService.sendSlackNotification('END_'+smciDc, 'SLACK_WEBHOOKS_4h_3C_BL');
     this.webhooksService.sendSlackNotification('END_'+macd4huorDc, 'SLACK_WEBHOOKS_4h_CROSS');
     await this.webhooksService.SendDcChannels(['TSLA'],this.logger,`END_4HOUR_${slma50}`);
     await this.webhooksService.SendDcChannels(['SMCI'],this.logger,`END_4OUR_${slma100}`);
@@ -166,21 +165,21 @@ export class TasksUS_ALL_MK_4HOUR_Service {
 
   // @Cron('6 9-15 * * 1-5', { timeZone: 'America/New_York' }) // Every day at 9:06 AM, 10:06 AM, ..., 3:06 PM ET on weekdays
 
-  @Cron('36 9-15/2 * * 1-5', { timeZone: 'America/New_York' }) // 9:36 AM, 11:36 AM, 1:36 PM ET (weekdays)
+  @Cron('36 9-15/2 * * 1-5', { timeZone: 'America/New_York' }) // 9:36 AM, 11:36 AM, 1:36, 3:36 PM ET (weekdays)
  async runAllWatchLists2h() {
     // this.stockHelperService.NextRound_2hourALL  = await this.LocalPLWR.getArrSymbolFFire(`NextRound/2hour`,'stockRSILAUP') || DataSymbols.allabove500million
     this.stockHelperService.NextRound_2hourALL  = DataSymbols.allabove500million
     console.log('NextRound_2hourALL:', this.stockHelperService.NextRound_2hourALL.length);
 
-    const sl1hourCr = `**[LOOK_US30ABMA50_SL](https://atllc-workspace.slack.com/archives/C081A4CHMJ4)**`
-    const dcMA_AB_20_50 = `<https://discord.com/channels/1306113720979689523/1436948534346911904|1HOUR_RUN_LOOK_MACDCRAB_DC>`
-    const message_sl1hourCr = `${sl1hourCr}${'='.repeat(32)}`;
+    const sl2hourCr = `**[LOOK_2H_SL](https://trading-udt8353.slack.com/archives/C0AV988SHDJ)**`
+    await this.webhooksService.SendDcChannels(['MA_AB_20_50'],this.logger,`START_2HOUR_${sl2hourCr}`);
+    
+    const dcMA_AB_20_50 = `<https://discord.com/channels/1306113720979689523/1436948534346911904|2HOUR> ${'='.repeat(32)}`
     this.webhooksService.sendSlackNotification('START_'+dcMA_AB_20_50, 'SLACK_WEBHOOKS_2h_CROSS');
-    await this.webhooksService.SendDcChannels(['MA_AB_20_50'],this.logger,`START_2HOUR_${message_sl1hourCr}`);
 
     await  this.runOnly2h(this.stockHelperService.NextRound_2hourALL)
 
-    await this.webhooksService.SendDcChannels(['MA_AB_20_50'],this.logger,`END_2HOUR_${message_sl1hourCr}`);
+    await this.webhooksService.SendDcChannels(['MA_AB_20_50'],this.logger,`END_2HOUR_${sl2hourCr}`);
     this.webhooksService.sendSlackNotification('END_'+dcMA_AB_20_50, 'SLACK_WEBHOOKS_2h_CROSS');
   }
 
