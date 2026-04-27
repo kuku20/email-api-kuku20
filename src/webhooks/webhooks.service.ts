@@ -1772,7 +1772,7 @@ export class WebhooksService {
     let hourIn4 = '';
     let in3candles = '';
     if(this.stockHelperService.above50andBelow200 && this.stockHelperService.above50andBelow200.length > 0){
-      hourIn4 = this.stockHelperService.above50andBelow200.includes(symbols[0]) ? '4️⃣ *BL200* 🟢🟢' : '';
+      hourIn4 = this.stockHelperService.above50andBelow200.includes(symbols[0]) ? '4️⃣ *BL200* 🟢' : '';
       in3candles = this.stockHelperService.ab50_bl200_3Candles.includes(symbols[0])?'(3C_4H_BL200)-':this.stockHelperService.ab50_ab200_3Candles.includes(symbols[0])?'(3C_4H_AB200)-':'';
     }
     const aboveOrBellow = lastData?.MA200 < lastData?.close
@@ -1784,13 +1784,17 @@ export class WebhooksService {
     const last = in3candles + hourIn4;
 
     const timeframeScore = timeframeScoreMap[timeframe];
+    const StopNTarget = await this.StopNTarget(lastData)
+    const buysellTarget = other !=='SLACK_WEBHOOKS_HOLDING'? `\n\t\t *TARGET:* ${StopNTarget?.target}  | \t |  *STOP LOSS:* ${StopNTarget?.target}`:'BETTER SELL'
 
     const display = `${sp500}${mkaboveOrBellow2}${HoldingList}${hourIn4}${last}${lastData?.close}(${aboveOrBellow}-${lastData?.MA200?.toFixed(2)})| ${lastData?.date} |`
+
     const formatted = symbols
       .map(
         (s) =>
           `• *${s}* → ${display}` +
-          `  < <http://localhost:4200/price-log/${s}?daysRange=${timeframeScore}|local> | <https://stockmarkets000.web.app/price-log/${s}?daysRange=${timeframeScore}|production> | <https://www.tradingview.com/chart/mWoCISmu/?symbol=${s}|tradingview> |  <http://localhost:4200/price-log/${s}?daysRange=240|4hour> | ${timeframe}`,
+          `  < <http://localhost:4200/price-log/${s}?daysRange=${timeframeScore}|local> | <https://stockmarkets000.web.app/price-log/${s}?daysRange=${timeframeScore}|production> | <https://www.tradingview.com/chart/mWoCISmu/?symbol=${s}|tradingview> |  <http://localhost:4200/price-log/${s}?daysRange=240|4hour> | ${timeframe}`+
+          `${buysellTarget}`,
       )
       .join('\n');
 
