@@ -199,7 +199,7 @@ export class TasksUSMKService_SP500 {
     const combinedRSILAUP = this.stockHelperService.combineUnique(this.stockHelperService.stockRSILAUP_4hourALL);
     // console.log('combinedRSILAUP',combinedRSILAUP);
     const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/DyDay/2hour.json`,'')
-    const macdCross_AB = this.stockHelperService.getKeysFromLastN(holdingObj,2)
+    const macdCross_AB = this.stockHelperService.getKeysFromLastN(holdingObj,1)
     console.log(`✅ Loaded stockRSILAUP/macdCross_AB/DyDay/2hour: has ${macdCross_AB.length} symbols`);
     // this is all run
     this.stockHelperService.ListMA50On1day = this.stockHelperService.combineUnique(this.stockHelperService.HoldingList,DataSymbols.watchlist,macdCross_AB)
@@ -207,7 +207,7 @@ export class TasksUSMKService_SP500 {
   }
   async onModuleInit() {
     // await this.getReapList()
-    this.runAllWatchLists30()
+    // this.runAllWatchLists30()
     // this.runAllWatchLists30(DataSymbols.watchlist)
     // this.runAllWatchLists30(this.stockHelperService.ListMA50On4hour)
     // console.table(this.stockHelperService.ab50_bl200_3Candles)
