@@ -1871,42 +1871,66 @@ export class WebhooksService {
       error?: any;
     }[] = [];
   
+    const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
+  
     for (const ts of tsList) {
-      try {
-        const { data } = await axios.post(
-          'https://slack.com/api/chat.delete',
-          { channel, ts },
-          { headers: this.headers },
-        );
+      let retry = true;
   
-        if (!data.ok) {
-          console.error('❌ Slack delete error', data);
+      while (retry) {
+        try {
+          const response = await axios.post(
+            'https://slack.com/api/chat.delete',
+            { channel, ts },
+            { headers: this.headers },
+          );
   
-          results.push({
-            ts,
-            success: false,
-            error: data,
-          });
+          const { data, headers } = response;
   
-          continue;
+          if (data.ok) {
+            console.log(`✅ Deleted message: ${ts}`);
+  
+            results.push({
+              ts,
+              success: true,
+              data,
+            });
+  
+            retry = false;
+          } else if (data.error === 'ratelimited') {
+            const retryAfter = Number(headers?.['retry-after'] || 1);
+            console.warn(`⏳ Rate limited. Waiting ${retryAfter}s...`);
+            await sleep(retryAfter * 1000);
+          } else {
+            console.error('❌ Slack delete error', data);
+  
+            results.push({
+              ts,
+              success: false,
+              error: data,
+            });
+  
+            retry = false;
+          }
+        } catch (error: any) {
+          // Handle HTTP 429
+          if (error.response?.status === 429) {
+            const retryAfter = Number(error.response.headers['retry-after'] || 1);
+            console.warn(`⏳ 429 hit. Waiting ${retryAfter}s...`);
+            await sleep(retryAfter * 1000);
+          } else {
+            console.error('🔥 Slack delete exception', error);
+  
+            results.push({
+              ts,
+              success: false,
+              error,
+            });
+            retry = false;
+          }
         }
-  
-        console.log(`✅ Deleted message: ${ts}`);
-  
-        results.push({
-          ts,
-          success: true,
-          data,
-        });
-      } catch (error) {
-        console.error('🔥 Slack delete exception', error);
-  
-        results.push({
-          ts,
-          success: false,
-          error,
-        });
       }
+      // 🔥 IMPORTANT: base throttle between requests
+      // await sleep(1100);
     }
   
     return results;
@@ -1985,5 +2009,17 @@ export class WebhooksService {
         error,
       };
     }
+  }
+
+  async deleteSLChannel(channels:string[]){
+    if(channels.length === 0){
+      console.log("No channel, skip")
+    }
+    channels.forEach(async (each:string)=>{
+      const slID = each.includes('SLACK_WEBHOOKS_')? this.configService.get<any>(each):each;
+      await this.deleteAllMessages_SLack(slID);
+      console.log(each,": Finished")
+    })
+    console.log("Finished")
   }
 }

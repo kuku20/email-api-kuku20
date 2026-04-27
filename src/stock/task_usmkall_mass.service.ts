@@ -234,25 +234,28 @@ export class TasksUS_ALL_MK_MASS_Service {
       '1day',
     );
 
-    this.stockHelperService.ListMA50On4hour = [];
-    await this.webhooksService.SendDcChannels(['200BL_OV_NEG_01','200BL_OV_NEG_05','200AB_LESS_1'],this.logger,'4hour',);
-    await this.webhooksService.sendSlackNotification(
-      `START+${today}+START=4hour=(aboveMA50Count >= 3 && MACDPositive)===`,
-      '4hour',
-    );
+     // skip to this week 
+    // this.stockHelperService.ListMA50On4hour = [];
+    // await this.webhooksService.SendDcChannels(['200BL_OV_NEG_01','200BL_OV_NEG_05','200AB_LESS_1'],this.logger,'4hour',);
+    // await this.webhooksService.sendSlackNotification(
+    //   `START+${today}+START=4hour=(aboveMA50Count >= 3 && MACDPositive)===`,
+    //   '4hour',
+    // );
 
     // await this.runAllOn4h([
     //   ...(this.stockHelperService.ListMA50On1day || []),
     // ]);
 
-    // skip to this week 
     // await this.runAllOn4h(stocklist);
 
-    await this.webhooksService.sendSlackNotification(
-      `END+${today}+END=4hour=(aboveMA50Count >= 3 && MACDPositive)==`,
-      '4hour',
-    );
-    await this.webhooksService.SendDcChannels(['200BL_OV_NEG_01','200BL_OV_NEG_05','200AB_LESS_1'],this.logger,'4hour',);
+    // await this.webhooksService.sendSlackNotification(
+    //   `END+${today}+END=4hour=(aboveMA50Count >= 3 && MACDPositive)==`,
+    //   '4hour',
+    // );
+    // await this.webhooksService.SendDcChannels(['200BL_OV_NEG_01','200BL_OV_NEG_05','200AB_LESS_1'],this.logger,'4hour',);
+
+    // this.webhooksService.deleteSLChannel(['SLACK_WEBHOOKS_HOLDING','SLACK_WEBHOOKS_US50','SLACK_WEBHOOKS_US100','SLACK_WEBHOOKS_US200','SLACK_WEBHOOKS_MACDCRAB','SLACK_WEBHOOKS_WATCHLIST'])
+
   }
 
   async runAllWatchLists(stocklist = DataSymbols.allabove500million) {

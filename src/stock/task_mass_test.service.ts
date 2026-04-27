@@ -27,7 +27,7 @@ export class TestOndata_service {
   endpointFolder = 'stock-price-check';
   //2h 2026_03_26_15_30_00 , 2026_04_16_15_30_00,2026_04_17_15_30_00,2026_04_23_15_30_00
   // 4h 2026_03_25_13_30_00 2026_04_17_13_30_00,2026_02_18_15_30_00
-  endpointDate = `2026_03_25_13_30_00`
+  endpointDate = `2026_04_24_09_30_00`
   
   timeframe = '4hour';
   async onModuleInit() {
@@ -287,6 +287,9 @@ export class TestOndata_service {
           const minOfClose = Math.min(lastData?.low,secondLastData?.low, thirdLast?.low)
           // console.log(lastData.date, secondLastData.date,thirdLast.date,)
           const setDateValue = tickerData.close;
+          // if(tickerData.MA50< tickerData.close){
+          //   return
+          // }
           const lastestPrice = lastData?.high;
           const increasePr = (maxOfClose- setDateValue)/setDateValue *100
           // console.log(`Data for ${ticker}: ${lastData.date}(${lastData.close}) V||S setClose:${tickerData.date}(${tickerData.close})` );
@@ -294,8 +297,8 @@ export class TestOndata_service {
           
           const urlcheck = `http://localhost:4200/price-log/${ticker}?daysRange=120`
 
-    const mkaboveOrBellow2 = DataSymbols.above2billion.includes(ticker) ? '💰-' : '';
-    const sp500 = DataSymbols.stock_500_symbols.includes(ticker) ? '(🇺🇸)-' : ''
+          const mkaboveOrBellow2 = DataSymbols.above2billion.includes(ticker) ? '💰-' : '';
+          const sp500 = DataSymbols.stock_500_symbols.includes(ticker) ? '(🇺🇸)-' : ''
 
           if (maxOfClose > setDateValue) {
             this.logger.log(increasePr,`${ticker} -${tickerData.date}-${sp500}${mkaboveOrBellow2}`, linedetail,
