@@ -188,7 +188,7 @@ export class TasksUS_ALL_MK_MASS_Service {
               await this.webhooksService.sendSlackNotificationVN(timeframe,
                 [ticker],
                 lastData,
-                DataSymbols.watchlist.includes(ticker)?'SLACK_WEBHOOKS_WATCHLIST':matched.hook,
+                DataSymbols.watchlist.includes(ticker)?'SLACK_WEBHOOKS_WATCHLIST':matched.hook,'','500'
               );
             }
           }

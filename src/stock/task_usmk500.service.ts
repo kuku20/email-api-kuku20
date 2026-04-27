@@ -112,7 +112,7 @@ export class TasksUSMKService_SP500 {
               await this.webhooksService.sendSlackNotificationVN(timeframe,
                 [ticker],
                 lastData,
-                'SLACK_WEBHOOKS_HOLDING',
+                'SLACK_WEBHOOKS_HOLDING','BlMA200_MA20_MA50_MA100_SELL',
                 this.runon15or30
               );
               await this.webhooksService.sendDiscord(
@@ -152,7 +152,7 @@ export class TasksUSMKService_SP500 {
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               lastData,
-              DataSymbols.watchlist.includes(ticker)?'SLACK_WEBHOOKS_WATCHLIST':matched.hook,
+              DataSymbols.watchlist.includes(ticker)?'SLACK_WEBHOOKS_WATCHLIST':matched.hook,'',
               this.runon15or30
             );
 
@@ -366,7 +366,7 @@ export class TasksUSMKService_SP500 {
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               lastData,
-              'SLACK_WEBHOOKS_4h',
+              'SLACK_WEBHOOKS_4h','',
               this.runon15or30
             );
             await this.webhooksService.sendDiscord(

@@ -73,12 +73,11 @@ export class TaskHoldingService {
             lastData,
             secondLastData,
           );
-          if (!BlMA200_MA20_MA50_MA100_SELL) return;
           if(BlMA200_MA20_MA50_MA100_SELL){
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               lastData,
-              'SLACK_WEBHOOKS_HOLDING',
+              'SLACK_WEBHOOKS_HOLDING','BlMA200_MA20_MA50_MA100_SELL',
               this.runon15or30
             );
             await this.webhooksService.sendDiscord(
@@ -163,7 +162,7 @@ export class TaskHoldingService {
     // await this.webhooksService.sendSlackNotificationVN(timeframe,
     //   symbols,
     //   null,
-    //   'SLACK_WEBHOOKS_HOLDING',
+    //   'SLACK_WEBHOOKS_HOLDING','',
     //   '500'
     // );
     this.logger.warn('Running getholdingList with stocklist length:', symbols.length);

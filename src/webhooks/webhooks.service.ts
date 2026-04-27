@@ -1498,7 +1498,7 @@ export class WebhooksService {
           await this.sendSlackNotificationVN(timeframe,
             [ticker],
             lastData,
-            'SLACK_WEBHOOKS_J2DAY',
+            'SLACK_WEBHOOKS_J2DAY','ABOVE_50_2C',
             '500'
           );
         }
@@ -1516,7 +1516,7 @@ export class WebhooksService {
           await this.sendSlackNotificationVN(timeframe,
             [ticker],
             lastData,
-            'SLACK_WEBHOOKS_J3DAY',
+            'SLACK_WEBHOOKS_J3DAY','PriceCrMA50_3C',
             '500'
           );
         }else if(timeframe.includes('4hour')){
@@ -1526,7 +1526,7 @@ export class WebhooksService {
           await this.sendSlackNotificationVN(timeframe,
             [ticker],
             lastData,
-            slackWebhook,
+            slackWebhook,'PriceCrMA50_3C',
             '500'
           );
           await this.sendDiscord(
@@ -1609,7 +1609,7 @@ export class WebhooksService {
     const lastDataOnTime = await this.stockHelperService.TurnDateToUnderFM(lastData.date);
     if (stockRSILAUP && macdCross.AB) {
       await this.FireBaseApi("put", `stockRSILAUP/macdCross_AB/${basePath}/${timeframe}/${ticker}.json`, {lastData: lastData})
-      await this.FireBaseApi("put", `stockRSILAUP/macdCross_AB/All/${timeframe}/${ticker}.json`, {lastData: lastData})
+      // await this.FireBaseApi("put", `stockRSILAUP/macdCross_AB/All/${timeframe}/${ticker}.json`, {lastData: lastData})
       await this.FireBaseApi("put", `stockRSILAUP/macdCross_AB/DyDay/${timeframe}/${lastDataOnTime}/${ticker}.json`, {lastData: lastData})
       await this.sendDiscord(
         `BUYY-macdCross_AB-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
@@ -1621,7 +1621,7 @@ export class WebhooksService {
       await this.sendSlackNotificationVN(timeframe,
         [ticker],
         lastData,
-        DataSymbols.watchlist.includes(ticker)?'SLACK_WEBHOOKS_WATCHLIST':sltimeframeKey,'15'
+        DataSymbols.watchlist.includes(ticker)?'SLACK_WEBHOOKS_WATCHLIST':sltimeframeKey,'macdCross_AB','15'
       );
       return;
     }
@@ -1633,11 +1633,16 @@ export class WebhooksService {
         'MA_AB_50_100',
         data,
       );
+      await this.sendSlackNotificationVN(timeframe,
+        [ticker],
+        lastData,
+        DataSymbols.watchlist.includes(ticker)?'SLACK_WEBHOOKS_HOLDING':sltimeframeKey,'macdCross_AB','15'
+      );
       return;
     }  
-    if(downtrend && timeframe === '4hour' || timeframe === '2hour'){
-      await this.FireBaseApi("put", `stockRSILAUP/NextRound/${timeframe}/${lastDataOnTime}/${ticker}.json`, {lastData: lastData})
-    }
+    // if(downtrend && timeframe === '4hour' || timeframe === '2hour'){
+    //   await this.FireBaseApi("put", `stockRSILAUP/NextRound/${timeframe}/${lastDataOnTime}/${ticker}.json`, {lastData: lastData})
+    // }
   }
   async sendlast(B_Channel, HT_Channel) {
     await this.sendDiscordNotification(
@@ -1765,8 +1770,9 @@ export class WebhooksService {
     timeframe: string,
     symbols: string[],
     lastData: any,
-    other = 'SLACK_WEBHOOKS_VN50',
-    range: '600' | '550' | '500' | '480' | '240' | '120' | '60' | '45' | '30' | '15' | '5' | '1' = '500',
+    other :string,
+    msg :string,
+    range: '600' | '550' | '500' | '480' | '240' | '120' | '60' | '45' | '30' | '15' | '5' | '1',
   ) {
     const BASE_URL = this.configService.get<any>(other);
     let hourIn4 = '';
@@ -1785,7 +1791,8 @@ export class WebhooksService {
 
     const timeframeScore = timeframeScoreMap[timeframe];
     const StopNTarget = await this.StopNTarget(lastData)
-    const buysellTarget = other !=='SLACK_WEBHOOKS_HOLDING'? `\n\t\t *TARGET:* ${StopNTarget?.target}  | \t |  *STOP LOSS:* ${StopNTarget?.target}`:'BETTER SELL'
+    const addMsg = msg? `*MSG:* ${msg} | ` :""
+    const buysellTarget = other !=='SLACK_WEBHOOKS_HOLDING'? `\n\t\t${addMsg} *TARGET:* ${StopNTarget?.target}  | \t |  *STOP LOSS:* ${StopNTarget?.target}`:'BETTER SELL'
 
     const display = `${sp500}${mkaboveOrBellow2}${HoldingList}${hourIn4}${last}${lastData?.close}(${aboveOrBellow}-${lastData?.MA200?.toFixed(2)})| ${lastData?.date} |`
 

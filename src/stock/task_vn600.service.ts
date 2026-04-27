@@ -67,7 +67,7 @@ export class TasksVNMKService {
             await this.webhooksService.sendSlackNotificationVN('1day',
               [symbol],
               lastData,
-              matched.hook,
+              matched.hook,'','500'
             );
           }
           this.logger.log(`${ticker} processed successfully.`);
