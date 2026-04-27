@@ -1473,15 +1473,15 @@ export class WebhooksService {
     if(MACDDivergence === 'bullish'){
       await this.FireBaseApi("put", `stock-related/${basePath}/MACDDivergence/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
     }
-    if (PriceCrMA50) {
-      await this.sendDiscord(
-        `${sp500}SBUY-PriceCrMA50 -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-        `${ticker}-${timeframe}-CrMA50-${lastData?.close}`,
-        lastData,
-        timeframe === '1day' ? '200AB_LESS_05' : '200AB_LESS_1',
-        data,
-      );
-    }
+    // if (PriceCrMA50) {
+    //   await this.sendDiscord(
+    //     `${sp500}SBUY-PriceCrMA50 -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+    //     `${ticker}-${timeframe}-CrMA50-${lastData?.close}`,
+    //     lastData,
+    //     timeframe === '1day' ? '200AB_LESS_05' : '200AB_LESS_1',
+    //     data,
+    //   );
+    // }
     const aboveMA50Count = [
       aboveMA50,
       aboveMA50Second,
@@ -1560,6 +1560,13 @@ export class WebhooksService {
           );
           this.listsymbolBEarly = [];
         }
+        await this.sendDiscord(
+          `${sp500}SBUY-PriceCrMA50 -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+          `${ticker}-${timeframe}-CrMA50-${lastData?.close}`,
+          lastData,
+          timeframe === '1day' ? '200AB_LESS_05' : '200AB_LESS_1',
+          data,
+        );
       }
       this.listsymbolB = [...(this.listsymbolB ?? []), ticker];
       await this.FireBaseApi("put", `stock-related/${basePath}/all3count/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
@@ -2020,6 +2027,5 @@ export class WebhooksService {
       await this.deleteAllMessages_SLack(slID);
       console.log(each,": Finished")
     })
-    console.log("Finished")
   }
 }
