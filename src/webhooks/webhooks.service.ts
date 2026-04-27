@@ -1799,7 +1799,7 @@ export class WebhooksService {
     const timeframeScore = timeframeScoreMap[timeframe];
     const StopNTarget = await this.StopNTarget(lastData)
     const addMsg = msg? `*MSG:* ${msg} | ` :""
-    const buysellTarget = other !=='SLACK_WEBHOOKS_HOLDING'? `\n\t\t${addMsg} *TARGET:* ${StopNTarget?.target}  | \t |  *STOP LOSS:* ${StopNTarget?.target}`:'BETTER SELL'
+    const buysellTarget = other !=='SLACK_WEBHOOKS_HOLDING'? `\n\t\t${addMsg} *TARGET:* ${StopNTarget?.target}  | \t |  *STOP LOSS:* ${StopNTarget?.stop}`:'BETTER SELL'
 
     const display = `${sp500}${mkaboveOrBellow2}${HoldingList}${hourIn4}${last}${lastData?.close}(${aboveOrBellow}-${lastData?.MA200?.toFixed(2)})| ${lastData?.date} |`
 

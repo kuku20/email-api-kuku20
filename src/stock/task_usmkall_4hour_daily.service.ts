@@ -165,7 +165,7 @@ export class TasksUS_ALL_MK_4HOUR_Service {
 
   // @Cron('6 9-15 * * 1-5', { timeZone: 'America/New_York' }) // Every day at 9:06 AM, 10:06 AM, ..., 3:06 PM ET on weekdays
 
-  @Cron('36 9-15/2 * * 1-5', { timeZone: 'America/New_York' }) // 9:36 AM, 11:36 AM, 1:36, 3:36 PM ET (weekdays)
+  @Cron('36 9,11,13,15 * * 1-5', { timeZone: 'America/New_York' }) // 9:36 AM, 11:36 AM, 1:36, 3:36 PM ET (weekdays)
  async runAllWatchLists2h() {
     // this.stockHelperService.NextRound_2hourALL  = await this.LocalPLWR.getArrSymbolFFire(`NextRound/2hour`,'stockRSILAUP') || DataSymbols.allabove500million
     this.stockHelperService.NextRound_2hourALL  = DataSymbols.allabove500million
