@@ -20,6 +20,57 @@ export class TasksUSMKService_SP500 {
   ) {}
   private readonly logger = new Logger(TasksUSMKService_SP500.name);
   endpointFolder = 'stock-price-check';
+
+  async onModuleInit() {
+    // await this.getReapList()
+    // this.runAllWatchLists30()
+    // this.runAllWatchLists30(DataSymbols.watchlist)
+    // this.runAllWatchLists30(this.stockHelperService.ListMA50On4hour)
+    // console.table(this.stockHelperService.ab50_bl200_3Candles)
+    // this.justSend(
+    //   this.stockHelperService.ab50_bl200_3Candles,
+    //   '4hour',
+    //    'all',
+    //   //
+    // )
+    // this.runAllWatchLists30()
+  }
+
+  async getReapList(){
+    await this.getholdingList()
+    // need to clean this up
+    this.stockHelperService.ListMA50On4hour = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/all3count/4hour`) as string[]||[];
+    this.stockHelperService.above50andBelow200 = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/alldata/4hour`)as string[]||[];
+    this.stockHelperService.above50andAbove200 = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}-aboveMA200/alldata/4hour`)as string[]||[];
+
+    this.stockHelperService.ab50_bl200_3Candles = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/threeday/4hour`)as string[]||[];
+    this.stockHelperService.ab50_ab200_3Candles = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}-aboveMA200/threeday/4hour`)as string[]||[];
+    this.stockHelperService.ab50_3Candles_ALL = this.stockHelperService.combineUnique( this.stockHelperService.ab50_bl200_3Candles,this.stockHelperService.ab50_ab200_3Candles);
+    // console.table(this.stockHelperService.ab50_bl200_3Candles);
+    // console.table(this.stockHelperService.above50andBelow200);
+    // this.stockHelperService.ListMA50On1day = this.stockHelperService.combineUnique(this.stockHelperService.HoldingList,DataSymbols.watchlist,this.stockHelperService.above50andBelow200,this.stockHelperService.ab50_ab200_3Candles)
+    this.stockHelperService.stockRSILAUP_4hourALL  =await this.LocalPLWR.getArrSymbolFFire(`macdCross_AB/All/4hour`,'stockRSILAUP')
+    this.stockHelperService.stockRSILAUP_1dayALL  =await this.LocalPLWR.getArrSymbolFFire(`macdCross_AB/All/1day`,'stockRSILAUP')
+    // const combinedRSILAUP = this.stockHelperService.combineUnique(this.stockHelperService.stockRSILAUP_4hourALL, this.stockHelperService.stockRSILAUP_1dayALL);
+    const combinedRSILAUP = this.stockHelperService.combineUnique(this.stockHelperService.stockRSILAUP_4hourALL);
+    // console.log('combinedRSILAUP',combinedRSILAUP);
+    // const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/DyDay/2hour.json`,'')
+    // const macdCross_AB = this.stockHelperService.getKeysFromLastN(holdingObj,1)
+
+   const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/OscConditionL/1day.json`,'')
+   const macdCross_AB = Object.keys(holdingObj);
+   console.log(`✅ Loaded stockRSILAUP/macdCross_AB/DyDay/2hour: has ${macdCross_AB.length} symbols`);
+    // this is all run
+    this.stockHelperService.ListMA50On1day = this.stockHelperService.combineUnique(this.stockHelperService.HoldingList,DataSymbols.watchlist,macdCross_AB)
+    console.log( this.stockHelperService.ListMA50On1day.length,);
+  }
+  async getholdingList() {
+    const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stock-related/holding.json`,'')
+    this.stockHelperService.HoldingList = Object.keys(holdingObj);
+    console.log(`✅ Loaded stock-related/holding: has ${this.stockHelperService.HoldingList.length} symbols`);
+    return this.stockHelperService.HoldingList;
+  }
+
   async  USTIMERUN(
     intickers: string[],
     api: any,
@@ -179,54 +230,6 @@ export class TasksUSMKService_SP500 {
 
     // Wait for all ticker promises to complete concurrently (with concurrency limit)
     await Promise.all(tickerPromises);
-  }
-  async getReapList(){
-    await this.getholdingList()
-    // need to clean this up
-    this.stockHelperService.ListMA50On4hour = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/all3count/4hour`) as string[]||[];
-    this.stockHelperService.above50andBelow200 = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/alldata/4hour`)as string[]||[];
-    this.stockHelperService.above50andAbove200 = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}-aboveMA200/alldata/4hour`)as string[]||[];
-
-    this.stockHelperService.ab50_bl200_3Candles = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/threeday/4hour`)as string[]||[];
-    this.stockHelperService.ab50_ab200_3Candles = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}-aboveMA200/threeday/4hour`)as string[]||[];
-    this.stockHelperService.ab50_3Candles_ALL = this.stockHelperService.combineUnique( this.stockHelperService.ab50_bl200_3Candles,this.stockHelperService.ab50_ab200_3Candles);
-    // console.table(this.stockHelperService.ab50_bl200_3Candles);
-    // console.table(this.stockHelperService.above50andBelow200);
-    // this.stockHelperService.ListMA50On1day = this.stockHelperService.combineUnique(this.stockHelperService.HoldingList,DataSymbols.watchlist,this.stockHelperService.above50andBelow200,this.stockHelperService.ab50_ab200_3Candles)
-    this.stockHelperService.stockRSILAUP_4hourALL  =await this.LocalPLWR.getArrSymbolFFire(`macdCross_AB/All/4hour`,'stockRSILAUP')
-    this.stockHelperService.stockRSILAUP_1dayALL  =await this.LocalPLWR.getArrSymbolFFire(`macdCross_AB/All/1day`,'stockRSILAUP')
-    // const combinedRSILAUP = this.stockHelperService.combineUnique(this.stockHelperService.stockRSILAUP_4hourALL, this.stockHelperService.stockRSILAUP_1dayALL);
-    const combinedRSILAUP = this.stockHelperService.combineUnique(this.stockHelperService.stockRSILAUP_4hourALL);
-    // console.log('combinedRSILAUP',combinedRSILAUP);
-    // const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/DyDay/2hour.json`,'')
-    // const macdCross_AB = this.stockHelperService.getKeysFromLastN(holdingObj,1)
-
-   const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/upYet/1day.json`,'')
-   const macdCross_AB = Object.keys(holdingObj);
-   console.log(`✅ Loaded stockRSILAUP/macdCross_AB/DyDay/2hour: has ${macdCross_AB.length} symbols`);
-    // this is all run
-    this.stockHelperService.ListMA50On1day = this.stockHelperService.combineUnique(this.stockHelperService.HoldingList,DataSymbols.watchlist,macdCross_AB)
-    console.log( this.stockHelperService.ListMA50On1day.length,);
-  }
-  async onModuleInit() {
-    // await this.getReapList()
-    // this.runAllWatchLists30()
-    // this.runAllWatchLists30(DataSymbols.watchlist)
-    // this.runAllWatchLists30(this.stockHelperService.ListMA50On4hour)
-    // console.table(this.stockHelperService.ab50_bl200_3Candles)
-    // this.justSend(
-    //   this.stockHelperService.ab50_bl200_3Candles,
-    //   '4hour',
-    //    'all',
-    //   //
-    // )
-    // this.runAllWatchLists30()
-  }
-  async getholdingList() {
-    const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stock-related/holding.json`,'')
-    this.stockHelperService.HoldingList = Object.keys(holdingObj);
-    console.log(`✅ Loaded stock-related/holding: has ${this.stockHelperService.HoldingList.length} symbols`);
-    return this.stockHelperService.HoldingList;
   }
 
   // @Cron('*/30 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 30 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
