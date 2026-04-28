@@ -41,6 +41,7 @@ export class StockHelperService {
     dataIn = await this.calculateRSI(dataIn);
     dataIn = await this.calculateStochasticRSI(dataIn);
     dataIn = await this.calculateMACD(dataIn);
+    dataIn = await this.calculateOSC(dataIn, 20, 6);
 
     return dataIn;
   }
@@ -256,6 +257,56 @@ export class StockHelperService {
       StochRSI_D: dArray[i], // D (Slow Stochastic RSI)
     }));
   }
+
+  /**
+ * Oscillator (OSC)
+ * OSC = 100 * (Close - MA(N)) / MA(N)
+ * With optional smoothing (signal line)
+ */
+async calculateOSC(
+  data: any[],
+  maPeriod: number = 20,
+  smoothPeriod: number = 6,
+) {
+  if (!data?.length) return [];
+
+  // 1️⃣ Ensure MA exists
+  const maLabel = `MA${maPeriod}`;
+  data = await this.calculateMovingAverage(data, maPeriod, maLabel);
+
+  const oscArray: number[] = Array(data.length).fill(null);
+  const signalArray: number[] = Array(data.length).fill(null);
+
+  // 2️⃣ Calculate OSC
+  for (let i = 0; i < data.length; i++) {
+    const ma = data[i][maLabel];
+    const close = data[i].close;
+
+    if (ma != null && ma !== 0) {
+      const osc = 100 * (close - ma) / ma;
+      oscArray[i] = parseFloat(osc.toFixed(7));
+    }
+  }
+
+  // 3️⃣ Smooth OSC (Signal line using SMA)
+  for (let i = smoothPeriod - 1; i < data.length; i++) {
+    const window = oscArray.slice(i - smoothPeriod + 1, i + 1);
+    const valid = window.filter((v) => v != null);
+
+    if (valid.length === smoothPeriod) {
+      const avg =
+        valid.reduce((sum, val) => sum + val, 0) / smoothPeriod;
+      signalArray[i] = parseFloat(avg.toFixed(7));
+    }
+  }
+
+  // 4️⃣ Merge into data
+  return data.map((item, i) => ({
+    ...item,
+    OSC: oscArray[i],
+    OSCSignal: signalArray[i],
+  }));
+}
 
   async transformData(data: any[]) {
     const transformedData = {};
