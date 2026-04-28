@@ -27,6 +27,9 @@ export class TasksUS_ALL_MK_MASS_Service {
 
    // this.webhooksService.deleteSLChannel(['C0AV988SHDJ'])
   //  const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/upYet/1day.json`,'')
+  //  const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/upYet/1day.json`,'')
+  //  const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/upYet/EarlyUpyet/1day.json`,'')
+
 
   //  const tickers = Object.keys(holdingObj);
   //  console.log(tickers.length);
@@ -108,16 +111,16 @@ export class TasksUS_ALL_MK_MASS_Service {
 
           console.log(`✅ Processing ${ticker} on ${timeframe} at ${lastData.date}`);
           // Process the data
-          const upYet = (lastData.divergence > secondLastData.divergence) && lastData.divergence > 0;
+          const upYet = (lastData.divergence > secondLastData.divergence) && lastData.divergence > 0 && (lastData.MA9> lastData.MA15);
           if(upYet){
             await this.webhooksService.FireBaseApi("put", `stockRSILAUP/macdCross_AB/${'upYet'}/${timeframe}/${ticker}.json`, {lastData: lastData})
             if(secondLastData.divergence< 0){
               await this.webhooksService.FireBaseApi("put", `stockRSILAUP/macdCross_AB/${'upYet'}/EarlyUpyet/${timeframe}/${ticker}.json`, {lastData: lastData})
               {await this.webhooksService.sendDiscord(
                 `SBUY-EarlyUpyet -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-                `${ticker}-${timeframe}-CrMA50-${lastData?.close}`,
+                `${ticker}-${timeframe}-EarlyUpyet-${lastData?.close}`,
                 lastData,
-                'MA_AB_100_200',
+                'MA_AB_100_200', // already in macdcrab-1day MA_AB_5_20
                 data,
               );}
             }else
@@ -125,7 +128,7 @@ export class TasksUS_ALL_MK_MASS_Service {
             await this.webhooksService.FireBaseApi("put", `stockRSILAUP/macdCross_AB/${'upYet'}/ContinueUp/${timeframe}/${ticker}.json`, {lastData: lastData})
               await this.webhooksService.sendDiscord(
               `SBUY-ContinueUp -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-              `${ticker}-${timeframe}-CrMA50-${lastData?.close}`,
+              `${ticker}-${timeframe}-ContinueUp-${lastData?.close}`,
               lastData,
               'MA_BL_5_20',
               data,
