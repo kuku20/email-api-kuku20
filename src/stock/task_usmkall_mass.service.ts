@@ -22,13 +22,21 @@ export class TasksUS_ALL_MK_MASS_Service {
   rundayaogo = this.stockHelperService.getDateNDaysAgo(this.dayago);
   marketTarget = 2
   async onModuleInit() {
+    // this.webhooksService.deleteSLChannel(['C0AV1KQGS3F','C0AV30D721L','C0AV52BFMDG','C0AV1KQGS3F','C0AV988SHDJ','C0B02DZU0KB','C0AUN3H0JR5','SLACK_WEBHOOKS_HOLDING','SLACK_WEBHOOKS_US50','SLACK_WEBHOOKS_US100','SLACK_WEBHOOKS_US200','SLACK_WEBHOOKS_MACDCRAB','SLACK_WEBHOOKS_WATCHLIST'])
+
+
+   // this.webhooksService.deleteSLChannel(['C0AV988SHDJ'])
+  //  const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/upYet/1day.json`,'')
+
+  //  const tickers = Object.keys(holdingObj);
+  //  console.log(tickers.length);
     // const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/NextRound/2hour.json`,'')
     // const holdingObj2 = Object.keys(holdingObj);
     // const dkd = this.stockHelperService.getKeysFromLastN(holdingObj)
     // console.log(`✅ Loaded stock-related/holding: has ${this.stockHelperService.HoldingList.length} symbols`);
     // console.table(dkd);
     
-// await this.webhooksService.deleteAllMessages_SLack('C0AUN3H0JR5');
+// await this.webhooksService.deleteAllMessages_SLack('C0AV988SHDJ');
     // This runs ONCE when the app starts
     // this.stockHelperService.aboveMA50api = `dayago-${this.dayago}-` +this.rundayaogo;
     // await this.webhooksService.delete(this.stockHelperService.aboveMA50api); // reset firebase data for the day
@@ -40,7 +48,7 @@ export class TasksUS_ALL_MK_MASS_Service {
   // await this.webhooksService.delete('runOn4hourInday'); // reset firebase data for the day
   // this.stockHelperService.aboveMA50api= this.rundayaogo
   //  await this.runOnly4h()
-     //  await this.runAllOn4h()
+      // await this.runAllOn4h()
     // await this.getMarket(DataSymbols.above2billion);
     // await this.stockHelperService.writeAbove2BillionToFile(this.aboveTarget,`Above_${this.marketTarget}_Billion`);
     // await this.stockHelperService.writeAbove2BillionToFile(this.BelowTarget,`Below_${this.marketTarget}_Billion`);
@@ -100,6 +108,29 @@ export class TasksUS_ALL_MK_MASS_Service {
 
           console.log(`✅ Processing ${ticker} on ${timeframe} at ${lastData.date}`);
           // Process the data
+          const upYet = (lastData.divergence > secondLastData.divergence) && lastData.divergence > 0;
+          if(upYet){
+            await this.webhooksService.FireBaseApi("put", `stockRSILAUP/macdCross_AB/${'upYet'}/${timeframe}/${ticker}.json`, {lastData: lastData})
+            if(secondLastData.divergence< 0){
+              await this.webhooksService.FireBaseApi("put", `stockRSILAUP/macdCross_AB/${'upYet'}/EarlyUpyet/${timeframe}/${ticker}.json`, {lastData: lastData})
+              {await this.webhooksService.sendDiscord(
+                `SBUY-EarlyUpyet -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+                `${ticker}-${timeframe}-CrMA50-${lastData?.close}`,
+                lastData,
+                'MA_AB_100_200',
+                data,
+              );}
+            }else
+            {
+            await this.webhooksService.FireBaseApi("put", `stockRSILAUP/macdCross_AB/${'upYet'}/ContinueUp/${timeframe}/${ticker}.json`, {lastData: lastData})
+              await this.webhooksService.sendDiscord(
+              `SBUY-ContinueUp -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+              `${ticker}-${timeframe}-CrMA50-${lastData?.close}`,
+              lastData,
+              'MA_BL_5_20',
+              data,
+            );}
+          }
           await this.webhooksService.stockRSILAUP(
             data,
             ticker,
@@ -278,6 +309,7 @@ export class TasksUS_ALL_MK_MASS_Service {
   }
 
   async runAllOn1day(stocklist = DataSymbols.allabove500million) {
+    await this.webhooksService.deleteFirebase('macdCross_AB/upYet/1day','stockRSILAUP');
     await Promise.all([
       this.USTIMERUN(
         stocklist,
