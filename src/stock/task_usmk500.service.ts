@@ -79,7 +79,7 @@ export class TasksUSMKService_SP500 {
     // Prepare ticker promises with concurrency limit
     const tickerPromises = tickers.map((ticker) =>
       limit(async () => {
-        if (washselllists.includes(ticker)) {
+        if (washselllists?.includes(ticker)) {
           console.log(`⏭️ Skipping ${ticker} — in wash sell list`);
           return; // Skip this ticker and move on
         }
@@ -103,7 +103,7 @@ export class TasksUSMKService_SP500 {
           if (!isWithinRange) {
             return
           }
-          if(this.stockHelperService.HoldingList.includes(ticker)){
+          if(this.stockHelperService.HoldingList?.includes(ticker)){
             const BlMA200_MA20_MA50_MA100_SELL = await this.stockHelperService.BlMA200_MA20_MA50_MA100_SELL(
               lastData,
               secondLastData,
@@ -183,12 +183,12 @@ export class TasksUSMKService_SP500 {
   async getReapList(){
     await this.getholdingList()
     // need to clean this up
-    this.stockHelperService.ListMA50On4hour = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/all3count/4hour`) as string[];
-    this.stockHelperService.above50andBelow200 = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/alldata/4hour`)as string[];
-    this.stockHelperService.above50andAbove200 = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}-aboveMA200/alldata/4hour`)as string[];
+    this.stockHelperService.ListMA50On4hour = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/all3count/4hour`) as string[]||[];
+    this.stockHelperService.above50andBelow200 = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/alldata/4hour`)as string[]||[];
+    this.stockHelperService.above50andAbove200 = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}-aboveMA200/alldata/4hour`)as string[]||[];
 
-    this.stockHelperService.ab50_bl200_3Candles = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/threeday/4hour`)as string[];
-    this.stockHelperService.ab50_ab200_3Candles = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}-aboveMA200/threeday/4hour`)as string[];
+    this.stockHelperService.ab50_bl200_3Candles = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/threeday/4hour`)as string[]||[];
+    this.stockHelperService.ab50_ab200_3Candles = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}-aboveMA200/threeday/4hour`)as string[]||[];
     this.stockHelperService.ab50_3Candles_ALL = this.stockHelperService.combineUnique( this.stockHelperService.ab50_bl200_3Candles,this.stockHelperService.ab50_ab200_3Candles);
     // console.table(this.stockHelperService.ab50_bl200_3Candles);
     // console.table(this.stockHelperService.above50andBelow200);
@@ -349,7 +349,7 @@ export class TasksUSMKService_SP500 {
     // Prepare ticker promises with concurrency limit
     const tickerPromises = tickers.map((ticker) =>
       limit(async () => {
-        if (washselllists.includes(ticker)) {
+        if (washselllists?.includes(ticker)) {
           console.log(`⏭️ Skipping ${ticker} — in wash sell list`);
           return; // Skip this ticker and move on
         }
