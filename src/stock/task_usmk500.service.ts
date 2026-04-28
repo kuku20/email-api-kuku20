@@ -198,9 +198,12 @@ export class TasksUSMKService_SP500 {
     // const combinedRSILAUP = this.stockHelperService.combineUnique(this.stockHelperService.stockRSILAUP_4hourALL, this.stockHelperService.stockRSILAUP_1dayALL);
     const combinedRSILAUP = this.stockHelperService.combineUnique(this.stockHelperService.stockRSILAUP_4hourALL);
     // console.log('combinedRSILAUP',combinedRSILAUP);
-    const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/DyDay/2hour.json`,'')
-    const macdCross_AB = this.stockHelperService.getKeysFromLastN(holdingObj,1)
-    console.log(`✅ Loaded stockRSILAUP/macdCross_AB/DyDay/2hour: has ${macdCross_AB.length} symbols`);
+    // const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/DyDay/2hour.json`,'')
+    // const macdCross_AB = this.stockHelperService.getKeysFromLastN(holdingObj,1)
+
+   const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/upYet/1day.json`,'')
+   const macdCross_AB = Object.keys(holdingObj);
+   console.log(`✅ Loaded stockRSILAUP/macdCross_AB/DyDay/2hour: has ${macdCross_AB.length} symbols`);
     // this is all run
     this.stockHelperService.ListMA50On1day = this.stockHelperService.combineUnique(this.stockHelperService.HoldingList,DataSymbols.watchlist,macdCross_AB)
     console.log( this.stockHelperService.ListMA50On1day.length,);
