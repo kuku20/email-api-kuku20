@@ -27,8 +27,8 @@ export class TasksUS_ALL_MK_MASS_Service {
 
    // this.webhooksService.deleteSLChannel(['C0AV988SHDJ'])
   //  const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/upYet/1day.json`,'')
-  //  const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/upYet/1day.json`,'')
-  //  const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/upYet/EarlyUpyet/1day.json`,'')
+  // //  const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/upYet/1day.json`,'')
+  // //  const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/upYet/EarlyUpyet/1day.json`,'')
 
 
   //  const tickers = Object.keys(holdingObj);
@@ -38,7 +38,7 @@ export class TasksUS_ALL_MK_MASS_Service {
     // const dkd = this.stockHelperService.getKeysFromLastN(holdingObj)
     // console.log(`✅ Loaded stock-related/holding: has ${this.stockHelperService.HoldingList.length} symbols`);
     // console.table(dkd);
-    
+    // await this.webhooksService.deleteFirebase('macdCross_AB','stockRSILAUP');
 // await this.webhooksService.deleteAllMessages_SLack('C0AV988SHDJ');
     // This runs ONCE when the app starts
     // this.stockHelperService.aboveMA50api = `dayago-${this.dayago}-` +this.rundayaogo;
@@ -111,6 +111,36 @@ export class TasksUS_ALL_MK_MASS_Service {
 
           console.log(`✅ Processing ${ticker} on ${timeframe} at ${lastData.date}`);
           // Process the data
+          const OscConditionL = lastData.OSC > lastData.OSCSignal
+          const OscConditionS = secondLastData.OSC > secondLastData.OSCSignal
+          const OscCrossAb = OscConditionL && !OscConditionS
+          const OscCrossBL = !OscConditionL && OscConditionS
+          if(OscConditionL){
+            await this.webhooksService.FireBaseApi("put", `stockRSILAUP/macdCross_AB/OscConditionL/${timeframe}/${ticker}.json`, {lastData: lastData})
+            await this.webhooksService.sendDiscord(
+              `SBUY-OscConditionL -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+              `${ticker}-${timeframe}-OscConditionL-${lastData?.close}`,
+              lastData,
+              'MA_BL_20_50', 
+              data,
+            );
+
+            if(OscCrossAb){
+              await this.webhooksService.FireBaseApi("put", `stockRSILAUP/macdCross_AB/OscCrossAb/${timeframe}/${ticker}.json`, {lastData: lastData})
+              await this.webhooksService.sendDiscord(
+                `SBUY-OscCrossAb -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+                `${ticker}-${timeframe}-OscCrossAb-${lastData?.close}`,
+                lastData,
+                'MA_BL_5_200', 
+                data,
+              );
+              await this.webhooksService.sendSlackNotificationVN(timeframe,
+                [ticker],
+                lastData,
+                'C0B00B2N6NB','','500'
+              );
+            }
+          }
           const upYet = (lastData.divergence > secondLastData.divergence) && lastData.divergence > 0 && (lastData.MA9> lastData.MA15);
           if(upYet){
             await this.webhooksService.FireBaseApi("put", `stockRSILAUP/macdCross_AB/${'upYet'}/${timeframe}/${ticker}.json`, {lastData: lastData})
@@ -312,7 +342,8 @@ export class TasksUS_ALL_MK_MASS_Service {
   }
 
   async runAllOn1day(stocklist = DataSymbols.allabove500million) {
-    await this.webhooksService.deleteFirebase('macdCross_AB/upYet/1day','stockRSILAUP');
+    // await this.webhooksService.deleteFirebase('macdCross_AB/upYet/1day','stockRSILAUP');
+    await this.webhooksService.deleteFirebase('macdCross_AB','stockRSILAUP');
     await Promise.all([
       this.USTIMERUN(
         stocklist,
