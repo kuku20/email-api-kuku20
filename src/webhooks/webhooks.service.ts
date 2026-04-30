@@ -1313,55 +1313,56 @@ export class WebhooksService {
     const allIn4hBl200 = this.stockHelperService.above50andBelow200.includes(ticker)?'(4H_BL200)-':'';
     const sp500 = sp5001 + in3candles + allIn4hBl200;
     // if(!timeframe.includes('m') && BuyOnly_StochRSICrossAB200.PriceCrMA50) {
-    if (
-      BuyOnly_StochRSICrossAB200.PriceCrMA50 &&
-      MACDPositive &&
-      BuyOnly_StochRSICrossAB200.ContinueUp
-    ) {
-      await this.sendDiscord(
-        `${
-          sp500
-        }SBUY--PriceCrMA50-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-${timeframe}-CrMA50-${lastdata?.close}`,
-        lastdata,
-        DataSymbols.watchlist.includes(ticker)?'WATCHLIST': this.stockHelperService.ab50_3Candles_ALL.includes(ticker)?'US_EARLY_15MIN': HT_Channel,
-        data,
-      );
-      return BuyOnly_StochRSICrossAB200;
-    }
-    if (
-      BuyOnly_StochRSICrossAB200.PriceCrMA100 &&
-      MACDPositive &&
-      BuyOnly_StochRSICrossAB200.ContinueUp
-    ) {
-      await this.sendDiscord(
-        `${
-          sp500
-        }(SBUY--PriceCrMA100-MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-${timeframe}-CrMA100-${lastdata?.close}`,
-        lastdata,
-        DataSymbols.watchlist.includes(ticker)?'WATCHLIST':this.stockHelperService.ab50_3Candles_ALL.includes(ticker)?'US_EARLY_15MIN':B_Channel,
-        data,
-      );
-      return BuyOnly_StochRSICrossAB200;
-    }
-    if (
-      BuyOnly_StochRSICrossAB200.PriceCrMA200 &&
-      MACDPositive &&
-      BuyOnly_StochRSICrossAB200.ContinueUp
-    ) {
-      await this.sendDiscord(
-        `${
-          sp500
-        }SBUY-PriceCrMA200-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
-        lastdata,
-        DataSymbols.watchlist.includes(ticker)?'WATCHLIST':this.stockHelperService.ab50_3Candles_ALL.includes(ticker)?'US_EARLY_15MIN':'US_30M_HT',
-        data,
-      );
-      return BuyOnly_StochRSICrossAB200;
-    }
-    if (BuyOnly_StochRSICrossAB200.macdCrAB) {
+    // if (
+    //   BuyOnly_StochRSICrossAB200.PriceCrMA50 &&
+    //   MACDPositive &&
+    //   BuyOnly_StochRSICrossAB200.ContinueUp
+    // ) {
+    //   await this.sendDiscord(
+    //     `${
+    //       sp500
+    //     }SBUY--PriceCrMA50-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+    //     `${ticker}-${timeframe}-CrMA50-${lastdata?.close}`,
+    //     lastdata,
+    //     DataSymbols.watchlist.includes(ticker)?'WATCHLIST': this.stockHelperService.ab50_3Candles_ALL.includes(ticker)?'US_EARLY_15MIN': HT_Channel,
+    //     data,
+    //   );
+    //   return BuyOnly_StochRSICrossAB200;
+    // }
+    // if (
+    //   BuyOnly_StochRSICrossAB200.PriceCrMA100 &&
+    //   MACDPositive &&
+    //   BuyOnly_StochRSICrossAB200.ContinueUp
+    // ) {
+    //   await this.sendDiscord(
+    //     `${
+    //       sp500
+    //     }(SBUY--PriceCrMA100-MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+    //     `${ticker}-${timeframe}-CrMA100-${lastdata?.close}`,
+    //     lastdata,
+    //     DataSymbols.watchlist.includes(ticker)?'WATCHLIST':this.stockHelperService.ab50_3Candles_ALL.includes(ticker)?'US_EARLY_15MIN':B_Channel,
+    //     data,
+    //   );
+    //   return BuyOnly_StochRSICrossAB200;
+    // }
+    // if (
+    //   BuyOnly_StochRSICrossAB200.PriceCrMA200 &&
+    //   MACDPositive &&
+    //   BuyOnly_StochRSICrossAB200.ContinueUp
+    // ) {
+    //   await this.sendDiscord(
+    //     `${
+    //       sp500
+    //     }SBUY-PriceCrMA200-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+    //     `${ticker}-ON-${timeframe}`,
+    //     lastdata,
+    //     DataSymbols.watchlist.includes(ticker)?'WATCHLIST':this.stockHelperService.ab50_3Candles_ALL.includes(ticker)?'US_EARLY_15MIN':'US_30M_HT',
+    //     data,
+    //   );
+    //   return BuyOnly_StochRSICrossAB200;
+    // }
+    const aboveOrBelowma50 = lastdata.close > lastdata.MA50
+    if (BuyOnly_StochRSICrossAB200.macdCrAB && aboveOrBelowma50) {
       await this.sendDiscord(
         `${
           sp500
