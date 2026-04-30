@@ -192,7 +192,7 @@ export class TasksUSMKService_SP500 {
           const lastMA9over15 = lastData.MA9 > lastData.MA15
           const lastStochRSI = lastData.StochRSI_K > lastData.StochRSI_D 
           const lastCLosevss = lastData.close > secondLastData.close
-          const aboveOrBelowma50 = lastData.close > lastData.MA50
+          const aboveOrBelowma50 = lastData.close > lastData.MA200
           const allCondition = OscConditionL && lastDivergence && lastMA9over15 && lastStochRSI && lastCLosevss && aboveOrBelowma50
 
           if(allCondition){

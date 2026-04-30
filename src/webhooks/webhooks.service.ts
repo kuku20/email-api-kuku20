@@ -1361,7 +1361,7 @@ export class WebhooksService {
     //   );
     //   return BuyOnly_StochRSICrossAB200;
     // }
-    const aboveOrBelowma50 = lastdata.close > lastdata.MA50
+    const aboveOrBelowma50 = lastdata.close > lastdata.MA200
     if (BuyOnly_StochRSICrossAB200.macdCrAB && aboveOrBelowma50) {
       await this.sendDiscord(
         `${
