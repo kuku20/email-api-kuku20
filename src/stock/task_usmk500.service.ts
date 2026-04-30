@@ -56,12 +56,12 @@ export class TasksUSMKService_SP500 {
     // console.log('combinedRSILAUP',combinedRSILAUP);
     // const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/DyDay/2hour.json`,'')
     // const macdCross_AB = this.stockHelperService.getKeysFromLastN(holdingObj,1)
-
-   const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/OscConditionL/1day.json`,'')
-   const macdCross_AB = Object.keys(holdingObj);
-   console.log(`✅ Loaded stockRSILAUP/macdCross_AB/DyDay/2hour: has ${macdCross_AB.length} symbols`);
+  //  const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/OscConditionL/1day.json`,'') || []
+  // const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/aboveOrBelowma50_12/1day.json`,'') || []
+  //  const macdCross_AB = Object.keys(holdingObj);
+  //  console.log(`✅ Loaded stockRSILAUP/macdCross_AB/DyDay/2hour: has ${macdCross_AB.length} symbols`);
     // this is all run
-    this.stockHelperService.ListMA50On1day = this.stockHelperService.combineUnique(this.stockHelperService.HoldingList,DataSymbols.watchlist,macdCross_AB)
+    this.stockHelperService.ListMA50On1day = this.stockHelperService.combineUnique(DataSymbols.watchlist,DataSymbols.stock_500_symbols)
     console.log( this.stockHelperService.ListMA50On1day.length,);
   }
   async getholdingList() {
@@ -316,7 +316,7 @@ export class TasksUSMKService_SP500 {
   }
 
 
-  @Cron('35 9 * * 1-5', { timeZone: 'America/New_York' })
+  @Cron('30 9 * * 1-5', { timeZone: 'America/New_York' })
   async openMkRunOnce(){
   this.runOnceAtOpen = true
   try {
