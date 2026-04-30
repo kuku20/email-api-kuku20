@@ -117,7 +117,7 @@ export class TasksUSMKService_SP500 {
     HT_Channel,
     delay = 2,
   ) {
-    const limit = pLimit(2); // Limit the concurrency to 8 at a time
+    const limit = pLimit(3); // Limit the concurrency to 8 at a time
 
     const date = new Date();
 
