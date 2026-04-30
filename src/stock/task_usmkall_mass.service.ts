@@ -22,17 +22,19 @@ export class TasksUS_ALL_MK_MASS_Service {
   rundayaogo = this.stockHelperService.getDateNDaysAgo(this.dayago);
   marketTarget = 2
   async onModuleInit() {
-    // this.webhooksService.deleteSLChannel(['C0AV1KQGS3F','C0AV30D721L','C0AV52BFMDG','C0AV1KQGS3F','C0AV988SHDJ','C0B02DZU0KB','C0AUN3H0JR5','SLACK_WEBHOOKS_HOLDING','SLACK_WEBHOOKS_US50','SLACK_WEBHOOKS_US100','SLACK_WEBHOOKS_US200','SLACK_WEBHOOKS_MACDCRAB','SLACK_WEBHOOKS_WATCHLIST'])
+
+  //   this.webhooksService.deleteSLChannel(['C0AV1KQGS3F','C0AV30D721L','C0AV52BFMDG','C0AV1KQGS3F','C0AV988SHDJ','C0B02DZU0KB','C0AUN3H0JR5','SLACK_WEBHOOKS_HOLDING','SLACK_WEBHOOKS_US50','SLACK_WEBHOOKS_US100','SLACK_WEBHOOKS_US200','SLACK_WEBHOOKS_MACDCRAB','SLACK_WEBHOOKS_WATCHLIST'])
 
 
-   // this.webhooksService.deleteSLChannel(['C0AV988SHDJ'])
-  //  const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/upYet/1day.json`,'')
+  //  // this.webhooksService.deleteSLChannel(['C0AV988SHDJ'])
+  //  const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/aboveOrBelowma50_12/1day.json`,'')
   // //  const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/upYet/1day.json`,'')
   // //  const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/upYet/EarlyUpyet/1day.json`,'')
 
 
   //  const tickers = Object.keys(holdingObj);
   //  console.log(tickers.length);
+  //  await this.runOneDaycheckOSC_MACDTRendThenFourHourSame()
     // const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/NextRound/2hour.json`,'')
     // const holdingObj2 = Object.keys(holdingObj);
     // const dkd = this.stockHelperService.getKeysFromLastN(holdingObj)
@@ -342,8 +344,9 @@ export class TasksUS_ALL_MK_MASS_Service {
   }
 
   async runAllOn1day(stocklist = DataSymbols.allabove500million) {
-    // await this.webhooksService.deleteFirebase('macdCross_AB/upYet/1day','stockRSILAUP');
-    await this.webhooksService.deleteFirebase('macdCross_AB','stockRSILAUP');
+    await this.webhooksService.deleteFirebase('macdCross_AB/upYet/1day','stockRSILAUP');
+    await this.webhooksService.deleteFirebase('macdCross_AB/OscConditionL/1day','stockRSILAUP');
+    // await this.webhooksService.deleteFirebase('macdCross_AB','stockRSILAUP/upYet');
     await Promise.all([
       this.USTIMERUN(
         stocklist,
@@ -421,6 +424,104 @@ export class TasksUS_ALL_MK_MASS_Service {
           // this.logger.log(`${ticker} processed successfully.`);
         } catch (error) {
           // Send error notification and log the error
+          this.logger.error(`Error processing ${ticker}: ${error.message}`);
+        }
+      }),
+    );
+
+    // Wait for all ticker promises to complete concurrently (with concurrency limit)
+    await Promise.all(tickerPromises);
+  }
+
+  async runOneDaycheckOSC_MACDTRendThenFourHourSame(stocklist = DataSymbols.allabove500million){
+    await Promise.all([
+      this.RUNTHEMALL(
+        stocklist,
+        'MA_BL_50_100',
+        'MA_BL_50_100',
+        0,
+        '1day',
+      ),
+    ]);
+  }
+
+  async RUNTHEMALL(
+    intickers: string[],
+    B_Channel,
+    HT_Channel,
+    delay,
+    timeframe = '5min',
+  ) {
+    const tickers = intickers;
+    await this.processTickersALL(tickers, timeframe, B_Channel, HT_Channel, delay);
+  }
+
+  private async processTickersALL(
+    tickers: string[],
+    timeframe: string,
+    B_Channel,
+    HT_Channel,
+    delay = 2,
+  ) {
+    const limit = pLimit(2); // Limit the concurrency to 1 at a time
+
+    const date = new Date();
+
+    const washselllists =
+      (await this.LocalPLWR.loadWashSellList()) ||
+      this.LocalPLWR.getWashSellList();
+    // Delay 2 minutes before processing
+    await new Promise((resolve) => setTimeout(resolve, delay * 60 * 1000));
+
+    // Prepare ticker promises with concurrency limit
+    const tickerPromises = tickers.map((ticker) =>
+      limit(async () => {
+        if (washselllists.includes(ticker)) {
+          console.log(`⏭️ Skipping ${ticker} — in wash sell list`);
+          return; // Skip this ticker and move on
+        }
+
+        try {
+          // let data = await this.LocalPLWR.getTickerFullChart_POLYGON2(
+          //   ticker,
+          //   timeframe,this.dayago
+          // );
+          let  data = await this.LocalPLWR.TwReveseNOAPI(ticker, timeframe);
+          if (!Array.isArray(data) || data.length < 2) {
+            this.logger.warn(`⚠️ No valid data for ${ticker} (${timeframe})`);
+            return;
+          }
+          const lastData = data[data.length - 1];
+          const secondLastData = data[data.length - 2];
+
+          console.log(`✅ Processing ${ticker} on ${timeframe} at ${lastData.date}`);
+          // Process the data
+          const OscConditionL = lastData.OSC > lastData.OSCSignal
+          const lastDivergence = lastData.divergence > secondLastData.divergence
+          const lastMA9over15 = lastData.MA9 > lastData.MA15
+          const lastStochRSI = lastData.StochRSI_K > lastData.StochRSI_D 
+          const lastCLosevss = lastData.close > secondLastData.close
+          const aboveOrBelowma50 = lastData.close > lastData.MA50
+          const allCondition = OscConditionL && lastDivergence && lastMA9over15 && lastStochRSI && lastCLosevss && aboveOrBelowma50
+
+          if(allCondition){
+            await this.webhooksService.FireBaseApi("put", `stockRSILAUP/macdCross_AB/aboveOrBelowma50_12/${timeframe}/${ticker}.json`, {lastData: lastData})
+            await this.webhooksService.sendDiscord(
+              `SBUY-allCondition -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+              `${ticker}-${timeframe}-allCondition-${lastData?.close}`,
+              lastData,
+              'MA_BL_50_100', 
+              data,
+            );
+          }
+        } catch (error) {
+          // Send error notification and log the error
+          await this.webhooksService.sendDiscord(
+            `ERROR ON API AT: ${timeframe} On ${date}| ${ticker}`,
+            `RSIENDBOT ${ticker} at ${timeframe}`,
+            'Nono',
+            'ERORR_CALL',
+          );
           this.logger.error(`Error processing ${ticker}: ${error.message}`);
         }
       }),
