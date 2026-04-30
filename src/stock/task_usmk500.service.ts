@@ -22,7 +22,7 @@ export class TasksUSMKService_SP500 {
   endpointFolder = 'stock-price-check';
   runOnceAtOpen = false
   async onModuleInit() {
-    // await this.getReapList()
+    await this.getReapList()
     // this.runAllWatchLists30()
     // this.runAllWatchLists30(DataSymbols.watchlist)
     // this.runAllWatchLists30(this.stockHelperService.ListMA50On4hour)
@@ -61,7 +61,7 @@ export class TasksUSMKService_SP500 {
   //  const macdCross_AB = Object.keys(holdingObj);
   //  console.log(`✅ Loaded stockRSILAUP/macdCross_AB/DyDay/2hour: has ${macdCross_AB.length} symbols`);
     // this is all run
-    this.stockHelperService.ListMA50On1day = this.stockHelperService.combineUnique(DataSymbols.watchlist,DataSymbols.stock_500_symbols)
+    this.stockHelperService.ListMA50On1day = this.stockHelperService.combineUnique(this.stockHelperService.HoldingList,DataSymbols.watchlist,DataSymbols.stock_500_symbols)
     console.log( this.stockHelperService.ListMA50On1day.length,);
   }
   async getholdingList() {
