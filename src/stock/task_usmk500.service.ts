@@ -20,7 +20,7 @@ export class TasksUSMKService_SP500 {
   ) {}
   private readonly logger = new Logger(TasksUSMKService_SP500.name);
   endpointFolder = 'stock-price-check';
-
+  runOnceAtOpen = false
   async onModuleInit() {
     // await this.getReapList()
     // this.runAllWatchLists30()
@@ -117,7 +117,7 @@ export class TasksUSMKService_SP500 {
     HT_Channel,
     delay = 2,
   ) {
-    const limit = pLimit(3); // Limit the concurrency to 8 at a time
+    const limit = pLimit(2); // Limit the concurrency to 8 at a time
 
     const date = new Date();
 
@@ -187,6 +187,18 @@ export class TasksUSMKService_SP500 {
             HT_Channel,
           );
           
+          if(this.runOnceAtOpen){
+            await this.webhooksService.openMkRunOnce(
+              data,
+              lastData,
+              secondLastData,
+              ticker,
+              timeframe,
+              B_Channel,
+              HT_Channel,
+            );
+          }
+
           if (!signal) return;
           
           const webhookMap = [
@@ -197,8 +209,6 @@ export class TasksUSMKService_SP500 {
           ];
           
           const matched = webhookMap.find((w) => w.condition);
-          const dateOut = lastData.date
-          const timeput =dateOut.replace(/[: ]/g, '-');
           if (matched) {
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
@@ -206,12 +216,6 @@ export class TasksUSMKService_SP500 {
               DataSymbols.watchlist.includes(ticker)?'SLACK_WEBHOOKS_WATCHLIST':matched.hook,'',
               this.runon15or30
             );
-
-            // const data1 = await this.webhooksService.FireBaseApi(
-            //   'put',
-            //   `${this.endpointFolder}/${matched.hook}/${timeput}/${timeframe}/${ticker}.json`,
-            //   lastData.close,
-            // );
           }
           this.logger.log(`${ticker} processed successfully.`);
         } catch (error) {
@@ -252,13 +256,28 @@ export class TasksUSMKService_SP500 {
   // @Cron('5,35 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 30 minutes at 5 and 35 minutes past the hour between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
 
   // runon15or30 :'30'|'15'= '15';
-  // @Cron('*/15 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 15 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
+  // @Cron('*/15 9-16 * * 1-5', { timeZone: 'America/New_York' }) // Every 15 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
   runon15or30 :'30'|'15'= '30';
-  @Cron('*/30 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 30 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
+  @Cron('*/30 9-16 * * 1-5', { timeZone: 'America/New_York' }) // Every 30 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
   async runAllWatchLists30() {
     if (!this.stockHelperService.shouldRunTradingLogicUS(`${this.runon15or30}min`,this.logger)) {
       return;
     }
+    this.runOnceAtOpen = false
+    const now = new Date();
+
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/New_York',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
+  
+    const [hour, minute] = formatter.format(now).split(':').map(Number);
+  
+    // Skip 9:30 AM ET (DST-safe)
+    if (hour === 9 && minute === 30) return;
+
     await this.getReapList()
     if(this.stockHelperService.ListMA50On1day.length === 0){
       this.logger.warn('No stocks to process for 15/30-minute run.');
@@ -295,6 +314,27 @@ export class TasksUSMKService_SP500 {
       await sendBatchNotification('END');
     }
   }
+
+
+  @Cron('35 9 * * 1-5', { timeZone: 'America/New_York' })
+  async openMkRunOnce(){
+  this.runOnceAtOpen = true
+  try {
+    await this.USTIMERUN(
+      this.stockHelperService.ListMA50On1day,
+      this.allkeys,
+      'US_ALL',
+      'USSTOCK_WATCH',
+      this.runon15or30 === '30'? 5 : 3,
+      `${this.runon15or30}min`,
+    );
+  } catch (error) {
+    console.error('runAllWatchLists30 failed:', error);
+    throw error;
+  } finally {
+    this.runOnceAtOpen = false
+  }
+}
 
  // @Cron('10 13-21/4 * * 1-5', { timeZone: 'UTC' }) // Every 4 hours at 10 minutes past the hour between 13:00 and 21:00 UTC (9:10 AM to 5:10 PM ET) on weekdays
   // async runAllWatchLists4h() {

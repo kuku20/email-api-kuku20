@@ -1265,7 +1265,34 @@ export class WebhooksService {
     //   return;
     // }
   }
-
+  async openMkRunOnce(data,
+    lastdata,
+    Secondlastdata,
+    ticker,
+    timeframe,
+    B_Channel,
+    HT_Channel,){
+      const aboveAll = lastdata.close > lastdata.MA200 && lastdata.close > lastdata.MA100 && lastdata.close > lastdata.MA50 && lastdata.close > lastdata.MA20 && lastdata.close > lastdata.MA15
+      const sp5001 = DataSymbols.stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
+      const sp500 = sp5001
+      if(aboveAll){
+        await this.sendDiscord(
+          `${
+            sp500
+          }SBUY--aboveAll-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+          `${ticker}-${timeframe}-aboveAll-${lastdata?.close}`,
+          lastdata,
+          'BUY_EARLY_DAY',
+          data,
+        );
+        await this.sendSlackNotificationVN(timeframe,
+          [ticker],
+          lastdata,
+          'SLACK_WEBHOOKS_2h_CROSS',sp500+'aboveAll',
+          '500'
+        );
+      }
+  }
   async BuyOnly_StochRSICrossAB200(
     data,
     lastdata,
@@ -1334,8 +1361,19 @@ export class WebhooksService {
       );
       return BuyOnly_StochRSICrossAB200;
     }
-
-    // if (BuyOnly_StochRSICrossAB200.CrUpMacdBl0) {
+    if (BuyOnly_StochRSICrossAB200.macdCrAB) {
+      await this.sendDiscord(
+        `${
+          sp500
+        }SBUY-macdCrAB-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}-macdCrAB`,
+        lastdata,
+        DataSymbols.watchlist.includes(ticker)?'WATCHLIST':'US_30M_BUY',
+        data,
+      );
+      return BuyOnly_StochRSICrossAB200;
+    }
+     // if (BuyOnly_StochRSICrossAB200.CrUpMacdBl0) {
     //   await this.sendDiscord(
     //     `SBUY-BuyOnly_StochRSICrossAB200-CrUpMacdBl0 -${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
     //     `${ticker}-ON-${timeframe}`,
@@ -1365,18 +1403,6 @@ export class WebhooksService {
     //   );
     //   return;
     // }
-    if (BuyOnly_StochRSICrossAB200.macdCrAB) {
-      await this.sendDiscord(
-        `${
-          sp500
-        }SBUY-macdCrAB-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}-macdCrAB`,
-        lastdata,
-        DataSymbols.watchlist.includes(ticker)?'WATCHLIST':'US_30M_BUY',
-        data,
-      );
-      return BuyOnly_StochRSICrossAB200;
-    }
   }
 
   /**
