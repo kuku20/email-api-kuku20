@@ -187,6 +187,30 @@ export class TasksUSMKService_SP500 {
             HT_Channel,
           );
           
+          const OscConditionL = lastData.OSC > lastData.OSCSignal
+          const lastDivergence = lastData.divergence > secondLastData.divergence
+          const lastMA9over15 = lastData.MA9 > lastData.MA15
+          const lastStochRSI = lastData.StochRSI_K > lastData.StochRSI_D 
+          const lastCLosevss = lastData.close > secondLastData.close
+          const aboveOrBelowma50 = lastData.close > lastData.MA50
+          const allCondition = OscConditionL && lastDivergence && lastMA9over15 && lastStochRSI && lastCLosevss && aboveOrBelowma50
+
+          if(allCondition){
+            await this.webhooksService.FireBaseApi("put", `stockRSILAUP/macdCross_AB/aboveOrBelowma50_12/${timeframe}/${ticker}.json`, {lastData: lastData})
+            await this.webhooksService.sendDiscord(
+              `SBUY-allCondition -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+              `${ticker}-${timeframe}-allCondition-${lastData?.close}`,
+              lastData,
+              'MA_BL_50_100', 
+              data,
+            );
+            await this.webhooksService.sendSlackNotificationVN(timeframe,
+              [ticker],
+              lastData,
+              DataSymbols.watchlist.includes(ticker)?'SLACK_WEBHOOKS_WATCHLIST':'SLACK_WEBHOOKS_US200','',
+              this.runon15or30
+            );
+          }
           if(this.runOnceAtOpen){
             await this.webhooksService.openMkRunOnce(
               data,
@@ -202,9 +226,9 @@ export class TasksUSMKService_SP500 {
           if (!signal) return;
           
           const webhookMap = [
-            { condition: signal.PriceCrMA50 && signal.ContinueUp && lastData.divergence > 0, hook: 'SLACK_WEBHOOKS_US50' },
-            { condition: signal.PriceCrMA100 && signal.ContinueUp && lastData.divergence > 0, hook: 'SLACK_WEBHOOKS_US100' },
-            { condition: signal.PriceCrMA200 && signal.ContinueUp && lastData.divergence > 0, hook: 'SLACK_WEBHOOKS_US200' },
+            // { condition: signal.PriceCrMA50 && signal.ContinueUp && lastData.divergence > 0, hook: 'SLACK_WEBHOOKS_US50' },
+            // { condition: signal.PriceCrMA100 && signal.ContinueUp && lastData.divergence > 0, hook: 'SLACK_WEBHOOKS_US100' },
+            // { condition: signal.PriceCrMA200 && signal.ContinueUp && lastData.divergence > 0, hook: 'SLACK_WEBHOOKS_US200' },
             { condition: signal.macdCrAB , hook: 'SLACK_WEBHOOKS_MACDCRAB' },
           ];
           
