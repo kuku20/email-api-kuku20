@@ -279,10 +279,10 @@ export class TasksUSMKService_SP500 {
 
   // @Cron('5,35 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 30 minutes at 5 and 35 minutes past the hour between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
 
-  // runon15or30 :'30'|'15'= '15';
-  // @Cron('*/15 9-16 * * 1-5', { timeZone: 'America/New_York' }) // Every 15 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
-  runon15or30 :'30'|'15'= '30';
-  @Cron('*/30 9-16 * * 1-5', { timeZone: 'America/New_York' }) // Every 30 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
+  runon15or30 :'30'|'15'= '15';
+  @Cron('*/15 9-16 * * 1-5', { timeZone: 'America/New_York' }) // Every 15 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
+  // runon15or30 :'30'|'15'= '30';
+  // @Cron('*/30 9-16 * * 1-5', { timeZone: 'America/New_York' }) // Every 30 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
   async runAllWatchLists30() {
     if (!this.stockHelperService.shouldRunTradingLogicUS(`${this.runon15or30}min`,this.logger)) {
       return;
