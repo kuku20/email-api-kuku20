@@ -185,18 +185,20 @@ export class TasksUSMKService_SP500 {
             HT_Channel,
           );
           
-          const OscConditionL = lastData.OSC > lastData.OSCSignal
-          const lastDivergence = lastData.divergence > secondLastData.divergence
-          const lastMA9over15 = lastData.MA9 > lastData.MA15
-          const lastStochRSI = lastData.StochRSI_K > lastData.StochRSI_D 
-          const lastCLosevss = lastData.close > secondLastData.close
+          // const OscConditionL = lastData.OSC > lastData.OSCSignal
+          // const lastDivergence = lastData.divergence > secondLastData.divergence
+          // const lastMA9over15 = lastData.MA9 > lastData.MA15
+          // const lastStochRSI = lastData.StochRSI_K > lastData.StochRSI_D 
+          // const lastCLosevss = lastData.close > secondLastData.close
           const aboveOrBelowma50 = lastData.close > lastData.MA200
-          const allCondition = OscConditionL && lastDivergence && lastMA9over15 && lastStochRSI && lastCLosevss && aboveOrBelowma50
+          const Belowma50 = secondLastData.close < secondLastData.MA200
+          // const allCondition = OscConditionL && lastDivergence && lastMA9over15 && lastStochRSI && lastCLosevss && aboveOrBelowma50
+          const allCondition = Belowma50 && aboveOrBelowma50
 
           if(allCondition){
             await this.webhooksService.sendDiscord(
-              `SBUY-allCondition -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-              `${ticker}-${timeframe}-allCondition-${lastData?.close}`,
+              `SBUY-CrossAB -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+              `${ticker}-${timeframe}-CrossAB-${lastData?.close}`,
               lastData,
               'MA_BL_50_100', 
               data,
@@ -276,10 +278,10 @@ export class TasksUSMKService_SP500 {
 
   // @Cron('5,35 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 30 minutes at 5 and 35 minutes past the hour between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
 
-  // runon15or30 :'30'|'15'= '15';
-  // @Cron('*/15 9-16 * * 1-5', { timeZone: 'America/New_York' }) // Every 15 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
-  runon15or30 :'30'|'15'= '30';
-  @Cron('*/30 9-16 * * 1-5', { timeZone: 'America/New_York' }) // Every 30 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
+  runon15or30 :'30'|'15'= '15';
+  @Cron('*/15 9-16 * * 1-5', { timeZone: 'America/New_York' }) // Every 15 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
+  // runon15or30 :'30'|'15'= '30';
+  // @Cron('*/30 9-16 * * 1-5', { timeZone: 'America/New_York' }) // Every 30 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
   async runAllWatchLists30() {
     if (!this.stockHelperService.shouldRunTradingLogicUS(`${this.runon15or30}min`,this.logger)) {
       return;
