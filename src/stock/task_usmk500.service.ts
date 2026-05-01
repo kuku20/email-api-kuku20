@@ -119,8 +119,6 @@ export class TasksUSMKService_SP500 {
   ) {
     const limit = pLimit(3); // Limit the concurrency to 8 at a time
 
-    const date = new Date();
-
     const washselllists =
       (await this.LocalPLWR.loadWashSellList()) ||
       this.LocalPLWR.getWashSellList();
@@ -196,7 +194,6 @@ export class TasksUSMKService_SP500 {
           const allCondition = OscConditionL && lastDivergence && lastMA9over15 && lastStochRSI && lastCLosevss && aboveOrBelowma50
 
           if(allCondition){
-            await this.webhooksService.FireBaseApi("put", `stockRSILAUP/macdCross_AB/aboveOrBelowma50_12/${timeframe}/${ticker}.json`, {lastData: lastData})
             await this.webhooksService.sendDiscord(
               `SBUY-allCondition -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
               `${ticker}-${timeframe}-allCondition-${lastData?.close}`,
@@ -207,7 +204,7 @@ export class TasksUSMKService_SP500 {
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               lastData,
-              DataSymbols.watchlist.includes(ticker)?'SLACK_WEBHOOKS_WATCHLIST':'SLACK_WEBHOOKS_US200','',
+              DataSymbols.watchlist.includes(ticker)?'SLACK_WEBHOOKS_WATCHLIST':'SLACK_WEBHOOKS_US200','allCondition',
               this.runon15or30
             );
           }
@@ -229,7 +226,7 @@ export class TasksUSMKService_SP500 {
             // { condition: signal.PriceCrMA50 && signal.ContinueUp && lastData.divergence > 0, hook: 'SLACK_WEBHOOKS_US50' },
             // { condition: signal.PriceCrMA100 && signal.ContinueUp && lastData.divergence > 0, hook: 'SLACK_WEBHOOKS_US100' },
             // { condition: signal.PriceCrMA200 && signal.ContinueUp && lastData.divergence > 0, hook: 'SLACK_WEBHOOKS_US200' },
-            { condition: signal.macdCrAB , hook: 'SLACK_WEBHOOKS_MACDCRAB' },
+            { condition: signal.macdCrAB && aboveOrBelowma50, hook: 'SLACK_WEBHOOKS_MACDCRAB' },
           ];
           
           const matched = webhookMap.find((w) => w.condition);
