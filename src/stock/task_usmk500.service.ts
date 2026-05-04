@@ -22,7 +22,9 @@ export class TasksUSMKService_SP500 {
   endpointFolder = 'stock-price-check';
   runOnceAtOpen = false
   async onModuleInit() {
-    await this.getReapList()
+    // const bullbear = Object.keys(DataSymbols.watchlistBB)
+    // console.log(bullbear.join(','))
+    // await this.getReapList()
     // this.runAllWatchLists30()
     // this.runAllWatchLists30(DataSymbols.watchlist)
     // this.runAllWatchLists30(this.stockHelperService.ListMA50On4hour)

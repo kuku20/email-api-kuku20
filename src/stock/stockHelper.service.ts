@@ -38,6 +38,7 @@ export class StockHelperService {
     dataIn = await this.calculateMovingAverage(dataIn, 50, 'MA50');
     dataIn = await this.calculateMovingAverage(dataIn, 100, 'MA100');
     dataIn = await this.calculateMovingAverage(dataIn, 200, 'MA200');
+    dataIn = await this.calculateMovingAverage(dataIn, 300, 'MA300');
     dataIn = await this.calculateRSI(dataIn);
     dataIn = await this.calculateStochasticRSI(dataIn);
     dataIn = await this.calculateMACD(dataIn);
@@ -878,5 +879,25 @@ SELL ALL
     return [...new Set(
       latestDates.flatMap(date => Object.keys(data[date] || {}))
     )];
+  }
+
+  getMACDRange(data: any[]) {
+    const values = data
+      .map(item => item.MACDLine)
+      .filter(value => value != null);
+  
+    if (!values.length) {
+      return {
+        min: null,
+        max: null,
+        mid: null,
+      };
+    }
+  
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    const mid = (min + max) / 2;
+  
+    return { min, max, mid };
   }
 }

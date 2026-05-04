@@ -62,6 +62,7 @@ import { TasksUS_ALL_MK_MASS_Service } from './stock/task_usmkall_mass.service';
 import { TestOndata_service } from './stock/task_mass_test.service';
 import { TaskHoldingService } from './stock/task_holding.service';
 import { TasksUS_ALL_MK_4HOUR_Service } from './stock/task_usmkall_4hour_daily.service';
+import { TasksBullBearService } from './stock/task_bull_bear.service';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -174,8 +175,9 @@ import { TasksUS_ALL_MK_4HOUR_Service } from './stock/task_usmkall_4hour_daily.s
     // TasksUSMKService,
     // TasksUSMK_1MIN_Service,
 
-    TasksUSMKService_SP500,
-    TasksUS_ALL_MK_4HOUR_Service,
+    // TasksUSMKService_SP500,
+    // TasksUS_ALL_MK_4HOUR_Service,
+    TasksBullBearService,
   ],
 })
 export class AppModule {}
