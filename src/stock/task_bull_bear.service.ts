@@ -104,6 +104,11 @@ export class TasksBullBearService {
           const lastStochRSI = lastData.StochRSI_K > lastData.StochRSI_D 
           const preStockRSI = secondLastData.StochRSI_K < secondLastData.StochRSI_D 
           const StochRSICross = preStockRSI && lastStochRSI
+
+          const lastMA9overMA15 = lastData.MA9 > lastData.MA15 
+          const sndMA9overMA15 =  secondLastData.MA9 < secondLastData.MA15 
+          const MA9crosMA20 = lastMA9overMA15 && sndMA9overMA15
+
           const aboveOrBelowma50 = lastData.close > lastData.MA200
           const oneTimeAt9h30 =lastData.date.includes('09:30:00')&& lastData.close >= lastData.MA9 && lastData.MA9 >= lastData.MA15 && lastData.MA15 >= lastData.MA50 && lastData.MA50 >= lastData.MA100 && lastData.MA100 >= lastData.MA200 && lastData.MA200 >= lastData.MA300
           const textDetail = oneTimeAt9h30?'Above all buy':StochRSICross?'StochRSICross': condition && aboveOrBelowma50?'CrossnAb200':''
@@ -148,6 +153,20 @@ export class TasksBullBearService {
             await this.webhooksService.sendDiscord(
               `${'blMa200MACDPMA50cR'}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
               `${ticker}-${timeframe}-${'blMa200MACDPMA50cR'}`,
+              lastData,
+              'US_15M_HT', 
+              data,
+            );
+          } else if(MA9crosMA20){
+            await this.webhooksService.sendSlackNotificationVN(timeframe,
+              [ticker],
+              lastData,
+              'SLACK_WEBHOOKS_WATCHLIST','MA9crosMA20',
+              this.runon15or30
+            );
+            await this.webhooksService.sendDiscord(
+              `${'MA9crosMA20'}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+              `${ticker}-${timeframe}-${'MA9crosMA20'}`,
               lastData,
               'US_15M_HT', 
               data,
