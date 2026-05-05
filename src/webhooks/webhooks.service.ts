@@ -1811,6 +1811,19 @@ export class WebhooksService {
     const BASE_URL = this.configService.get<any>(other);
     let hourIn4 = '';
     let in3candles = '';
+    let bullxx: string = '';
+    let bearxx: string = '';
+    if (DataSymbols.watchlistBB[symbols[0]]?.BULL.length > 0) {
+      DataSymbols.watchlistBB[symbols[0]].BULL.forEach((element) => {
+        bullxx += `<https://www.tradingview.com/chart/?symbol=${element}|BULL_${element}> | `;
+      });
+    }
+    if (DataSymbols.watchlistBB[symbols[0]]?.BEAR.length > 0) {
+      DataSymbols.watchlistBB[symbols[0]].BEAR.forEach((element) => {
+        bearxx +=  `<https://www.tradingview.com/chart/?symbol=${element}|BEAR_${element}> | `;
+      });
+    }
+    let bullbearxx = bullxx + bearxx;
     if(this.stockHelperService.above50andBelow200 && this.stockHelperService.above50andBelow200.length > 0){
       hourIn4 = this.stockHelperService.above50andBelow200.includes(symbols[0]) ? '4️⃣ *BL200* 🟢' : '';
       in3candles = this.stockHelperService.ab50_bl200_3Candles.includes(symbols[0])?'(3C_4H_BL200)-':this.stockHelperService.ab50_ab200_3Candles.includes(symbols[0])?'(3C_4H_AB200)-':'';
@@ -1835,7 +1848,8 @@ export class WebhooksService {
         (s) =>
           `• *${s}* → ${display}` +
           `  < <http://localhost:4200/price-log/${s}?daysRange=${timeframeScore}|local> | <https://stockmarkets000.web.app/price-log/${s}?daysRange=${timeframeScore}|production> | <https://www.tradingview.com/chart/mWoCISmu/?symbol=${s}|tradingview> |  <http://localhost:4200/price-log/${s}?daysRange=240|4hour> | ${timeframe}`+
-          `${buysellTarget}`,
+          `${buysellTarget} +
+          \n\t ${bullbearxx}`,
       )
       .join('\n');
 
