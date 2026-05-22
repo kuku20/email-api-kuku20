@@ -169,7 +169,7 @@ import { TasksBullBearService } from './stock/task_bull_bear.service';
     TasksUS_ALL_MK_MASS_Service,
 
     // TasksUS_ALL_MKService,
-    // TasksService,
+    TasksService,
     // TasksUSMKService_15MIN
     // TestOndata_service,
     // TasksUSMKService,
