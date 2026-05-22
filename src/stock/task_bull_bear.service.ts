@@ -114,6 +114,7 @@ export class TasksBullBearService {
           const oneTimeAt9h30 =lastData.date.includes('09:30:00')&& lastData.close >= lastData.MA9 && lastData.MA9 >= lastData.MA15 && lastData.MA15 >= lastData.MA50 && lastData.MA50 >= lastData.MA100 && lastData.MA100 >= lastData.MA200 && lastData.MA200 >= lastData.MA300
           const textDetail = oneTimeAt9h30?'Above all buy':StochRSICross?'StochRSICross': condition && aboveOrBelowma50?'CrossnAb200':''
           const blMa200MACDPMA50cR = lastData.close < lastData.MA200 && lastData.divergence > 0 && (lastData.close > lastData.MA50 && secondLastData.close < secondLastData.MA50)
+          const macdCrossAB = lastData.divergence > 0 && secondLastData.divergence < 0
           if(oneTimeAt9h30){
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
@@ -172,7 +173,21 @@ export class TasksBullBearService {
               'US_15M_HT', 
               data,
             );
-          }
+          } else if(macdCrossAB){
+            await this.webhooksService.sendSlackNotificationVN(timeframe,
+              [ticker],
+              lastData,
+              'SLACK_WEBHOOKS_MACDCRAB','macdCrossAB',
+              this.runon15or30
+            );
+            await this.webhooksService.sendDiscord(
+              `${'macdCrossAB'}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+              `${ticker}-${timeframe}-${'macdCrossAB'}`,
+              lastData,
+              'US_30M_HT', 
+              data,
+            );
+           }
           this.logger.log(`${ticker} processed successfully.`);
         } catch (error) {
           // Send error notification and log the error
