@@ -217,6 +217,7 @@ export class TasksBullBearService {
       this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_US50')
       this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_US100')
       this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_WATCHLIST')
+      this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_MACDCRAB')
       await this.USTIMERUN(
         symbols,
         this.allkeys,
@@ -230,9 +231,6 @@ export class TasksBullBearService {
       throw error;
     } finally {
       this.runOnceAtOpen = false
-      this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_US50')
-      this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_US100')
-      this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_WATCHLIST')
       const percentof = this.aboveListUP.length/this.aboveList.length
       const percentofeve = this.belowListUp.length/this.belowList.length
       this.logger.log(percentof)
