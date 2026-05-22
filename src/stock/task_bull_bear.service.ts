@@ -23,6 +23,7 @@ export class TasksBullBearService {
   belowListUp = []
   async onModuleInit() {
     // this.webhooksService.deleteSLChannel(['SLACK_WEBHOOKS_US50','SLACK_WEBHOOKS_US200','SLACK_WEBHOOKS_US100','SLACK_WEBHOOKS_WATCHLIST'])
+    // this.webhooksService.deleteSLChannel(['C0B0HRF04EL','C0AV30D721L','C0AV52BFMDG','C0AV1KQGS3F','C0AV988SHDJ','C0B02DZU0KB','C0AUN3H0JR5','SLACK_WEBHOOKS_HOLDING','SLACK_WEBHOOKS_US50','SLACK_WEBHOOKS_US100','SLACK_WEBHOOKS_US200','SLACK_WEBHOOKS_MACDCRAB','SLACK_WEBHOOKS_WATCHLIST'])
     // await this.delete(-1)
     // await this.delete(0)
     // await this.bullBear()
@@ -190,16 +191,17 @@ export class TasksBullBearService {
     // Wait for all ticker promises to complete concurrently (with concurrency limit)
     await Promise.all(tickerPromises);
   }
-  runon15or30 :'30'|'15'|'5'= '15';
-  @Cron('*/15 9-16 * * 1-5', { timeZone: 'America/New_York' })
+  runon15or30 :'30'|'15'|'5'= '5';
+  @Cron('*/5 9-16 * * 1-5', { timeZone: 'America/New_York' })
   async bullBear(timeframe = '15min',symbols= DataSymbols.watchlist){
     if (!this.stockHelperService.shouldRunTradingLogicUS(`${this.runon15or30}min`,this.logger)) {
       return;
     }
+    const time = new Date().toLocaleString('en-US', {timeZone: 'America/New_York',});
     try {
-      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', 'SLACK_WEBHOOKS_US50')
-      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', 'SLACK_WEBHOOKS_US100')
-      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', 'SLACK_WEBHOOKS_WATCHLIST')
+      this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_US50')
+      this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_US100')
+      this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_WATCHLIST')
       await this.USTIMERUN(
         symbols,
         this.allkeys,
@@ -213,9 +215,9 @@ export class TasksBullBearService {
       throw error;
     } finally {
       this.runOnceAtOpen = false
-      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', 'SLACK_WEBHOOKS_US50')
-      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', 'SLACK_WEBHOOKS_US100')
-      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', 'SLACK_WEBHOOKS_WATCHLIST')
+      this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_US50')
+      this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_US100')
+      this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_WATCHLIST')
       const percentof = this.aboveListUP.length/this.aboveList.length
       const percentofeve = this.belowListUp.length/this.belowList.length
       this.logger.log(percentof)
