@@ -54,7 +54,7 @@ export class WebhooksService {
         ? this.configService.get<any>('SLACK_WEBHOOKS')
         : other === '4hour'
         ? this.configService.get<any>('SLACK_WEBHOOKS_4h')
-        : this.configService.get<any>(other);
+        : other.includes('SLACK_WEBHOOKS_')? this.configService.get<any>(other):other;
     const nexMsg = `================================${message.replace(
       /\*\*/g,
       '*',
@@ -1808,7 +1808,7 @@ export class WebhooksService {
     msg :string,
     range: '600' | '550' | '500' | '480' | '240' | '120' | '60' | '45' | '30' | '15' | '5' | '1',
   ) {
-    const BASE_URL = this.configService.get<any>(other);
+    const BASE_URL = other.includes('SLACK_WEBHOOKS_')? this.configService.get<any>(other):other;
     let hourIn4 = '';
     let in3candles = '';
     let bullxx: string = '';
@@ -1898,7 +1898,7 @@ export class WebhooksService {
       );
 
       if (!data.ok) {
-        console.error('Slack post error', data);
+        console.error('Slack post error',channel,text, data);
       }
 
       return data;
