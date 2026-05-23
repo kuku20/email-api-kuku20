@@ -8319,6 +8319,7 @@ export const watchlistBB: Watchlist = {
   CRCL: { BULL: ['CRCA'], BEAR: [] },
   SNAP: { BULL: ['SNAG'], BEAR: [] },
   CNC: { BULL: ['CNCG'], BEAR: [] },
+  HIMS: { BULL: ['HIMZ'], BEAR: [] },
 };
 
 export const above2billion = [
