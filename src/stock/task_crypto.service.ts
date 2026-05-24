@@ -182,7 +182,7 @@ export class TaskCryptoService {
     );
   }
 
-  @Cron(CronExpression.EVERY_30_MINUTES)
+  // @Cron(CronExpression.EVERY_30_MINUTES)
   async handle30pCrypto() {
     // await this.webhooksService.sendDiscord(
     //   'WAKEUPCALL:30min',
