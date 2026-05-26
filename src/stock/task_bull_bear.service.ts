@@ -23,7 +23,8 @@ export class TasksBullBearService {
   belowListUp = []
   async onModuleInit() {
     // this.webhooksService.deleteSLChannel(['SLACK_WEBHOOKS_US50','SLACK_WEBHOOKS_US200','SLACK_WEBHOOKS_US100','SLACK_WEBHOOKS_WATCHLIST'])
-    // this.webhooksService.deleteSLChannel(['C0B0HRF04EL','C0AV30D721L','C0AV52BFMDG','C0AV1KQGS3F','C0AV988SHDJ','C0B02DZU0KB','C0AUN3H0JR5','SLACK_WEBHOOKS_HOLDING','SLACK_WEBHOOKS_US50','SLACK_WEBHOOKS_US100','SLACK_WEBHOOKS_US200','SLACK_WEBHOOKS_MACDCRAB','SLACK_WEBHOOKS_WATCHLIST'])
+    // this.webhooksService.deleteSLChannel(['C0B00B2N6NB','C0B02ENGMCH','C0AV3HHR42W','C0AUN3ZAY4F','C0B02EGGMR7','C0B02EEHFQR','C0B0HRF04EL','C0AV30D721L','C0AV52BFMDG','C0AV1KQGS3F','C0AV988SHDJ','C0B02DZU0KB','C0AUN3H0JR5','SLACK_WEBHOOKS_HOLDING','SLACK_WEBHOOKS_US50','SLACK_WEBHOOKS_US100','SLACK_WEBHOOKS_US200','SLACK_WEBHOOKS_MACDCRAB','SLACK_WEBHOOKS_WATCHLIST'])
+    // this.webhooksService.deleteSLChannel(['C0B0KECHWGL','C0B5QLGE6MB','C0B5MLVNYH1','C0B5QLEQZNH','C0B6NB9HV6U','C0B5XL8DVB6','C0B5QLSF3FX'])
     // await this.delete(-1)
     // await this.delete(0)
     // await this.bullBear()
@@ -206,9 +207,9 @@ export class TasksBullBearService {
     // Wait for all ticker promises to complete concurrently (with concurrency limit)
     await Promise.all(tickerPromises);
   }
-  runon15or30 :'30'|'15'|'5'= '5';
+  runon15or30 :'30'|'15'|'5'= '15';
   @Cron('*/5 9-16 * * 1-5', { timeZone: 'America/New_York' })
-  async bullBear(timeframe = '5min',symbols= DataSymbols.watchlist){
+  async bullBear(timeframe = '15min',symbols= DataSymbols.watchlist){
     if (!this.stockHelperService.shouldRunTradingLogicUS(`${this.runon15or30}min`,this.logger)) {
       return;
     }
