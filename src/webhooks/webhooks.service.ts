@@ -1804,11 +1804,11 @@ export class WebhooksService {
     timeframe: string,
     symbols: string[],
     lastData: any,
-    other :string,
+    slChannel :string,
     msg :string,
     range: '600' | '550' | '500' | '480' | '240' | '120' | '60' | '45' | '30' | '15' | '5' | '1',
   ) {
-    const BASE_URL = other.includes('SLACK_WEBHOOKS_')? this.configService.get<any>(other):other;
+    const BASE_URL = slChannel.includes('SLACK_WEBHOOKS_')? this.configService.get<any>(slChannel):slChannel;
     let hourIn4 = '';
     let in3candles = '';
     let bullxx: string = '';
@@ -1839,7 +1839,7 @@ export class WebhooksService {
     const timeframeScore = timeframeScoreMap[timeframe];
     const StopNTarget = await this.StopNTarget(lastData)
     const addMsg = msg? `*MSG:* ${msg} | ` :""
-    const buysellTarget = other !=='SLACK_WEBHOOKS_HOLDING'? `\n\t\t${addMsg} *TARGET:* ${StopNTarget?.target}  | \t |  *STOP LOSS:* ${StopNTarget?.stop}`:'BETTER SELL'
+    const buysellTarget = slChannel !=='SLACK_WEBHOOKS_HOLDING'? `\n\t\t${addMsg} *TARGET:* ${StopNTarget?.target}  | \t |  *STOP LOSS:* ${StopNTarget?.stop}`:'BETTER SELL'
 
     const display = `${sp500}${mkaboveOrBellow2}${HoldingList}${hourIn4}${last}${lastData?.close}(${aboveOrBellow}-${lastData?.MA200?.toFixed(2)})| ${lastData?.date} |`
 

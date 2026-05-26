@@ -139,7 +139,7 @@ export class TasksUS_ALL_MK_MASS_Service {
               await this.webhooksService.sendSlackNotificationVN(timeframe,
                 [ticker],
                 lastData,
-                'C0B00B2N6NB','','500'
+                'C0B00B2N6NB','OscCrossAb','500'
               );
             }
           }
@@ -279,7 +279,7 @@ export class TasksUS_ALL_MK_MASS_Service {
   @Cron('0 0 * * 1-5', {
     timeZone: 'America/Los_Angeles',
   })
-  async runfullonms(stocklist = DataSymbols.allabove500million){
+  async runfullonms(stocklist = DataSymbols.stock_500_symbols){
     // delete old data from firebase
     const today = this.stockHelperService.getDateNDaysAgo(0); // Get today's date
     await this.webhooksService.deleteFirebase(this.stockHelperService.aboveMA50api); // reset firebase data for the day

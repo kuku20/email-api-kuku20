@@ -63,6 +63,7 @@ import { TestOndata_service } from './stock/task_mass_test.service';
 import { TaskHoldingService } from './stock/task_holding.service';
 import { TasksUS_ALL_MK_4HOUR_Service } from './stock/task_usmkall_4hour_daily.service';
 import { TasksBullBearService } from './stock/task_bull_bear.service';
+import { TasksUS_ALL_MK_MASS_MACD_OSC } from './stock/task_usmkall_mass_macd_osc.service';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -165,9 +166,9 @@ import { TasksBullBearService } from './stock/task_bull_bear.service';
     TaskCryptoService,
     TasksForexService,
     TaskHoldingService,
-    // SendEverydayService,
-    TasksUS_ALL_MK_MASS_Service,
-
+    // // SendEverydayService,
+    //TasksUS_ALL_MK_MASS_Service,
+    TasksUS_ALL_MK_MASS_MACD_OSC,
     // TasksUS_ALL_MKService,
     TasksService,
     // TasksUSMKService_15MIN

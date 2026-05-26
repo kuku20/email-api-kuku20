@@ -793,9 +793,9 @@ SELL ALL
     // const RSI25up = last.RSI > 25 && prev.RSI < 25;
     // const RSI30up = last.RSI > 30 && prev.RSI < 30;
     const RSI15up = last.RSI < 15 
-    const RSI20up = last.RSI < 20 && last.RSI > 15
-    const RSI25up = last.RSI < 25 && last.RSI > 20
-    const RSI30up = last.RSI < 30 && last.RSI > 25
+    const RSI20up = last.RSI < 20 && last.RSI >= 15
+    const RSI25up = last.RSI < 25 && last.RSI >= 20
+    const RSI30up = last.RSI < 30 && last.RSI >= 25
     return {
       CrUpAll,ContinueUp,
       CrUpMacdBl0,

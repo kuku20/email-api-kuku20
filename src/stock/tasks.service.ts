@@ -344,7 +344,7 @@ export class TasksService {
     //   'CRON_CHECK',
     // );
     try {
-      const { data } = await axios.get('https://email-api-kuku20-production.up.railway.app/');
+      const { data } = await axios.get('https://nestjs-api.koyeb.app/');
       this.logger.log('⏱️ koyeb Keep-alive ping success:', data.status);
     } catch (err) {
       this.logger.error(`❌ Keep-alive failed: ${err.message}`);
