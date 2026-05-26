@@ -258,10 +258,28 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
       `END+${today}+END=1day=(aboveMA50Count >= 3 && MACDPositive)===`,
       '1day',
     );
-    await this.runOnly4h(stocklist)
+    await this.runOnly4hxx(stocklist)
+  }
+  async runOnly4hxx(stocklist = DataSymbols.stock_500_symbols) {
+    const today = this.stockHelperService.getDateNDaysAgo(0);
+  
+    // const webhooks = ['C0B00B2N6NB','C0B0KECHWGL','C0B5QLGE6MB','C0B5MLVNYH1','C0B5QLEQZNH','C0B6NB9HV6U','C0B5XL8DVB6','C0B5QLSF3FX','SLACK_WEBHOOKS_D_US50', 'SLACK_WEBHOOKS_D_US100','SLACK_WEBHOOKS_D_US200','SLACK_WEBHOOKS_WATCHLIST','SLACK_WEBHOOKS_J2DAY','SLACK_WEBHOOKS_J3DAY','SLACK_WEBHOOKS_US_MACDCR','SLACK_WEBHOOKS_MACDCRAB',];
+    const webhooks = ['C0B02EEHFQR','SLACK_WEBHOOKS_MACDCRAB','SLACK_WEBHOOKS_WATCHLIST','C0B02ENGMCH','C0B5QLSF3FX','C0B00B2N6NB','C0B0KECHWGL','C0B5QLGE6MB','C0B5MLVNYH1','C0B5QLEQZNH','C0B6NB9HV6U','C0B5XL8DVB6',];
+
+    const sendBatchNotification = async (type: 'START' | 'END') => {
+      const message = `${type}+4hour+${today}+${type}${'='.repeat(32)}`;
+      await Promise.all(
+        webhooks.map((hook) =>
+          this.webhooksService.sendSlackNotification(message, hook),
+        ),
+      );
+    };
+    await sendBatchNotification('START');
+    await this.runOnly4h(stocklist);
+    await sendBatchNotification('END');
   }
 
-  async runAllWatchLists(stocklist = DataSymbols.allabove500million) {
+  async runAllWatchLists(stocklist = DataSymbols.stock_500_symbols) {
     const today = this.stockHelperService.getDateNDaysAgo(0);
   
     // const webhooks = ['C0B00B2N6NB','C0B0KECHWGL','C0B5QLGE6MB','C0B5MLVNYH1','C0B5QLEQZNH','C0B6NB9HV6U','C0B5XL8DVB6','C0B5QLSF3FX','SLACK_WEBHOOKS_D_US50', 'SLACK_WEBHOOKS_D_US100','SLACK_WEBHOOKS_D_US200','SLACK_WEBHOOKS_WATCHLIST','SLACK_WEBHOOKS_J2DAY','SLACK_WEBHOOKS_J3DAY','SLACK_WEBHOOKS_US_MACDCR','SLACK_WEBHOOKS_MACDCRAB',];
@@ -281,7 +299,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
     await this.webhooksService.sendlast('EARLY_AB200', '200AB_LESS_01');
   }
 
-  async runAllOn1day(stocklist = DataSymbols.allabove500million) {
+  async runAllOn1day(stocklist = DataSymbols.stock_500_symbols) {
     await this.webhooksService.deleteFirebase('macdCross_AB/upYet/1day','stockRSILAUP');
     await this.webhooksService.deleteFirebase('macdCross_AB/OscConditionL/1day','stockRSILAUP');
     // await this.webhooksService.deleteFirebase('macdCross_AB','stockRSILAUP/upYet');
@@ -295,7 +313,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
       ),
     ]);
   }
-  async runOnly4h(stocklist = DataSymbols.allabove500million) {
+  async runOnly4h(stocklist = DataSymbols.stock_500_symbols) {
     await Promise.all([
       this.USTIMERUN(
         stocklist,
@@ -306,7 +324,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
       ),
     ]);
   }
-  async runAllOn4h(stocklist = DataSymbols.allabove500million) {
+  async runAllOn4h(stocklist = DataSymbols.stock_500_symbols) {
     await this.webhooksService.deleteFirebase('NextRound/4hour','stockRSILAUP');
     const tslaDc = `<https://discord.com/channels/1306113720979689523/1380037316143349922|4HOUR_RUN_LOOK_TSLA_DC>`
     const smciDc = `<https://discord.com/channels/1306113720979689523/1348653615992143924|4HOUR_RUN_LOOK_SMCI_DC>`
