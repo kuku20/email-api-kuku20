@@ -339,7 +339,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
       );
     };
     await sendBatchNotification('START');
-    await this.runOnly4h(stocklist);
+    await this.runOnlyDaily4hours(stocklist);
     await sendBatchNotification('END');
   }
 
