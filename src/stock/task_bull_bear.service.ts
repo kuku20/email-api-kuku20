@@ -223,14 +223,14 @@ export class TasksBullBearService {
         3,
         timeframe,
       );
-      await this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_US50')
-      await this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_US100')
-      await this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_WATCHLIST')
-      await this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_MACDCRAB')
     } catch (error) {
       console.error('runAllWatchLists30 failed:', error);
       throw error;
     } finally {
+      await this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_US50')
+      await this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_US100')
+      await this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_WATCHLIST')
+      await this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_MACDCRAB')
       this.runOnceAtOpen = false
       const percentof = this.aboveListUP.length/this.aboveList.length
       const percentofeve = this.belowListUp.length/this.belowList.length
