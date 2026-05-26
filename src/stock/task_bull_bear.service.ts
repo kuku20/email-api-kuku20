@@ -215,10 +215,6 @@ export class TasksBullBearService {
     }
     const time = new Date().toLocaleString('en-US', {timeZone: 'America/New_York',});
     try {
-      this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_US50')
-      this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_US100')
-      this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_WATCHLIST')
-      this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_MACDCRAB')
       await this.USTIMERUN(
         symbols,
         this.allkeys,
@@ -227,6 +223,10 @@ export class TasksBullBearService {
         3,
         timeframe,
       );
+      this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_US50')
+      this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_US100')
+      this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_WATCHLIST')
+      this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_MACDCRAB')
     } catch (error) {
       console.error('runAllWatchLists30 failed:', error);
       throw error;
