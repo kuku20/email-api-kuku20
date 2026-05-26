@@ -8252,16 +8252,16 @@ export const stock_usall_symbols = [
 ];
 
 export const watchlist = [
-  // 'SMCI', 'TSLA', 'MSTR',  'SOXX', 'CRWV',
-  // 'XOM',  'AAPL', 'NVDA',  'AMZN', 'MSFT',
-  // 'QQQ',  'SPY',  'DJT',   'TTD',  'INTC',
-  // 'UNH',   'AMD',   'AVGO', 'ORCL',
-  // 'PLTR', 'BABA', 'BULL',  'COIN', 'CRWD',
-  // 'DELL', 'ETOR', 'GOOGL', 'ISRG', 'LCID',
-  // 'MARA', 'META', 'MRVL',  'MU',   'NBIS',
-  // 'NOW',  'PDD',  'QCOM',  'RDDT', 'RIVN',
-  // 'TSM',  'UBER', 'VRT',   'CRCL', 'SNAP',
-  // 'CNC'
+  'SMCI', 'TSLA', 'MSTR',  'SOXX', 'CRWV',
+  'XOM',  'AAPL', 'NVDA',  'AMZN', 'MSFT',
+  'QQQ',  'SPY',  'DJT',   'TTD',  'INTC',
+  'UNH',   'AMD',   'AVGO', 'ORCL',
+  'PLTR', 'BABA', 'BULL',  'COIN', 'CRWD',
+  'DELL', 'ETOR', 'GOOGL', 'ISRG', 'LCID',
+  'MARA', 'META', 'MRVL',  'MU',   'NBIS',
+  'NOW',  'PDD',  'QCOM',  'RDDT', 'RIVN',
+  'TSM',  'UBER', 'VRT',   'CRCL', 'SNAP',
+  'CNC'
 ];
 interface Watchlist {
   [key: string]: {
