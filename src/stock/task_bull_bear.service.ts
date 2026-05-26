@@ -208,7 +208,7 @@ export class TasksBullBearService {
     await Promise.all(tickerPromises);
   }
   runon15or30 :'30'|'15'|'5'= '15';
-  @Cron('*/5 9-16 * * 1-5', { timeZone: 'America/New_York' })
+  @Cron('*/15 9-16 * * 1-5', { timeZone: 'America/New_York' })
   async bullBear(timeframe = '15min',symbols= DataSymbols.watchlist){
     if (!this.stockHelperService.shouldRunTradingLogicUS(`${this.runon15or30}min`,this.logger)) {
       return;
