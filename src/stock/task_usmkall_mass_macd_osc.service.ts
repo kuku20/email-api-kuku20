@@ -105,6 +105,11 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
               'RSI15AL',
               data,
             );
+            await this.webhooksService.sendSlackNotificationVN(timeframe,
+              [ticker],
+              lastData,
+              'C0B6F49S3HT','RSI15','500'
+            );
           }else if(signal && signal.RSI20up){
             await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSIALERT/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
             await this.webhooksService.sendDiscord(
@@ -113,6 +118,11 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
               lastData,
               'RSIALERT',
               data,
+            );
+            await this.webhooksService.sendSlackNotificationVN(timeframe,
+              [ticker],
+              lastData,
+              'C0B6C4Q6SHH','RSI20','500'
             );
           }else if(signal && signal.RSI25up){
             await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSI25AL/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
