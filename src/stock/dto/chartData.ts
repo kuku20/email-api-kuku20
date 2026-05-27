@@ -8261,7 +8261,7 @@ export const watchlist = [
   'MARA', 'META', 'MRVL',  'MU',   'NBIS',
   'NOW',  'PDD',  'QCOM',  'RDDT', 'RIVN',
   'TSM',  'UBER', 'VRT',   'CRCL', 'SNAP',
-  'CNC'
+  'CNC','HIMS', 'FUTU','OKLO','HOOD',
 ];
 interface Watchlist {
   [key: string]: {
@@ -8320,6 +8320,9 @@ export const watchlistBB: Watchlist = {
   SNAP: { BULL: ['SNAG'], BEAR: [] },
   CNC: { BULL: ['CNCG'], BEAR: [] },
   HIMS: { BULL: ['HIMZ'], BEAR: [] },
+  FUTU: { BULL: ['FUTG'], BEAR: [] },
+  OKLO: { BULL: ['OKLL'], BEAR: [] },
+  HOOD: { BULL: ['ROBN'], BEAR: [] },
 };
 
 export const above2billion = [
