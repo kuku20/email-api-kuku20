@@ -205,9 +205,9 @@ export class TasksBullBearService {
     // Wait for all ticker promises to complete concurrently (with concurrency limit)
     await Promise.all(tickerPromises);
   }
-  runon15or30 :'30'|'15'|'5'= '15';
-  @Cron('*/15 9-16 * * 1-5', { timeZone: 'America/New_York' })
-  async bullBear(timeframe = '15min',symbols= DataSymbols.watchlist){
+  runon15or30 :'30'|'15'|'5'= '30';
+  @Cron('*/30 9-16 * * 1-5', { timeZone: 'America/New_York' })
+  async bullBear(timeframe = '30min',symbols= DataSymbols.watchlist){
     if (!this.stockHelperService.shouldRunTradingLogicUS(`${this.runon15or30}min`,this.logger)) {
       return;
     }
@@ -218,7 +218,7 @@ export class TasksBullBearService {
         this.allkeys,
         'US_ALL',
         'USSTOCK_WATCH',
-        3,
+        4,
         timeframe,
       );
     } catch (error) {
