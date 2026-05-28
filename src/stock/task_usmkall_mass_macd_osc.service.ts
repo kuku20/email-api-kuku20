@@ -489,7 +489,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
             {
               condition: stochRSICros,
               hook: `C0B7FJNF908`,
-              msg:`${priceAbMA200?'PriceCrMA200': priceAbMA100?'priceAbMA100': priceAbMA50?'priceAbMA50':'PriceBlAl'} - ${MACDVALUEPOS}`
+              msg:`*stochRSICros* --${priceAbMA200?'PriceCrMA200': priceAbMA100?'priceAbMA100': priceAbMA50?'priceAbMA50':'PriceBlAl'} -${MACDVALUEPOS}`
             },
           ];
 
