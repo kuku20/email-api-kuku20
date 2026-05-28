@@ -261,5 +261,6 @@ export class TasksBullBearService {
     this.webhooksService.deleteSLChannel(['C0B0KECHWGL','C0B5QLGE6MB','C0B5MLVNYH1','C0B5QLEQZNH',])
     this.webhooksService.deleteSLChannel(['C0B6NB9HV6U','C0B5XL8DVB6','C0B5QLSF3FX'])
     this.webhooksService.deleteSLChannel(['C0B5QLEQZNH',])
+    this.webhooksService.deleteSLChannel(['C0B6K7BB2BY','C0B6K76F79U','C0B6QTBSCJ0','C0B6ETS74UB','C0B6P4EPGUR','C0B6QT628BE','C0AV30D721L','C0B6HTHQLJH','C0B7FJNF908','SLACK_WEBHOOKS_WATCHLIST'])
   }
 }

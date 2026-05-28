@@ -108,7 +108,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               lastData,
-              'C0B6F49S3HT','RSI15','500'
+              'C0B6F49S3HT','RSIBL15','500'
             );
           }else if(signal && signal.RSI20up){
             await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSIALERT/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
@@ -122,7 +122,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               lastData,
-              'C0B6C4Q6SHH','RSI20','500'
+              'C0B6C4Q6SHH','RSI15-20','500'
             );
           }else if(signal && signal.RSI25up){
             await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSI25AL/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
@@ -132,6 +132,11 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
               lastData,
               'RSI25AL',
               data,
+            );
+            await this.webhooksService.sendSlackNotificationVN(timeframe,
+              [ticker],
+              lastData,
+              'C0B6ME2MXGS','RSI20-25','500'
             );
           }else if(signal && signal.RSI30up){
             await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSI30AL/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
@@ -172,28 +177,28 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
           const webhookMap = [
             {
               condition:(macdCross.AB || OscCrossAb) &&  priceAbMA200,
-              hook: `${OscCrossAb?'C0B5QLGE6MB': 'C0B6NB9HV6U'}`,
-              msg:`${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''} - PriceCrMA200 ${MACDVALUEPOS}`
+              hook: timeframe === '1day'?`${OscCrossAb?'C0B5QLGE6MB': 'C0B6NB9HV6U'}`: `${OscCrossAb?'C0B6K7BB2BY': 'C0B6K76F79U'}`,
+              msg:`*${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''}* - PriceCrMA200 ${MACDVALUEPOS}`
             },
             {
               condition:(macdCross.AB || OscCrossAb) &&  priceAbMA100 ,
-              hook: `${OscCrossAb?'C0B5MLVNYH1': 'C0B5XL8DVB6'}`,
-              msg:`${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''} - PriceCrMA100 ${MACDVALUEPOS}`
+              hook: timeframe === '1day'?`${OscCrossAb?'C0B5MLVNYH1': 'C0B5XL8DVB6'}`:`${OscCrossAb?'C0B6QTBSCJ0': 'C0B6ETS74UB'}`,
+              msg:`*${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''}* - PriceCrMA100 ${MACDVALUEPOS}`
             },
             {
               condition:(macdCross.AB || OscCrossAb) && priceAbMA50 ,
-              hook: `${OscCrossAb?'C0B5QLEQZNH': 'C0B5QLSF3FX'}`,
-              msg:`${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''} - PriceCrMA50 ${MACDVALUEPOS}`
+              hook: timeframe === '1day'?`${OscCrossAb?'C0B5QLEQZNH': 'C0B5QLSF3FX'}`:`${OscCrossAb?'C0B6P4EPGUR': 'C0B6QT628BE'}`,
+              msg:`*${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''}* - PriceCrMA50 ${MACDVALUEPOS}`
             },
             {
               condition: (macdCross.AB || OscCrossAb) && priceBlAl,
-              hook: `${OscCrossAb?'C0B00B2N6NB': 'C0B02ENGMCH'}`,
-              msg:`${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''} - PriceBlMA50_100_200 ${MACDVALUEPOS}`
+              hook: timeframe === '1day'?`${OscCrossAb?'C0B00B2N6NB': 'C0B02ENGMCH'}`:`${OscCrossAb?'C0B6HTHQLJH': 'C0AV30D721L'}`,
+              msg:`*${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''}* - PriceBlMA50_100_200 ${MACDVALUEPOS}`
             },
             {
               condition: stochRSICros,
-              hook: `C0B02EEHFQR`,
-              msg:`${priceAbMA200?'PriceCrMA200': priceAbMA100?'priceAbMA100': priceAbMA50?'priceAbMA50':'PriceBlAl'} - ${MACDVALUEPOS}`
+              hook: timeframe === '1day'?`C0B02EEHFQR`:`C0B7FJNF908`,
+              msg:`*stochRSICros* --${priceAbMA200?'PriceCrMA200': priceAbMA100?'priceAbMA100': priceAbMA50?'priceAbMA50':'PriceBlAl'} -${MACDVALUEPOS}`
             },
           ];
 
@@ -259,8 +264,8 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
     const today = this.stockHelperService.getDateNDaysAgo(0);
   
     // const webhooks = ['C0B00B2N6NB','C0B0KECHWGL','C0B5QLGE6MB','C0B5MLVNYH1','C0B5QLEQZNH','C0B6NB9HV6U','C0B5XL8DVB6','C0B5QLSF3FX','SLACK_WEBHOOKS_D_US50', 'SLACK_WEBHOOKS_D_US100','SLACK_WEBHOOKS_D_US200','SLACK_WEBHOOKS_WATCHLIST','SLACK_WEBHOOKS_J2DAY','SLACK_WEBHOOKS_J3DAY','SLACK_WEBHOOKS_US_MACDCR','SLACK_WEBHOOKS_MACDCRAB',];
-    const webhooks = ['C0B02EEHFQR','SLACK_WEBHOOKS_MACDCRAB','SLACK_WEBHOOKS_WATCHLIST','C0B02ENGMCH','C0B5QLSF3FX','C0B00B2N6NB','C0B0KECHWGL','C0B5QLGE6MB','C0B5MLVNYH1','C0B5QLEQZNH','C0B6NB9HV6U','C0B5XL8DVB6',];
-
+    // const webhooks = ['C0B02EEHFQR','SLACK_WEBHOOKS_MACDCRAB','SLACK_WEBHOOKS_WATCHLIST','C0B02ENGMCH','C0B5QLSF3FX','C0B00B2N6NB','C0B0KECHWGL','C0B5QLGE6MB','C0B5MLVNYH1','C0B5QLEQZNH','C0B6NB9HV6U','C0B5XL8DVB6',];
+    const webhooks = ['C0B6K7BB2BY','C0B6K76F79U','C0B6QTBSCJ0','C0B6ETS74UB','C0B6P4EPGUR','C0B6QT628BE','C0AV30D721L','C0B6HTHQLJH','C0B7FJNF908','SLACK_WEBHOOKS_WATCHLIST']
     const sendBatchNotification = async (type: 'START' | 'END') => {
       const message = `${type}+4hour+${today}+${type}${'='.repeat(32)}`;
       await Promise.all(
@@ -353,8 +358,8 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
     const today = this.stockHelperService.getDateNDaysAgo(0);
   
     // const webhooks = ['C0B00B2N6NB','C0B0KECHWGL','C0B5QLGE6MB','C0B5MLVNYH1','C0B5QLEQZNH','C0B6NB9HV6U','C0B5XL8DVB6','C0B5QLSF3FX','SLACK_WEBHOOKS_D_US50', 'SLACK_WEBHOOKS_D_US100','SLACK_WEBHOOKS_D_US200','SLACK_WEBHOOKS_WATCHLIST','SLACK_WEBHOOKS_J2DAY','SLACK_WEBHOOKS_J3DAY','SLACK_WEBHOOKS_US_MACDCR','SLACK_WEBHOOKS_MACDCRAB',];
-    const webhooks = ['C0B02EEHFQR','SLACK_WEBHOOKS_MACDCRAB','SLACK_WEBHOOKS_WATCHLIST','C0B02ENGMCH','C0B5QLSF3FX','C0B00B2N6NB','C0B0KECHWGL','C0B5QLGE6MB','C0B5MLVNYH1','C0B5QLEQZNH','C0B6NB9HV6U','C0B5XL8DVB6',];
-
+    // const webhooks = ['C0B02EEHFQR','SLACK_WEBHOOKS_MACDCRAB','SLACK_WEBHOOKS_WATCHLIST','C0B02ENGMCH','C0B5QLSF3FX','C0B00B2N6NB','C0B0KECHWGL','C0B5QLGE6MB','C0B5MLVNYH1','C0B5QLEQZNH','C0B6NB9HV6U','C0B5XL8DVB6',];
+    const webhooks = ['C0B6K7BB2BY','C0B6K76F79U','C0B6QTBSCJ0','C0B6ETS74UB','C0B6P4EPGUR','C0B6QT628BE','C0AV30D721L','C0B6HTHQLJH','C0B7FJNF908','SLACK_WEBHOOKS_WATCHLIST']
     const sendBatchNotification = async (type: 'START' | 'END') => {
       const message = `${type}+4hour+${today}+${type}${'='.repeat(32)}`;
       await Promise.all(
@@ -463,27 +468,27 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
           const webhookMap = [
             {
               condition:(macdCross.AB || OscCrossAb) &&  priceAbMA200,
-              hook: `${OscCrossAb?'C0B5QLGE6MB': 'C0B6NB9HV6U'}`,
-              msg:`${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''} - PriceCrMA200 ${MACDVALUEPOS}`
+              hook: `${OscCrossAb?'C0B6K7BB2BY': 'C0B6K76F79U'}`,
+              msg:`*${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''}* - PriceCrMA200 ${MACDVALUEPOS}`
             },
             {
               condition:(macdCross.AB || OscCrossAb) &&  priceAbMA100 ,
-              hook: `${OscCrossAb?'C0B5MLVNYH1': 'C0B5XL8DVB6'}`,
-              msg:`${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''} - PriceCrMA100 ${MACDVALUEPOS}`
+              hook: `${OscCrossAb?'C0B6QTBSCJ0': 'C0B6ETS74UB'}`,
+              msg:`*${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''}* - PriceCrMA100 ${MACDVALUEPOS}`
             },
             {
               condition:(macdCross.AB || OscCrossAb) && priceAbMA50 ,
-              hook: `${OscCrossAb?'C0B5QLEQZNH': 'C0B5QLSF3FX'}`,
-              msg:`${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''} - PriceCrMA50 ${MACDVALUEPOS}`
+              hook: `${OscCrossAb?'C0B6P4EPGUR': 'C0B6QT628BE'}`,
+              msg:`*${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''}* - PriceCrMA50 ${MACDVALUEPOS}`
             },
             {
               condition: (macdCross.AB || OscCrossAb) && priceBlAl,
-              hook: `${OscCrossAb?'C0B00B2N6NB': 'C0B02ENGMCH'}`,
-              msg:`${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''} - PriceBlMA50_100_200 ${MACDVALUEPOS}`
+              hook: `${OscCrossAb?'C0B6HTHQLJH': 'C0AV30D721L'}`,
+              msg:`*${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''}* - PriceBlMA50_100_200 ${MACDVALUEPOS}`
             },
             {
               condition: stochRSICros,
-              hook: `C0B02EEHFQR`,
+              hook: `C0B7FJNF908`,
               msg:`${priceAbMA200?'PriceCrMA200': priceAbMA100?'priceAbMA100': priceAbMA50?'priceAbMA50':'PriceBlAl'} - ${MACDVALUEPOS}`
             },
           ];
