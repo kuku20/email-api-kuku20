@@ -230,7 +230,6 @@ export class TasksBullBearService {
           this.webhooksService.sendSlackNotification(`${time}================================`, hook),
         ),
       );
-      await this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_WATCHLIST')
       this.runOnceAtOpen = false
       const percentof = this.aboveListUP.length/this.aboveList.length
       const percentofeve = this.belowListUp.length/this.belowList.length
@@ -258,7 +257,6 @@ export class TasksBullBearService {
 
   @Cron('0 17 * * 1-5', { timeZone: 'America/New_York' }) // Every weekday at 5:00 PM New York time
   async dailyCleanup() {    
-    // this.webhooksService.deleteSLChannel(['SLACK_WEBHOOKS_WATCHLIST'])
     // this.webhooksService.deleteSLChannel(this.stockHelperService.DailyRSIList)
     // this.webhooksService.deleteSLChannel(this.stockHelperService.DailyList)
     // this.webhooksService.deleteSLChannel(this.stockHelperService.FourHSList)

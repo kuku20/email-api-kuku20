@@ -208,7 +208,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               lastData,
-              DataSymbols.watchlist.includes(ticker)?'SLACK_WEBHOOKS_WATCHLIST':matched.hook,matched.msg,'500'
+              DataSymbols.watchlist.includes(ticker)?'C0B6PEXE4HZ':matched.hook,matched.msg,'500'
             );
           }
           this.logger.log(`${ticker} processed successfully.`);
@@ -264,7 +264,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
     const today = this.stockHelperService.getDateNDaysAgo(0);
   
     // const webhooks = ['C0B00B2N6NB','C0B0KECHWGL','C0B5QLGE6MB','C0B5MLVNYH1','C0B5QLEQZNH','C0B6NB9HV6U','C0B5XL8DVB6','C0B5QLSF3FX','SLACK_WEBHOOKS_D_US50', 'SLACK_WEBHOOKS_D_US100','SLACK_WEBHOOKS_D_US200','SLACK_WEBHOOKS_WATCHLIST','SLACK_WEBHOOKS_J2DAY','SLACK_WEBHOOKS_J3DAY','SLACK_WEBHOOKS_US_MACDCR','SLACK_WEBHOOKS_MACDCRAB',];
-    const webhooks = ['SLACK_WEBHOOKS_WATCHLIST',...this.stockHelperService.FourHSList]
+    const webhooks = [...this.stockHelperService.FourHSList]
     const sendBatchNotification = async (type: 'START' | 'END') => {
       const message = `${type}+4hour+${today}+${type}${'='.repeat(32)}`;
       await Promise.all(
@@ -282,7 +282,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
     const today = this.stockHelperService.getDateNDaysAgo(0);
   
     // const webhooks = ['C0B00B2N6NB','C0B0KECHWGL','C0B5QLGE6MB','C0B5MLVNYH1','C0B5QLEQZNH','C0B6NB9HV6U','C0B5XL8DVB6','C0B5QLSF3FX','SLACK_WEBHOOKS_D_US50', 'SLACK_WEBHOOKS_D_US100','SLACK_WEBHOOKS_D_US200','SLACK_WEBHOOKS_WATCHLIST','SLACK_WEBHOOKS_J2DAY','SLACK_WEBHOOKS_J3DAY','SLACK_WEBHOOKS_US_MACDCR','SLACK_WEBHOOKS_MACDCRAB',];
-    const webhooks = ['SLACK_WEBHOOKS_WATCHLIST',...this.stockHelperService.DailyList,...this.stockHelperService.DailyRSIList];
+    const webhooks = [...this.stockHelperService.DailyList,...this.stockHelperService.DailyRSIList];
     const sendBatchNotification = async (type: 'START' | 'END') => {
       const message = `${type}+daily+${today}+${type}${'='.repeat(32)}`;
       await Promise.all(
@@ -356,7 +356,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
     const today = this.stockHelperService.getDateNDaysAgo(0);
   
     // const webhooks = ['C0B00B2N6NB','C0B0KECHWGL','C0B5QLGE6MB','C0B5MLVNYH1','C0B5QLEQZNH','C0B6NB9HV6U','C0B5XL8DVB6','C0B5QLSF3FX','SLACK_WEBHOOKS_D_US50', 'SLACK_WEBHOOKS_D_US100','SLACK_WEBHOOKS_D_US200','SLACK_WEBHOOKS_WATCHLIST','SLACK_WEBHOOKS_J2DAY','SLACK_WEBHOOKS_J3DAY','SLACK_WEBHOOKS_US_MACDCR','SLACK_WEBHOOKS_MACDCRAB',];
-    const webhooks = ['SLACK_WEBHOOKS_WATCHLIST',...this.stockHelperService.FourHSList]
+    const webhooks = [...this.stockHelperService.FourHSList]
     const sendBatchNotification = async (type: 'START' | 'END') => {
       const message = `${type}+4hour+${today}+${type}${'='.repeat(32)}`;
       await Promise.all(
@@ -496,7 +496,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               lastData,
-              DataSymbols.watchlist.includes(ticker)?'SLACK_WEBHOOKS_WATCHLIST':matched.hook,matched.msg,'500'
+              DataSymbols.watchlist.includes(ticker)?'C0B6XLX1G65':matched.hook,matched.msg,'500'
             );
           }
           this.logger.log(`${ticker} processed successfully.`);
