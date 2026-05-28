@@ -25,7 +25,7 @@ export class TasksBullBearService {
     //  await this.dailyCleanup()
     // await this.delete(-1)
     // await this.delete(0)
-    // await this.bullBear()
+    // await this.bullBear('30min', []);
   }
 
   async getholdingList() {
@@ -225,10 +225,12 @@ export class TasksBullBearService {
       console.error('runAllWatchLists30 failed:', error);
       throw error;
     } finally {
-      await this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_US50')
-      await this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_US100')
+      await Promise.all(
+        this.stockHelperService.IntradayList.map((hook) =>
+          this.webhooksService.sendSlackNotification(`${time}================================`, hook),
+        ),
+      );
       await this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_WATCHLIST')
-      await this.webhooksService.sendSlackNotification(`${time}================================`, 'SLACK_WEBHOOKS_MACDCRAB')
       this.runOnceAtOpen = false
       const percentof = this.aboveListUP.length/this.aboveList.length
       const percentofeve = this.belowListUp.length/this.belowList.length
@@ -254,13 +256,13 @@ export class TasksBullBearService {
     }
   }
 
-  // @Cron('0 17 * * 1-5', { timeZone: 'America/New_York' }) // Every weekday at 5:00 PM New York time
+  @Cron('0 17 * * 1-5', { timeZone: 'America/New_York' }) // Every weekday at 5:00 PM New York time
   async dailyCleanup() {    
-    this.webhooksService.deleteSLChannel(['SLACK_WEBHOOKS_US50','SLACK_WEBHOOKS_US200','SLACK_WEBHOOKS_US100','SLACK_WEBHOOKS_WATCHLIST'])
-    this.webhooksService.deleteSLChannel(['C0B00B2N6NB','C0B02ENGMCH','C0AV3HHR42W','C0AUN3ZAY4F','C0B02EGGMR7','C0B02EEHFQR','C0B0HRF04EL','C0AV30D721L','C0AV52BFMDG','C0AV1KQGS3F','C0AV988SHDJ','C0B02DZU0KB','C0AUN3H0JR5','SLACK_WEBHOOKS_HOLDING','SLACK_WEBHOOKS_US50','SLACK_WEBHOOKS_US100','SLACK_WEBHOOKS_US200','SLACK_WEBHOOKS_MACDCRAB','SLACK_WEBHOOKS_WATCHLIST'])
-    this.webhooksService.deleteSLChannel(['C0B0KECHWGL','C0B5QLGE6MB','C0B5MLVNYH1','C0B5QLEQZNH',])
-    this.webhooksService.deleteSLChannel(['C0B6NB9HV6U','C0B5XL8DVB6','C0B5QLSF3FX'])
-    this.webhooksService.deleteSLChannel(['C0B5QLEQZNH',])
-    this.webhooksService.deleteSLChannel(['C0B6K7BB2BY','C0B6K76F79U','C0B6QTBSCJ0','C0B6ETS74UB','C0B6P4EPGUR','C0B6QT628BE','C0AV30D721L','C0B6HTHQLJH','C0B7FJNF908','SLACK_WEBHOOKS_WATCHLIST'])
+    // this.webhooksService.deleteSLChannel(['SLACK_WEBHOOKS_WATCHLIST'])
+    // this.webhooksService.deleteSLChannel(this.stockHelperService.DailyRSIList)
+    // this.webhooksService.deleteSLChannel(this.stockHelperService.DailyList)
+    // this.webhooksService.deleteSLChannel(this.stockHelperService.FourHSList)
+    // this.webhooksService.deleteSLChannel(this.stockHelperService.AISlackChannel)
+    this.webhooksService.deleteSLChannel(this.stockHelperService.IntradayList)
   }
 }
