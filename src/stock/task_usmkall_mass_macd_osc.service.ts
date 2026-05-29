@@ -25,7 +25,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
 
     // await this.runOnlyDaily4hour()
     // await this.runfullonms();
-    // await this.runAllWatchLists(DataSymbols.stock_500_symbols);
+    // await this.runAllOn1day(['ABBV','ACN','MSFT']);
     // await this.runOnly4hxx(DataSymbols.stock_500_symbols)
     // await this.runAllOn4h(DataSymbols.stock_500_symbols);
   }
@@ -209,7 +209,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
           if (matched) {
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
-              lastData,
+              data,
               DataSymbols.watchlist.includes(ticker)? wlSl : matched.hook,matched.msg,'500'
             );
           }
