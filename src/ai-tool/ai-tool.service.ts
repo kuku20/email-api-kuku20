@@ -18,12 +18,19 @@ export class AiToolService {
     private stockHelperService: StockHelperService
   ) {}
   async postGemini(message: string) {
-    const symbol = message.slice(0, 200).match(/"symbol":"([^"]+)"/) || 'UNKNOWN';
-    const line = '================================ '
+    try {      
+      const res = await this.getResFromGemini(message);
+      await this.postToSl(message, res)
+      return res;
+    } catch (error) {
+      return JSON.stringify(error.message)
+    }
+  }
+  async getResFromGemini(message: string) {
     try {
       const GEMINI_KEY = this.configService.get<any>('GEMINI_API');
       const genAI = new GoogleGenerativeAI(GEMINI_KEY);
-      const model = genAI.getGenerativeModel({ model: 'gemini-3.1-flash-lite' });//'gemini-2.5-flash', 'gemini-3.5-flash'
+      const model = genAI.getGenerativeModel({ model: 'gemini-3.1-flash-lite'  });//'gemini-2.5-flash', 'gemini-3.5-flash' ,'gemini-3.1-flash-lite' 
       const generationConfig = {
         temperature: 1.1, // 0-2
         topP: 0.95,
@@ -37,33 +44,36 @@ export class AiToolService {
       const result = await chatSession.sendMessage(message);
       // post to slack if
       const msgRes = result.response.text()
-      const performanceNRecommendatioASK = message.toLowerCase().includes('performance and recommending')
-      const askPrice = message.toLowerCase().includes('just guess')
-      console.log('performanceNRecommendatioASK', performanceNRecommendatioASK, 'askPrice', askPrice)
-      const recommendingBuyOrSell = msgRes.toLowerCase().includes('recommendation: sell')? 'sell': 'buyhold'
-      const nexMsg = `${msgRes.replace(
-        /\*\*/g,
-        '*',
-      )}`;
-      const lineWithSymbol = line + symbol[1] + line
-      const outMsg = lineWithSymbol + '\n' + nexMsg + '\n' + lineWithSymbol
-      if(performanceNRecommendatioASK){
-        if(recommendingBuyOrSell === 'sell'){
-          await this.post_SLack('C0B6RH4466S', outMsg)
-        }else{
-          await this.post_SLack('C0B7M7Y7FLG',outMsg)
-        }
-      }else if(askPrice){
-        await this.post_SLack('C0B6BFBKJ4X',outMsg)
-      }
       return msgRes;
     } catch (error) {
-      const lineWithSymbol = line + symbol[1] + +'-'+error.statusText+line
-      await this.post_SLack('C0B02DZU0KB',lineWithSymbol )
-      return JSON.stringify(error.statusText)
+      return JSON.stringify(error.message)
     }
   }
-
+  async postToSl(message: string, msgRes:string) {
+    const line = '================================ '
+    const symbol = message.slice(0, 250).match(/"symbol":"([^"]+)"/) || 'UNKNOWN';
+    const performanceNRecommendatioASK = message.toLowerCase().includes('performance and recommending')
+    const askPrice = message.toLowerCase().includes('just guess')
+    const recommendingBuyOrSell = msgRes.toLowerCase().includes('recommendation: buy')? 'buy':  msgRes.toLowerCase().includes('recommendation: hold')?'hold':'sell'
+    const nexMsg = `${msgRes.replace(
+      /\*\*/g,
+      '*',
+    )}`;
+    const lineWithSymbol = line + symbol[1] + line
+    const outMsg = lineWithSymbol + '\n' + nexMsg + '\n' + lineWithSymbol
+    if(performanceNRecommendatioASK){
+      if(recommendingBuyOrSell === 'buy'){
+      return  await this.post_SLack('C0B7WELEKJL', outMsg)
+      } else if(recommendingBuyOrSell === 'hold'){
+      return  await this.post_SLack('C0B7M7Y7FLG',outMsg)
+       }
+      else{
+      return await this.post_SLack('C0B6RH4466S',outMsg)
+      }
+    }else if(askPrice){
+      return await this.post_SLack('C0B6BFBKJ4X',outMsg)
+    }
+  }
   async posOpenAi(dataIn: any, message:string) {
     try {
       const OPENAI_API_KEY = this.configService.get<any>('OPENAI_API_KEY');
@@ -244,10 +254,45 @@ export class AiToolService {
       if (!data.ok) {
         console.error('Slack post error',channel, data);
       }
-
-      return data;
+      // console.log('Slack post response', data); 
+      // await this.reply_SLack('C0B6RH4466S', data.ts)
+      // data.channel C0B6RH4466S
+      // data.ts  1780072407.351509
+      // data.message.text
+      return this.stockHelperService.getSlackMessageLink(data.channel, data.ts);
     } catch (error) {
       console.error('Slack post exception', error);
+      throw error;
+    }
+  }
+
+  async reply_SLack(
+    channel: string,
+    thread_ts: string,
+    text: string =`See original message: https://myworkspace.slack.com/archives/${channel}/p${thread_ts.replace('.', '')}`,
+  ) {
+    try {
+      const { data } = await axios.post(
+        'https://slack.com/api/chat.postMessage',
+        {
+          channel,
+          text,
+          thread_ts, // reply target
+        },
+        {
+          headers: this.headers,
+        },
+      );
+  
+      if (!data.ok) {
+        console.error('Slack reply error', channel, data);
+      }
+  
+      // console.log('Slack reply response', data);
+  
+      return data;
+    } catch (error) {
+      console.error('Slack reply exception', error);
       throw error;
     }
   }

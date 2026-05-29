@@ -9,6 +9,7 @@ import { StockHelperService } from 'src/stock/stockHelper.service';
 import * as DataSymbols from '../stock/dto/chartData';
 import * as fs from 'fs';
 import { channel } from 'diagnostics_channel';
+import { AiToolService } from 'src/ai-tool/ai-tool.service';
 type Timeframe = '1month' | '1week' | '1day' | '8hour' | '4hour' | '2hour' | '1hour' | '45min' | '30min' | '15min' | '5min' | '1min';
 
 const timeframeScoreMap: Record<Timeframe, number> = {
@@ -35,6 +36,7 @@ export class WebhooksService {
   constructor(
     private readonly configService: ConfigService,
     private readonly stockHelperService: StockHelperService,
+    private readonly aiToolService: AiToolService
   ) {
     // Parse JSON from env vars
     this.WEBHOOKS_ENV = JSON.parse(
@@ -1803,11 +1805,13 @@ export class WebhooksService {
   async sendSlackNotificationVN(
     timeframe: string,
     symbols: string[],
-    lastData: any,
+    fullData: any,
     slChannel :string,
     msg :string,
     range: '600' | '550' | '500' | '480' | '240' | '120' | '60' | '45' | '30' | '15' | '5' | '1',
   ) {
+    const isFullDataArray = Array.isArray(fullData);
+    let lastData = isFullDataArray? fullData[fullData.length - 1]: fullData;
     const BASE_URL = slChannel.includes('SLACK_WEBHOOKS_')? this.configService.get<any>(slChannel):slChannel;
     let hourIn4 = '';
     let in3candles = '';
@@ -1858,7 +1862,28 @@ export class WebhooksService {
     };
     try {
       // await axios.post(BASE_URL, payload);
-      await this.post_SLack(BASE_URL, formatted);
+      const postToCSLRE = await this.post_SLack(BASE_URL, formatted);
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      if(timeframe === '1day' && isFullDataArray){
+        // postToCSLRE.channel 
+        // postToCSLRE.ts  
+        const slackMessageLink = this.stockHelperService.getSlackMessageLink(postToCSLRE.channel, postToCSLRE.ts);
+        // get ai call 
+        const recommending = `I give the data on share prices over today, write a report of no more than 500 words describing the stocks performance and recommending whether to buy, hold or sell:`;
+        const aiMesAsk = recommending + JSON.stringify({symbol: symbols[0], data : fullData})
+        const getResFromGemini = await this.aiToolService.getResFromGemini(aiMesAsk)
+        // await 30s then get the ai response and post it as a thread reply to the original message
+        await new Promise(resolve => setTimeout(resolve, 30000));
+
+        const slackReLink = await this.aiToolService.postToSl(aiMesAsk, getResFromGemini)
+        //post to slack sybole lik
+        await this.aiToolService.reply_SLack(postToCSLRE.channel, postToCSLRE.ts, slackReLink);
+        const recommendingBuyOrSell = getResFromGemini.toLowerCase().includes('recommendation: buy')
+        if(recommendingBuyOrSell ){
+          // post to a-buy channel if recommendation is buy
+          await this.post_SLack('C0B6UVBFRRT', slackMessageLink);
+        }
+      }
       return { msg: 'post to Slack success' };
     } catch (error) {
       return { msg: 'post to Slack fails:', error };

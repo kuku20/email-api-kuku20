@@ -28,7 +28,7 @@ export class StockHelperService {
   DailyRSIList: string[] = ['C0B6F49S3HT','C0B6C4Q6SHH','C0B6ME2MXGS'];
   VNSLList: string[] = ['SLACK_WEBHOOKS_VN50','SLACK_WEBHOOKS_VN100','SLACK_WEBHOOKS_VN200','SLACK_WEBHOOKS_VN_MACDCR'];
   IntradayList: string[] = ['SLACK_WEBHOOKS_US50','SLACK_WEBHOOKS_US200','SLACK_WEBHOOKS_US100','SLACK_WEBHOOKS_MACDCRAB','SLACK_WEBHOOKS_WATCHLIST']
-  AISlackChannel = ['C0B6BFBKJ4X','C0B7M7Y7FLG','C0B6RH4466S','C0B02DZU0KB']
+  AISlackChannel = ['C0B6BFBKJ4X','C0B7M7Y7FLG','C0B6RH4466S','C0B02DZU0KB','C0B7WELEKJL']
   async returnNewData(dataIn: any[]) {
     if (!dataIn?.length) return [];
 
@@ -906,5 +906,13 @@ SELL ALL
     const mid = (min + max) / 2;
   
     return { min, max, mid };
+  }
+
+  getSlackMessageLink(
+    channel: string,
+    ts: string,
+    workspace: string = 'myworkspace',
+  ): string {
+    return `https://${workspace}.slack.com/archives/${channel}/p${ts.replace('.', '')}`;
   }
 }

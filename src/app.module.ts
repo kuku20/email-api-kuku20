@@ -64,6 +64,8 @@ import { TaskHoldingService } from './stock/task_holding.service';
 import { TasksUS_ALL_MK_4HOUR_Service } from './stock/task_usmkall_4hour_daily.service';
 import { TasksBullBearService } from './stock/task_bull_bear.service';
 import { TasksUS_ALL_MK_MASS_MACD_OSC } from './stock/task_usmkall_mass_macd_osc.service';
+import { AiToolService } from './ai-tool/ai-tool.service';
+import { StockService } from './stock/stock.service';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -160,24 +162,24 @@ import { TasksUS_ALL_MK_MASS_MACD_OSC } from './stock/task_usmkall_mass_macd_osc
     StockHelperService,
     WebhooksService,
     LocalPLWR,
-    AlphavantageService,
+    AlphavantageService,AiToolService,StockService,
 
     TasksVNMKService,
     TaskCryptoService,
     TasksForexService,
     TaskHoldingService,
-    // // SendEverydayService,
-    //TasksUS_ALL_MK_MASS_Service,
+    // // // SendEverydayService,
+    // //TasksUS_ALL_MK_MASS_Service,
     TasksUS_ALL_MK_MASS_MACD_OSC,
-    // TasksUS_ALL_MKService,
+    // // TasksUS_ALL_MKService,
     TasksService,
-    // TasksUSMKService_15MIN
-    // TestOndata_service,
-    // TasksUSMKService,
-    // TasksUSMK_1MIN_Service,
+    // // TasksUSMKService_15MIN
+    // // TestOndata_service,
+    // // TasksUSMKService,
+    // // TasksUSMK_1MIN_Service,
 
-    // TasksUSMKService_SP500,
-    // TasksUS_ALL_MK_4HOUR_Service,
+    // // TasksUSMKService_SP500,
+    // // TasksUS_ALL_MK_4HOUR_Service,
     TasksBullBearService,
   ],
 })
