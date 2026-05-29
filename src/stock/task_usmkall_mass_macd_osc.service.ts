@@ -23,8 +23,10 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
   marketTarget = 2
   async onModuleInit() {
 
-  // await this.runOnlyDaily4hour()
-  //  await this.runfullonms();
+    // await this.runOnlyDaily4hour()
+    // await this.runfullonms();
+    // await this.runAllWatchLists(DataSymbols.stock_500_symbols);
+    // await this.runOnly4hxx(DataSymbols.stock_500_symbols)
     // await this.runAllOn4h(DataSymbols.stock_500_symbols);
   }
 
