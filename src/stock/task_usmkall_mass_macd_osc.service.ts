@@ -205,12 +205,12 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
           ];
 
           const matched = webhookMap.find((w) => w.condition);
-
+          const wlSl = timeframe === '1day'? 'C0B6PEXE4HZ' : 'C0B6XLX1G65';
           if (matched) {
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               lastData,
-              DataSymbols.watchlist.includes(ticker)?'C0B6PEXE4HZ':matched.hook,matched.msg,'500'
+              DataSymbols.watchlist.includes(ticker)? wlSl : matched.hook,matched.msg,'500'
             );
           }
           this.logger.log(`${ticker} processed successfully.`);
