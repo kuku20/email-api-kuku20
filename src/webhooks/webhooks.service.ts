@@ -1871,13 +1871,42 @@ export class WebhooksService {
         // get ai call 
         const recommending = `I give the data on share prices over today, write a report of no more than 500 words describing the stocks performance and recommending whether to buy, hold or sell:`;
         const aiMesAsk = recommending + JSON.stringify({symbol: symbols[0], data : fullData})
-        const getResFromGemini = await this.aiToolService.getResFromGemini(aiMesAsk)
+        let getResFromGemini = '';
+        let AIError = true;
+
+        for (let i = 0; i < 3; i++) {
+          // wait 30s before each retry (except first run)
+          await new Promise(resolve => setTimeout(resolve, 30000));
+
+          getResFromGemini = await this.aiToolService.getResFromGemini(aiMesAsk);
+
+          AIError = getResFromGemini.toLowerCase().includes('error');
+
+          // stop retrying if success
+          if (!AIError) {
+            break;
+          }
+        }
+        const slackReLink = await this.aiToolService.postToSl(
+          aiMesAsk,
+          getResFromGemini
+        );
         // await 30s then get the ai response and post it as a thread reply to the original message
         await new Promise(resolve => setTimeout(resolve, 30000));
-
-        const slackReLink = await this.aiToolService.postToSl(aiMesAsk, getResFromGemini)
-        //post to slack sybole lik
-        await this.aiToolService.reply_SLack(postToCSLRE.channel, postToCSLRE.ts, slackReLink);
+        // post to slack symbol link
+        if (!AIError) {
+          await this.aiToolService.reply_SLack(
+            postToCSLRE.channel,
+            postToCSLRE.ts,
+            slackReLink
+          );
+        } else {
+          // failed after 3 tries
+          await this.post_SLack(
+            'C0B77K2AG12',
+            `AI Error for ${symbols[0]}: ${slackMessageLink}`
+          );
+        }
         const recommendingBuyOrSell = getResFromGemini.toLowerCase().includes('recommendation: buy')
         if(recommendingBuyOrSell ){
           // post to a-buy channel if recommendation is buy
@@ -1923,175 +1952,220 @@ export class WebhooksService {
       );
 
       if (!data.ok) {
-        console.error('Slack post error',channel,text, data);
+        console.log('Slack post error',channel,text);
       }
 
       return data;
     } catch (error) {
-      console.error('Slack post exception', error);
+      console.log('Slack post exception');
       throw error;
     }
   }
+// =====================================
+// GET ALL MESSAGES + THREAD REPLIES
+// =====================================
+async getAllMessages_SLack(channel: string): Promise<string[]> {
+  let cursor: string | undefined;
 
-  // =========================
-  // DELETE MESSAGE
-  // =========================
-  async deleteMessage_SLack(channel: string, tsList: string[]) {
-    const results: {
-      ts: string;
-      success: boolean;
-      data?: any;
-      error?: any;
-    }[] = [];
-  
-    const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
-  
-    for (const ts of tsList) {
-      let retry = true;
-  
-      while (retry) {
-        try {
-          const response = await axios.post(
-            'https://slack.com/api/chat.delete',
-            { channel, ts },
-            { headers: this.headers },
-          );
-  
-          const { data, headers } = response;
-  
-          if (data.ok) {
-            console.log(`✅ Deleted message: ${ts}`);
-  
-            results.push({
-              ts,
-              success: true,
-              data,
-            });
-  
-            retry = false;
-          } else if (data.error === 'ratelimited') {
-            const retryAfter = Number(headers?.['retry-after'] || 1);
-            console.warn(`⏳ Rate limited. Waiting ${retryAfter}s...`);
-            await sleep(retryAfter * 1000);
-          } else {
-            console.error('❌ Slack delete error', data);
-  
-            results.push({
-              ts,
-              success: false,
-              error: data,
-            });
-  
-            retry = false;
-          }
-        } catch (error: any) {
-          // Handle HTTP 429
-          if (error.response?.status === 429) {
-            const retryAfter = Number(error.response.headers['retry-after'] || 1);
-            console.warn(`⏳ 429 hit. Waiting ${retryAfter}s...`);
-            await sleep(retryAfter * 1000);
-          } else {
-            console.error('🔥 Slack delete exception', error);
-  
-            results.push({
-              ts,
-              success: false,
-              error,
-            });
-            retry = false;
-          }
-        }
+  const replyTs: string[] = [];
+  const parentTs: string[] = [];
+
+  try {
+    do {
+      const { data } = await axios.post(
+        'https://slack.com/api/conversations.history',
+        {
+          channel,
+          cursor,
+          limit: 100,
+        },
+        {
+          headers: this.headers,
+        },
+      );
+
+      if (!data.ok) {
+        console.log('History failed:');
+        break;
       }
-      // 🔥 IMPORTANT: base throttle between requests
-      // await sleep(1100);
-    }
-  
-    return results;
-  }
 
-  // =========================
-  // GET ALL MESSAGES (PAGINATED)
-  // =========================
-  async getAllMessages_SLack(channel: string): Promise<string[]> {
-    let cursor: string | undefined;
-    const allTs: string[] = [];
-  
-    try {
-      do {
-        const { data } = await axios.post(
-          'https://slack.com/api/conversations.history',
-          {
-            channel,
-            cursor,
-          },
-          { headers: this.headers },
-        );
-  
-        if (!data.ok) break;
-  
-        const messages = data.messages || [];
-  
-        for (const msg of messages) {
-          if (msg?.ts) {
-            allTs.push(msg.ts);
+      const messages = data.messages || [];
+
+      for (const msg of messages) {
+        if (!msg?.ts) continue;
+
+        // =========================
+        // GET THREAD REPLIES
+        // =========================
+        if ((msg.reply_count ?? 0) > 0) {
+          try {
+
+            const { data: replyData } = await axios.get(
+              'https://slack.com/api/conversations.replies',
+              {
+                headers: this.headers,
+                params: {
+                  channel,
+                  ts: msg.ts,
+                },
+              },
+            );
+
+            if (!replyData.ok) {
+              console.log( 'conversations.replies failed:',);
+            } else {
+              const replies = replyData.messages || [];
+
+              // Skip parent (index 0)
+              for (const reply of replies.slice(1)) {
+                if (reply?.ts) {
+                  replyTs.push(reply.ts);
+                }
+              }
+            }
+          } catch (error) {
+            console.log('conversations.replies exception:',);
           }
         }
-  
-        cursor = data.response_metadata?.next_cursor;
-      } while (cursor);
-  
-      return allTs;
-    } catch (error) {
-      console.error('Slack history error', error);
-      throw error;
-    }
-  }
 
-  async deleteAllMessages_SLack(channel: string) {
+        parentTs.push(msg.ts);
+      }
+
+      cursor = data.response_metadata?.next_cursor || undefined;
+    } while (cursor);
+
+    // replies first, parents last
+    const tsList = [...new Set([...replyTs, ...parentTs])];
+
+    return tsList;
+  } catch (error) {
+    // console.log('Slack history error', error);
+    // throw error;
+  }
+}
+
+// =====================================
+// DELETE MESSAGES
+// =====================================
+async deleteMessage_SLack(
+  channel: string,
+  tsList: string[],
+) {
+  const results: {
+    ts: string;
+    success: boolean;
+    error?: any;
+  }[] = [];
+
+  const sleep = (ms: number) =>
+    new Promise(resolve => setTimeout(resolve, ms));
+
+  for (const ts of tsList) {
     try {
-      // 1. Get all message timestamps
-      const tsList = await this.getAllMessages_SLack(channel);
-  
-      if (!tsList.length) {
-        return {
+      const response = await axios.post(
+        'https://slack.com/api/chat.delete',
+        {
+          channel,
+          ts,
+        },
+        {
+          headers: this.headers,
+        },
+      );
+
+      if (response.data.ok) {
+        console.log(`✅ Deleted message: ${ts}`);
+
+        results.push({
+          ts,
           success: true,
-          message: 'No messages found',
-          deleted: [],
-        };
+        });
+      } else {
+        console.log( `❌ Slack delete error (${ts})`, channel,  response.data,);
+        results.push({
+          ts,
+          success: false,
+          error: response.data,
+        });
       }
-  
-      // 2. Delete all messages
-      const results = await this.deleteMessage_SLack(channel, tsList);
-  
-      // 3. Summary
-      const successCount = results.filter(r => r.success).length;
-      const failCount = results.length - successCount;
-  
-      return {
-        success: failCount === 0,
-        total: tsList.length,
-        successCount,
-        failCount,
-        results,
-      };
+
+      await sleep(1200);
     } catch (error) {
-      console.error('🔥 deleteAllMessages error', error);
-  
-      return {
+
+
+      results.push({
+        ts,
         success: false,
         error,
-      };
+      });
     }
   }
 
-  async deleteSLChannel(channels:string[]){
-    if(channels.length === 0){
-      console.log("No channel, skip")
+  return results;
+}
+
+// =====================================
+// DELETE ALL MESSAGES
+// =====================================
+async deleteAllMessages_SLack(channel: string) {
+  try {
+    const tsList = await this.getAllMessages_SLack(channel);
+    if (!tsList.length) {
+      return {
+        success: true,
+        message: 'No messages found',
+      };
     }
-    channels.forEach(async (each:string)=>{
-      const slID = each.includes('SLACK_WEBHOOKS_')? this.configService.get<any>(each):each;
-      await this.deleteAllMessages_SLack(slID);
-      console.log(each,": Finished")
-    })
+
+    const results = await this.deleteMessage_SLack(
+      channel,
+      tsList,
+    );
+
+    const successCount = results.filter(
+      r => r.success,
+    ).length;
+
+    const failCount = results.length - successCount;
+
+    return {
+      success: failCount === 0,
+      total: tsList.length,
+      successCount,
+      failCount,
+      results,
+    };
+  } catch (error) {
+    console.log('🔥 deleteAllMessages error', );
+
+    return {
+      success: false,
+      error,
+    };
+  }
+}
+
+// =====================================
+// DELETE CHANNELS
+// =====================================
+async deleteSLChannel(channels: string[]) {
+  if (!channels.length) {
+    console.log('No channel, skip');
+    return;
+  }
+
+  for (const each of channels) {
+    try {
+      const slID = each.includes('SLACK_WEBHOOKS_')
+        ? this.configService.get<string>(each)
+        : each;
+
+      const result =
+        await this.deleteAllMessages_SLack(slID);
+        console.log(each,": Finished")
+    } catch (error) {
+      // console.error(each, error);
+    }
+  }
   }
 }

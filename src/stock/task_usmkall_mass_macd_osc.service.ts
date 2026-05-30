@@ -71,7 +71,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
             ticker,
             timeframe,this.dayago
           );
-
+          // let  data = await this.LocalPLWR.TwReveseNOAPI(ticker, timeframe);
           if (!Array.isArray(data) || data.length < 2) {
             this.logger.warn(`⚠️ No valid data for ${ticker} (${timeframe})`);
             return;

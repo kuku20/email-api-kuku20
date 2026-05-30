@@ -61,14 +61,16 @@ export class AiToolService {
     )}`;
     const lineWithSymbol = line + symbol[1] + line
     const outMsg = lineWithSymbol + '\n' + nexMsg + '\n' + lineWithSymbol
-    if(performanceNRecommendatioASK){
+    if(nexMsg.toLocaleLowerCase().includes('error')){
+      return await this.post_SLack('C0B02DZU0KB',outMsg)
+    }else if(performanceNRecommendatioASK){
       if(recommendingBuyOrSell === 'buy'){
-      return  await this.post_SLack('C0B7WELEKJL', outMsg)
+        return  await this.post_SLack('C0B7WELEKJL', outMsg)
       } else if(recommendingBuyOrSell === 'hold'){
-      return  await this.post_SLack('C0B7M7Y7FLG',outMsg)
-       }
+        return  await this.post_SLack('C0B7M7Y7FLG',outMsg)
+      }
       else{
-      return await this.post_SLack('C0B6RH4466S',outMsg)
+        return await this.post_SLack('C0B6RH4466S',outMsg)
       }
     }else if(askPrice){
       return await this.post_SLack('C0B6BFBKJ4X',outMsg)
