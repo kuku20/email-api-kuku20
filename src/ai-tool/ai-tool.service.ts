@@ -52,7 +52,7 @@ export class AiToolService {
   async postToSl(message: string, msgRes:string) {
     const line = '================================ '
     const symbol = message.slice(0, 250).match(/"symbol":"([^"]+)"/) || 'UNKNOWN';
-    const performanceNRecommendatioASK = message.toLowerCase().includes('performance and recommending')
+    const performanceNRecommendatioASK = message.toLowerCase().includes('performance')
     const askPrice = message.toLowerCase().includes('just guess')
     const recommendingBuyOrSell = msgRes.toLowerCase().includes('recommendation: buy')? 'buy':  msgRes.toLowerCase().includes('recommendation: hold')?'hold':'sell'
     const nexMsg = `${msgRes.replace(

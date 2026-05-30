@@ -913,6 +913,6 @@ SELL ALL
     ts: string,
     workspace: string = 'myworkspace',
   ): string {
-    return `https://${workspace}.slack.com/archives/${channel}/p${ts.replace('.', '')}`;
+    return `<https://${workspace}.slack.com/archives/${channel}/p${ts.replace('.', '')} |View Signal>`;
   }
 }

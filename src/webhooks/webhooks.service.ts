@@ -1869,7 +1869,9 @@ export class WebhooksService {
         // postToCSLRE.ts  
         const slackMessageLink = this.stockHelperService.getSlackMessageLink(postToCSLRE.channel, postToCSLRE.ts);
         // get ai call 
-        const recommending = `I give the data on share prices over today, write a report of no more than 500 words describing the stocks performance and recommending whether to buy, hold or sell:`;
+        const timeframeFormatted = timeframe.replace(/(\d+)([a-zA-Z]+)/, '$1-$2').toLowerCase();
+        const recommending = `I will provide stock price data over a ${timeframeFormatted} period. Please analyze the performance and write a concise report (maximum 500 words) summarizing key price movements, trends, and momentum. Based on your analysis, include a clear recommendation: Buy, Hold, or Sell, with brief justification supported by the observed data. The data is:`;
+
         const aiMesAsk = recommending + JSON.stringify({symbol: symbols[0], data : fullData})
         let getResFromGemini = '';
         let AIError = true;
@@ -1891,8 +1893,6 @@ export class WebhooksService {
           aiMesAsk,
           getResFromGemini
         );
-        // await 30s then get the ai response and post it as a thread reply to the original message
-        await new Promise(resolve => setTimeout(resolve, 30000));
         // post to slack symbol link
         if (!AIError) {
           await this.aiToolService.reply_SLack(
