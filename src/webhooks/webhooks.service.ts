@@ -1911,6 +1911,10 @@ export class WebhooksService {
         if(recommendingBuyOrSell ){
           // post to a-buy channel if recommendation is buy
           await this.post_SLack('C0B6UVBFRRT', slackMessageLink);
+          // add reaction to original message
+          await this.addReaction_SLack(postToCSLRE.channel, postToCSLRE.ts, 'heart');
+        } else if(getResFromGemini.toLowerCase().includes('recommendation: hold')){
+          await this.addReaction_SLack(postToCSLRE.channel, postToCSLRE.ts, 'thumbsdown');
         }
       }
       return { msg: 'post to Slack success' };
@@ -2148,7 +2152,7 @@ async deleteAllMessages_SLack(channel: string) {
 // =====================================
 // DELETE CHANNELS
 // =====================================
-async deleteSLChannel(channels: string[]) {
+  async deleteSLChannel(channels: string[]) {
   if (!channels.length) {
     console.log('No channel, skip');
     return;
@@ -2167,5 +2171,36 @@ async deleteSLChannel(channels: string[]) {
       // console.error(each, error);
     }
   }
+  }
+
+  async addReaction_SLack(
+    channel: string,
+    ts: string,
+    reaction: string = 'white_check_mark',
+  ) {
+    try {
+      const { data } = await axios.post(
+        'https://slack.com/api/reactions.add',
+        {
+          channel,
+          timestamp: ts,
+          name: reaction,
+        },
+        {
+          headers: this.headers,
+        },
+      );
+  
+      if (!data.ok) {
+        console.error('Reaction add failed:', data);
+        return false;
+      }
+  
+      console.log(`✅ Added :${reaction}: to ${ts}`);
+      return true;
+    } catch (error) {
+      console.error('Reaction exception:', error);
+      return false;
+    }
   }
 }
