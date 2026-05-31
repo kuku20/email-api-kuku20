@@ -34,7 +34,6 @@ export class TasksBullBearLocalService {
     // await this.bullBear('5min')
     // await this.bullBear('4hour')
     // await this.bullBear('4hour')
-    // this.webhooksService.deleteSLChannel(['SLACK_WEBHOOKS_US50','SLACK_WEBHOOKS_US200','SLACK_WEBHOOKS_US100','SLACK_WEBHOOKS_WATCHLIST'])
     // await this.delete(-1)
     // await this.delete(0)
 
@@ -167,7 +166,7 @@ export class TasksBullBearLocalService {
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               lastData,
-              'SLACK_WEBHOOKS_US200',textDetail+' '+maxOfFour,
+              this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_200,textDetail+' '+maxOfFour,
               this.runon15or30
             );
             await this.webhooksService.sendDiscord(
@@ -182,7 +181,7 @@ export class TasksBullBearLocalService {
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               lastData,
-              StochRSICross?'SLACK_WEBHOOKS_US50':'SLACK_WEBHOOKS_US100',textDetail+' '+maxOfFour,
+              StochRSICross?this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_50:this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_100,textDetail+' '+maxOfFour,
               this.runon15or30
             );
             this.aboveList.push(ticker)
@@ -200,7 +199,7 @@ export class TasksBullBearLocalService {
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               lastData,
-              'SLACK_WEBHOOKS_WATCHLIST','blMa200MACDPMA50cR'+maxOfFour,
+              this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,'blMa200MACDPMA50cR'+maxOfFour,
               this.runon15or30
             );
             await this.webhooksService.sendDiscord(
@@ -246,10 +245,10 @@ export class TasksBullBearLocalService {
   @Cron('*/15 9-16 * * 1-5', { timeZone: 'America/New_York' })
   async bullBear(timeframe = '5min',symbols= DataSymbols.watchlist){
     try {
-      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', 'SLACK_WEBHOOKS_US50')
-      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', 'SLACK_WEBHOOKS_US100')
-      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', 'SLACK_WEBHOOKS_US200')
-      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', 'SLACK_WEBHOOKS_WATCHLIST')
+      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_50)
+      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_100)
+      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_200)
+      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', this.stockHelperService.INTRA_30M_SL.US_30M_WATCH)
       await this.USTIMERUN(
         symbols,
         this.allkeys,
@@ -264,10 +263,10 @@ export class TasksBullBearLocalService {
       throw error;
     } finally {
       this.runOnceAtOpen = false
-      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', 'SLACK_WEBHOOKS_US50')
-      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', 'SLACK_WEBHOOKS_US100')
-      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', 'SLACK_WEBHOOKS_US200')
-      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', 'SLACK_WEBHOOKS_WATCHLIST')
+      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_50)
+      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_100)
+      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_200)
+      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', this.stockHelperService.INTRA_30M_SL.US_30M_WATCH)
       const percentof = this.aboveListUP.length/this.aboveList.length
       const percentofeve = this.belowListUp.length/this.belowList.length
       this.logger.log(percentof)

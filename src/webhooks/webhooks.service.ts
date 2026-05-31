@@ -52,11 +52,7 @@ export class WebhooksService {
 
   async sendSlackNotification(message: string, other = '1day') {
     const BASE_URL =
-      other === '1day'
-        ? this.configService.get<any>('SLACK_WEBHOOKS')
-        : other === '4hour'
-        ? this.configService.get<any>('SLACK_WEBHOOKS_4h')
-        : other.includes('SLACK_WEBHOOKS_')? this.configService.get<any>(other):other;
+      other === '1day' ? this.stockHelperService.Z_US_SL.Z_US_SL_OR : other === '4hour' ? this.stockHelperService.Z_US_SL.Z_US_SL_OR4 :other;
     const nexMsg = `================================${message.replace(
       /\*\*/g,
       '*',
@@ -1290,7 +1286,7 @@ export class WebhooksService {
         await this.sendSlackNotificationVN(timeframe,
           [ticker],
           lastdata,
-          'SLACK_WEBHOOKS_2h_CROSS',sp500+'aboveAll',
+          this.stockHelperService.Z_US_SL.Z_US_SL_2h_CROSS,sp500+'aboveAll',
           '500'
         );
       }
@@ -1527,7 +1523,7 @@ export class WebhooksService {
           await this.sendSlackNotificationVN(timeframe,
             [ticker],
             lastData,
-            'SLACK_WEBHOOKS_J2DAY','ABOVE_50_2C',
+            this.stockHelperService.Z_US_SL.Z_US_SL_J2DAY,'ABOVE_50_2C',
             '500'
           );
         }
@@ -1545,12 +1541,12 @@ export class WebhooksService {
           await this.sendSlackNotificationVN(timeframe,
             [ticker],
             lastData,
-            'SLACK_WEBHOOKS_J3DAY','PriceCrMA50_3C',
+            this.stockHelperService.Z_US_SL.Z_US_SL_J3DAY,'PriceCrMA50_3C',
             '500'
           );
         }else if(timeframe.includes('4hour')){
           const aboveOrBellow = lastData?.MA200 < lastData?.close ?'above':'bellow';
-          const slackWebhook = lastData?.MA200 < lastData?.close ? 'SLACK_WEBHOOKS_4h_3C_AB' : 'SLACK_WEBHOOKS_4h_3C_BL';
+          const slackWebhook = lastData?.MA200 < lastData?.close ? this.stockHelperService.Z_US_SL.Z_US_SL_4h_3C_AB : this.stockHelperService.Z_US_SL.Z_US_SL_4h_3C_BL;
           const discordChannel = lastData?.MA200 < lastData?.close ? 'TSLA' : 'SMCI';
           await this.sendSlackNotificationVN(timeframe,
             [ticker],
@@ -1641,7 +1637,7 @@ export class WebhooksService {
     const  downtrend = lastData.divergence < 0 
     const basePath = blowMA200 ? this.stockHelperService.aboveMA50api : `${this.stockHelperService.aboveMA50api}-aboveMA200`;
     const timeframeKey = timeframe === '1day' ? 'MA_AB_5_20' :timeframe === '4hour'  ? 'MA_AB_5_200' : timeframe === '2hour' ? 'MA_AB_20_50' : 'MA_AB_100_200';
-    const sltimeframeKey = timeframe === '1day' ? 'SLACK_WEBHOOKS_US_MACDCR' :timeframe === '4hour'  ? 'SLACK_WEBHOOKS_4h_CROSS' : 'SLACK_WEBHOOKS_2h_CROSS';
+    const sltimeframeKey = timeframe === '1day' ? this.stockHelperService.DAILY_SL.US_D_MACDCR_BL :timeframe === '4hour'  ? this.stockHelperService.FOURHOUR_SL.US_4H_MACDCR_BL : this.stockHelperService.Z_US_SL.Z_US_SL_2h_CROSS;
     const lastDataOnTime = await this.stockHelperService.TurnDateToUnderFM(lastData.date);
     if (stockRSILAUP && macdCross.AB) {
       await this.FireBaseApi("put", `stockRSILAUP/macdCross_AB/${basePath}/${timeframe}/${ticker}.json`, {lastData: lastData})
@@ -1657,7 +1653,7 @@ export class WebhooksService {
       await this.sendSlackNotificationVN(timeframe,
         [ticker],
         lastData,
-        DataSymbols.watchlist.includes(ticker)?'SLACK_WEBHOOKS_WATCHLIST':sltimeframeKey,'macdCross_AB','15'
+        DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL.US_30M_WATCH:sltimeframeKey,'macdCross_AB','15'
       );
       return;
     }
@@ -1672,7 +1668,7 @@ export class WebhooksService {
       await this.sendSlackNotificationVN(timeframe,
         [ticker],
         lastData,
-        DataSymbols.watchlist.includes(ticker)?'SLACK_WEBHOOKS_HOLDING':sltimeframeKey,'macdCross_AB','15'
+        DataSymbols.watchlist.includes(ticker)?this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING:sltimeframeKey,'macdCross_AB','15'
       );
       return;
     }  
@@ -1768,9 +1764,7 @@ export class WebhooksService {
     other = '1day',
   ) {
     const BASE_URL =
-      other === '1day'
-        ? this.configService.get<any>('SLACK_WEBHOOKS')
-        : this.configService.get<any>('SLACK_WEBHOOKS_4h');
+      other === '1day'? this.stockHelperService.Z_US_SL.Z_US_SL_OR : this.stockHelperService.Z_US_SL.Z_US_SL_OR4;
     let hourIn4 = '';
     if(this.stockHelperService.above50andBelow200 && this.stockHelperService.above50andBelow200.length > 0){
       hourIn4 = this.stockHelperService.above50andBelow200.includes(symbols[0]) ? '4️⃣ *BL200* 🟢🟢' : '';
@@ -1812,7 +1806,7 @@ export class WebhooksService {
   ) {
     const isFullDataArray = Array.isArray(fullData);
     let lastData = isFullDataArray? fullData[fullData.length - 1]: fullData;
-    const BASE_URL = slChannel.includes('SLACK_WEBHOOKS_')? this.configService.get<any>(slChannel):slChannel;
+    const BASE_URL = slChannel;
     let hourIn4 = '';
     let in3candles = '';
     let bullxx: string = '';
@@ -1843,7 +1837,7 @@ export class WebhooksService {
     const timeframeScore = timeframeScoreMap[timeframe];
     const StopNTarget = await this.StopNTarget(lastData)
     const addMsg = msg? `*msg:* ${msg} | ` :""
-    const buysellTarget = slChannel !=='SLACK_WEBHOOKS_HOLDING'? `\n\t\t${addMsg} *TARGET:* ${StopNTarget?.target}  | \t |  *STOP LOSS:* ${StopNTarget?.stop}`:'BETTER SELL'
+    const buysellTarget = slChannel !==this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING? `\n\t\t${addMsg} *TARGET:* ${StopNTarget?.target}  | \t |  *STOP LOSS:* ${StopNTarget?.stop}`:'BETTER SELL'
 
     const display = `${sp500}${mkaboveOrBellow2}${HoldingList}${hourIn4}${last}${lastData?.close}(${aboveOrBellow}-${lastData?.MA200?.toFixed(2)})| ${lastData?.date} |`
 
@@ -1865,61 +1859,64 @@ export class WebhooksService {
       const postToCSLRE = await this.post_SLack(BASE_URL, formatted);
       await new Promise(resolve => setTimeout(resolve, 5000));
       if(timeframe === '1day' && isFullDataArray){
-        // postToCSLRE.channel 
-        // postToCSLRE.ts  
-        const slackMessageLink = this.stockHelperService.getSlackMessageLink(postToCSLRE.channel, postToCSLRE.ts);
-        // get ai call 
-        const timeframeFormatted = timeframe.replace(/(\d+)([a-zA-Z]+)/, '$1-$2').toLowerCase();
-        const recommending = `I will provide stock price data over a ${timeframeFormatted} period. Please analyze the performance and write a concise report (maximum 500 words) summarizing key price movements, trends, and momentum. Based on your analysis, include a clear recommendation: Buy, Hold, or Sell, with brief justification supported by the observed data. The data is:`;
-
-        const aiMesAsk = recommending + JSON.stringify({symbol: symbols[0], data : fullData})
-        let getResFromGemini = '';
-        let AIError = true;
-
-        for (let i = 0; i < 3; i++) {
-          // wait 30s before each retry (except first run)
-          await new Promise(resolve => setTimeout(resolve, 30000));
-
-          getResFromGemini = await this.aiToolService.getResFromGemini(aiMesAsk);
-
-          AIError = getResFromGemini.toLowerCase().includes('error');
-
-          // stop retrying if success
-          if (!AIError) {
-            break;
-          }
-        }
-        const slackReLink = await this.aiToolService.postToSl(
-          aiMesAsk,
-          getResFromGemini
-        );
-        // post to slack symbol link
-        if (!AIError) {
-          await this.aiToolService.reply_SLack(
-            postToCSLRE.channel,
-            postToCSLRE.ts,
-            slackReLink
-          );
-        } else {
-          // failed after 3 tries
-          await this.post_SLack(
-            'C0B77K2AG12',
-            `AI Error for ${symbols[0]}: ${slackMessageLink}`
-          );
-        }
-        const recommendingBuyOrSell = getResFromGemini.toLowerCase().includes('recommendation: buy')
-        if(recommendingBuyOrSell ){
-          // post to a-buy channel if recommendation is buy
-          await this.post_SLack('C0B6UVBFRRT', slackMessageLink);
-          // add reaction to original message
-          await this.addReaction_SLack(postToCSLRE.channel, postToCSLRE.ts, 'heart');
-        } else if(getResFromGemini.toLowerCase().includes('recommendation: hold')){
-          await this.addReaction_SLack(postToCSLRE.channel, postToCSLRE.ts, 'thumbsdown');
-        }
+        await this.GeminiRecomendation(postToCSLRE, timeframe, symbols, fullData);
       }
       return { msg: 'post to Slack success' };
     } catch (error) {
       return { msg: 'post to Slack fails:', error };
+    }
+  }
+  async GeminiRecomendation(postToCSLRE, timeframe , symbols, fullData ) {
+     // postToCSLRE.channel 
+    // postToCSLRE.ts  
+    const slackMessageLink = this.stockHelperService.getSlackMessageLink(postToCSLRE.channel, postToCSLRE.ts);
+    // get ai call 
+    const timeframeFormatted = timeframe.replace(/(\d+)([a-zA-Z]+)/, '$1-$2').toLowerCase();
+    const recommending = `I will provide stock price data over a ${timeframeFormatted} period. Please analyze the performance and write a concise report (maximum 500 words) summarizing key price movements, trends, and momentum. Based on your analysis, include a clear recommendation: Buy, Hold, or Sell, with brief justification supported by the observed data. The data is:`;
+
+    const aiMesAsk = recommending + JSON.stringify({symbol: symbols[0], data : fullData})
+    let getResFromGemini = '';
+    let AIError = true;
+
+    for (let i = 0; i < 3; i++) {
+      // wait 30s before each retry (except first run)
+      await new Promise(resolve => setTimeout(resolve, 30000));
+
+      getResFromGemini = await this.aiToolService.getResFromGemini(aiMesAsk);
+
+      AIError = getResFromGemini.toLowerCase().includes('error');
+
+      // stop retrying if success
+      if (!AIError) {
+        break;
+      }
+    }
+    const slackReLink = await this.aiToolService.postToSl(
+      aiMesAsk,
+      getResFromGemini
+    );
+    // post to slack symbol link
+    if (!AIError) {
+      await this.aiToolService.reply_SLack(
+        postToCSLRE.channel,
+        postToCSLRE.ts,
+        slackReLink
+      );
+    } else {
+      // failed after 3 tries
+      await this.post_SLack(
+        'C0B77K2AG12',
+        `AI Error for ${symbols[0]}: ${slackMessageLink}`
+      );
+    }
+    const recommendingBuyOrSell = getResFromGemini.toLowerCase().includes('recommendation: buy')
+    if(recommendingBuyOrSell ){
+      // post to a-buy channel if recommendation is buy
+      await this.post_SLack('C0B6UVBFRRT', slackMessageLink);
+      // add reaction to original message
+      await this.addReaction_SLack(postToCSLRE.channel, postToCSLRE.ts, 'heart');
+    } else if(getResFromGemini.toLowerCase().includes('recommendation: hold')){
+      await this.addReaction_SLack(postToCSLRE.channel, postToCSLRE.ts, 'thumbsdown');
     }
   }
   
@@ -2160,13 +2157,8 @@ async deleteAllMessages_SLack(channel: string) {
 
   for (const each of channels) {
     try {
-      const slID = each.includes('SLACK_WEBHOOKS_')
-        ? this.configService.get<string>(each)
-        : each;
-
-      const result =
-        await this.deleteAllMessages_SLack(slID);
-        console.log(each,": Finished")
+      const result = await this.deleteAllMessages_SLack(each);
+      console.log(each,": Finished")
     } catch (error) {
       // console.error(each, error);
     }

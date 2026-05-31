@@ -66,6 +66,7 @@ import { TasksBullBearService } from './stock/task_bull_bear.service';
 import { TasksUS_ALL_MK_MASS_MACD_OSC } from './stock/task_usmkall_mass_macd_osc.service';
 import { AiToolService } from './ai-tool/ai-tool.service';
 import { StockService } from './stock/stock.service';
+import { SlackService } from './slack/slack.service';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -163,23 +164,24 @@ import { StockService } from './stock/stock.service';
     WebhooksService,
     LocalPLWR,
     AlphavantageService,AiToolService,StockService,
-
+    TasksService,
     TasksVNMKService,
     TaskCryptoService,
     TasksForexService,
     TaskHoldingService,
-    // // // SendEverydayService,
-    // //TasksUS_ALL_MK_MASS_Service,
-    TasksUS_ALL_MK_MASS_MACD_OSC,
-    // // TasksUS_ALL_MKService,
-    TasksService,
-    // // TasksUSMKService_15MIN
-    // // TestOndata_service,
-    // // TasksUSMKService,
-    // // TasksUSMK_1MIN_Service,
 
-    // // TasksUSMKService_SP500,
-    // // TasksUS_ALL_MK_4HOUR_Service,
+    // SlackService,
+    // SendEverydayService,
+    // TasksUS_ALL_MK_MASS_Service,
+    // TasksUS_ALL_MKService,
+    // TasksUSMKService_15MIN
+    // TestOndata_service,
+    // TasksUSMKService,
+    // TasksUSMK_1MIN_Service,
+    // TasksUSMKService_SP500,
+    // TasksUS_ALL_MK_4HOUR_Service,
+    
+    TasksUS_ALL_MK_MASS_MACD_OSC,
     TasksBullBearService,
   ],
 })

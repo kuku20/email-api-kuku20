@@ -22,7 +22,7 @@ export class TasksVNMKService {
 
   async onModuleInit() {
     // This runs ONCE when the app starts
-   //  await this.runAllWatchLists();
+    // await this.runAllWatchLists();
     // console.log(  stock_500_symbols.length)
   }
   
@@ -55,10 +55,10 @@ export class TasksVNMKService {
             secondLastData,
           );
           const webhookMap = [
-            { condition: signal.PriceCrMA50 && signal.ContinueUp, hook: 'SLACK_WEBHOOKS_VN50' },
-            { condition: signal.PriceCrMA100 && signal.ContinueUp, hook: 'SLACK_WEBHOOKS_VN100' },
-            { condition: signal.PriceCrMA200 && signal.ContinueUp, hook: 'SLACK_WEBHOOKS_VN200' },
-            { condition: stockRSILAUP && macdCross.AB, hook: 'SLACK_WEBHOOKS_VN_MACDCR' },
+            { condition: signal.PriceCrMA50 && signal.ContinueUp, hook: this.stockHelperService.VN_SL.VN_D_MACDCR_50 },
+            { condition: signal.PriceCrMA100 && signal.ContinueUp, hook: this.stockHelperService.VN_SL.VN_D_MACDCR_100 },
+            { condition: signal.PriceCrMA200 && signal.ContinueUp, hook: this.stockHelperService.VN_SL.VN_D_MACDCR_200 },
+            { condition: stockRSILAUP && macdCross.AB, hook: this.stockHelperService.VN_SL.VN_D_MACDCR_BL },
           ];
 
           const matched = webhookMap.find(({ condition }) => condition);
@@ -93,7 +93,7 @@ export class TasksVNMKService {
   async runAllWatchLists() {
     const today = this.stockHelperService.getDateNDaysAgo(0);
 
-    const webhooks = ['SLACK_WEBHOOKS_VN50', 'SLACK_WEBHOOKS_VN100','SLACK_WEBHOOKS_VN200','SLACK_WEBHOOKS_VN_MACDCR']
+    const webhooks = [...Object.values(this.stockHelperService.VN_SL)];
     const sendBatchNotification = async (type: 'START' | 'END') => {
       const message = `${type}*${today}${type}${'='.repeat(32)}`;
       await Promise.all(

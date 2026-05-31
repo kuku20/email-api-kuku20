@@ -163,7 +163,7 @@ export class TasksUSMKService_SP500 {
               await this.webhooksService.sendSlackNotificationVN(timeframe,
                 [ticker],
                 lastData,
-                'SLACK_WEBHOOKS_HOLDING','BlMA200_MA20_MA50_MA100_SELL',
+                this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING,'BlMA200_MA20_MA50_MA100_SELL',
                 this.runon15or30
               );
               await this.webhooksService.sendDiscord(
@@ -208,7 +208,7 @@ export class TasksUSMKService_SP500 {
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               lastData,
-              DataSymbols.watchlist.includes(ticker)?'SLACK_WEBHOOKS_WATCHLIST':'SLACK_WEBHOOKS_US200','allCondition',
+              DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL.US_30M_WATCH:this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_200,'allCondition',
               this.runon15or30
             );
           }
@@ -227,10 +227,10 @@ export class TasksUSMKService_SP500 {
           if (!signal) return;
           
           const webhookMap = [
-            // { condition: signal.PriceCrMA50 && signal.ContinueUp && lastData.divergence > 0, hook: 'SLACK_WEBHOOKS_US50' },
-            // { condition: signal.PriceCrMA100 && signal.ContinueUp && lastData.divergence > 0, hook: 'SLACK_WEBHOOKS_US100' },
-            // { condition: signal.PriceCrMA200 && signal.ContinueUp && lastData.divergence > 0, hook: 'SLACK_WEBHOOKS_US200' },
-            { condition: signal.macdCrAB && aboveOrBelowma50, hook: 'SLACK_WEBHOOKS_MACDCRAB' },
+            // { condition: signal.PriceCrMA50 && signal.ContinueUp && lastData.divergence > 0, hook: this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_50 },
+            // { condition: signal.PriceCrMA100 && signal.ContinueUp && lastData.divergence > 0, hook: this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_100 },
+            // { condition: signal.PriceCrMA200 && signal.ContinueUp && lastData.divergence > 0, hook: this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_200 },
+            { condition: signal.macdCrAB && aboveOrBelowma50, hook: this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_BL },
           ];
           
           const matched = webhookMap.find((w) => w.condition);
@@ -238,7 +238,7 @@ export class TasksUSMKService_SP500 {
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               lastData,
-              DataSymbols.watchlist.includes(ticker)?'SLACK_WEBHOOKS_WATCHLIST':matched.hook,'',
+              DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL.US_30M_WATCH:matched.hook,'',
               this.runon15or30
             );
           }
@@ -310,7 +310,7 @@ export class TasksUSMKService_SP500 {
     }
     const today = new Date().toLocaleString('sv-SE', { timeZone: 'America/Chicago' }).replace(/[^\d]/g, '-');
     // const today = this.stockHelperService.getDateNDaysAgo(0);
-    const webhooks = ['SLACK_WEBHOOKS_US50', 'SLACK_WEBHOOKS_US100','SLACK_WEBHOOKS_US200','SLACK_WEBHOOKS_MACDCRAB','SLACK_WEBHOOKS_WATCHLIST','SLACK_WEBHOOKS_HOLDING'];
+    const webhooks = [this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_50, this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_100,this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_200,this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_BL,this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING];
   
     const sendBatchNotification = async (type: 'START' | 'END') => {
       const message = `${type}*${today}*${type}${'='.repeat(32)}`;
@@ -412,7 +412,7 @@ export class TasksUSMKService_SP500 {
     // Delay 2 minutes before processing
     await new Promise((resolve) => setTimeout(resolve, delay * 60 * 1000));
     const message = `${'='.repeat(32)}`;
-    this.webhooksService.sendSlackNotification(message, 'SLACK_WEBHOOKS_4h');
+    this.webhooksService.sendSlackNotification(message, this.stockHelperService.Z_US_SL.Z_US_SL_OR4);
     await this.webhooksService.SendDcChannels(['TSLA'],this.logger,'START');
     // Prepare ticker promises with concurrency limit
     const tickerPromises = tickers.map((ticker) =>
@@ -437,7 +437,7 @@ export class TasksUSMKService_SP500 {
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               lastData,
-              'SLACK_WEBHOOKS_4h','',
+              this.stockHelperService.Z_US_SL.Z_US_SL_OR4,'',
               this.runon15or30
             );
             await this.webhooksService.sendDiscord(
@@ -466,7 +466,7 @@ export class TasksUSMKService_SP500 {
     // Wait for all ticker promises to complete concurrently (with concurrency limit)
     await Promise.all(tickerPromises);
 
-    this.webhooksService.sendSlackNotification(message, 'SLACK_WEBHOOKS_4h');
+    this.webhooksService.sendSlackNotification(message, this.stockHelperService.Z_US_SL.Z_US_SL_OR4);
     await this.webhooksService.SendDcChannels(['TSLA'],this.logger,'END');
   }
 }

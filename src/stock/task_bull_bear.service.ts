@@ -118,7 +118,7 @@ export class TasksBullBearService {
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               lastData,
-              'SLACK_WEBHOOKS_US200',textDetail,
+              this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_200,textDetail,
               this.runon15or30
             );
             await this.webhooksService.sendDiscord(
@@ -133,7 +133,7 @@ export class TasksBullBearService {
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               lastData,
-              StochRSICross?'SLACK_WEBHOOKS_US50':'SLACK_WEBHOOKS_US100',textDetail+' ',
+              StochRSICross?this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_50:this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_100,textDetail+' ',
               this.runon15or30
             );
             this.aboveList.push(ticker)
@@ -148,7 +148,7 @@ export class TasksBullBearService {
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               lastData,
-              'SLACK_WEBHOOKS_WATCHLIST','blMa200MACDPMA50cR',
+              this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,'blMa200MACDPMA50cR',
               this.runon15or30
             );
             await this.webhooksService.sendDiscord(
@@ -162,7 +162,7 @@ export class TasksBullBearService {
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               lastData,
-              'SLACK_WEBHOOKS_WATCHLIST','MA9crosMA20',
+              this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,'MA9crosMA20',
               this.runon15or30
             );
             await this.webhooksService.sendDiscord(
@@ -176,7 +176,7 @@ export class TasksBullBearService {
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               lastData,
-              'SLACK_WEBHOOKS_MACDCRAB','macdCrossAB',
+              this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_BL,'macdCrossAB',
               this.runon15or30
             );
             await this.webhooksService.sendDiscord(
@@ -226,7 +226,7 @@ export class TasksBullBearService {
       throw error;
     } finally {
       await Promise.all(
-        this.stockHelperService.IntradayList.map((hook) =>
+        Object.values(this.stockHelperService.INTRA_30M_SL).map((hook) =>
           this.webhooksService.sendSlackNotification(`${time}================================`, hook),
         ),
       );
@@ -257,10 +257,26 @@ export class TasksBullBearService {
 
   @Cron('0 17 * * 1-5', { timeZone: 'America/New_York' }) // Every weekday at 5:00 PM New York time
   async dailyCleanup() {    
-    // this.webhooksService.deleteSLChannel(this.stockHelperService.DailyRSIList)
-    // this.webhooksService.deleteSLChannel(this.stockHelperService.DailyList)
-    // this.webhooksService.deleteSLChannel(this.stockHelperService.FourHSList)
-    // this.webhooksService.deleteSLChannel(this.stockHelperService.AISlackChannel)
-    this.webhooksService.deleteSLChannel(this.stockHelperService.IntradayList)
+    // await this.postSLTest()
+    // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.AI_SL))
+    // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.DAILY_SL))
+    // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.FOURHOUR_SL))
+    // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.VN_SL))
+    // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.Z_US_SL))
+    this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.INTRA_30M_SL))
+  }
+
+  async postSLTest(){
+    const webhooks = [...Object.values(this.stockHelperService.Z_US_SL)];
+    const sendBatchNotification = async (type: 'START' | 'END') => {
+      const message = `${type}+daily+${type}${'='.repeat(32)}`;
+      await Promise.all(
+        webhooks.map((hook) =>
+          this.webhooksService.sendSlackNotification(message, hook),
+        ),
+      );
+    };
+    await sendBatchNotification('START');
+    await sendBatchNotification('END');
   }
 }

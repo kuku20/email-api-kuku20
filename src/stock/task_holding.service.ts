@@ -77,7 +77,7 @@ export class TaskHoldingService {
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               lastData,
-              'SLACK_WEBHOOKS_HOLDING','BlMA200_MA20_MA50_MA100_SELL',
+              this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING,'BlMA200_MA20_MA50_MA100_SELL',
               this.runon15or30
             );
             await this.webhooksService.sendDiscord(
@@ -124,7 +124,7 @@ export class TaskHoldingService {
     const today = new Date().toLocaleString('sv-SE', { timeZone: 'America/Chicago' }).replace(/[^\d]/g, '-');
     // const today = this.stockHelperService.getDateNDaysAgo(0);
   
-    const webhooks = ['SLACK_WEBHOOKS_HOLDING'];
+    const webhooks = [this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING];
   
     const sendBatchNotification = async (type: 'START' | 'END') => {
       const message = `${type}*${today}*${type}${'='.repeat(32)}`;
@@ -162,14 +162,14 @@ export class TaskHoldingService {
     // await this.webhooksService.sendSlackNotificationVN(timeframe,
     //   symbols,
     //   null,
-    //   'SLACK_WEBHOOKS_HOLDING','',
+    //   this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING,'',
     //   '500'
     // );
     this.logger.warn('Running getholdingList with stocklist length:', symbols.length);
     const today = new Date().toLocaleString('sv-SE', { timeZone: 'America/Chicago' }).replace(/[^\d]/g, '-');
     // const today = this.stockHelperService.getDateNDaysAgo(0);
   
-    const webhooks = ['SLACK_WEBHOOKS_HOLDING'];
+    const webhooks = [this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING];
   
     const sendBatchNotification = async (type: 'START-DAILY' | 'END-DAILY') => {
       const message = `${type}*${today}*${type}${'='.repeat(32)}`;
