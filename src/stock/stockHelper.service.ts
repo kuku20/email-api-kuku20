@@ -23,6 +23,10 @@ export class StockHelperService {
   HoldingList: string[] = [];
   Just2day: string[] = [];
 
+  slackTokenKey = 'SLACK_BOT_TOKEN';
+  setSlackToken(tokenKey: string) {
+    this.slackTokenKey = tokenKey;
+  }
   AI_SL = {
     "AI_BUY": "C0B6SH7PRL7",
     "AI_ERORR": "C0B79ETB41F",
@@ -82,6 +86,28 @@ export class StockHelperService {
     "Z_US_SL_OR": "C0B79NF825P",
     "Z_US_SL_OR4": "C0B74FZQZRT"
    }
+   WEEKLY_SL = {
+    "US_WK_STOCHRSI": "C0B769TEVK8",
+    "US_WK_MACDCR_50": "C0B7A6WMZ97",
+    "US_WK_MACDCR_100": "C0B78BZB3QA",
+    "US_WK_MACDCR_200": "C0B769VJZ46",
+    "US_WK_MACDCR_BL": "C0B720T4WAX",
+    "US_WK_OSC_50": "C0B78BZ4W1G",
+    "US_WK_OSC_100": "C0B7C0FMSRJ",
+    "US_WK_OSC_200": "C0B82LDDX40",
+    "US_WK_OSC_BL": "C0B750FK23F",
+    "US_WK_WATCH": "C0B7C0GFN1J",
+    "US_WK_RSI_15": "C0B720TR8PM",
+    "US_WK_RSI_20": "C0B769UGWHL",
+    "US_WK_RSI_25": "C0B82LCJT3J",
+    "AI_BUY": "C0B7C0FUN4U",
+    "AI_ERORR": "C0B78BZ5TNW",
+    "AI_PRICE": "C0B7A6WSPSM",
+    "AI_RE_BUY": "C0B750FTJTF",
+    "AI_RE_HOLD": "C0B6STLT1FZ",
+    "AI_RE_SELL": "C0B7A6X4QQH",
+    "AI_OTHER_ALGO": "C0B769UT2FQ"
+  }
   async returnNewData(dataIn: any[]) {
     if (!dataIn?.length) return [];
 

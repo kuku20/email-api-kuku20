@@ -38,6 +38,7 @@ export class SlackService implements OnModuleInit {
 
     // OPTIONAL: auto-create on startup
     // Comment this out if you don't want Slack API calls on boot
+    // await this.createDailyChannels(this.stockHelperService.WEEKLY_SL); SLACK_BOT_TOKEN_WEEKLY
     // await this.createDailyChannels(this.stockHelperService.AI_SL);
     // await this.createDailyChannels(this.stockHelperService.INTRA_30M_SL);
     // await this.createDailyChannels(this.stockHelperService.FOURHOUR_SL);
@@ -132,7 +133,7 @@ export class SlackService implements OnModuleInit {
         await this.getOrCreateChannel(key);
 
       channels[key] = channel?.id ?? '';
-      this.addUserToChannel(channels[key], 'U0B79BTNZCZ'); // Replace with actual user ID
+      this.addUserToChannel(channels[key], 'U0B79BTNZCZ'); // U0B7A38HBK3
       this.logger.log(
         `${key} => ${channels[key]}`,
       );

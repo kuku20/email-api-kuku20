@@ -67,6 +67,7 @@ import { TasksUS_ALL_MK_MASS_MACD_OSC } from './stock/task_usmkall_mass_macd_osc
 import { AiToolService } from './ai-tool/ai-tool.service';
 import { StockService } from './stock/stock.service';
 import { SlackService } from './slack/slack.service';
+import { Tasks_US_WEEKLY } from './stock/task_us_weekly.service';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -164,6 +165,7 @@ import { SlackService } from './slack/slack.service';
     WebhooksService,
     LocalPLWR,
     AlphavantageService,AiToolService,StockService,
+    Tasks_US_WEEKLY,
     TasksService,
     TasksVNMKService,
     TaskCryptoService,
@@ -180,7 +182,7 @@ import { SlackService } from './slack/slack.service';
     // TasksUSMK_1MIN_Service,
     // TasksUSMKService_SP500,
     // TasksUS_ALL_MK_4HOUR_Service,
-    
+
     TasksUS_ALL_MK_MASS_MACD_OSC,
     TasksBullBearService,
   ],

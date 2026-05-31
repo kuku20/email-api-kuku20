@@ -1860,13 +1860,15 @@ export class WebhooksService {
       await new Promise(resolve => setTimeout(resolve, 5000));
       if(timeframe === '1day' && isFullDataArray){
         await this.GeminiRecomendation(postToCSLRE, timeframe, symbols, fullData);
+      } else if(timeframe === '1week' && isFullDataArray){
+        await this.GeminiRecomendation(postToCSLRE, timeframe, symbols, fullData, this.stockHelperService.WEEKLY_SL);
       }
       return { msg: 'post to Slack success' };
     } catch (error) {
       return { msg: 'post to Slack fails:', error };
     }
   }
-  async GeminiRecomendation(postToCSLRE, timeframe , symbols, fullData ) {
+  async GeminiRecomendation(postToCSLRE, timeframe , symbols, fullData, aiSlackCl = this.stockHelperService.AI_SL ) {
      // postToCSLRE.channel 
     // postToCSLRE.ts  
     const slackMessageLink = this.stockHelperService.getSlackMessageLink(postToCSLRE.channel, postToCSLRE.ts);
@@ -1893,7 +1895,7 @@ export class WebhooksService {
     }
     const slackReLink = await this.aiToolService.postToSl(
       aiMesAsk,
-      getResFromGemini
+      getResFromGemini, aiSlackCl
     );
     // post to slack symbol link
     if (!AIError) {
@@ -1905,14 +1907,14 @@ export class WebhooksService {
     } else {
       // failed after 3 tries
       await this.post_SLack(
-        this.stockHelperService.AI_SL.AI_ERORR,
+        aiSlackCl.AI_ERORR,
         `AI Error for ${symbols[0]}: ${slackMessageLink}`
       );
     }
     const recommendingBuyOrSell = getResFromGemini.toLowerCase().includes('recommendation: buy')
     if(recommendingBuyOrSell ){
       // post to a-buy channel if recommendation is buy
-      await this.post_SLack(this.stockHelperService.AI_SL.AI_BUY, slackMessageLink);
+      await this.post_SLack(aiSlackCl.AI_BUY, slackMessageLink);
       // add reaction to original message
       await this.addReaction_SLack(postToCSLRE.channel, postToCSLRE.ts, 'heart');
     } else if(getResFromGemini.toLowerCase().includes('recommendation: sell')){
@@ -1933,14 +1935,6 @@ export class WebhooksService {
     }
   }
 
-
-  private get headers() {
-    const slackToken = this.configService.get<any>('SLACK_BOT_TOKEN');
-    return {
-      Authorization: `Bearer ${slackToken}`,
-      'Content-Type': 'application/json; charset=utf-8',
-    };
-  }
 // =========================
   // POST MESSAGE
   // =========================
@@ -1949,7 +1943,7 @@ export class WebhooksService {
       const { data } = await axios.post(
         'https://slack.com/api/chat.postMessage',
         { channel, text },
-        { headers: this.headers },
+        { headers: this.aiToolService.headers },
       );
 
       if (!data.ok) {
@@ -1981,7 +1975,7 @@ async getAllMessages_SLack(channel: string): Promise<string[]> {
           limit: 100,
         },
         {
-          headers: this.headers,
+          headers: this.aiToolService.headers,
         },
       );
 
@@ -2004,7 +1998,7 @@ async getAllMessages_SLack(channel: string): Promise<string[]> {
             const { data: replyData } = await axios.get(
               'https://slack.com/api/conversations.replies',
               {
-                headers: this.headers,
+                headers: this.aiToolService.headers,
                 params: {
                   channel,
                   ts: msg.ts,
@@ -2070,7 +2064,7 @@ async deleteMessage_SLack(
           ts,
         },
         {
-          headers: this.headers,
+          headers: this.aiToolService.headers,
         },
       );
 
@@ -2179,7 +2173,7 @@ async deleteAllMessages_SLack(channel: string) {
           name: reaction,
         },
         {
-          headers: this.headers,
+          headers: this.aiToolService.headers,
         },
       );
   

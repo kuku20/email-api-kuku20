@@ -713,7 +713,7 @@ export class LocalPLWR {
         })
       }
       const newData = await this.stockHelperService.returnNewData(dataOut);
-      return newData;
+      return newData.slice(-400); //
     }
     // return null;
   }

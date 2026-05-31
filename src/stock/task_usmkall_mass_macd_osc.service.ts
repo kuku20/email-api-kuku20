@@ -24,10 +24,18 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
   async onModuleInit() {
 
     // await this.runOnlyDaily4hour()
+    // await this.runfullonms();
     // await this.runfullonms(['ABBV','ACN','MSFT']);
     // await this.runAllOn1day(['ABBV','ACN','MSFT']);
     // await this.runOnly4hxx(DataSymbols.stock_500_symbols)
     // await this.runAllOn4h(DataSymbols.stock_500_symbols);
+    // const data =  await this.LocalPLWR.getTickerFullChart_POLYGON2(
+    //   "TSLA",
+    //   '1week',this.dayago
+    // );
+    // console.log(data.slice(-1), data.length)
+    // let  data2 = await this.LocalPLWR.TwReveseNOAPI("TSLA",'1week');
+    // console.log(data2.slice(-1), data2.length)
   }
 
   async USTIMERUN(
@@ -468,17 +476,17 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
             },
             {
               condition:(macdCross.AB || OscCrossAb) &&  priceAbMA100 ,
-              hook: `${OscCrossAb?this.stockHelperService.FOURHOUR_SL.US_4H_OSC_100: this.stockHelperService.FOURHOUR_SL.US_4H_MACDCR_100}}`,
+              hook: `${OscCrossAb?this.stockHelperService.FOURHOUR_SL.US_4H_OSC_100: this.stockHelperService.FOURHOUR_SL.US_4H_MACDCR_100}`,
               msg:`*${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''}* - PriceCrMA100 ${MACDVALUEPOS}`
             },
             {
               condition:(macdCross.AB || OscCrossAb) && priceAbMA50 ,
-              hook: `${OscCrossAb?this.stockHelperService.FOURHOUR_SL.US_4H_OSC_50: this.stockHelperService.FOURHOUR_SL.US_4H_MACDCR_50}}`,
+              hook: `${OscCrossAb?this.stockHelperService.FOURHOUR_SL.US_4H_OSC_50: this.stockHelperService.FOURHOUR_SL.US_4H_MACDCR_50}`,
               msg:`*${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''}* - PriceCrMA50 ${MACDVALUEPOS}`
             },
             {
               condition: (macdCross.AB || OscCrossAb) && priceBlAl,
-              hook: `${OscCrossAb?this.stockHelperService.FOURHOUR_SL.US_4H_OSC_BL: this.stockHelperService.FOURHOUR_SL.US_4H_MACDCR_BL}}`,
+              hook: `${OscCrossAb?this.stockHelperService.FOURHOUR_SL.US_4H_OSC_BL: this.stockHelperService.FOURHOUR_SL.US_4H_MACDCR_BL}`,
               msg:`*${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''}* - PriceBlMA50_100_200 ${MACDVALUEPOS}`
             },
             {
