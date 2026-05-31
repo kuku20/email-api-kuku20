@@ -165,7 +165,7 @@ import { Tasks_US_WEEKLY } from './stock/task_us_weekly.service';
     WebhooksService,
     LocalPLWR,
     AlphavantageService,AiToolService,StockService,
-    // Tasks_US_WEEKLY,
+    Tasks_US_WEEKLY,
     TasksService,
     TasksVNMKService,
     TaskCryptoService,
@@ -183,7 +183,7 @@ import { Tasks_US_WEEKLY } from './stock/task_us_weekly.service';
     // TasksUSMKService_SP500,
     // TasksUS_ALL_MK_4HOUR_Service,
 
-    // TasksUS_ALL_MK_MASS_MACD_OSC,
+    TasksUS_ALL_MK_MASS_MACD_OSC,
     TasksBullBearService,
   ],
 })
