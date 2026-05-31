@@ -22,7 +22,9 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
   rundayaogo = this.stockHelperService.getDateNDaysAgo(this.dayago);
   marketTarget = 2
   async onModuleInit() {
-
+    // const timeframe = '1day'
+    // const geminibuy  = await this.LocalPLWR.FireBaseApi('get',`stock-gemini-buy/${timeframe}.json`,'')
+    // console.log('geminibuy', geminibuy) 
     // await this.runOnlyDaily4hour()
     // await this.runfullonms();
     // await this.runfullonms(['ABBV','ACN','MSFT']);
@@ -289,7 +291,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
 
   async runAllWatchLists(stocklist) {
     const today = this.stockHelperService.getDateNDaysAgo(0);
-    const webhooks = [...Object.values(this.stockHelperService.DAILY_SL)];
+    const webhooks = [...Object.values(this.stockHelperService.DAILY_SL),...Object.values(this.stockHelperService.AI_SL)];
     const sendBatchNotification = async (type: 'START' | 'END') => {
       const message = `${type}+daily+${today}+${type}${'='.repeat(32)}`;
       await Promise.all(

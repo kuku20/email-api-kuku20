@@ -21,7 +21,10 @@ export class Tasks_US_WEEKLY {
   dayago = 0// end of toi 4
   rundayaogo = this.stockHelperService.getDateNDaysAgo(this.dayago);
   async onModuleInit() {
-    // await this.cronRunWeekly()
+    // const timeframe = '1week/2026-05-24'
+    // const geminibuy  = await this.LocalPLWR.FireBaseApi('get',`stock-gemini-buy/${timeframe}.json`,'')
+    // console.log('geminibuy', Object.keys(geminibuy || {}).length)
+    // await this.cronRunWeekly(newdata)
     // await this.dailyCleanup()
     // const data =  await this.LocalPLWR.getTickerFullChart_POLYGON2(
     //   "TSLA",

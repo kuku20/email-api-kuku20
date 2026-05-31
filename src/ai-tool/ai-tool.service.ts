@@ -19,7 +19,10 @@ export class AiToolService {
   ) {}
   async postGemini(message: string) {
     try {
-      const res = await this.getResFromGemini(message);
+      // const symbol = message.slice(0, 500).match(/"symbol":"([^"]+)"/)||'TSLA';
+      const symbol = message.slice(0, 500).match(/"symbol":"([^"]+)"/) || 'UNKNOWN';
+      const metric = (await this.stockService.getMetric_FINHUB(symbol[1])).metric;
+      const res = await this.getResFromGemini(message+`. Metric: ${JSON.stringify(metric)}`);
       await this.postToSl(message, res);
       return res;
     } catch (error) {

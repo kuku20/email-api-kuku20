@@ -10,6 +10,7 @@ import * as DataSymbols from '../stock/dto/chartData';
 import * as fs from 'fs';
 import { channel } from 'diagnostics_channel';
 import { AiToolService } from 'src/ai-tool/ai-tool.service';
+import { StockService } from 'src/stock/stock.service';
 type Timeframe = '1month' | '1week' | '1day' | '8hour' | '4hour' | '2hour' | '1hour' | '45min' | '30min' | '15min' | '5min' | '1min';
 
 const timeframeScoreMap: Record<Timeframe, number> = {
@@ -36,7 +37,8 @@ export class WebhooksService {
   constructor(
     private readonly configService: ConfigService,
     private readonly stockHelperService: StockHelperService,
-    private readonly aiToolService: AiToolService
+    private readonly aiToolService: AiToolService,
+    private readonly stockService: StockService
   ) {
     // Parse JSON from env vars
     this.WEBHOOKS_ENV = JSON.parse(
@@ -1874,9 +1876,10 @@ export class WebhooksService {
     const slackMessageLink = this.stockHelperService.getSlackMessageLink(postToCSLRE.channel, postToCSLRE.ts);
     // get ai call 
     const timeframeFormatted = timeframe.replace(/(\d+)([a-zA-Z]+)/, '$1-$2').toLowerCase();
-    const recommending = `I will provide stock price data over a ${timeframeFormatted} period. Please analyze the performance and write a concise report (maximum 500 words) summarizing key price movements, trends, and momentum. Based on your analysis, include a clear recommendation: Buy, Hold, or Sell, with brief justification supported by the observed data. The data is:`;
+    const metric = (await this.stockService.getMetric_FINHUB(symbols[0])).metric;
+    const recommending = `I will provide stock price data over a ${timeframeFormatted} period, and metric. Please analyze the performance and write a concise report (maximum 500 words) summarizing key price movements, trends, momentum, and estimated intrinsic value. Based on your analysis, include a clear recommendation: Buy, Hold, or Sell, with brief justification supported by the observed data. Add stoploss and target. The data is:`;
 
-    const aiMesAsk = recommending + JSON.stringify({symbol: symbols[0], data : fullData})
+    const aiMesAsk = recommending + JSON.stringify({symbol: symbols[0], data : fullData.slice(-300)}) + `Metric: ${JSON.stringify(metric)}`;
     let getResFromGemini = '';
     let AIError = true;
 
@@ -1917,6 +1920,10 @@ export class WebhooksService {
       await this.post_SLack(aiSlackCl.AI_BUY, slackMessageLink);
       // add reaction to original message
       await this.addReaction_SLack(postToCSLRE.channel, postToCSLRE.ts, 'heart');
+      // store list to buy in firebase
+      let lastData = fullData[fullData.length - 1]
+      const lastDateOndata = fullData[fullData.length - 1].date.split(' ')[0]
+      await this.FireBaseApi("put", `stock-gemini-buy/${timeframe}/${lastDateOndata}/${symbols[0]}.json`, {lastData: lastData})
     } else if(getResFromGemini.toLowerCase().includes('recommendation: sell')){
       await this.addReaction_SLack(postToCSLRE.channel, postToCSLRE.ts, 'thumbsdown');
     }
