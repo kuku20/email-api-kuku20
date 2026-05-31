@@ -30,6 +30,13 @@ export class Tasks_US_WEEKLY {
     // console.log(data.slice(-1), data.length)
     // let  data2 = await this.LocalPLWR.TwReveseNOAPI("TSLA",'1week');
     // console.log(data2.slice(-1), data2.length)
+    // const date = '2026-05-24'
+    // const OscCrossAb = await this.LocalPLWR.FireBaseApi('get',`stock-related/OscCrossAb/1week/${date}.json`,'')
+    // const macdCross = await this.LocalPLWR.FireBaseApi('get',`stock-related/macdCross/1week/${date}.json`,'')
+    // const stochRSICros = await this.LocalPLWR.FireBaseApi('get',`stock-related/stochRSICros/1week/${date}.json`,'')
+    // console.log('OscCrossAb', Object.keys(OscCrossAb || {}).length)
+    // console.log('macdCross', Object.keys(macdCross || {}).length)
+    // console.log('stochRSICros', Object.keys(stochRSICros || {}).length)
   }
 
   async dailyCleanup() {    
@@ -40,7 +47,7 @@ export class Tasks_US_WEEKLY {
   @Cron('0 0 * * 6', {
     timeZone: 'America/Los_Angeles',
   })
-  async cronRunWeekly(stocklist = DataSymbols.above2billion) {
+  async cronRunWeekly(stocklist = DataSymbols.above5billion) {
     this.stockHelperService.setSlackToken('SLACK_BOT_TOKEN_WEEKLY');
     const combine = [...stocklist, ...DataSymbols.watchlist]
     const uniqueCombine = Array.from(new Set(combine));
@@ -57,7 +64,7 @@ export class Tasks_US_WEEKLY {
       );
     };
     await sendBatchNotification('START');
-    // await this.runWeekly(uniqueCombine);
+    await this.runWeekly(uniqueCombine);
     await sendBatchNotification('END');
   }
   async runWeekly(stocklist) {
