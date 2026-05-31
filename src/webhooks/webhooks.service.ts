@@ -1915,7 +1915,7 @@ export class WebhooksService {
       await this.post_SLack(this.stockHelperService.AI_SL.AI_BUY, slackMessageLink);
       // add reaction to original message
       await this.addReaction_SLack(postToCSLRE.channel, postToCSLRE.ts, 'heart');
-    } else if(getResFromGemini.toLowerCase().includes('recommendation: hold')){
+    } else if(getResFromGemini.toLowerCase().includes('recommendation: sell')){
       await this.addReaction_SLack(postToCSLRE.channel, postToCSLRE.ts, 'thumbsdown');
     }
   }

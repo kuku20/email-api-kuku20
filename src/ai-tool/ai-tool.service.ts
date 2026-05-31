@@ -54,7 +54,7 @@ export class AiToolService {
   async postToSl(message: string, msgRes: string) {
     const line = '================================ ';
     const symbol =
-      message.slice(0, 250).match(/"symbol":"([^"]+)"/) || 'UNKNOWN';
+      message.slice(0, 500).match(/"symbol":"([^"]+)"/) || 'UNKNOWN';
     const performanceNRecommendatioASK = message
       .toLowerCase()
       .includes('performance');
@@ -70,19 +70,19 @@ export class AiToolService {
     const lineWithSymbol = line + symbol[1] + line;
     const outMsg = lineWithSymbol + '\n' + nexMsg + '\n' + lineWithSymbol;
     if (nexMsg.toLocaleLowerCase().includes('error')) {
-      return await this.post_SLack('C0B02DZU0KB', outMsg);
+      return await this.post_SLack(this.stockHelperService.AI_SL.AI_ERORR, outMsg);
     } else if (performanceNRecommendatioASK) {
       if (recommendingBuyOrSell === 'buy') {
-        return await this.post_SLack('C0B7WELEKJL', outMsg);
+        return await this.post_SLack(this.stockHelperService.AI_SL.AI_RE_BUY, outMsg);
       } else if (recommendingBuyOrSell === 'hold') {
-        return await this.post_SLack('C0B7M7Y7FLG', outMsg);
+        return await this.post_SLack(this.stockHelperService.AI_SL.AI_RE_HOLD, outMsg);
       } else {
-        return await this.post_SLack('C0B6RH4466S', outMsg);
+        return await this.post_SLack(this.stockHelperService.AI_SL.AI_RE_SELL, outMsg);
       }
     } else if (askPrice) {
-      return await this.post_SLack('C0B6BFBKJ4X', outMsg);
+      return await this.post_SLack(this.stockHelperService.AI_SL.AI_PRICE, outMsg);
     } else{
-      return await this.post_SLack('C0B02DZU0KB', outMsg);
+      return await this.post_SLack(this.stockHelperService.AI_SL.AI_ERORR, outMsg);
     }
   }
   async posOpenAi(dataIn: any, message: string) {
@@ -277,7 +277,6 @@ export class AiToolService {
         console.error('Slack post error', channel, data);
       }
       // console.log('Slack post response', data);
-      // await this.reply_SLack('C0B6RH4466S', data.ts)
       // data.channel C0B6RH4466S
       // data.ts  1780072407.351509
       // data.message.text
