@@ -24,7 +24,7 @@ export class StockHelperService {
   Just2day: string[] = [];
 
   AI_SL = {
-    "ABUY": "C0B745ELYHK",
+    "AI_BUY": "C0B6SH7PRL7",
     "AI_ERORR": "C0B79ETB41F",
     "AI_PRICE": "C0B79ET5YP3",
     "AI_RE_BUY": "C0B77KWCTHQ",

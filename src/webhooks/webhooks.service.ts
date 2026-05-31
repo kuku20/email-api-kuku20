@@ -1905,14 +1905,14 @@ export class WebhooksService {
     } else {
       // failed after 3 tries
       await this.post_SLack(
-        'C0B77K2AG12',
+        this.stockHelperService.AI_SL.AI_ERORR,
         `AI Error for ${symbols[0]}: ${slackMessageLink}`
       );
     }
     const recommendingBuyOrSell = getResFromGemini.toLowerCase().includes('recommendation: buy')
     if(recommendingBuyOrSell ){
       // post to a-buy channel if recommendation is buy
-      await this.post_SLack('C0B6UVBFRRT', slackMessageLink);
+      await this.post_SLack(this.stockHelperService.AI_SL.AI_BUY, slackMessageLink);
       // add reaction to original message
       await this.addReaction_SLack(postToCSLRE.channel, postToCSLRE.ts, 'heart');
     } else if(getResFromGemini.toLowerCase().includes('recommendation: hold')){
