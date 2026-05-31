@@ -73,19 +73,19 @@ export class AiToolService {
     const lineWithSymbol = line + symbol[1] + line;
     const outMsg = lineWithSymbol + '\n' + nexMsg + '\n' + lineWithSymbol;
     if (nexMsg.toLocaleLowerCase().includes('error')) {
-      return await this.post_SLack(slackChannel.AI_ERORR, outMsg);
+      return await this.post_SLack_Form_ALink(slackChannel.AI_ERORR, outMsg);
     } else if (performanceNRecommendatioASK) {
       if (recommendingBuyOrSell === 'buy') {
-        return await this.post_SLack(slackChannel.AI_RE_BUY, outMsg);
+        return await this.post_SLack_Form_ALink(slackChannel.AI_RE_BUY, outMsg);
       } else if (recommendingBuyOrSell === 'hold') {
-        return await this.post_SLack(slackChannel.AI_RE_HOLD, outMsg);
+        return await this.post_SLack_Form_ALink(slackChannel.AI_RE_HOLD, outMsg);
       } else {
-        return await this.post_SLack(slackChannel.AI_RE_SELL, outMsg);
+        return await this.post_SLack_Form_ALink(slackChannel.AI_RE_SELL, outMsg);
       }
     } else if (askPrice) {
-      return await this.post_SLack(slackChannel.AI_PRICE, outMsg);
+      return await this.post_SLack_Form_ALink(slackChannel.AI_PRICE, outMsg);
     } else{
-      return await this.post_SLack(slackChannel.AI_ERORR, outMsg);
+      return await this.post_SLack_Form_ALink(slackChannel.AI_ERORR, outMsg);
     }
   }
   async posOpenAi(dataIn: any, message: string) {
@@ -268,7 +268,7 @@ export class AiToolService {
       });
   }
 
-  async post_SLack(channel: string, text: string) {
+  async post_SLack_Form_ALink(channel: string, text: string) {
     try {
       const { data } = await axios.post(
         'https://slack.com/api/chat.postMessage',

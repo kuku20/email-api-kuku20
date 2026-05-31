@@ -1859,6 +1859,10 @@ export class WebhooksService {
     try {
       // await axios.post(BASE_URL, payload);
       const postToCSLRE = await this.post_SLack(BASE_URL, formatted);
+      if(!postToCSLRE || !postToCSLRE.ts || !postToCSLRE.channel){
+        console.log('---SL-ERR---', postToCSLRE.error);
+        throw new Error('Failed to post to Slack');
+      }
       await new Promise(resolve => setTimeout(resolve, 5000));
       if(timeframe === '1day' && isFullDataArray){
         await this.GeminiRecomendation(postToCSLRE, timeframe, symbols, fullData);
@@ -1942,9 +1946,10 @@ export class WebhooksService {
     }
   }
 
-// =========================
+  // =========================
   // POST MESSAGE
   // =========================
+  count = 1
   async post_SLack(channel: string, text: string) {
     try {
       const { data } = await axios.post(
@@ -1954,7 +1959,16 @@ export class WebhooksService {
       );
 
       if (!data.ok) {
-        console.log('Slack post error',channel,text);
+        console.log('Slack post error',data.error ,channel,text);
+        if(data.error === 'message_limit_exceeded' && this.count <= 3){
+          this.count++;
+          // let's sent to discord if slack message limit exceeded
+          await this.sendDiscordNotification(
+            `SLACK_LIMIT_ERR:${channel}, ${text.substring(0, 100)}...`,
+            `ERORR_CALL RSIENDBOT`,
+            JSON.stringify('lastdata'),
+          );
+        }
       }
 
       return data;
