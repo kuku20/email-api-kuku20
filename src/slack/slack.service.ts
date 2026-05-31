@@ -23,8 +23,9 @@ export class SlackService implements OnModuleInit {
     private readonly configService: ConfigService,
     private readonly stockHelperService: StockHelperService,
   ) {
-    const slackToken =
-      this.configService.get<string>('SLACK_BOT_TOKEN');
+    this.stockHelperService.setSlackToken('SLACK_BOT_TOKEN');
+    // this.stockHelperService.setSlackToken('SLACK_BOT_TOKEN_WEEKLY');
+    const slackToken = this.configService.get<string>(this.stockHelperService.slackTokenKey);
 
     if (!slackToken) {
       throw new Error('SLACK_BOT_TOKEN is not configured');
@@ -38,12 +39,13 @@ export class SlackService implements OnModuleInit {
 
     // OPTIONAL: auto-create on startup
     // Comment this out if you don't want Slack API calls on boot
-    // await this.createDailyChannels(this.stockHelperService.WEEKLY_SL); SLACK_BOT_TOKEN_WEEKLY
     // await this.createDailyChannels(this.stockHelperService.AI_SL);
     // await this.createDailyChannels(this.stockHelperService.INTRA_30M_SL);
     // await this.createDailyChannels(this.stockHelperService.FOURHOUR_SL);
     // await this.createDailyChannels(this.stockHelperService.DAILY_SL);
     // await this.createDailyChannels(this.stockHelperService.VN_SL);
+    // this.stockHelperService.setSlackToken('SLACK_BOT_TOKEN_WEEKLY');
+    // await this.createDailyChannels(this.stockHelperService.WEEKLY_SL); SLACK_BOT_TOKEN_WEEKLY
   }
 
   private normalizeChannelName(name: string): string {

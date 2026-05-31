@@ -321,8 +321,8 @@ export class AiToolService {
     }
   }
 
-  private get headers() {
-    const slackToken = this.configService.get<any>('SLACK_BOT_TOKEN');
+  public get headers() {
+    const slackToken = this.configService.get<string>(this.stockHelperService.slackTokenKey);
     return {
       Authorization: `Bearer ${slackToken}`,
       'Content-Type': 'application/json; charset=utf-8',
