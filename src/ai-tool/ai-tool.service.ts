@@ -23,7 +23,7 @@ export class AiToolService {
       const symbol = message.slice(0, 500).match(/"symbol":"([^"]+)"/) || 'UNKNOWN';
       const metric = (await this.stockService.getMetric_FINHUB(symbol[1])).metric;
       const res = await this.getResFromGemini(message+`. Metric: ${JSON.stringify(metric)}`);
-      await this.postToSl(message, res);
+      await this.GeminiPostedThread(symbol[1],message, res);
       return res;
     } catch (error) {
       return JSON.stringify(error.message);
@@ -54,13 +54,11 @@ export class AiToolService {
       return JSON.stringify(error.message);
     }
   }
-  async postToSl(message: string, msgRes: string, slackChannel = this.stockHelperService.AI_SL) {
+  async GeminiPostedThread(symbol:string,message: string, msgRes: string, slackChannel = this.stockHelperService.AI_SL) {
     const line = '================================ ';
-    const symbol =
-      message.slice(0, 500).match(/"symbol":"([^"]+)"/) || 'UNKNOWN';
     const performanceNRecommendatioASK = message
       .toLowerCase()
-      .includes('performance');
+      .includes('recommendation');
     const askPrice = message.toLowerCase().includes('just guess');
     const recommendingBuyOrSell = msgRes
       .toLowerCase()
@@ -70,7 +68,7 @@ export class AiToolService {
       ? 'hold'
       : 'sell';
     const nexMsg = `${msgRes.replace(/\*\*/g, '*')}`;
-    const lineWithSymbol = line + symbol[1] + line;
+    const lineWithSymbol = line + symbol + line;
     const outMsg = lineWithSymbol + '\n' + nexMsg + '\n' + lineWithSymbol;
     if (nexMsg.toLocaleLowerCase().includes('error')) {
       return await this.post_SLack_Form_ALink(slackChannel.AI_ERORR, outMsg);
@@ -286,40 +284,6 @@ export class AiToolService {
       return this.stockHelperService.getSlackMessageLink(data.channel, data.ts);
     } catch (error) {
       console.error('Slack post exception', error);
-      throw error;
-    }
-  }
-
-  async reply_SLack(
-    channel: string,
-    thread_ts: string,
-    text: string = `See original message: https://myworkspace.slack.com/archives/${channel}/p${thread_ts.replace(
-      '.',
-      '',
-    )}`,
-  ) {
-    try {
-      const { data } = await axios.post(
-        'https://slack.com/api/chat.postMessage',
-        {
-          channel,
-          text,
-          thread_ts, // reply target
-        },
-        {
-          headers: this.headers,
-        },
-      );
-
-      if (!data.ok) {
-        console.error('Slack reply error', channel, data);
-      }
-
-      // console.log('Slack reply response', data);
-
-      return data;
-    } catch (error) {
-      console.error('Slack reply exception', error);
       throw error;
     }
   }

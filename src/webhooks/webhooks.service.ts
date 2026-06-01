@@ -1869,59 +1869,76 @@ export class WebhooksService {
       } else if(timeframe === '1week' && isFullDataArray){
         await this.GeminiRecomendation(postToCSLRE, timeframe, symbols, fullData, this.stockHelperService.WEEKLY_SL);
       }
-      return { msg: 'post to Slack success' };
+      return { msg: 'post to Slack success', postToCSLRE: postToCSLRE };
     } catch (error) {
       return { msg: 'post to Slack fails:', error };
     }
   }
-  async GeminiRecomendation(postToCSLRE, timeframe , symbols, fullData, aiSlackCl = this.stockHelperService.AI_SL ) {
-     // postToCSLRE.channel 
-    // postToCSLRE.ts  
-    const slackMessageLink = this.stockHelperService.getSlackMessageLink(postToCSLRE.channel, postToCSLRE.ts);
+  async GetGeminiReNPosted(timeframe:string,symbol:string, fullData, aiSlackCl = this.stockHelperService.AI_SL){
     // get ai call 
     const timeframeFormatted = timeframe.replace(/(\d+)([a-zA-Z]+)/, '$1-$2').toLowerCase();
-    const metric = (await this.stockService.getMetric_FINHUB(symbols[0])).metric;
-    const recommending = `I will provide stock price data over a ${timeframeFormatted} period, and metric. Please analyze the performance and write a concise report (maximum 500 words) summarizing key price movements, trends, momentum, and estimated intrinsic value. Based on your analysis, include a clear recommendation: Buy, Hold, or Sell, with brief justification supported by the observed data. Add stoploss and target. The data is:`;
+    const metric = (await this.stockService.getMetric_FINHUB(symbol)).metric;
+    const recommending = `I will provide stock price data over a ${timeframeFormatted} period and related metrics.
+    Analyze the data and write a concise report (maximum 500 words) covering trend, momentum, support/resistance, technical signals, and estimated intrinsic value. Determine whether the stock appears undervalued, fairly valued, or overvalued.
+    Then provide:
+    - Recommendation: Buy, Hold, or Sell
+    - Confidence Level (Low / Medium / High)
+    - Entry Range
+    - Target Price(s)
+    - Stop-Loss
+    - Risk/Reward Ratio
+    - Key reasons supporting the recommendation
+    Base your analysis on the supplied data. If intrinsic value cannot be calculated precisely, estimate it using reasonable assumptions and state them clearly.
+    Stock data:
+    `;
 
-    const aiMesAsk = recommending + JSON.stringify({symbol: symbols[0], data : fullData.slice(-300)}) + `Metric: ${JSON.stringify(metric)}`;
+    const aiMesAsk = recommending + JSON.stringify({symbol: symbol, data : fullData.slice(-300)}) + `Metric: ${JSON.stringify(metric)}`;
     let getResFromGemini = '';
     let AIError = true;
-
     for (let i = 0; i < 3; i++) {
       // wait 30s before each retry (except first run)
       await new Promise(resolve => setTimeout(resolve, 30000));
-
+      console.log(`Attempt ${i + 1}: Calling Gemini API for ${symbol}...`);
       getResFromGemini = await this.aiToolService.getResFromGemini(aiMesAsk);
 
       AIError = getResFromGemini.toLowerCase().includes('error');
 
       // stop retrying if success
       if (!AIError) {
-        break;
-      }
+          break;
+        }
     }
-    const slackReLink = await this.aiToolService.postToSl(
+    const RecommendThreadLink = await this.aiToolService.GeminiPostedThread(
+      symbol,
       aiMesAsk,
-      getResFromGemini, aiSlackCl
+      getResFromGemini, 
+      aiSlackCl
     );
-    // post to slack symbol link
-    if (!AIError) {
-      await this.aiToolService.reply_SLack(
+    return {RecommendThreadLink,getResFromGemini}
+  }
+
+  async GeminiRecomendation(postToCSLRE, timeframe , symbols, fullData, aiSlackCl = this.stockHelperService.AI_SL ) {
+
+    const signalThread = this.stockHelperService.getSlackMessageLink(postToCSLRE.channel, postToCSLRE.ts);
+    // get ai call 
+    const {RecommendThreadLink, getResFromGemini} = await this.GetGeminiReNPosted(timeframe, symbols[0], fullData, aiSlackCl);
+
+    if (!getResFromGemini.toLowerCase().includes('error')) {
+      await this.reply_SLack(
         postToCSLRE.channel,
         postToCSLRE.ts,
-        slackReLink
+        RecommendThreadLink
       );
     } else {
-      // failed after 3 tries
       await this.post_SLack(
         aiSlackCl.AI_ERORR,
-        `AI Error for ${symbols[0]}: ${slackMessageLink}`
+        `AI Error for ${symbols[0]}: ${signalThread}`
       );
     }
-    const recommendingBuyOrSell = getResFromGemini.toLowerCase().includes('recommendation: buy')
-    if(recommendingBuyOrSell ){
+
+    if(getResFromGemini.toLowerCase().includes('buy') ){
       // post to a-buy channel if recommendation is buy
-      await this.post_SLack(aiSlackCl.AI_BUY, slackMessageLink);
+      await this.post_SLack(aiSlackCl.AI_BUY, signalThread);
       // add reaction to original message
       await this.addReaction_SLack(postToCSLRE.channel, postToCSLRE.ts, 'heart');
       // store list to buy in firebase
@@ -1945,7 +1962,41 @@ export class WebhooksService {
       logger.error(`✅ Finished sending for`, channel);
     }
   }
+  // =========================
+  // REPLY THREAD
+  // =========================
+  async reply_SLack(
+    channel: string,
+    thread_ts: string,
+    text: string = `See original message: https://myworkspace.slack.com/archives/${channel}/p${thread_ts.replace(
+      '.',
+      '',
+    )}`,
+  ) {
+    try {
+      const { data } = await axios.post(
+        'https://slack.com/api/chat.postMessage',
+        {
+          channel,
+          text,
+          thread_ts, // reply target
+        },
+        { headers: this.aiToolService.headers },
+      );
 
+      if (!data.ok) {
+        console.error('Slack reply error', channel, data);
+      }
+
+      // console.log('Slack reply response', data);
+
+      return data;
+    } catch (error) {
+      console.error('Slack reply exception', error);
+      throw error;
+    }
+  }
+  // =========================
   // =========================
   // POST MESSAGE
   // =========================
