@@ -131,11 +131,11 @@ export class TasksUS_ALL_MK_4HOUR_Service {
     const macd4huorDc = `<https://discord.com/channels/1306113720979689523/1436948457247080589|4HOUR_RUN_LOOK_MACDCRAB_DC> ${'='.repeat(32)}`
     this.webhooksService.sendSlackNotification('START_'+tslaDc, this.stockHelperService.Z_US_SL.Z_US_SL_4h_3C_AB);
     this.webhooksService.sendSlackNotification('START_'+smciDc, this.stockHelperService.Z_US_SL.Z_US_SL_4h_3C_BL);
-    this.webhooksService.sendSlackNotification('START_'+macd4huorDc, this.stockHelperService.FOURHOUR_SL.US_4H_MACDCR_BL);
+    this.webhooksService.sendSlackNotification('START_'+macd4huorDc, this.stockHelperService.US_4H_.MACDCR_BL);
 
     const slma50 = `**[LOOK_US30ABMA50_SL](https://myworkspace.slack.com/archives/${this.stockHelperService.Z_US_SL.Z_US_SL_4h_3C_AB})**`
     const slma100 = `**[LOOK_US30ABMA100_SL](https://myworkspace.slack.com/archives/${this.stockHelperService.Z_US_SL.Z_US_SL_4h_3C_BL})**`
-    const slmacd = `**[LOOK_US30ABMA100_SL](https://myworkspace.slack.com/archives/${this.stockHelperService.FOURHOUR_SL.US_4H_MACDCR_BL})**`
+    const slmacd = `**[LOOK_US30ABMA100_SL](https://myworkspace.slack.com/archives/${this.stockHelperService.US_4H_.MACDCR_BL})**`
     await this.webhooksService.SendDcChannels(['TSLA'],this.logger,`START_4OUR_${slma50}`);
     await this.webhooksService.SendDcChannels(['SMCI'],this.logger,`START_4OUR_${slma100}`);
     await this.webhooksService.SendDcChannels(['MA_AB_5_200'],this.logger,`START_4OUR_${slmacd}`);
@@ -145,7 +145,7 @@ export class TasksUS_ALL_MK_4HOUR_Service {
     await this.webhooksService.sendlast('200BL_OV_NEG_01', '200BL_OV_NEG_05');
     this.webhooksService.sendSlackNotification('END_'+tslaDc, this.stockHelperService.Z_US_SL.Z_US_SL_4h_3C_AB);
     this.webhooksService.sendSlackNotification('END_'+smciDc, this.stockHelperService.Z_US_SL.Z_US_SL_4h_3C_BL);
-    this.webhooksService.sendSlackNotification('END_'+macd4huorDc, this.stockHelperService.FOURHOUR_SL.US_4H_MACDCR_BL);
+    this.webhooksService.sendSlackNotification('END_'+macd4huorDc, this.stockHelperService.US_4H_.MACDCR_BL);
     await this.webhooksService.SendDcChannels(['TSLA'],this.logger,`END_4HOUR_${slma50}`);
     await this.webhooksService.SendDcChannels(['SMCI'],this.logger,`END_4OUR_${slma100}`);
     await this.webhooksService.SendDcChannels(['MA_AB_5_200'],this.logger,`END_4HOUR_${slmacd}`);

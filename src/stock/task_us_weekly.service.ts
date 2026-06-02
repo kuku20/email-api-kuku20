@@ -44,7 +44,7 @@ export class Tasks_US_WEEKLY {
 
   async dailyCleanup() {    
     this.stockHelperService.setSlackToken('SLACK_BOT_TOKEN_WEEKLY');
-    this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.WEEKLY_SL))
+    this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.US_WK_))
   }
 
   @Cron('0 0 * * 6', {
@@ -57,7 +57,7 @@ export class Tasks_US_WEEKLY {
 
     const today = this.stockHelperService.getDateNDaysAgo(0);
 
-    const webhooks = [...Object.values(this.stockHelperService.WEEKLY_SL)]
+    const webhooks = [...Object.values(this.stockHelperService.US_WK_)]
     const sendBatchNotification = async (type: 'START' | 'END') => {
       const message = `${type}+weekly+${today}+${type}${'='.repeat(32)}`;
       await Promise.all(
@@ -165,27 +165,27 @@ export class Tasks_US_WEEKLY {
           const webhookMap = [
             {
               condition:(macdCross.AB || OscCrossAb) &&  priceAbMA200,
-              hook: `${OscCrossAb?this.stockHelperService.WEEKLY_SL.US_WK_OSC_200: this.stockHelperService.WEEKLY_SL.US_WK_MACDCR_200}`,
+              hook: `${OscCrossAb?this.stockHelperService.US_WK_.OSC_200: this.stockHelperService.US_WK_.MACDCR_200}`,
               msg:`*${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''}* - PriceCrMA200 ${MACDVALUEPOS}`
             },
             {
               condition:(macdCross.AB || OscCrossAb) &&  priceAbMA100 ,
-              hook: `${OscCrossAb?this.stockHelperService.WEEKLY_SL.US_WK_OSC_100: this.stockHelperService.WEEKLY_SL.US_WK_MACDCR_100}`,
+              hook: `${OscCrossAb?this.stockHelperService.US_WK_.OSC_100: this.stockHelperService.US_WK_.MACDCR_100}`,
               msg:`*${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''}* - PriceCrMA100 ${MACDVALUEPOS}`
             },
             {
               condition:(macdCross.AB || OscCrossAb) && priceAbMA50 ,
-              hook: `${OscCrossAb?this.stockHelperService.WEEKLY_SL.US_WK_OSC_50: this.stockHelperService.WEEKLY_SL.US_WK_MACDCR_50}`,
+              hook: `${OscCrossAb?this.stockHelperService.US_WK_.OSC_50: this.stockHelperService.US_WK_.MACDCR_50}`,
               msg:`*${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''}* - PriceCrMA50 ${MACDVALUEPOS}`
             },
             {
               condition: (macdCross.AB || OscCrossAb) && priceBlAl,
-              hook: `${OscCrossAb?this.stockHelperService.WEEKLY_SL.US_WK_OSC_BL: this.stockHelperService.WEEKLY_SL.US_WK_MACDCR_BL}`,
+              hook: `${OscCrossAb?this.stockHelperService.US_WK_.OSC_BL: this.stockHelperService.US_WK_.MACDCR_BL}`,
               msg:`*${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''}* - PriceBlMA50_100_200 ${MACDVALUEPOS}`
             },
             {
               condition: stochRSICros,
-              hook: this.stockHelperService.WEEKLY_SL.US_WK_STOCHRSI,
+              hook: this.stockHelperService.US_WK_.STOCHRSI,
               msg:`*stochRSICros* --${priceAbMA200?'PriceCrMA200': priceAbMA100?'priceAbMA100': priceAbMA50?'priceAbMA50':'PriceBlAl'} -${MACDVALUEPOS}`
             },
           ];
@@ -196,7 +196,7 @@ export class Tasks_US_WEEKLY {
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               data,
-              DataSymbols.watchlist.includes(ticker)? this.stockHelperService.WEEKLY_SL.US_WK_WATCH :matched.hook,matched.msg,'500'
+              DataSymbols.watchlist.includes(ticker)? this.stockHelperService.US_WK_.WATCH :matched.hook,matched.msg,'500'
             );
           }
           this.logger.log(`${ticker} processed successfully.`);

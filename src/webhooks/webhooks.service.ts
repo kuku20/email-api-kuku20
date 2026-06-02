@@ -1639,7 +1639,7 @@ export class WebhooksService {
     const  downtrend = lastData.divergence < 0 
     const basePath = blowMA200 ? this.stockHelperService.aboveMA50api : `${this.stockHelperService.aboveMA50api}-aboveMA200`;
     const timeframeKey = timeframe === '1day' ? 'MA_AB_5_20' :timeframe === '4hour'  ? 'MA_AB_5_200' : timeframe === '2hour' ? 'MA_AB_20_50' : 'MA_AB_100_200';
-    const sltimeframeKey = timeframe === '1day' ? this.stockHelperService.DAILY_SL.US_D_MACDCR_BL :timeframe === '4hour'  ? this.stockHelperService.FOURHOUR_SL.US_4H_MACDCR_BL : this.stockHelperService.Z_US_SL.Z_US_SL_2h_CROSS;
+    const sltimeframeKey = timeframe === '1day' ? this.stockHelperService.US_DAILY_.MACDCR_BL :timeframe === '4hour'  ? this.stockHelperService.US_4H_.MACDCR_BL : this.stockHelperService.Z_US_SL.Z_US_SL_2h_CROSS;
     const lastDataOnTime = await this.stockHelperService.TurnDateToUnderFM(lastData.date);
     if (stockRSILAUP && macdCross.AB) {
       await this.FireBaseApi("put", `stockRSILAUP/macdCross_AB/${basePath}/${timeframe}/${ticker}.json`, {lastData: lastData})
@@ -1867,7 +1867,7 @@ export class WebhooksService {
       if(timeframe === '1day' && isFullDataArray){
         await this.GeminiRecomendation(postToCSLRE, timeframe, symbols, fullData);
       } else if(timeframe === '1week' && isFullDataArray){
-        await this.GeminiRecomendation(postToCSLRE, timeframe, symbols, fullData, this.stockHelperService.WEEKLY_SL);
+        await this.GeminiRecomendation(postToCSLRE, timeframe, symbols, fullData, this.stockHelperService.US_WK_);
       }
       return { msg: 'post to Slack success', postToCSLRE: postToCSLRE };
     } catch (error) {

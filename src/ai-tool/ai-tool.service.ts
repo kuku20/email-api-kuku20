@@ -62,13 +62,15 @@ export class AiToolService {
     const askPrice = message.toLowerCase().includes('just guess');
     const recommendingBuyOrSell = msgRes
       .toLowerCase()
-      .includes('recommendation: buy')
+      .includes('buy')
       ? 'buy'
-      : msgRes.toLowerCase().includes('recommendation: hold')
+      : msgRes.toLowerCase().includes('hold')
       ? 'hold'
       : 'sell';
     const nexMsg = `${msgRes.replace(/\*\*/g, '*')}`;
-    const lineWithSymbol = line + symbol + line;
+    const locallink = `<http://localhost:4200/price-log/${symbol}?daysRange=500|${symbol}>`;
+
+    const lineWithSymbol = line + locallink + line;
     const outMsg = lineWithSymbol + '\n' + nexMsg + '\n' + lineWithSymbol;
     if (nexMsg.toLocaleLowerCase().includes('error')) {
       return await this.post_SLack_Form_ALink(slackChannel.AI_ERORR, outMsg);

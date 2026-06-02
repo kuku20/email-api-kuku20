@@ -22,19 +22,18 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
   rundayaogo = this.stockHelperService.getDateNDaysAgo(this.dayago);
   marketTarget = 2
   async onModuleInit() {
-    console.log('TasksUS_ALL_MK_MASS_MACD_OSC initialized', DataSymbols.watchlist.length);
-    const timeframe = '1day/2026-05-28'
-    const geminibuy  = await this.LocalPLWR.FireBaseApi('get',`stock-gemini-buy/${timeframe}.json`,'')
-    console.log('geminibuy', Object.keys(geminibuy)) 
+    // console.log('TasksUS_ALL_MK_MASS_MACD_OSC initialized', DataSymbols.watchlist.length);
+    // const timeframe = '1day/2026-05-28'
+    // const geminibuy  = await this.LocalPLWR.FireBaseApi('get',`stock-gemini-buy/${timeframe}.json`,'')
+    // console.log('geminibuy', Object.keys(geminibuy)) 
     // await this.runOnlyDaily4hour()
-    // await this.runWatchlistGemini([]);
+    // await this.runWatchlistGemini(DataSymbols.watchlist);
+    // await this.runWatchlistGemini(DataSymbols.watchlist, this.stockHelperService.US_DAILY_, '1day');
     // await this.runAllOn1day(['IVZ']);
     // await this.runfullonms(['ABBV','ACN','MSFT']);
     // await this.runAllWatchLists(Object.keys(geminibuy));
-    // await this.runAllWatchLists([
-    //   'C',    'CPAY',
-    //   'IBKR', 'IVZ',
-    //   'MSFT', 
+    // await this.runAllOn1day([
+    //   'NVDA',
     // ]);
     // await this.runOnly4hxx(DataSymbols.stock_500_symbols)
     // await this.runAllOn4h(DataSymbols.stock_500_symbols);
@@ -127,7 +126,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               lastData,
-              this.stockHelperService.DAILY_SL.US_D_RSI_15,'RSIBL15','500'
+              this.stockHelperService.US_DAILY_.RSI_15,'RSIBL15','500'
             );
           }else if(signal && signal.RSI20up){
             await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSIALERT/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
@@ -141,7 +140,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               lastData,
-              this.stockHelperService.DAILY_SL.US_D_RSI_20,'RSI15-20','500'
+              this.stockHelperService.US_DAILY_.RSI_20,'RSI15-20','500'
             );
           }else if(signal && signal.RSI25up){
             await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSI25AL/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
@@ -155,7 +154,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               lastData,
-              this.stockHelperService.DAILY_SL.US_D_RSI_25,'RSI20-25','500'
+              this.stockHelperService.US_DAILY_.RSI_25,'RSI20-25','500'
             );
           }else if(signal && signal.RSI30up){
             await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSI30AL/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
@@ -196,33 +195,33 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
           const webhookMap = [
             {
               condition:(macdCross.AB || OscCrossAb) &&  priceAbMA200,
-              hook: timeframe === '1day'?`${OscCrossAb?this.stockHelperService.DAILY_SL.US_D_OSC_200: this.stockHelperService.DAILY_SL.US_D_MACDCR_200}`: `${OscCrossAb?this.stockHelperService.FOURHOUR_SL.US_4H_OSC_200: this.stockHelperService.FOURHOUR_SL.US_4H_MACDCR_200}`,
+              hook: timeframe === '1day'?`${OscCrossAb?this.stockHelperService.US_DAILY_.OSC_200: this.stockHelperService.US_DAILY_.MACDCR_200}`: `${OscCrossAb?this.stockHelperService.US_4H_.OSC_200: this.stockHelperService.US_4H_.MACDCR_200}`,
               msg:`*${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''}* - PriceCrMA200 ${MACDVALUEPOS}`
             },
             {
               condition:(macdCross.AB || OscCrossAb) &&  priceAbMA100 ,
-              hook: timeframe === '1day'?`${OscCrossAb?this.stockHelperService.DAILY_SL.US_D_OSC_100:  this.stockHelperService.DAILY_SL.US_D_MACDCR_100}`: `${OscCrossAb?this.stockHelperService.FOURHOUR_SL.US_4H_OSC_100: this.stockHelperService.FOURHOUR_SL.US_4H_MACDCR_100}`,
+              hook: timeframe === '1day'?`${OscCrossAb?this.stockHelperService.US_DAILY_.OSC_100:  this.stockHelperService.US_DAILY_.MACDCR_100}`: `${OscCrossAb?this.stockHelperService.US_4H_.OSC_100: this.stockHelperService.US_4H_.MACDCR_100}`,
               msg:`*${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''}* - PriceCrMA100 ${MACDVALUEPOS}`
             },
             {
               condition:(macdCross.AB || OscCrossAb) && priceAbMA50 ,
-              hook: timeframe === '1day'?`${OscCrossAb?this.stockHelperService.DAILY_SL.US_D_OSC_50: this.stockHelperService.DAILY_SL.US_D_MACDCR_50}`: `${OscCrossAb?this.stockHelperService.FOURHOUR_SL.US_4H_OSC_50: this.stockHelperService.FOURHOUR_SL.US_4H_MACDCR_50}`,
+              hook: timeframe === '1day'?`${OscCrossAb?this.stockHelperService.US_DAILY_.OSC_50: this.stockHelperService.US_DAILY_.MACDCR_50}`: `${OscCrossAb?this.stockHelperService.US_4H_.OSC_50: this.stockHelperService.US_4H_.MACDCR_50}`,
               msg:`*${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''}* - PriceCrMA50 ${MACDVALUEPOS}`
             },
             {
               condition: (macdCross.AB || OscCrossAb) && priceBlAl,
-              hook: timeframe === '1day'?`${OscCrossAb?this.stockHelperService.DAILY_SL.US_D_OSC_BL:  this.stockHelperService.DAILY_SL.US_D_MACDCR_BL}`: `${OscCrossAb?this.stockHelperService.FOURHOUR_SL.US_4H_OSC_BL: this.stockHelperService.FOURHOUR_SL.US_4H_MACDCR_BL}`,
+              hook: timeframe === '1day'?`${OscCrossAb?this.stockHelperService.US_DAILY_.OSC_BL:  this.stockHelperService.US_DAILY_.MACDCR_BL}`: `${OscCrossAb?this.stockHelperService.US_4H_.OSC_BL: this.stockHelperService.US_4H_.MACDCR_BL}`,
               msg:`*${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''}* - PriceBlMA50_100_200 ${MACDVALUEPOS}`
             },
             {
               condition: stochRSICros,
-              hook: timeframe === '1day'?this.stockHelperService.DAILY_SL.US_D_STOCHRSI:this.stockHelperService.FOURHOUR_SL.US_4H_STOCHRSI,
+              hook: timeframe === '1day'?this.stockHelperService.US_DAILY_.STOCHRSI:this.stockHelperService.US_4H_.STOCHRSI,
               msg:`*stochRSICros* --${priceAbMA200?'PriceCrMA200': priceAbMA100?'priceAbMA100': priceAbMA50?'priceAbMA50':'PriceBlAl'} -${MACDVALUEPOS}`
             },
           ];
 
           const matched = webhookMap.find((w) => w.condition);
-          const wlSl = timeframe === '1day'? this.stockHelperService.DAILY_SL.US_D_WATCH : this.stockHelperService.FOURHOUR_SL.US_4H_WATCH;
+          const wlSl = timeframe === '1day'? this.stockHelperService.US_DAILY_.WATCH : this.stockHelperService.US_4H_.WATCH;
           if (matched) {
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
@@ -282,7 +281,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
   async runOnly4hxx(stocklist) {
     const today = this.stockHelperService.getDateNDaysAgo(0);
 
-    const webhooks = [...Object.values(this.stockHelperService.FOURHOUR_SL)]
+    const webhooks = [...Object.values(this.stockHelperService.US_4H_)]
     const sendBatchNotification = async (type: 'START' | 'END') => {
       const message = `${type}+4hour+${today}+${type}${'='.repeat(32)}`;
       await Promise.all(
@@ -298,7 +297,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
 
   async runAllWatchLists(stocklist) {
     const today = this.stockHelperService.getDateNDaysAgo(0);
-    const webhooks = [...Object.values(this.stockHelperService.DAILY_SL),...Object.values(this.stockHelperService.AI_SL)];
+    const webhooks = [...Object.values(this.stockHelperService.US_DAILY_),...Object.values(this.stockHelperService.AI_SL)];
     const sendBatchNotification = async (type: 'START' | 'END') => {
       const message = `${type}+daily+${today}+${type}${'='.repeat(32)}`;
       await Promise.all(
@@ -347,10 +346,10 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
     const message_smci = `${smciDc}${'='.repeat(32)}`;
     this.webhooksService.sendSlackNotification('START_'+message_tsla, this.stockHelperService.Z_US_SL.Z_US_SL_4h_3C_AB);
     this.webhooksService.sendSlackNotification('START_'+message_smci, this.stockHelperService.Z_US_SL.Z_US_SL_4h_3C_BL);
-    this.webhooksService.sendSlackNotification('START_'+macd4huorDc, this.stockHelperService.FOURHOUR_SL.US_4H_MACDCR_BL);
+    this.webhooksService.sendSlackNotification('START_'+macd4huorDc, this.stockHelperService.US_4H_.MACDCR_BL);
     const slma50 = `**[LOOK_US30ABMA50_SL](https://myworkspace.slack.com/archives/${this.stockHelperService.Z_US_SL.Z_US_SL_4h_3C_AB})**`
     const slma100 = `**[LOOK_US30ABMA100_SL](https://myworkspace.slack.com/archives/${this.stockHelperService.Z_US_SL.Z_US_SL_4h_3C_BL})**`
-    const slmacd = `**[LOOK_US30ABMA100_SL](https://myworkspace.slack.com/archives/${this.stockHelperService.FOURHOUR_SL.US_4H_MACDCR_BL})**`
+    const slmacd = `**[LOOK_US30ABMA100_SL](https://myworkspace.slack.com/archives/${this.stockHelperService.US_4H_.MACDCR_BL})**`
     await this.webhooksService.SendDcChannels(['TSLA'],this.logger,`START_4OUR_${slma50}`);
     await this.webhooksService.SendDcChannels(['SMCI'],this.logger,`START_4OUR_${slma100}`);
     await this.webhooksService.SendDcChannels(['MA_AB_5_200'],this.logger,`START_4OUR_${slmacd}`);
@@ -358,7 +357,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
     await this.webhooksService.sendlast('200BL_OV_NEG_01', '200BL_OV_NEG_05');
     this.webhooksService.sendSlackNotification('END_'+message_tsla, this.stockHelperService.Z_US_SL.Z_US_SL_4h_3C_AB);
     this.webhooksService.sendSlackNotification('END_'+message_smci, this.stockHelperService.Z_US_SL.Z_US_SL_4h_3C_BL);
-    this.webhooksService.sendSlackNotification('END_'+macd4huorDc, this.stockHelperService.FOURHOUR_SL.US_4H_MACDCR_BL);
+    this.webhooksService.sendSlackNotification('END_'+macd4huorDc, this.stockHelperService.US_4H_.MACDCR_BL);
     await this.webhooksService.SendDcChannels(['TSLA'],this.logger,`END_4HOUR_${slma50}`);
     await this.webhooksService.SendDcChannels(['SMCI'],this.logger,`END_4OUR_${slma100}`);
     await this.webhooksService.SendDcChannels(['MA_AB_5_200'],this.logger,`END_4HOUR_${slmacd}`);
@@ -371,7 +370,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
 
     const today = this.stockHelperService.getDateNDaysAgo(0);
 
-    const webhooks = [...Object.values(this.stockHelperService.FOURHOUR_SL)]
+    const webhooks = [...Object.values(this.stockHelperService.US_4H_)]
     const sendBatchNotification = async (type: 'START' | 'END') => {
       const message = `${type}+4hour+${today}+${type}${'='.repeat(32)}`;
       await Promise.all(
@@ -480,27 +479,27 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
           const webhookMap = [
             {
               condition:(macdCross.AB || OscCrossAb) &&  priceAbMA200,
-              hook: `${OscCrossAb?this.stockHelperService.FOURHOUR_SL.US_4H_OSC_200: this.stockHelperService.FOURHOUR_SL.US_4H_MACDCR_200}`,
+              hook: `${OscCrossAb?this.stockHelperService.US_4H_.OSC_200: this.stockHelperService.US_4H_.MACDCR_200}`,
               msg:`*${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''}* - PriceCrMA200 ${MACDVALUEPOS}`
             },
             {
               condition:(macdCross.AB || OscCrossAb) &&  priceAbMA100 ,
-              hook: `${OscCrossAb?this.stockHelperService.FOURHOUR_SL.US_4H_OSC_100: this.stockHelperService.FOURHOUR_SL.US_4H_MACDCR_100}`,
+              hook: `${OscCrossAb?this.stockHelperService.US_4H_.OSC_100: this.stockHelperService.US_4H_.MACDCR_100}`,
               msg:`*${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''}* - PriceCrMA100 ${MACDVALUEPOS}`
             },
             {
               condition:(macdCross.AB || OscCrossAb) && priceAbMA50 ,
-              hook: `${OscCrossAb?this.stockHelperService.FOURHOUR_SL.US_4H_OSC_50: this.stockHelperService.FOURHOUR_SL.US_4H_MACDCR_50}`,
+              hook: `${OscCrossAb?this.stockHelperService.US_4H_.OSC_50: this.stockHelperService.US_4H_.MACDCR_50}`,
               msg:`*${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''}* - PriceCrMA50 ${MACDVALUEPOS}`
             },
             {
               condition: (macdCross.AB || OscCrossAb) && priceBlAl,
-              hook: `${OscCrossAb?this.stockHelperService.FOURHOUR_SL.US_4H_OSC_BL: this.stockHelperService.FOURHOUR_SL.US_4H_MACDCR_BL}`,
+              hook: `${OscCrossAb?this.stockHelperService.US_4H_.OSC_BL: this.stockHelperService.US_4H_.MACDCR_BL}`,
               msg:`*${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''}* - PriceBlMA50_100_200 ${MACDVALUEPOS}`
             },
             {
               condition: stochRSICros,
-              hook: this.stockHelperService.FOURHOUR_SL.US_4H_STOCHRSI,
+              hook: this.stockHelperService.US_4H_.STOCHRSI,
               msg:`*stochRSICros* --${priceAbMA200?'PriceCrMA200': priceAbMA100?'priceAbMA100': priceAbMA50?'priceAbMA50':'PriceBlAl'} -${MACDVALUEPOS}`
             },
           ];
@@ -511,7 +510,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               lastData,
-              DataSymbols.watchlist.includes(ticker)? this.stockHelperService.FOURHOUR_SL.US_4H_WATCH :matched.hook,matched.msg,'500'
+              DataSymbols.watchlist.includes(ticker)? this.stockHelperService.US_4H_.WATCH :matched.hook,matched.msg,'500'
             );
           }
           this.logger.log(`${ticker} processed successfully.`);
@@ -528,25 +527,37 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
       }),
     );
 
-    // Wait for all ticker promises to complete concurrently (with concurrency limit)
+    // Wait for all ticker promises to complete concurrentl  y (with concurrency limit)
     await Promise.all(tickerPromises);
   }
 
 
-  async runWatchlistGemini(stocklist, timeframe = '4hour') {
-    this.webhooksService.sendSlackNotification('================================END+4hour+2026-05-30+END================================', this.stockHelperService.FOURHOUR_SL.US_4H_WATCH),
+  async runWatchlistGemini(stocklist, slChannel = this.stockHelperService.US_4H_, timeframe = '4hour') {
+    const today = this.stockHelperService.getDateNDaysAgo(0);
+    const webhooks = [slChannel.WATCH, this.stockHelperService.AI_SL.AI_RE_BUY,this.stockHelperService.AI_SL.AI_RE_SELL,this.stockHelperService.AI_SL.AI_RE_HOLD, this.stockHelperService.AI_SL.AI_ERORR];
+    const sendBatchNotification = async (type: 'START' | 'END') => {
+      const message = `${type}+${timeframe}+${today}+${type}${'='.repeat(32)}`;
+      await Promise.all(
+        webhooks.map((hook) =>
+          this.webhooksService.sendSlackNotification(message, hook),
+        ),
+      );
+    };
+    await sendBatchNotification('START');
     await Promise.all([
       this.processTickers_runWatchlistGemini(
         stocklist,
-        timeframe, 
+        timeframe, slChannel,
         0,
       ),
     ]);
+    await sendBatchNotification('END');
   }
 
   private async processTickers_runWatchlistGemini(
     tickers: string[],
     timeframe: string,
+    slChannel=this.stockHelperService.US_4H_,
     delay = 2,
   ) {
     const limit = pLimit(2); // Limit the concurrency to 1 at a time
@@ -578,11 +589,11 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
           const secondLastData = data[data.length - 2];
 
           const {RecommendThreadLink,getResFromGemini} = await this.webhooksService.GetGeminiReNPosted(timeframe,ticker,data);
-          if(getResFromGemini.toLowerCase().includes('recommendation: buy')){
+          if(getResFromGemini.toLowerCase().includes('buy')){
            const {msg,postToCSLRE} = await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               lastData,
-               this.stockHelperService.FOURHOUR_SL.US_4H_WATCH ,'AI-BUY','500'
+              slChannel.WATCH ,'AI-BUY','500'
             );
             await this.webhooksService.reply_SLack(
               postToCSLRE.channel,
@@ -627,27 +638,27 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
             const webhookMap = [
               {
                 condition:(macdCross.AB || OscCrossAb) &&  priceAbMA200,
-                hook: `${OscCrossAb?this.stockHelperService.FOURHOUR_SL.US_4H_OSC_200: this.stockHelperService.FOURHOUR_SL.US_4H_MACDCR_200}`,
+                hook: `${OscCrossAb?slChannel.OSC_200: slChannel.MACDCR_200}`,
                 msg:`*${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''}* - PriceCrMA200 ${MACDVALUEPOS}`
               },
               {
                 condition:(macdCross.AB || OscCrossAb) &&  priceAbMA100 ,
-                hook: `${OscCrossAb?this.stockHelperService.FOURHOUR_SL.US_4H_OSC_100: this.stockHelperService.FOURHOUR_SL.US_4H_MACDCR_100}`,
+                hook: `${OscCrossAb?slChannel.OSC_100: slChannel.MACDCR_100}`,
                 msg:`*${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''}* - PriceCrMA100 ${MACDVALUEPOS}`
               },
               {
                 condition:(macdCross.AB || OscCrossAb) && priceAbMA50 ,
-                hook: `${OscCrossAb?this.stockHelperService.FOURHOUR_SL.US_4H_OSC_50: this.stockHelperService.FOURHOUR_SL.US_4H_MACDCR_50}`,
+                hook: `${OscCrossAb?slChannel.OSC_50: slChannel.MACDCR_50}`,
                 msg:`*${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''}* - PriceCrMA50 ${MACDVALUEPOS}`
               },
               {
                 condition: (macdCross.AB || OscCrossAb) && priceBlAl,
-                hook: `${OscCrossAb?this.stockHelperService.FOURHOUR_SL.US_4H_OSC_BL: this.stockHelperService.FOURHOUR_SL.US_4H_MACDCR_BL}`,
+                hook: `${OscCrossAb?slChannel.OSC_BL: slChannel.MACDCR_BL}`,
                 msg:`*${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''}* - PriceBlMA50_100_200 ${MACDVALUEPOS}`
               },
               {
                 condition: stochRSICros,
-                hook: this.stockHelperService.FOURHOUR_SL.US_4H_STOCHRSI,
+                hook: slChannel.STOCHRSI,
                 msg:`*stochRSICros* --${priceAbMA200?'PriceCrMA200': priceAbMA100?'priceAbMA100': priceAbMA50?'priceAbMA50':'PriceBlAl'} -${MACDVALUEPOS}`
               },
             ];
@@ -658,7 +669,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
               const {msg,postToCSLRE} = await this.webhooksService.sendSlackNotificationVN(timeframe,
                 [ticker],
                 lastData,
-                DataSymbols.watchlist.includes(ticker)? this.stockHelperService.FOURHOUR_SL.US_4H_WATCH :matched.hook,matched.msg,'500'
+                DataSymbols.watchlist.includes(ticker)? slChannel.WATCH :matched.hook,matched.msg,'500'
               );
               await this.webhooksService.reply_SLack(
                 postToCSLRE.channel,

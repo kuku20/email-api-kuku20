@@ -22,6 +22,7 @@ export class TasksBullBearService {
   belowList = []
   belowListUp = []
   async onModuleInit() {
+    // await this.postSLTest()
     //  await this.dailyCleanup()
     // await this.delete(-1)
     // await this.delete(0)
@@ -208,7 +209,7 @@ export class TasksBullBearService {
   runon15or30 :'30'|'15'|'5'= '30';
   @Cron('*/30 9-16 * * 1-5', { timeZone: 'America/New_York' })
   async bullBear(timeframe = '30min',symbols= DataSymbols.watchlist){
-    if (!this.stockHelperService.shouldRunTradingLogicUS(`${this.runon15or30}min`,this.logger)) {
+    if (this.stockHelperService.shouldRunTradingLogicUS(`${this.runon15or30}min`,this.logger)) {
       return;
     }
     const time = new Date().toLocaleString('en-US', {timeZone: 'America/New_York',});
@@ -218,18 +219,18 @@ export class TasksBullBearService {
         this.allkeys,
         'US_ALL',
         'USSTOCK_WATCH',
-        4,
+        0,
         timeframe,
       );
     } catch (error) {
       console.error('runAllWatchLists30 failed:', error);
       throw error;
     } finally {
-      await Promise.all(
-        Object.values(this.stockHelperService.INTRA_30M_SL).map((hook) =>
-          this.webhooksService.sendSlackNotification(`${time}================================`, hook),
-        ),
-      );
+      // await Promise.all(
+      //   Object.values(this.stockHelperService.INTRA_30M_SL).map((hook) =>
+      //     this.webhooksService.sendSlackNotification(`${time}================================`, hook),
+      //   ),
+      // );
       this.runOnceAtOpen = false
       const percentof = this.aboveListUP.length/this.aboveList.length
       const percentofeve = this.belowListUp.length/this.belowList.length
@@ -259,15 +260,15 @@ export class TasksBullBearService {
   async dailyCleanup() {    
     // await this.postSLTest()
     // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.AI_SL))
-    // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.DAILY_SL))
-    // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.FOURHOUR_SL))
+    // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.US_DAILY_))
+    // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.US_4H_))
     // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.VN_SL))
     // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.Z_US_SL))
     this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.INTRA_30M_SL))
   }
 
   async postSLTest(){
-    const webhooks = [...Object.values(this.stockHelperService.Z_US_SL)];
+    const webhooks = ['C0B77K2AG12','C0B6BFBKJ4X'];
     const sendBatchNotification = async (type: 'START' | 'END') => {
       const message = `${type}+daily+${type}${'='.repeat(32)}`;
       await Promise.all(

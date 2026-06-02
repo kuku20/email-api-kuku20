@@ -41,11 +41,11 @@ export class SlackService implements OnModuleInit {
     // Comment this out if you don't want Slack API calls on boot
     // await this.createDailyChannels(this.stockHelperService.AI_SL);
     // await this.createDailyChannels(this.stockHelperService.INTRA_30M_SL);
-    // await this.createDailyChannels(this.stockHelperService.FOURHOUR_SL);
-    // await this.createDailyChannels(this.stockHelperService.DAILY_SL);
+    // await this.createDailyChannels(this.stockHelperService.US_4H_);
+    // await this.createDailyChannels(this.stockHelperService.US_DAILY_);
     // await this.createDailyChannels(this.stockHelperService.VN_SL);
     // this.stockHelperService.setSlackToken('SLACK_BOT_TOKEN_WEEKLY');
-    // await this.createDailyChannels(this.stockHelperService.WEEKLY_SL); SLACK_BOT_TOKEN_WEEKLY
+    // await this.createDailyChannels(this.stockHelperService.US_WK_); SLACK_BOT_TOKEN_WEEKLY
   }
 
   private normalizeChannelName(name: string): string {
