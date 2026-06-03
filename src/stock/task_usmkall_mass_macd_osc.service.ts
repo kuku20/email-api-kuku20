@@ -31,7 +31,8 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
     // const geminibuy  = await this.LocalPLWR.FireBaseApi('get',`stock-gemini-buy/${timeframe}.json`,'')
     // console.log('geminibuy', Object.keys(geminibuy)) 
     // await this.runOnlyDaily4hour(symbols)
-    await this.runWatchlistGemini(symbols);
+    // await this.runWatchlistGemini(symbols);
+    // await this.runevery4hour()
     // await this.runWatchlistGemini(symbols, this.stockHelperService.US_DAILY_, '1day');
     // await this.runAllOn1day(['IVZ']);
     // await this.runfullonms(['ABBV','ACN','MSFT']);
