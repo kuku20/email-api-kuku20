@@ -13,8 +13,10 @@ export class AiToolController {
   create(@Body() createAiToolDto: any) {
     const { message, data } = createAiToolDto;
     // return message+JSON.stringify(data)
-    return this.aiToolService.postGemini(message + JSON.stringify(data));
+    return this.aiToolService.postGemini(message, data);
   }
+  
+
 
   @Post('/get-advice')
   async getTickerFullChart_POLYGON(@Body() dataIn: any) {

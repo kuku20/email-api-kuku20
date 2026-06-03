@@ -17,13 +17,13 @@ export class AiToolService {
     private stockService: StockService,
     private stockHelperService: StockHelperService,
   ) {}
-  async postGemini(message: string) {
+  async postGemini(message: string,data?: any) {
     try {
-      // const symbol = message.slice(0, 500).match(/"symbol":"([^"]+)"/)||'TSLA';
-      const symbol = message.slice(0, 500).match(/"symbol":"([^"]+)"/) || 'UNKNOWN';
-      const metric = (await this.stockService.getMetric_FINHUB(symbol[1])).metric;
-      const res = await this.getResFromGemini(message+`. Metric: ${JSON.stringify(metric)}`);
-      await this.GeminiPostedThread(symbol[1],message, res);
+      const symbol = data? data.symbol : message.slice(0, 900).match(/"symbol":"([^"]+)"/)[1] || 'UNKNOWN';;
+      const metric = (await this.stockService.getMetric_FINHUB(symbol)).metric;
+      const newMsg = message + `. Metric:${JSON.stringify(metric)}` +`. Stock data:+${JSON.stringify(data)}`
+      const res = await this.getResFromGemini(newMsg);
+      await this.GeminiPostedThread(symbol,newMsg, res);
       return res;
     } catch (error) {
       return JSON.stringify(error.message);
@@ -70,7 +70,19 @@ export class AiToolService {
     const nexMsg = `${msgRes.replace(/\*\*/g, '*')}`;
     const locallink = `<http://localhost:4200/price-log/${symbol}?daysRange=500|${symbol}>`;
 
-    const lineWithSymbol = line + locallink + line;
+    const datacode = encodeURIComponent(message.length > 1800 ? message.slice(0, 8000) + '...' : message);
+    const openaiUrlLong = `https://chat.openai.com?q=${datacode}`;
+    const claudeAiUrlLong = `https://claude.ai/new?q=${datacode}`;
+
+    const openaiUrlshort = await axios.get(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(openaiUrlLong)}`,);
+    const claudeAiUrlShort = await axios.get(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(claudeAiUrlLong)}`,);
+    if(!openaiUrlshort.data || !claudeAiUrlShort.data){
+      console.error('TinyURL API failed to shorten the URL');
+    }
+    const locallinkOpenAI = openaiUrlshort.data?`=<${openaiUrlshort.data}|OpenAI Chat>`:'';
+    const locallinkClaudeAI = claudeAiUrlShort.data?`=<${claudeAiUrlShort.data}|Claude AI Chat>`:'';
+    
+    const lineWithSymbol = line + locallink + locallinkOpenAI + locallinkClaudeAI + line ;
     const outMsg = lineWithSymbol + '\n' + nexMsg + '\n' + lineWithSymbol;
     if (nexMsg.toLocaleLowerCase().includes('error')) {
       return await this.post_SLack_Form_ALink(slackChannel.AI_ERORR, outMsg);

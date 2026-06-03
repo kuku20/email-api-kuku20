@@ -100,7 +100,7 @@ export class WebhooksService {
     let embed;
     let options: any;
     const botdt = botname.split(' ').slice(1).join(' ');
-    const color = message.includes('SELL') ? 0xff0000 : 0x00ff00; // Red for SELL, Green otherwise
+    const color = message?.includes('SELL') ? 0xff0000 : 0x00ff00; // Red for SELL, Green otherwise
     /**
     **[sMk000-1m](https://stockmarkets000.web.app//price-log/${ticker})** 
      | **[sMk000-5m](https://stockmarkets000.web.app//price-log/${ticker}?daysRange=5)** 
@@ -121,7 +121,7 @@ export class WebhooksService {
     }
     let setmess = extra ? `${origin} | ${gptres}` : origin;
 
-    if (!file && !message.includes('SELLCR')) {
+    if (!file && !message?.includes('SELLCR')) {
       setmess = `${setmess} | **[C.MISS.4200](http://localhost:4200/capture-click/${webhookCl}/${tickerON})** | **[C.MISS.PROD](https://stockmarkets000.web.app/capture-click/${webhookCl}/${tickerON})**`;
     }
     if (botdt.includes('RSIENDBOT')) {
@@ -1889,10 +1889,10 @@ export class WebhooksService {
     - Risk/Reward Ratio
     - Key reasons supporting the recommendation
     Base your analysis on the supplied data. If intrinsic value cannot be calculated precisely, estimate it using reasonable assumptions and state them clearly.
-    Stock data:
     `;
-
-    const aiMesAsk = recommending + JSON.stringify({symbol: symbol, data : fullData.slice(-300)}) + `Metric: ${JSON.stringify(metric)}`;
+    const dataToAi = fullData.slice(-300).reverse()
+    console.log('Data sent to AI:', dataToAi[0]);
+    const aiMesAsk = recommending + + `Metric: ${JSON.stringify(metric)}` +`. Stock data:+ ${JSON.stringify({symbol: symbol, data : dataToAi})}`;
     let getResFromGemini = '';
     let AIError = true;
     for (let i = 0; i < 3; i++) {
