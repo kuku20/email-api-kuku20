@@ -39,7 +39,7 @@ export class TasksUSMKService_SP500 {
   }
 
   async getReapList(){
-    await this.LocalPLWR.getholdingList()
+    await this.LocalPLWR.getholdingList_W_other()
     // need to clean this up
     this.stockHelperService.ListMA50On4hour = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/all3count/4hour`) as string[]||[];
     this.stockHelperService.above50andBelow200 = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/alldata/4hour`)as string[]||[];

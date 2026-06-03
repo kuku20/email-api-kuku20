@@ -112,7 +112,7 @@ export class TaskHoldingService {
   // runon15or30 :'30'|'15'= '30';
   // @Cron('*/30 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 30 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
   async runAllWatchLists30() {
-    const symbols = await this.LocalPLWR.getholdingList()
+    const symbols = await this.LocalPLWR.getholdingList_W_other()
     this.logger.warn('Running getholdingList with stocklist length:', symbols.length);
     const today = new Date().toLocaleString('sv-SE', { timeZone: 'America/Chicago' }).replace(/[^\d]/g, '-');
     // const today = this.stockHelperService.getDateNDaysAgo(0);
@@ -151,7 +151,7 @@ export class TaskHoldingService {
     timeZone: 'America/Chicago',
   })
   async runDaily() {
-    const symbols = await this.LocalPLWR.getholdingList()
+    const symbols = await this.LocalPLWR.getholdingList_W_other()
     // await this.webhooksService.sendSlackNotificationVN(timeframe,
     //   symbols,
     //   null,

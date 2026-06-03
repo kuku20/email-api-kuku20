@@ -1046,10 +1046,11 @@ export class LocalPLWR {
     }
   }
 
-  async getholdingList() {
+  async getholdingList_W_other(stocklist = []){
     const holdingObj = await this.FireBaseApi('get',`stock-related/holding.json`,'')
     this.stockHelperService.HoldingList = Object.keys(holdingObj);
     console.log(`✅ Loaded stock-related/holding: has ${this.stockHelperService.HoldingList.length} symbols`);
-    return this.stockHelperService.HoldingList;
+    const combine = [...stocklist,...this.stockHelperService.HoldingList]
+    return Array.from(new Set(combine));
   }
 }

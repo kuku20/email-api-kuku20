@@ -26,6 +26,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
     const combine4h = [...symbols, ...DataSymbols.watchlist]
     const uniqueCombine4h = Array.from(new Set(combine4h));
     console.log('Combined watchlist and holdings:', uniqueCombine4h.length, 'symbols');
+    await this.runeverydayat4pm()
     // console.log('TasksUS_ALL_MK_MASS_MACD_OSC initialized', DataSymbols.watchlist.length);
     // const timeframe = '1day/2026-05-28'
     // const geminibuy  = await this.LocalPLWR.FireBaseApi('get',`stock-gemini-buy/${timeframe}.json`,'')
@@ -286,7 +287,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
   async runOnly4hxx(stocklist) {
 
     const webhooks = [...Object.values(this.stockHelperService.US_4H_)]
-    
+
     await this.stockHelperService.sendBatchNotification('START','4hour',webhooks,this.webhooksService,1000,);
     await this.runOnly4h(stocklist);
     await this.stockHelperService.sendBatchNotification('START','4hour',webhooks,this.webhooksService,1000,);
@@ -529,18 +530,19 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
 
   async runWatchlistGemini(stocklist, slChannel = this.stockHelperService.US_4H_, timeframe = '4hour') {
     const webhooks = [
-      ...Object.keys(slChannel),
+      ...Object.values(slChannel),
       ...Object.values(this.stockHelperService.AI_SL),
     ];
+    console.log('webhooks for batch notification:', webhooks);
     await this.stockHelperService.sendBatchNotification('START',timeframe,webhooks,this.webhooksService,1000,);
-    await Promise.all([
-      this.processTickers_runWatchlistGemini(
-        stocklist,
-        timeframe, slChannel,
-        0,
-      ),
-    ]);
-    await this.stockHelperService.sendBatchNotification('END',timeframe,webhooks,this.webhooksService,1000,);
+    // await Promise.all([
+    //   this.processTickers_runWatchlistGemini(
+    //     stocklist,
+    //     timeframe, slChannel,
+    //     0,
+    //   ),
+    // ]);
+    // await this.stockHelperService.sendBatchNotification('END',timeframe,webhooks,this.webhooksService,1000,);
   }
 
   private async processTickers_runWatchlistGemini(
