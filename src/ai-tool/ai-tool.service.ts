@@ -31,7 +31,10 @@ export class AiToolService {
     
         const openaiUrlshort = await axios.get(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(openaiUrlLong)}`,);
         const claudeAiUrlShort = await axios.get(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(claudeAiUrlLong)}`,);
-        const link = `[OpenAI](${openaiUrlshort.data}) -------|------- [Claude](${claudeAiUrlShort.data})`;
+        const link = `
+        <a href="${openaiUrlshort.data}" target="_blank">OpenAI</a> ---------|---------
+        <a href="${claudeAiUrlShort.data}" target="_blank">Claude</a>
+        `;
         return link;
       } 
       const res = await this.getResFromGemini(message);
