@@ -22,11 +22,10 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
   rundayaogo = this.stockHelperService.getDateNDaysAgo(this.dayago);
   marketTarget = 2
   async onModuleInit() {
-    const symbols = await this.LocalPLWR.getholdingList()
-    const combine4h = [...symbols, ...DataSymbols.watchlist]
-    const uniqueCombine4h = Array.from(new Set(combine4h));
-    console.log('Combined watchlist and holdings:', uniqueCombine4h.length, 'symbols');
-    await this.runeverydayat4pm()
+    const symbols = await this.LocalPLWR.getholdingList_W_other()
+    console.log('Combined watchlist and holdings:', symbols.length, 'symbols');
+    
+    // await this.runeverydayat4pm()
     // console.log('TasksUS_ALL_MK_MASS_MACD_OSC initialized', DataSymbols.watchlist.length);
     // const timeframe = '1day/2026-05-28'
     // const geminibuy  = await this.LocalPLWR.FireBaseApi('get',`stock-gemini-buy/${timeframe}.json`,'')
@@ -514,17 +513,13 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
 
   @Cron('45 9,13 * * 1-5', { timeZone: 'America/New_York' }) // Every day at 9:45 AM and 1:45 1 PM ET on weekdays
   async runevery4hour(stocklist = DataSymbols.stock_500_symbols) {
-    const symbols = await this.LocalPLWR.getholdingList()
-    const combine = [...stocklist, ...DataSymbols.watchlist,...symbols]
-    const uniqueCombine = Array.from(new Set(combine));
+    const uniqueCombine = await this.LocalPLWR.getholdingList_W_other([...stocklist, ...DataSymbols.watchlist]);
     await this.runWatchlistGemini(uniqueCombine)
   }
 
   @Cron('0 17 * * 1-5', { timeZone: 'America/New_York' }) // Every weekday at 5:00 PM New York time
   async runeverydayat4pm(stocklist = DataSymbols.stock_500_symbols) {
-    const symbols = await this.LocalPLWR.getholdingList()
-    const combine = [...stocklist, ...DataSymbols.watchlist,...symbols]
-    const uniqueCombine = Array.from(new Set(combine));
+    const uniqueCombine = await this.LocalPLWR.getholdingList_W_other([...stocklist, ...DataSymbols.watchlist]);
     await this.runWatchlistGemini(uniqueCombine, this.stockHelperService.US_DAILY_, '1day')
   }
 
@@ -533,16 +528,15 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
       ...Object.values(slChannel),
       ...Object.values(this.stockHelperService.AI_SL),
     ];
-    console.log('webhooks for batch notification:', webhooks);
     await this.stockHelperService.sendBatchNotification('START',timeframe,webhooks,this.webhooksService,1000,);
-    // await Promise.all([
-    //   this.processTickers_runWatchlistGemini(
-    //     stocklist,
-    //     timeframe, slChannel,
-    //     0,
-    //   ),
-    // ]);
-    // await this.stockHelperService.sendBatchNotification('END',timeframe,webhooks,this.webhooksService,1000,);
+    await Promise.all([
+      this.processTickers_runWatchlistGemini(
+        stocklist,
+        timeframe, slChannel,
+        0,
+      ),
+    ]);
+    await this.stockHelperService.sendBatchNotification('END',timeframe,webhooks,this.webhooksService,1000,);
   }
 
   private async processTickers_runWatchlistGemini(
@@ -551,9 +545,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
     slChannel=this.stockHelperService.US_4H_,
     delay = 2,
   ) {
-    const symbols = await this.LocalPLWR.getholdingList()
-    const WatchListNholding = [...symbols, ...DataSymbols.watchlist]
-    const ONMIRUNNOW = Array.from(new Set(WatchListNholding));
+    const ONMIRUNNOW = await this.LocalPLWR.getholdingList_W_other(DataSymbols.watchlist);
     console.log('ONMIRUNNOW:', ONMIRUNNOW.length);
     const limit = pLimit(2); // Limit the concurrency to 1 at a time
 
