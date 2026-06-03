@@ -36,7 +36,7 @@ export class TasksBullBearService {
 
     // await this.delete(-1)
     // await this.delete(0)
-    // await this.bullBear('30min', []);
+    // await this.bullBear('30min');
   }
 
   async  USTIMERUN(
@@ -212,7 +212,7 @@ export class TasksBullBearService {
   runon15or30 :'30'|'15'|'5'= '30';
   @Cron('*/30 9-16 * * 1-5', { timeZone: 'America/New_York' })
   async bullBear(timeframe = '30min',symbols= DataSymbols.watchlist){
-    if (this.stockHelperService.shouldRunTradingLogicUS(`${this.runon15or30}min`,this.logger)) {
+    if (!this.stockHelperService.shouldRunTradingLogicUS(`${this.runon15or30}min`,this.logger)) {
       return;
     }
     const time = new Date().toLocaleString('en-US', {timeZone: 'America/New_York',});
@@ -229,11 +229,11 @@ export class TasksBullBearService {
       console.error('runAllWatchLists30 failed:', error);
       throw error;
     } finally {
-      // await Promise.all(
-      //   Object.values(this.stockHelperService.INTRA_30M_SL).map((hook) =>
-      //     this.webhooksService.sendSlackNotification(`${time}================================`, hook),
-      //   ),
-      // );
+      await Promise.all(
+        Object.values(this.stockHelperService.INTRA_30M_SL).map((hook) =>
+          this.webhooksService.sendSlackNotification(`${time}================================`, hook),
+        ),
+      );
       this.runOnceAtOpen = false
       const percentof = this.aboveListUP.length/this.aboveList.length
       const percentofeve = this.belowListUp.length/this.belowList.length
