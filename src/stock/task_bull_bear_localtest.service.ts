@@ -43,12 +43,6 @@ export class TasksBullBearLocalService {
     // console.log(bullbear.join(','))
   }
 
-  async getholdingList() {
-    const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stock-related/holding.json`,'')
-    this.stockHelperService.HoldingList = Object.keys(holdingObj);
-    console.log(`✅ Loaded stock-related/holding: has ${this.stockHelperService.HoldingList.length} symbols`);
-    return this.stockHelperService.HoldingList;
-  }
 
   async  USTIMERUN(
     intickers: string[],

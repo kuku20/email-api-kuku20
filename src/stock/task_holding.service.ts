@@ -107,19 +107,12 @@ export class TaskHoldingService {
     await Promise.all(tickerPromises);
   }
 
-  async getholdingList() {
-    const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stock-related/holding.json`,'')
-    this.stockHelperService.HoldingList = Object.keys(holdingObj);
-    console.log(`✅ Loaded stock-related/holding: has ${this.stockHelperService.HoldingList.length} symbols`);
-    return this.stockHelperService.HoldingList;
-  }
-
   runon15or30 :'30'|'15'= '15';
   // @Cron('*/15 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 15 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
   // runon15or30 :'30'|'15'= '30';
   // @Cron('*/30 13-21 * * 1-5', { timeZone: 'UTC' }) // Every 30 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
   async runAllWatchLists30() {
-    const symbols = await this.getholdingList()
+    const symbols = await this.LocalPLWR.getholdingList()
     this.logger.warn('Running getholdingList with stocklist length:', symbols.length);
     const today = new Date().toLocaleString('sv-SE', { timeZone: 'America/Chicago' }).replace(/[^\d]/g, '-');
     // const today = this.stockHelperService.getDateNDaysAgo(0);
@@ -158,7 +151,7 @@ export class TaskHoldingService {
     timeZone: 'America/Chicago',
   })
   async runDaily() {
-    const symbols = await this.getholdingList()
+    const symbols = await this.LocalPLWR.getholdingList()
     // await this.webhooksService.sendSlackNotificationVN(timeframe,
     //   symbols,
     //   null,

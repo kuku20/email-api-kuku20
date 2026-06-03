@@ -39,7 +39,7 @@ export class TasksUSMKService_SP500 {
   }
 
   async getReapList(){
-    await this.getholdingList()
+    await this.LocalPLWR.getholdingList()
     // need to clean this up
     this.stockHelperService.ListMA50On4hour = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/all3count/4hour`) as string[]||[];
     this.stockHelperService.above50andBelow200 = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/alldata/4hour`)as string[]||[];
@@ -65,12 +65,6 @@ export class TasksUSMKService_SP500 {
     // this is all run
     this.stockHelperService.ListMA50On1day = this.stockHelperService.combineUnique(this.stockHelperService.HoldingList,DataSymbols.watchlist,DataSymbols.stock_500_symbols)
     console.log( this.stockHelperService.ListMA50On1day.length,);
-  }
-  async getholdingList() {
-    const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stock-related/holding.json`,'')
-    this.stockHelperService.HoldingList = Object.keys(holdingObj);
-    console.log(`✅ Loaded stock-related/holding: has ${this.stockHelperService.HoldingList.length} symbols`);
-    return this.stockHelperService.HoldingList;
   }
 
   async  USTIMERUN(

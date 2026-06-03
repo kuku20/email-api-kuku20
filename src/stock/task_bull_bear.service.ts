@@ -22,18 +22,21 @@ export class TasksBullBearService {
   belowList = []
   belowListUp = []
   async onModuleInit() {
-    // await this.postSLTest()
-    //  await this.dailyCleanup()
+    // const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stock-related/holding.json`,'')
+    // this.stockHelperService.HoldingList = Object.keys(holdingObj);
+    // console.log(`✅ Loaded stock-related/holding: has ${this.stockHelperService.HoldingList}`);
+    // this.stockHelperService.setSlackToken('SLACK_USER_TOKEN');
+
+    // await this.postSLTest(['C0B748C0BCM'])
+    // await this.postSLTest(['C0B748C0BCM'])
+
+    
+    // //  await this.dailyCleanup()
+    // await this.webhooksService.deleteSLChannel(['C0B748C0BCM'])
+
     // await this.delete(-1)
     // await this.delete(0)
     // await this.bullBear('30min', []);
-  }
-
-  async getholdingList() {
-    const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stock-related/holding.json`,'')
-    this.stockHelperService.HoldingList = Object.keys(holdingObj);
-    console.log(`✅ Loaded stock-related/holding: has ${this.stockHelperService.HoldingList.length} symbols`);
-    return this.stockHelperService.HoldingList;
   }
 
   async  USTIMERUN(
@@ -267,8 +270,8 @@ export class TasksBullBearService {
     this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.INTRA_30M_SL))
   }
 
-  async postSLTest(){
-    const webhooks = ['C0B77K2AG12','C0B6BFBKJ4X'];
+  async postSLTest(webhook =[ 'C0B77K2AG12','C0B6BFBKJ4X']) {
+    const webhooks = [...webhook];
     const sendBatchNotification = async (type: 'START' | 'END') => {
       const message = `${type}+daily+${type}${'='.repeat(32)}`;
       await Promise.all(

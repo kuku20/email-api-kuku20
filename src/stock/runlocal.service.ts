@@ -1045,4 +1045,11 @@ export class LocalPLWR {
       return 'skipped';
     }
   }
+
+  async getholdingList() {
+    const holdingObj = await this.FireBaseApi('get',`stock-related/holding.json`,'')
+    this.stockHelperService.HoldingList = Object.keys(holdingObj);
+    console.log(`✅ Loaded stock-related/holding: has ${this.stockHelperService.HoldingList.length} symbols`);
+    return this.stockHelperService.HoldingList;
+  }
 }

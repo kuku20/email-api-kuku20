@@ -1891,7 +1891,7 @@ export class WebhooksService {
     Base your analysis on the supplied data. If intrinsic value cannot be calculated precisely, estimate it using reasonable assumptions and state them clearly.
     `;
     const dataToAi = fullData.slice(-300).reverse()
-    console.log('Data sent to AI:', dataToAi[0]);
+    // console.log('Data sent to AI:', dataToAi[0]);
     const aiMesAsk = recommending + + `Metric: ${JSON.stringify(metric)}` +`. Stock data:+ ${JSON.stringify({symbol: symbol, data : dataToAi})}`;
     let getResFromGemini = '';
     let AIError = true;
@@ -2052,7 +2052,7 @@ async getAllMessages_SLack(channel: string): Promise<string[]> {
       );
 
       if (!data.ok) {
-        console.log('History failed:');
+        console.log('History failed:',data);
         break;
       }
 
@@ -2148,7 +2148,7 @@ async deleteMessage_SLack(
           success: true,
         });
       } else {
-        console.log( `❌ Slack delete error (${ts})`, channel,  response.data,);
+        console.log( `❌ Slack delete error (${ts})`, channel,  response.data);
         results.push({
           ts,
           success: false,
