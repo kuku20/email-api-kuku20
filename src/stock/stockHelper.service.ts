@@ -994,4 +994,37 @@ SELL ALL
   ): string {
     return `<https://${workspace}.slack.com/archives/${channel}/p${ts.replace('.', '')} |View Signal>`;
   }
+
+
+  private sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+  
+  async sendBatchNotification(
+    type: 'START' | 'END',
+    timeframe: string,
+    webhooks: string[],
+    service:any,
+    delayMs = 1000,
+  ): Promise<void> {
+    const today = new Date().toISOString().split('T')[0];
+    const message = `${type}+${timeframe}+${today}+${type}${'='.repeat(32)}`;
+  
+    for (const hook of webhooks) {
+      try {
+        await service.sendSlackNotification(message, hook);
+        await this.sleep(delayMs);
+      } catch (error) {
+        console.error(`Failed to send notification to ${hook}`, error);
+      }
+    }
+    // const sendBatchNotification = async (type: 'START' | 'END') => {
+    //   const message = `${type}+4hour+${today}+${type}${'='.repeat(32)}`;
+    //   await Promise.all(
+    //     webhooks.map((hook) =>
+    //       this.webhooksService.sendSlackNotification(message, hook),
+    //     ),
+    //   );
+    // };
+  }
 }

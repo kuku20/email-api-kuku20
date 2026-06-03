@@ -284,36 +284,21 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
     await this.runOnly4hxx(uniqueCombine4h)
   }
   async runOnly4hxx(stocklist) {
-    const today = this.stockHelperService.getDateNDaysAgo(0);
 
     const webhooks = [...Object.values(this.stockHelperService.US_4H_)]
-    const sendBatchNotification = async (type: 'START' | 'END') => {
-      const message = `${type}+4hour+${today}+${type}${'='.repeat(32)}`;
-      await Promise.all(
-        webhooks.map((hook) =>
-          this.webhooksService.sendSlackNotification(message, hook),
-        ),
-      );
-    };
-    await sendBatchNotification('START');
+    
+    await this.stockHelperService.sendBatchNotification('START','4hour',webhooks,this.webhooksService,1000,);
     await this.runOnly4h(stocklist);
-    await sendBatchNotification('END');
+    await this.stockHelperService.sendBatchNotification('START','4hour',webhooks,this.webhooksService,1000,);
   }
 
   async runAllWatchLists(stocklist) {
-    const today = this.stockHelperService.getDateNDaysAgo(0);
+
     const webhooks = [...Object.values(this.stockHelperService.US_DAILY_),...Object.values(this.stockHelperService.AI_SL)];
-    const sendBatchNotification = async (type: 'START' | 'END') => {
-      const message = `${type}+daily+${today}+${type}${'='.repeat(32)}`;
-      await Promise.all(
-        webhooks.map((hook) =>
-          this.webhooksService.sendSlackNotification(message, hook),
-        ),
-      );
-    };
-    await sendBatchNotification('START');
+
+    await this.stockHelperService.sendBatchNotification('START','1day',webhooks,this.webhooksService,1000,);
     await this.runAllOn1day(stocklist);
-    await sendBatchNotification('END');
+    await this.stockHelperService.sendBatchNotification('END','1day',webhooks,this.webhooksService,1000,);
     // await this.webhooksService.sendlast('EARLY_AB200', '200AB_LESS_01');
   }
 
@@ -372,21 +357,11 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
   async runOnlyDaily4hour(stocklist = DataSymbols.stock_500_symbols) {
     const combine = [...stocklist, ...DataSymbols.watchlist]
     const uniqueCombine = Array.from(new Set(combine));
-
-    const today = this.stockHelperService.getDateNDaysAgo(0);
-
     const webhooks = [...Object.values(this.stockHelperService.US_4H_)]
-    const sendBatchNotification = async (type: 'START' | 'END') => {
-      const message = `${type}+4hour+${today}+${type}${'='.repeat(32)}`;
-      await Promise.all(
-        webhooks.map((hook) =>
-          this.webhooksService.sendSlackNotification(message, hook),
-        ),
-      );
-    };
-    await sendBatchNotification('START');
+
+    await this.stockHelperService.sendBatchNotification('START','4hour',webhooks,this.webhooksService,1000,);
     await this.runOnlyDaily4hours(uniqueCombine);
-    await sendBatchNotification('END');
+    await this.stockHelperService.sendBatchNotification('END','4hour',webhooks,this.webhooksService,1000,);
   }
 
   async runOnlyDaily4hours(stocklist) {
@@ -553,17 +528,11 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
   }
 
   async runWatchlistGemini(stocklist, slChannel = this.stockHelperService.US_4H_, timeframe = '4hour') {
-    const today = this.stockHelperService.getDateNDaysAgo(0);
-    const webhooks = [this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING,slChannel.WATCH, this.stockHelperService.AI_SL.AI_RE_BUY,this.stockHelperService.AI_SL.AI_RE_SELL,this.stockHelperService.AI_SL.AI_RE_HOLD, this.stockHelperService.AI_SL.AI_ERORR];
-    const sendBatchNotification = async (type: 'START' | 'END') => {
-      const message = `${type}+${timeframe}+${today}+${type}${'='.repeat(32)}`;
-      await Promise.all(
-        webhooks.map((hook) =>
-          this.webhooksService.sendSlackNotification(message, hook),
-        ),
-      );
-    };
-    await sendBatchNotification('START');
+    const webhooks = [
+      ...Object.keys(slChannel),
+      ...Object.values(this.stockHelperService.AI_SL),
+    ];
+    await this.stockHelperService.sendBatchNotification('START',timeframe,webhooks,this.webhooksService,1000,);
     await Promise.all([
       this.processTickers_runWatchlistGemini(
         stocklist,
@@ -571,7 +540,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
         0,
       ),
     ]);
-    await sendBatchNotification('END');
+    await this.stockHelperService.sendBatchNotification('END',timeframe,webhooks,this.webhooksService,1000,);
   }
 
   private async processTickers_runWatchlistGemini(
