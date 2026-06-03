@@ -17,13 +17,25 @@ export class AiToolService {
     private stockService: StockService,
     private stockHelperService: StockHelperService,
   ) {}
-  async postGemini(message: string,data?: any) {
+  async postGemini(newMsg: string,data?: any) {
     try {
-      const symbol = data? data.symbol : message.slice(0, 900).match(/"symbol":"([^"]+)"/)[1] || 'UNKNOWN';;
+      const symbol = data? data.symbol : newMsg.slice(0, 900).match(/"symbol":"([^"]+)"/)[1] || 'UNKNOWN';;
       const metric = (await this.stockService.getMetric_FINHUB(symbol)).metric;
-      const newMsg = message + `. Metric:${JSON.stringify(metric)}` +`. Stock data:+${JSON.stringify(data)}`
-      const res = await this.getResFromGemini(newMsg);
-      await this.GeminiPostedThread(symbol,newMsg, res);
+      const message = newMsg + `. Metric:${JSON.stringify(metric)}` +`. Stock data:+${JSON.stringify(data)}`
+      if (data?.link === 'link'){
+        const datacodeOPENAI = encodeURIComponent(message.length > 1800 ? message.slice(0, 7500) + '...' : message);
+        const datacodeCLAUDE = encodeURIComponent(message.length > 1800 ? message.slice(0, 10000) + '...' : message);
+  
+        const openaiUrlLong = `https://chat.openai.com?q=${datacodeOPENAI}`;
+        const claudeAiUrlLong = `https://claude.ai/new?q=${datacodeCLAUDE}`;
+    
+        const openaiUrlshort = await axios.get(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(openaiUrlLong)}`,);
+        const claudeAiUrlShort = await axios.get(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(claudeAiUrlLong)}`,);
+        const link = `[OpenAI](${openaiUrlshort.data}) -------|------- [Claude](${claudeAiUrlShort.data})`;
+        return link;
+      } 
+      const res = await this.getResFromGemini(message);
+      await this.GeminiPostedThread(symbol,message, res);
       return res;
     } catch (error) {
       return JSON.stringify(error.message);
@@ -70,9 +82,10 @@ export class AiToolService {
     const nexMsg = `${msgRes.replace(/\*\*/g, '*')}`;
     const locallink = `<http://localhost:4200/price-log/${symbol}?daysRange=500|${symbol}>`;
 
-    const datacode = encodeURIComponent(message.length > 1800 ? message.slice(0, 8000) + '...' : message);
-    const openaiUrlLong = `https://chat.openai.com?q=${datacode}`;
-    const claudeAiUrlLong = `https://claude.ai/new?q=${datacode}`;
+    const datacodeOPENAI = encodeURIComponent(message.length > 1800 ? message.slice(0, 7500) + '...' : message);
+    const datacodeCLAUDE = encodeURIComponent(message.length > 1800 ? message.slice(0, 10000) + '...' : message);
+    const openaiUrlLong = `https://chat.openai.com?q=${datacodeOPENAI}`;
+    const claudeAiUrlLong = `https://claude.ai/new?q=${datacodeCLAUDE}`;
 
     const openaiUrlshort = await axios.get(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(openaiUrlLong)}`,);
     const claudeAiUrlShort = await axios.get(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(claudeAiUrlLong)}`,);

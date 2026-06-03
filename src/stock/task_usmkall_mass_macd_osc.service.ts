@@ -27,7 +27,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
     
     // await this.runeverydayat4pm()
     // console.log('TasksUS_ALL_MK_MASS_MACD_OSC initialized', DataSymbols.watchlist.length);
-    // const timeframe = '1day/2026-05-28'
+    // const timeframe = '1day/2026-06-03'
     // const geminibuy  = await this.LocalPLWR.FireBaseApi('get',`stock-gemini-buy/${timeframe}.json`,'')
     // console.log('geminibuy', Object.keys(geminibuy)) 
     // await this.runOnlyDaily4hour(symbols)
@@ -518,7 +518,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
   }
 
   @Cron('0 17 * * 1-5', { timeZone: 'America/New_York' }) // Every weekday at 5:00 PM New York time
-  async runeverydayat4pm(stocklist = DataSymbols.stock_500_symbols) {
+  async runeverydayat4pm(stocklist = DataSymbols.above2billion) {
     const uniqueCombine = await this.LocalPLWR.getholdingList_W_other([...stocklist, ...DataSymbols.watchlist]);
     await this.runWatchlistGemini(uniqueCombine, this.stockHelperService.US_DAILY_, '1day')
   }
@@ -527,6 +527,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
     const webhooks = [
       ...Object.values(slChannel),
       ...Object.values(this.stockHelperService.AI_SL),
+      this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING
     ];
     await this.stockHelperService.sendBatchNotification('START',timeframe,webhooks,this.webhooksService,1000,);
     await Promise.all([
@@ -636,7 +637,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
               );
             };
           }
-          if (!(DataSymbols.stock_500_symbols.includes(ticker) ||DataSymbols.watchlist.includes(ticker))) {
+          if (!(DataSymbols.stock_500_symbols.includes(ticker) || ONMIRUNNOW.includes(ticker))) {
             return;
           }
 
@@ -770,10 +771,13 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
             ];
   
             const matched = webhookMap.find((w) => w.condition);
+            const datasend = (OscCrossAb || stochRSICros) && timeframe!=='1day'? lastData : data 
+            // if osc cross or stoch cross and not on daily timeframe then send last data to skip gemini 
+            // otherwise send fulldata for better analysis for gemini to get recommendation.
             if (matched) {
               await this.webhooksService.sendSlackNotificationVN(timeframe,
                 [ticker],
-                data,
+                datasend,
                 DataSymbols.watchlist.includes(ticker)? slChannel.WATCH :matched.hook,matched.msg,'500'
               );
             }

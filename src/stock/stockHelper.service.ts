@@ -1008,7 +1008,7 @@ SELL ALL
     delayMs = 1000,
   ): Promise<void> {
     const today = new Date().toISOString().split('T')[0];
-    const message = `${type}+${timeframe}+${today}+${type}${'='.repeat(32)}`;
+    const message = `${type}+${timeframe}+${today}+${type}${'='.repeat(50)}`;
   
     for (const hook of webhooks) {
       try {
