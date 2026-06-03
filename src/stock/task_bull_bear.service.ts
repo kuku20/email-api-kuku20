@@ -222,7 +222,7 @@ export class TasksBullBearService {
         this.allkeys,
         'US_ALL',
         'USSTOCK_WATCH',
-        0,
+        4,
         timeframe,
       );
     } catch (error) {
