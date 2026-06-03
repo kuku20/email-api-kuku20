@@ -55,20 +55,12 @@ export class Tasks_US_WEEKLY {
     const combine = [...stocklist, ...DataSymbols.watchlist]
     const uniqueCombine = Array.from(new Set(combine));
 
-    const today = this.stockHelperService.getDateNDaysAgo(0);
-
     const webhooks = [...Object.values(this.stockHelperService.US_WK_)]
-    const sendBatchNotification = async (type: 'START' | 'END') => {
-      const message = `${type}+weekly+${today}+${type}${'='.repeat(32)}`;
-      await Promise.all(
-        webhooks.map((hook) =>
-          this.webhooksService.sendSlackNotification(message, hook),
-        ),
-      );
-    };
-    await sendBatchNotification('START');
+
+    await this.stockHelperService.sendBatchNotification('START','1week',webhooks,this.webhooksService,1000,);
     await this.runWeekly(uniqueCombine);
-    await sendBatchNotification('END');
+    await this.stockHelperService.sendBatchNotification('END','1week',webhooks,this.webhooksService,1000,);
+
   }
   async runWeekly(stocklist) {
     await Promise.all([

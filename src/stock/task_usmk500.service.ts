@@ -302,21 +302,11 @@ export class TasksUSMKService_SP500 {
       this.logger.warn('No stocks to process for 15/30-minute run.');
       return;
     }
-    const today = new Date().toLocaleString('sv-SE', { timeZone: 'America/Chicago' }).replace(/[^\d]/g, '-');
-    // const today = this.stockHelperService.getDateNDaysAgo(0);
+    
     const webhooks = [this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_50, this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_100,this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_200,this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_BL,this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING];
-  
-    const sendBatchNotification = async (type: 'START' | 'END') => {
-      const message = `${type}*${today}*${type}${'='.repeat(32)}`;
-      await Promise.all(
-        webhooks.map((hook) =>
-          this.webhooksService.sendSlackNotification(message, hook),
-        ),
-      );
-    };
-  
+
     try {
-      await sendBatchNotification('START');
+      await this.stockHelperService.sendBatchNotification('START', `${this.runon15or30}min`,webhooks,this.webhooksService,1000,);
   
       await this.USTIMERUN(
         this.stockHelperService.ListMA50On1day,
@@ -330,7 +320,8 @@ export class TasksUSMKService_SP500 {
       console.error('runAllWatchLists30 failed:', error);
       throw error;
     } finally {
-      await sendBatchNotification('END');
+      await this.stockHelperService.sendBatchNotification('END', `${this.runon15or30}min`,webhooks,this.webhooksService,1000,);
+
     }
   }
 

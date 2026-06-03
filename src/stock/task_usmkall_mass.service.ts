@@ -321,22 +321,13 @@ export class TasksUS_ALL_MK_MASS_Service {
   }
 
   async runAllWatchLists(stocklist = DataSymbols.allabove500million) {
-    const today = this.stockHelperService.getDateNDaysAgo(0);
-  
+
     const webhooks = [this.stockHelperService.US_DAILY_.MACDCR_50, this.stockHelperService.US_DAILY_.MACDCR_100,this.stockHelperService.US_DAILY_.MACDCR_200,this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,this.stockHelperService.Z_US_SL.Z_US_SL_J2DAY,this.stockHelperService.Z_US_SL.Z_US_SL_J3DAY,this.stockHelperService.US_DAILY_.MACDCR_BL,];
   
-    const sendBatchNotification = async (type: 'START' | 'END') => {
-      const message = `${type}+daily+${today}+${type}${'='.repeat(32)}`;
-      await Promise.all(
-        webhooks.map((hook) =>
-          this.webhooksService.sendSlackNotification(message, hook),
-        ),
-      );
-    };
-    await sendBatchNotification('START');
+    await this.stockHelperService.sendBatchNotification('START', `daily`,webhooks,this.webhooksService,1000,);
     await this.runAllOn1day(stocklist);
-    await sendBatchNotification('END');
-    await this.webhooksService.sendlast('EARLY_AB200', '200AB_LESS_01');
+    await this.stockHelperService.sendBatchNotification('END', `daily`,webhooks,this.webhooksService,1000,);
+
   }
 
   async runAllOn1day(stocklist = DataSymbols.allabove500million) {

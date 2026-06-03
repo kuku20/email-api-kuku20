@@ -289,7 +289,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
 
     await this.stockHelperService.sendBatchNotification('START','4hour',webhooks,this.webhooksService,1000,);
     await this.runOnly4h(stocklist);
-    await this.stockHelperService.sendBatchNotification('START','4hour',webhooks,this.webhooksService,1000,);
+    await this.stockHelperService.sendBatchNotification('END','4hour',webhooks,this.webhooksService,1000,);
   }
 
   async runAllWatchLists(stocklist) {

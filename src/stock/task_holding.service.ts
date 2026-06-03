@@ -114,22 +114,11 @@ export class TaskHoldingService {
   async runAllWatchLists30() {
     const symbols = await this.LocalPLWR.getholdingList_W_other()
     this.logger.warn('Running getholdingList with stocklist length:', symbols.length);
-    const today = new Date().toLocaleString('sv-SE', { timeZone: 'America/Chicago' }).replace(/[^\d]/g, '-');
-    // const today = this.stockHelperService.getDateNDaysAgo(0);
-  
+
     const webhooks = [this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING];
   
-    const sendBatchNotification = async (type: 'START' | 'END') => {
-      const message = `${type}*${today}*${type}${'='.repeat(32)}`;
-      await Promise.all(
-        webhooks.map((hook) =>
-          this.webhooksService.sendSlackNotification(message, hook),
-        ),
-      );
-    };
-  
     try {
-      await sendBatchNotification('START');
+      await this.stockHelperService.sendBatchNotification('START',`${this.runon15or30}min`,webhooks,this.webhooksService,1000,);
   
       await this.USTIMERUN('twelvedata',
         symbols,
@@ -143,7 +132,7 @@ export class TaskHoldingService {
       console.error('runAllWatchLists30 failed:', error);
       throw error;
     } finally {
-      await sendBatchNotification('END');
+      await this.stockHelperService.sendBatchNotification('END',`${this.runon15or30}min`,webhooks,this.webhooksService,1000,);
     }
   }
 
@@ -158,23 +147,11 @@ export class TaskHoldingService {
     //   this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING,'',
     //   '500'
     // );
-    this.logger.warn('Running getholdingList with stocklist length:', symbols.length);
-    const today = new Date().toLocaleString('sv-SE', { timeZone: 'America/Chicago' }).replace(/[^\d]/g, '-');
-    // const today = this.stockHelperService.getDateNDaysAgo(0);
-  
     const webhooks = [this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING];
   
-    const sendBatchNotification = async (type: 'START-DAILY' | 'END-DAILY') => {
-      const message = `${type}*${today}*${type}${'='.repeat(32)}`;
-      await Promise.all(
-        webhooks.map((hook) =>
-          this.webhooksService.sendSlackNotification(message, hook),
-        ),
-      );
-    };
-  
     try {
-      await sendBatchNotification('START-DAILY');
+
+      await this.stockHelperService.sendBatchNotification('START','1day',webhooks,this.webhooksService,1000,);
   
       await this.USTIMERUN('MASS',
         symbols,
@@ -188,7 +165,7 @@ export class TaskHoldingService {
       console.error('runAllWatchLists30 failed:', error);
       throw error;
     } finally {
-      await sendBatchNotification('END-DAILY');
+      await this.stockHelperService.sendBatchNotification('END','1day',webhooks,this.webhooksService,1000,);
     }
   }
 

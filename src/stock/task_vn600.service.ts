@@ -91,21 +91,12 @@ export class TasksVNMKService {
 
   @Cron('0 16 * * 1-5', { timeZone: 'America/New_York' })
   async runAllWatchLists() {
-    const today = this.stockHelperService.getDateNDaysAgo(0);
 
     const webhooks = [...Object.values(this.stockHelperService.VN_SL)];
-    const sendBatchNotification = async (type: 'START' | 'END') => {
-      const message = `${type}*${today}${type}${'='.repeat(32)}`;
-      await Promise.all(
-        webhooks.map((hook) =>
-          this.webhooksService.sendSlackNotification(message, hook),
-        ),
-      );
-    };
-    
+
     try {
-      await sendBatchNotification('START');
-    
+      await this.stockHelperService.sendBatchNotification('START', `daily`,webhooks,this.webhooksService,1000,);
+
       await this.processTickers(
         VN_Stock_symbols,
         'BUY_EARLY_DAY',
@@ -115,7 +106,7 @@ export class TasksVNMKService {
       console.error('VN processTickers failed:', error);
       throw error;
     } finally {
-      await sendBatchNotification('END');
+      await this.stockHelperService.sendBatchNotification('END', `daily`,webhooks,this.webhooksService,1000,);
     }
   }
 }

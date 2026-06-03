@@ -270,17 +270,7 @@ export class TasksBullBearService {
     this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.INTRA_30M_SL))
   }
 
-  async postSLTest(webhook =[ 'C0B77K2AG12','C0B6BFBKJ4X']) {
-    const webhooks = [...webhook];
-    const sendBatchNotification = async (type: 'START' | 'END') => {
-      const message = `${type}+daily+${type}${'='.repeat(32)}`;
-      await Promise.all(
-        webhooks.map((hook) =>
-          this.webhooksService.sendSlackNotification(message, hook),
-        ),
-      );
-    };
-    await sendBatchNotification('START');
-    await sendBatchNotification('END');
+  async postSLTest(webhooks =[ 'C0B77K2AG12','C0B6BFBKJ4X']) {
+    await this.stockHelperService.sendBatchNotification('START','test',webhooks,this.webhooksService,1000,);
   }
 }
