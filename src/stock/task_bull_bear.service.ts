@@ -259,7 +259,7 @@ export class TasksBullBearService {
     }
   }
 
-  @Cron('0 17 * * 1-5', { timeZone: 'America/New_York' }) // Every weekday at 5:00 PM New York time
+  @Cron('0 19 * * 1-5', { timeZone: 'America/New_York' }) // Every weekday at 7:00 PM New York time
   async dailyCleanup() {    
     // await this.postSLTest()
     // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.AI_SL))
