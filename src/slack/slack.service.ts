@@ -12,6 +12,7 @@ import { StockHelperService } from 'src/stock/stockHelper.service';
   go to https://api.slack.com/apps/ to create a new app and get the bot token, then add it to your .env file as SLACK_BOT_TOKEN.
   Only update the xoxb token in .env file, and it will auto-create channels on startup if needed. 
   update the SLID in stockHelperService with the new channel IDs after they are created.
+  
 */
 
 @Injectable()
@@ -23,7 +24,7 @@ export class SlackService implements OnModuleInit {
     private readonly configService: ConfigService,
     private readonly stockHelperService: StockHelperService,
   ) {
-    this.stockHelperService.setSlackToken('SLACK_BOT_TOKEN');
+    // this.stockHelperService.setSlackToken('SLACK_USER_TRADING_TOKEN');
     // this.stockHelperService.setSlackToken('SLACK_BOT_TOKEN_WEEKLY');
     const slackToken = this.configService.get<string>(this.stockHelperService.slackTokenKey);
 
@@ -46,6 +47,8 @@ export class SlackService implements OnModuleInit {
     // await this.createDailyChannels(this.stockHelperService.VN_SL);
     // this.stockHelperService.setSlackToken('SLACK_BOT_TOKEN_WEEKLY');
     // await this.createDailyChannels(this.stockHelperService.US_WK_); SLACK_BOT_TOKEN_WEEKLY
+    // this.stockHelperService.setSlackToken('SLACK_USER_TRADING_TOKEN')
+    // await this.createDailyChannels(this.stockHelperService.US_WK_); 
   }
 
   private normalizeChannelName(name: string): string {
@@ -79,7 +82,7 @@ export class SlackService implements OnModuleInit {
           error?.data?.error ?? error.message
         }`,
       );
-      throw error;
+      console.log(error.data.needed);
     }
   }
 
@@ -105,8 +108,8 @@ export class SlackService implements OnModuleInit {
           (c) => c.name === channelName,
         );
       }
+      console.log(error.data.needed);
 
-      throw error;
     }
   }
   async addUserToChannel(channelId: string, userId: string) {
@@ -135,7 +138,7 @@ export class SlackService implements OnModuleInit {
         await this.getOrCreateChannel(key);
 
       channels[key] = channel?.id ?? '';
-      this.addUserToChannel(channels[key], 'U0B79BTNZCZ'); // U0B7A38HBK3
+      this.addUserToChannel(channels[key], 'U0B0HL7TC1W'); // U0B7A38HBK3
       this.logger.log(
         `${key} => ${channels[key]}`,
       );
