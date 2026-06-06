@@ -425,7 +425,6 @@ export class LocalPLWR {
     // })
     return allResults2;
   }
-
   async twelvedata(ticker: string, timefame: string) {
     let tem = timefame;
     if (timefame.includes('hour')) {
@@ -436,28 +435,28 @@ export class LocalPLWR {
       tem = '1month';
     }
     if(ticker.includes('USD')){
+      // return with 
       // ticker = this.stockHelperService.getmatch1only(ticker)
       // return this.getCoinHistory(ticker, '5m')
       ticker = this.stockHelperService.formatSymbol(ticker)
     }
-    // const daytestBF = 10;
-    // const dayend = this.stockHelperService.getDateNDaysAgo(-1 + daytestBF);
-    // let BASE_URL = `https://api.twelvedata.com/time_series?symbol=${ticker}&interval=${tem}&outputsize=600&dp=2&end_date=${dayend}&apikey=`;
     let BASE_URL = `https://api.twelvedata.com/time_series?symbol=${ticker}&interval=${tem}&outputsize=600&dp=2&apikey=`;
-    // console.log(BASE_URL)
     const response = await this.tryCatchtwelvedata(BASE_URL);
-      if (response?.status == 'ok') {
-        // us stock     "exchange_timezone": "America/New_York", ChartOutTwelveData
-        // btc don't turn to ChartOutTwelveDataUTC
-        const meta_timezone = response.meta.exchange_timezone
-        let responseRe
-        if(meta_timezone){
-          responseRe = plainToClass(DTO.ChartOutTwelveData, response.values);
-        }else if(!meta_timezone){
-          responseRe = plainToClass(DTO.ChartOutTwelveDataUTC, response.values);
-        }
-        return responseRe;
+    if (response.status == 'ok') {
+      // us stock     "exchange_timezone": "America/New_York", ChartOutTwelveData
+      // btc don't turn to ChartOutTwelveDataUTC
+      const meta_timezone = response.meta.exchange_timezone
+      let responseRe = plainToClass(DTO.ChartOutTwelveData, response.values);
+      if(meta_timezone){
+        responseRe = plainToClass(DTO.ChartOutTwelveData, response.values);
+      }else if(!meta_timezone){
+        responseRe = plainToClass(DTO.ChartOutTwelveDataUTC, response.values);
       }
+      const newdata = Array.isArray(responseRe) ? [...responseRe] : [responseRe];
+      const reverseData = newdata.reverse();
+      const result = await this.stockHelperService.returnNewData(reverseData)
+      return result;
+    }
     return null;
   }
   getRandomNumber(x: number): number {

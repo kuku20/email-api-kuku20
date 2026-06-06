@@ -8261,7 +8261,7 @@ export const watchlist = [
   'MARA', 'META', 'MRVL',  'MU',   'NBIS',
   'NOW',  'PDD',  'QCOM',  'RDDT', 'RIVN',
   'TSM',  'UBER', 'VRT',   'CRCL', 'SNAP',
-  'CNC','HIMS', 'FUTU','OKLO','HOOD','FIG','NFLX',
+  'CNC','HIMS', 'FUTU','OKLO','HOOD','FIG','NFLX','LULU','GLW'
 ];
 interface Watchlist {
   [key: string]: {
@@ -8325,6 +8325,8 @@ export const watchlistBB: Watchlist = {
   HOOD: { BULL: ['ROBN'], BEAR: [] },
   FIG: { BULL: ['FIGG'], BEAR: [] },
   NFLX: { BULL: ['NFXL','NFLU'], BEAR: ['NFXS'] },
+  LULU: { BULL: ['LULG'], BEAR: [] },
+  GLW: { BULL: ['GLWG'], BEAR: [] },
 };
 
 export const above2billion = [

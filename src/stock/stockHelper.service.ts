@@ -23,7 +23,7 @@ export class StockHelperService {
   HoldingList: string[] = [];
   Just2day: string[] = [];
 
-  slackTokenKey = 'SLACK_BOT_TOKEN';
+  slackTokenKey = 'SLACK_USER_TOKEN';
   setSlackToken(tokenKey: string) {
     this.slackTokenKey = tokenKey;
   }
