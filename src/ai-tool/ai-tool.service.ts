@@ -90,13 +90,27 @@ export class AiToolService {
     const openaiUrlLong = `https://chat.openai.com?q=${datacodeOPENAI}`;
     const claudeAiUrlLong = `https://claude.ai/new?q=${datacodeCLAUDE}`;
 
-    const openaiUrlshort = await axios.get(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(openaiUrlLong)}`,);
-    const claudeAiUrlShort = await axios.get(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(claudeAiUrlLong)}`,);
-    if(!openaiUrlshort.data || !claudeAiUrlShort.data){
-      console.error('TinyURL API failed to shorten the URL');
+
+    let openaiShortUrl = '';
+    let claudeShortUrl = '';
+    try {
+      const [openaiRes, claudeRes] = await Promise.all([
+        axios.get(
+          `https://tinyurl.com/api-create.php?url=${encodeURIComponent(openaiUrlLong)}`
+        ),
+        axios.get(
+          `https://tinyurl.com/api-create.php?url=${encodeURIComponent(claudeAiUrlLong)}`
+        ),
+      ]);
+    
+      openaiShortUrl = openaiRes?.data || '';
+      claudeShortUrl = claudeRes?.data || '';
+    } catch (err) {
+      console.error('TinyURL API failed:', err.message);
     }
-    const locallinkOpenAI = openaiUrlshort.data?`=<${openaiUrlshort.data}|OpenAI Chat>`:'';
-    const locallinkClaudeAI = claudeAiUrlShort.data?`=<${claudeAiUrlShort.data}|Claude AI Chat>`:'';
+    
+    const locallinkOpenAI = openaiShortUrl?`=<${openaiShortUrl}|OpenAI Chat>`:'';
+    const locallinkClaudeAI = openaiShortUrl?`=<${openaiShortUrl}|Claude AI Chat>`:'';
     
     const lineWithSymbol = line + locallink + locallinkOpenAI + locallinkClaudeAI + line ;
     const outMsg = lineWithSymbol + '\n' + nexMsg + '\n' + lineWithSymbol;

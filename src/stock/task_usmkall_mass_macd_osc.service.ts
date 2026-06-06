@@ -24,7 +24,11 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
   async onModuleInit() {
     const symbols = await this.LocalPLWR.getholdingList_W_other()
     console.log('Combined watchlist and holdings:', symbols.length, 'symbols');
-    
+    // await this.processTickers_runWatchlistGemini(
+    //   ['FE'],
+    //   '1day', this.stockHelperService.US_DAILY_,
+    //   0,
+    // )
     // await this.runeverydayat4pm()
     // console.log('TasksUS_ALL_MK_MASS_MACD_OSC initialized', DataSymbols.watchlist.length);
     // const timeframe = '1day/2026-06-03'
