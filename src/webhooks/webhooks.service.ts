@@ -1847,7 +1847,7 @@ export class WebhooksService {
       .map(
         (s) =>
           `• *${s}* → ${display}` +
-          `  < <http://localhost:4200/price-log/${s}?daysRange=${timeframeScore}|local> | <https://stockmarkets000.web.app/price-log/${s}?daysRange=${timeframeScore}|production> | <https://www.tradingview.com/chart/mWoCISmu/?symbol=${s}|tradingview> |  <http://localhost:4200/price-log/${s}?daysRange=240|4hour> | ${timeframe}`+
+          `  < <http://localhost:4200/price-log/${s}?daysRange=${timeframeScore}|local> | <https://stockmarkets000.web.app/price-log/${s}?daysRange=${timeframeScore}|production> | <https://www.tradingview.com/chart/mWoCISmu/?symbol=${s}|tradingview> |  <https://new-site-pwa.web.app/?stockTicker=${s}&endpoint=fm&timeframe=${timeframe}|OtherLink> | ${timeframe}`+
           `${buysellTarget} +
           \n\t ${bullbearxx}`,
       )
