@@ -24,8 +24,7 @@ export class AiToolService {
       const message = newMsg + `. Metric:${JSON.stringify(metric)}` +`. Stock data:+${JSON.stringify(data)}`
       if (data?.link === 'link'){
         const datacodeOPENAI = encodeURIComponent(message.length > 1800 ? message.slice(0, 7500) + '...' : message);
-        const datacodeCLAUDE = encodeURIComponent(message.length > 1800 ? message.slice(0, 10000) + '...' : message);
-  
+        const datacodeCLAUDE = encodeURIComponent(message.length > 1800 ? message.slice(0, 9500) + '...' : message);
         const openaiUrlLong = `https://chat.openai.com?q=${datacodeOPENAI}`;
         const claudeAiUrlLong = `https://claude.ai/new?q=${datacodeCLAUDE}`;
     
@@ -47,8 +46,9 @@ export class AiToolService {
           console.error('TinyURL API failed:', err.message);
         }
         const link = `
-        <a href="${openaiShortUrl}" target="_blank">OpenAI</a> ---------|---------
-        <a href="${claudeShortUrl}" target="_blank">Claude</a>
+        ${openaiShortUrl?`<a href="${openaiShortUrl}" target="_blank">OpenAI</a> `:'error'}
+        ---------|---------
+        ${claudeShortUrl?`<a href="${claudeShortUrl}" target="_blank">Claude</a>`:'error'}
         `;
         return link;
       } 
