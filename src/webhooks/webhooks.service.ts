@@ -1936,7 +1936,8 @@ export class WebhooksService {
       );
     }
 
-    if(getResFromGemini.toLowerCase().includes(': buy') ){
+    const textL = getResFromGemini.toLowerCase().replace(/\s+/g, '').replace(/\*\*/g, '').replace(/\*/g, '')
+    if(textL.includes(':buy')){
       // post to a-buy channel if recommendation is buy
       await this.post_SLack(aiSlackCl.AI_BUY, signalThread);
       // add reaction to original message
@@ -1945,7 +1946,7 @@ export class WebhooksService {
       let lastData = fullData[fullData.length - 1]
       const lastDateOndata = fullData[fullData.length - 1].date.split(' ')[0]
       await this.FireBaseApi("put", `stock-gemini-buy/${timeframe}/${lastDateOndata}/${symbols[0]}.json`, {lastData: lastData})
-    } else if(getResFromGemini.toLowerCase().includes('recommendation: sell')){
+    } else if(textL.includes(':sell')){
       await this.addReaction_SLack(postToCSLRE.channel, postToCSLRE.ts, 'thumbsdown');
     }
   }

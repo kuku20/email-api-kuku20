@@ -53,7 +53,8 @@ export class StockHelperService {
     "OSC_100": "C0B75J2C22J",
     "OSC_200": "C0B748PNBFF",
     "OSC_BL": "C0B75J408NS",
-    "WATCH": "C0B79F4P0MP"
+    "WATCH": "C0B79F4P0MP",
+    "WATCH_BUY": "C0B8Q7S6137",
   }
   US_DAILY_ = {
     "STOCHRSI": "C0B6S5ABATZ",
@@ -66,6 +67,7 @@ export class StockHelperService {
     "OSC_200": "C0B77K2HECS",
     "OSC_BL": "C0B79DZRKNV",
     "WATCH": "C0B717X3KT5",
+    "WATCH_BUY": "C0B8Q7RB9FX",
     "RSI_15": "C0B77K2AQP4",
     "RSI_20": "C0B6S59GVKR",
     "RSI_25": "C0B7B7KTKNY"
@@ -81,6 +83,7 @@ export class StockHelperService {
     "Z_US_SL_4h_3C_BL": "C0B74FZSUJH",
     "Z_US_SL_2h_CROSS": "C0B71GB82M9",
     "Z_US_SL_HOLDING": "C0B826H2ADN",
+    "Z_US_SL_HOLDING_C_SELL": "C0B8C5LSTL7",
     "Z_US_SL_J2DAY": "C0B75RDBJG6",
     "Z_US_SL_J3DAY": "C0B75RD90UE",
     "Z_US_SL_OR": "C0B79NF825P",

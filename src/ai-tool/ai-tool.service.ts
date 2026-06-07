@@ -90,12 +90,9 @@ export class AiToolService {
       .toLowerCase()
       .includes('recommendation');
     const askPrice = message.toLowerCase().includes('just guess');
-    const recommendingBuyOrSell = msgRes
-      .toLowerCase()
-      .includes(': buy')
-      ? 'buy'
-      : msgRes.toLowerCase().includes(': hold')
-      ? 'hold'
+    const textL = msgRes.toLowerCase().replace(/\s+/g, '').replace(/\*\*/g, '').replace(/\*/g, '')
+    const recommendingBuyOrSell = textL.includes(':buy')? 'buy'
+      : textL.includes(':hold')? 'hold'
       : 'sell';
     const nexMsg = `${msgRes.replace(/\*\*/g, '*')}`;
     const locallink = `<http://localhost:4200/price-log/${symbol}?daysRange=500|${symbol}>`;
