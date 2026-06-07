@@ -92,9 +92,9 @@ export class AiToolService {
     const askPrice = message.toLowerCase().includes('just guess');
     const recommendingBuyOrSell = msgRes
       .toLowerCase()
-      .includes('buy')
+      .includes(': buy')
       ? 'buy'
-      : msgRes.toLowerCase().includes('hold')
+      : msgRes.toLowerCase().includes(': hold')
       ? 'hold'
       : 'sell';
     const nexMsg = `${msgRes.replace(/\*\*/g, '*')}`;

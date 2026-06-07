@@ -1936,7 +1936,7 @@ export class WebhooksService {
       );
     }
 
-    if(getResFromGemini.toLowerCase().includes('buy') ){
+    if(getResFromGemini.toLowerCase().includes(': buy') ){
       // post to a-buy channel if recommendation is buy
       await this.post_SLack(aiSlackCl.AI_BUY, signalThread);
       // add reaction to original message
