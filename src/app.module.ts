@@ -184,7 +184,7 @@ import { Tasks_US_WEEKLY } from './stock/task_us_weekly.service';
     // TasksUS_ALL_MK_4HOUR_Service,
 
     TasksUS_ALL_MK_MASS_MACD_OSC,
-    // TasksBullBearService,
+    TasksBullBearService,
   ],
 })
 export class AppModule {}
