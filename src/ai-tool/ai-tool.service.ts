@@ -23,8 +23,8 @@ export class AiToolService {
       const metric = (await this.stockService.getMetric_FINHUB(symbol)).metric;
       const message = newMsg + `. Metric:${JSON.stringify(metric)}` +`. Stock data:+${JSON.stringify(data)}`
       if (data?.link === 'link'){
-        const datacodeOPENAI = encodeURIComponent(message.length > 1800 ? message.slice(0, 7500) + '...' : message);
-        const datacodeCLAUDE = encodeURIComponent(message.length > 1800 ? message.slice(0, 9500) + '...' : message);
+        const datacodeOPENAI = encodeURIComponent(message.length > 1800 ? message.slice(0, 7000) + '...' : message);
+        const datacodeCLAUDE = encodeURIComponent(message.length > 1800 ? message.slice(0, 8500) + '...' : message);
         const openaiUrlLong = `https://chat.openai.com?q=${datacodeOPENAI}`;
         const claudeAiUrlLong = `https://claude.ai/new?q=${datacodeCLAUDE}`;
     
@@ -97,8 +97,8 @@ export class AiToolService {
     const nexMsg = `${msgRes.replace(/\*\*/g, '*')}`;
     const locallink = `<http://localhost:4200/price-log/${symbol}?daysRange=500|${symbol}>`;
 
-    const datacodeOPENAI = encodeURIComponent(message.length > 1800 ? message.slice(0, 7500) + '...' : message);
-    const datacodeCLAUDE = encodeURIComponent(message.length > 1800 ? message.slice(0, 10000) + '...' : message);
+    const datacodeOPENAI = encodeURIComponent(message.length > 1800 ? message.slice(0, 7000) + '...' : message);
+    const datacodeCLAUDE = encodeURIComponent(message.length > 1800 ? message.slice(0, 8500) + '...' : message);
     const openaiUrlLong = `https://chat.openai.com?q=${datacodeOPENAI}`;
     const claudeAiUrlLong = `https://claude.ai/new?q=${datacodeCLAUDE}`;
 
