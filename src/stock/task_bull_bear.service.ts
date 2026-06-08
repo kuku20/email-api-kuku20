@@ -31,7 +31,8 @@ export class TasksBullBearService {
     // await this.postSLTest(['C0B748C0BCM'])
 
     
-    // //  await this.dailyCleanup()
+    //  await this.dailyCleanup()
+    //  console.log('done')
     // await this.webhooksService.deleteSLChannel(['C0B748C0BCM'])
 
     // await this.delete(-1)
@@ -209,9 +210,10 @@ export class TasksBullBearService {
     // Wait for all ticker promises to complete concurrently (with concurrency limit)
     await Promise.all(tickerPromises);
   }
-  runon15or30 :'30'|'15'|'5'= '30';
-  @Cron('*/30 9-16 * * 1-5', { timeZone: 'America/New_York' })
-  async bullBear(timeframe = '30min',symbols= DataSymbols.watchlist){
+  runon15or30 :'30'|'15'|'5'|'60'= '60';
+  // @Cron('*/30 9-16 * * 1-5', { timeZone: 'America/New_York' })
+  @Cron('0 9-16 * * 1-5', { timeZone: 'America/New_York' })
+  async bullBear(timeframe = '1hour',symbols= DataSymbols.watchlist){
     if (!this.stockHelperService.shouldRunTradingLogicUS(`${this.runon15or30}min`,this.logger)) {
       return;
     }
@@ -263,11 +265,11 @@ export class TasksBullBearService {
   async dailyCleanup() {    
     // await this.postSLTest()
     // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.AI_SL))
-    // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.US_DAILY_))
+    this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.US_DAILY_))
     // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.US_4H_))
     // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.VN_SL))
     // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.Z_US_SL))
-    this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.INTRA_30M_SL))
+    // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.INTRA_30M_SL))
   }
 
   async postSLTest(webhooks =[ 'C0B77K2AG12','C0B6BFBKJ4X']) {
