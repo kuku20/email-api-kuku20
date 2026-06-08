@@ -531,7 +531,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
     const webhooks = [
       ...Object.values(slChannel),
       ...Object.values(this.stockHelperService.AI_SL),
-      this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING
+      this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING, this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING_C_SELL
     ];
     await this.stockHelperService.sendBatchNotification('START',timeframe,webhooks,this.webhooksService,1000,);
     await Promise.all([
@@ -673,23 +673,12 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
 
           if(ONMIRUNNOW.includes(ticker)){ // if stock in watchlist or holding list then call gemini to get recommendation and post to slack with thread link from gemini response
             const {RecommendThreadLink,getResFromGemini} = await this.webhooksService.GetGeminiReNPosted(timeframe,ticker,data);
-            if(this.stockHelperService.HoldingList.includes(ticker)){
-              const {msg,postToCSLRE} = await this.webhooksService.sendSlackNotificationVN(timeframe,
-                [ticker],
-                lastData,
-                this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING,'AI-detail','500'
-              );
-              await this.webhooksService.reply_SLack(
-                postToCSLRE.channel,
-                postToCSLRE.ts,
-                RecommendThreadLink
-              );
-            }
-            else if(getResFromGemini.toLowerCase().includes('buy')){
+            const textL = getResFromGemini.toLowerCase().replace(/\s+/g, '').replace(/\*\*/g, '').replace(/\*/g, '')
+            if(textL.includes(':buy')){
              const {msg,postToCSLRE} = await this.webhooksService.sendSlackNotificationVN(timeframe,
                 [ticker],
                 lastData,
-                slChannel.WATCH ,'AI-BUY','500'
+                this.stockHelperService.HoldingList.includes(ticker)?this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING:slChannel.WATCH_BUY,'AI-BUY','500'
               );
               await this.webhooksService.reply_SLack(
                 postToCSLRE.channel,
@@ -699,7 +688,6 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
               const lastDateOndata = lastData.date.split(' ')[0]
               await this.LocalPLWR.FireBaseApi("put", `stock-gemini-buy/${timeframe}/${lastDateOndata}/${ticker}.json`, {lastData: lastData})
             } else {
-
               const webhookMap = [
                 {
                   condition:(macdCross.AB || OscCrossAb) &&  priceAbMA200,
@@ -734,7 +722,18 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
                 const {msg,postToCSLRE} = await this.webhooksService.sendSlackNotificationVN(timeframe,
                   [ticker],
                   lastData,
-                  DataSymbols.watchlist.includes(ticker)? slChannel.WATCH :matched.hook,matched.msg,'500'
+                  this.stockHelperService.HoldingList.includes(ticker)?this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING_C_SELL:slChannel.WATCH,matched.msg,'500'
+                );
+                await this.webhooksService.reply_SLack(
+                  postToCSLRE.channel,
+                  postToCSLRE.ts,
+                  RecommendThreadLink
+                );
+              }else{
+                const {msg,postToCSLRE} = await this.webhooksService.sendSlackNotificationVN(timeframe,
+                  [ticker],
+                  lastData,
+                  this.stockHelperService.HoldingList.includes(ticker)?this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING_C_SELL:slChannel.WATCH,'AI-Watch','500'
                 );
                 await this.webhooksService.reply_SLack(
                   postToCSLRE.channel,
