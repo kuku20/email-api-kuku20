@@ -777,9 +777,9 @@ async putToFBDynamic(endpoint:string, data: any,) {
       let tem = timefame;
       if (timefame.includes('hour')) {
         tem = timefame.slice(0, 2);
-      } else if (timefame.includes('weekly')) {
+      } else if (timefame.includes('week')) {
         tem = '1week';
-      } else if (timefame.includes('monthly')) {
+      } else if (timefame.includes('month')) {
         tem = '1month';
       }
       if(ticker.includes('USD')){

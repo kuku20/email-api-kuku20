@@ -83,7 +83,7 @@ export class LocalPLWR {
       return
     }
     const urls = `https://api.massive.com/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${dayStart}/${dayend}?adjusted=true&sort=desc&limit=50000&apiKey=`;
-    // if (timefame.includes('weekly') || timefame.includes('monthly')) {
+    // if (timefame.includes('week') || timefame.includes('month')) {
     //   return this.alphavantageService.weekORmonthly(ticker, timefame);
     // }
     // const responsesArray = await this.tryCatchF(urls, 'POLYGON_STOCK_API_KEY');
@@ -137,7 +137,7 @@ export class LocalPLWR {
       return
     }
     const urls = `https://api.massive.com/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${dayStart}/${dayend}?adjusted=true&sort=desc&limit=50000&apiKey=`;
-    // if (timefame.includes('weekly') || timefame.includes('monthly')) {
+    // if (timefame.includes('week') || timefame.includes('month')) {
     //   return this.alphavantageService.weekORmonthly(ticker, timefame);
     // }
     // const responsesArray = await this.tryCatchF(urls, 'POLYGON_STOCK_API_KEY');
@@ -186,7 +186,7 @@ export class LocalPLWR {
       dayStart = this.stockHelperService.getDateNDaysAgo(365 + daytestBF);
       return this.getTickerDailyChart_FMP(ticker, dayStart, dayend);
     }
-    if (timefame.includes('weekly') || timefame.includes('monthly')) {
+    if (timefame.includes('week') || timefame.includes('month')) {
       return this.alphavantageService.weekORmonthly(ticker, timefame);
     }
     const today = new Date().toISOString().replace(/T.*$/, '');
@@ -295,7 +295,7 @@ export class LocalPLWR {
   // Map timeframe to repository
   private getRepository(timeframe: string): Repository<any> {
     switch (timeframe) {
-      case 'weekly': return this.DataHistory1moRepo;
+      case '1week': return this.DataHistory1moRepo;
       case '1day': return this.dataHistory1dRepo;
       case '4hour': return this.dataHistory4hRepo;
       case '1hour': return this.dataHistory1hRepo;

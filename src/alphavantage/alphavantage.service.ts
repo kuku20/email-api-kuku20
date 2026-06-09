@@ -34,13 +34,13 @@ export class AlphavantageService {
       }
     }
 
-    async weekORmonthly(symbol: string, seriesType = 'weekly') {
-      const timeseries = seriesType==='weekly' ?"TIME_SERIES_WEEKLY_ADJUSTED":"TIME_SERIES_MONTHLY_ADJUSTED"
+    async weekORmonthly(symbol: string, seriesType = '1week') {
+      const timeseries = seriesType==='1week' ?"TIME_SERIES_WEEKLY_ADJUSTED":"TIME_SERIES_MONTHLY_ADJUSTED"
       const url = `https://www.alphavantage.co/query?function=${timeseries}&symbol=${symbol}&apikey=`;
   
       const weekly = `Weekly Adjusted Time Series`
       const monthly = "Monthly Adjusted Time Series"
-      const returndataseries = seriesType==='weekly' ?weekly: monthly
+      const returndataseries = seriesType==='1week' ?weekly: monthly
       try {
         const response =  await this.tryCatchF(url, 'alphavantage', returndataseries);
   
