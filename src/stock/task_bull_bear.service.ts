@@ -115,7 +115,7 @@ export class TasksBullBearService {
           const MA9crosMA20 = lastMA9overMA15 && sndMA9overMA15
 
           const aboveOrBelowma50 = lastData.close > lastData.MA200
-          const oneTimeAt9h30 =lastData.date.includes('09:30:00')&& lastData.close >= lastData.MA9 && lastData.MA9 >= lastData.MA15 && lastData.MA15 >= lastData.MA50 && lastData.MA50 >= lastData.MA100 && lastData.MA100 >= lastData.MA200 && lastData.MA200 >= lastData.MA300
+          const oneTimeAt9h30 =lastData.date.includes('09:35:00')&& lastData.close >= lastData.MA9 && lastData.MA9 >= lastData.MA15 && lastData.MA15 >= lastData.MA50 && lastData.MA50 >= lastData.MA100 && lastData.MA100 >= lastData.MA200 && lastData.MA200 >= lastData.MA300
           const textDetail = oneTimeAt9h30?'Above all buy':StochRSICross?'StochRSICross': condition && aboveOrBelowma50?'CrossnAb200':''
           const blMa200MACDPMA50cR = lastData.close < lastData.MA200 && lastData.divergence > 0 && (lastData.close > lastData.MA50 && secondLastData.close < secondLastData.MA50)
           const macdCrossAB = lastData.divergence > 0 && secondLastData.divergence < 0
@@ -212,7 +212,7 @@ export class TasksBullBearService {
   }
   runon15or30 :'30'|'15'|'5'|'60'= '60';
   // @Cron('*/30 9-16 * * 1-5', { timeZone: 'America/New_York' })
-  @Cron('0 9-16 * * 1-5', { timeZone: 'America/New_York' })
+  @Cron('35 9-16 * * 1-5', { timeZone: 'America/New_York' }) // 
   async bullBear(timeframe = '1hour',symbols= DataSymbols.watchlist){
     if (!this.stockHelperService.shouldRunTradingLogicUS(`${this.runon15or30}min`,this.logger)) {
       return;
@@ -224,7 +224,7 @@ export class TasksBullBearService {
         this.allkeys,
         'US_ALL',
         'USSTOCK_WATCH',
-        4,
+        0,
         timeframe,
       );
     } catch (error) {
