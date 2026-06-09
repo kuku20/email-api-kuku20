@@ -88,8 +88,8 @@ export enum TimeRange {
     '1hour' = '1hour',
     '4hour' = '4hour',
     '1day' = '1day',
-    'weekly' = 'weekly',
-    'monthly' = 'monthly',
+    '1week' = '1week',
+    '1month' = '1month',
   }
   export class TIMEFRAMEDTO {
     @IsEnum(TIMEFRAME, {
