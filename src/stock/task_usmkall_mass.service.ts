@@ -50,7 +50,7 @@ export class TasksUS_ALL_MK_MASS_Service {
   // this.stockHelperService.aboveMA50api= this.rundayaogo
   //  await this.runOnly4h()
       // await this.runAllOn4h()
-    // await this.getMarket(DataSymbols.above2billion);
+    // await this.getMarket(DataSymbols.stock_usall_symbols_update);
     // await this.stockHelperService.writeAbove2BillionToFile(this.aboveTarget,`Above_${this.marketTarget}_Billion`);
     // await this.stockHelperService.writeAbove2BillionToFile(this.BelowTarget,`Below_${this.marketTarget}_Billion`);
     // this.stockHelperService.ListMA50On1day = await this.LocalPLWR.getArrSymbolFFire('${this.stockHelperService.aboveMA50api}/alldata/1day')as string[];
