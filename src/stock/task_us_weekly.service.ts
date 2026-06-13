@@ -48,8 +48,8 @@ export class Tasks_US_WEEKLY {
     console.log("done")
   }
 
-  // @Cron('0 0 * * 6', { // saturday
-  @Cron('0 0 * * 0', { // sunday
+  @Cron('0 0 * * 6', { // saturday
+  // @Cron('0 0 * * 0', { // sunday
     timeZone: 'America/Los_Angeles',
   })
   async cronRunWeekly(stocklist = DataSymbols.above5billion) {
