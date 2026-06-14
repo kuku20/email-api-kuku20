@@ -264,12 +264,12 @@ export class TasksBullBearService {
   @Cron('0 19 * * 1-5', { timeZone: 'America/New_York' }) // Every weekday at 7:00 PM New York time
   async dailyCleanup() {    
     // await this.postSLTest()
-    // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.AI_SL))
     // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.US_DAILY_))
     // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.US_4H_))
     // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.VN_SL))
     // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.Z_US_SL))
-    this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.INTRA_30M_SL))
+    // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.AI_SL))
+    // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.INTRA_30M_SL))
   }
 
   async postSLTest(webhooks =[ 'C0B77K2AG12','C0B6BFBKJ4X']) {
