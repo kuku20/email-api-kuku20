@@ -215,8 +215,8 @@ export class TasksBullBearService {
     await Promise.all(tickerPromises);
   }
   runon15or30 :'30'|'15'|'5'|'60'= '30';
-  // @Cron('*/30 9-16 * * 1-5', { timeZone: 'America/New_York' })
-  @Cron('34 9-16 * * 1-5', { timeZone: 'America/New_York' })
+  @Cron('*/30 9-16 * * 1-5', { timeZone: 'America/New_York' })
+  // @Cron('34 9-16 * * 1-5', { timeZone: 'America/New_York' })
   async bullBear(timeframe = '30min',symbols= DataSymbols.watchlist){
     if (!this.stockHelperService.shouldRunTradingLogicUS(`${this.runon15or30}min`,this.logger)) {
       return;
@@ -228,7 +228,7 @@ export class TasksBullBearService {
         this.allkeys,
         'US_ALL',
         'USSTOCK_WATCH',
-        0,
+        4,
         timeframe,
       );
     } catch (error) {
