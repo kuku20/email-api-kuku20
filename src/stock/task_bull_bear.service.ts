@@ -134,22 +134,24 @@ export class TasksBullBearService {
               data,
             );
             return
-          }else if((StochRSICross || condition && aboveOrBelowma50)){
-            await this.webhooksService.sendSlackNotificationVN(timeframe,
-              [ticker],
-              lastData,
-              StochRSICross?this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_50:this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_100,textDetail+' ',
-              this.runon15or30
-            );
-            this.aboveList.push(ticker)
-            await this.webhooksService.sendDiscord(
-              `${textDetail}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-              `${ticker}-${timeframe}-${textDetail}`,
-              lastData,
-              StochRSICross?B_Channel:HT_Channel, 
-              data,
-            );
-          }else if(blMa200MACDPMA50cR){
+          }
+          // else if((StochRSICross || condition && aboveOrBelowma50)){
+          //   await this.webhooksService.sendSlackNotificationVN(timeframe,
+          //     [ticker],
+          //     lastData,
+          //     StochRSICross?this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_50:this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_100,textDetail+' ',
+          //     this.runon15or30
+          //   );
+          //   this.aboveList.push(ticker)
+          //   await this.webhooksService.sendDiscord(
+          //     `${textDetail}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+          //     `${ticker}-${timeframe}-${textDetail}`,
+          //     lastData,
+          //     StochRSICross?B_Channel:HT_Channel, 
+          //     data,
+          //   );
+          // }
+          else if(blMa200MACDPMA50cR){
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               lastData,
@@ -163,21 +165,23 @@ export class TasksBullBearService {
               'US_15M_HT', 
               data,
             );
-          } else if(MA9crosMA20){
-            await this.webhooksService.sendSlackNotificationVN(timeframe,
-              [ticker],
-              lastData,
-              this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,'MA9crosMA20',
-              this.runon15or30
-            );
-            await this.webhooksService.sendDiscord(
-              `${'MA9crosMA20'}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-              `${ticker}-${timeframe}-${'MA9crosMA20'}`,
-              lastData,
-              'US_15M_HT', 
-              data,
-            );
-          } else if(macdCrossAB){
+          } 
+          // else if(MA9crosMA20){
+          //   await this.webhooksService.sendSlackNotificationVN(timeframe,
+          //     [ticker],
+          //     lastData,
+          //     this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,'MA9crosMA20',
+          //     this.runon15or30
+          //   );
+          //   await this.webhooksService.sendDiscord(
+          //     `${'MA9crosMA20'}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+          //     `${ticker}-${timeframe}-${'MA9crosMA20'}`,
+          //     lastData,
+          //     'US_15M_HT', 
+          //     data,
+          //   );
+          // } 
+          else if(macdCrossAB){
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               lastData,
@@ -210,10 +214,10 @@ export class TasksBullBearService {
     // Wait for all ticker promises to complete concurrently (with concurrency limit)
     await Promise.all(tickerPromises);
   }
-  runon15or30 :'30'|'15'|'5'|'60'= '60';
+  runon15or30 :'30'|'15'|'5'|'60'= '30';
   // @Cron('*/30 9-16 * * 1-5', { timeZone: 'America/New_York' })
-  @Cron('35 9-16 * * 1-5', { timeZone: 'America/New_York' }) // 
-  async bullBear(timeframe = '1hour',symbols= DataSymbols.watchlist){
+  @Cron('33 9-16 * * 1-5', { timeZone: 'America/New_York' })
+  async bullBear(timeframe = '30min',symbols= DataSymbols.watchlist){
     if (!this.stockHelperService.shouldRunTradingLogicUS(`${this.runon15or30}min`,this.logger)) {
       return;
     }
