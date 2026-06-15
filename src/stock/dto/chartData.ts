@@ -8305,6 +8305,7 @@ export const watchlist = [
   'NFLX',
   'LULU',
   'GLW',
+  'AAL'
 ];
 interface Watchlist {
   [key: string]: {
@@ -8370,6 +8371,7 @@ export const watchlistBB: Watchlist = {
   NFLX: { BULL: ['NFXL', 'NFLU'], BEAR: ['NFXS'] },
   LULU: { BULL: ['LULG'], BEAR: [] },
   GLW: { BULL: ['GLWG'], BEAR: [] },
+  AAL: { BULL: ['AALG'], BEAR: [] },
 };
 
 export const above2billion = [
