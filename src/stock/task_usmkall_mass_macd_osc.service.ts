@@ -521,7 +521,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
     await this.runWatchlistGemini(uniqueCombine)
   }
 
-  @Cron('0 17 * * 1-5', { timeZone: 'America/New_York' }) // Every weekday at 5:00 PM New York time
+  @Cron('30 16 * * 1-5', { timeZone: 'America/New_York' }) // 4:30 PM ET weekdays
   async runeverydayat4pm(stocklist = DataSymbols.above2billion) {
     const uniqueCombine = await this.LocalPLWR.getholdingList_W_other([...stocklist, ...DataSymbols.watchlist]);
     await this.runWatchlistGemini(uniqueCombine, this.stockHelperService.US_DAILY_, '1day')
