@@ -1884,7 +1884,7 @@ export class WebhooksService {
     - Recommendation: Buy, Hold, or Sell
     - Confidence Level (Low / Medium / High)
     - Entry Range
-    - Target Price(s)
+    - Target Price(s) with upside probability 
     - Stop-Loss
     - Risk/Reward Ratio
     - Key reasons supporting the recommendation
@@ -2259,6 +2259,48 @@ async deleteAllMessages_SLack(channel: string) {
       return true;
     } catch (error) {
       console.error('Reaction exception:', error);
+      return false;
+    }
+  }
+
+// =====================================
+// Update_Slack CHANNELS
+// =====================================
+  async Update_Slack(
+    channel: string,
+    ts: string,
+    text='✅ Application submitted'
+  ) {
+    try {
+      const { data } = await axios.post(
+        'https://slack.com/api/chat.update',
+        {
+          channel: channel,
+          ts: ts,
+          text: text,
+          blocks: [
+            {
+              type: 'section',
+              text: {
+                type: 'mrkdwn',
+                text: text,
+              },
+            },
+          ],
+        },
+        {
+          headers: this.aiToolService.headers,
+        },
+      );
+  
+      if (!data.ok) {
+        console.error('update add failed:', data);
+        return false;
+      }
+
+      return { ok: true };
+    } catch (error) {
+      console.error('update exception:', error);
       return false;
     }
   }
