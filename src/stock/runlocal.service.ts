@@ -96,10 +96,11 @@ export class LocalPLWR {
         excludeExtraneousValues: true,
       }
     ) as any;
-    return  response.slice(0, 300);
-    // const result = await this.stockHelperService.returnNewData(response);
+    // return  response.slice(0, 300);
+    const reverseData = response.reverse()
+    const result = await this.stockHelperService.returnNewData(reverseData);
     // return  result.slice(0, 300);
-    return response;
+    return result;
   }
   async getTickerFullChart_POLYGON2(ticker: string, timefame: string, daytestinput = 0) {
     let range, timespan;
