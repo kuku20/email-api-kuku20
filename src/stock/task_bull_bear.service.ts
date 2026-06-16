@@ -273,7 +273,7 @@ export class TasksBullBearService {
     // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.VN_SL))
     // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.Z_US_SL))
     // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.AI_SL))
-    // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.INTRA_30M_SL))
+    this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.INTRA_30M_SL))
   }
 
   async postSLTest(webhooks =[ 'C0B77K2AG12','C0B6BFBKJ4X']) {
