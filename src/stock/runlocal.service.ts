@@ -489,7 +489,7 @@ export class LocalPLWR {
   
       try {
         const response = await axios.get(url);
-        if (response.data?.code === 404) {
+        if (response.data?.code === 404 || response.data?.code === 400) {
           console.warn(':12: Received 404 code in response, breaking...');
           return null; 
         }
@@ -500,7 +500,7 @@ export class LocalPLWR {
       } catch (error: any) {
         attempt++;
               // Detect 404 from Axios response
-        if (error.response?.status === 404) {
+        if (error.response?.status === 404 || error.response?.status === 400) {
           console.warn(':12: Received HTTP 404 from TwelveData, breaking...');
           return null; 
         }

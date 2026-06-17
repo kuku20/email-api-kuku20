@@ -24,14 +24,11 @@ export class SlackPbController {
     const timeframe = action.action_id
     // console.log(action)
     const postToCSLRE = {channel:payload.channel.id,ts:payload.message.ts,ticker,timeframe}
-    const  fullData = await this.stockService.TwReveseNOAPI(postToCSLRE.ticker, postToCSLRE.timeframe);
-    const lastData = fullData[fullData.length - 1];
     if(timeframe ==='1day'||timeframe ==='4hour'){
-      const lastdataText = `${lastData.close} @ *${lastData.date }* On ${timeframe}`
-      await this.webhooksService.reply_SLack(payload.channel.id,payload.message.ts,lastdataText)
       // console.log(postToCSLRE)
-      this.processApply(postToCSLRE,fullData)
+      this.processApply(postToCSLRE)
     }else{
+      this.processApply(postToCSLRE)
       await this.webhooksService.Update_Slack(payload.channel.id,payload.message.ts,"Remove Completed ✅"+ticker)
     }
     // await new Promise((resolve) => setTimeout(resolve, 2 * 60 * 1000));
@@ -45,9 +42,18 @@ export class SlackPbController {
     };
   }
 
-  async processApply(postToCSLRE: any,fullData) {
+  async processApply(postToCSLRE: any) {
     try {
-      await this.webhooksService.GeminiRecomendation(postToCSLRE, postToCSLRE.timeframe, [postToCSLRE.ticker], fullData);
+      const isSupportedTimeframe = /(?:min|hour|day|week)$/.test(postToCSLRE.timeframe);
+      if(isSupportedTimeframe){
+        const  fullData = await this.stockService.TwReveseNOAPI(postToCSLRE.ticker, postToCSLRE.timeframe);
+        const lastData = fullData[fullData.length - 1];
+        const lastdataText = `${lastData.close} @ *${lastData.date }* On ${postToCSLRE.timeframe}`
+        await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,lastdataText)
+        await this.webhooksService.GeminiRecomendation(postToCSLRE, postToCSLRE.timeframe, [postToCSLRE.ticker], fullData);
+      }else{
+        return null
+      }
     } catch (error) {
       await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,"TRY Again")
     }
