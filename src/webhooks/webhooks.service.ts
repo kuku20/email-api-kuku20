@@ -1777,7 +1777,7 @@ export class WebhooksService {
       : '🔴 *BELOW*';
     const mkaboveOrBellow2 = DataSymbols.above2billion.includes(symbols[0]) ? '💰-' : '';
     const sp500 = DataSymbols.stock_500_symbols.includes(symbols[0]) ? '(🇺🇸)-' : ''
-    const display = `${sp500}${mkaboveOrBellow2}${hourIn4}${lastData?.close}(${aboveOrBellow}-${lastData?.MA200?.toFixed(2)})| ${lastData?.date} |`
+    const display = `${sp500}${mkaboveOrBellow2}${hourIn4}${lastData?.close}(${aboveOrBellow}-${lastData?.MA200?.toFixed(2)})|(MA50-${lastData?.MA50?.toFixed(2)})| ${lastData?.date} |`
     const formatted = symbols
       .map(
         (s) =>
