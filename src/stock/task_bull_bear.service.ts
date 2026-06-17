@@ -371,11 +371,11 @@ export class TasksBullBearService {
           const channel = ticker==='QQQ'? this.stockHelperService.INTRA_30M_SL.US_30M_QQQ : this.stockHelperService.INTRA_30M_SL.US_30M_SPY
           let text = ''
           if(macdCrossAB){
-            text = aboveOrBelowma50?'*macdCrossNAB-GOODDAYYYYYY*':'*macdCrossNBL50-W*'
+            text = aboveOrBelowma50?'*macdCrossNAB-GOODDAYYYYYY🟢🟢*':'*macdCrossNBL50-W*'
           }else if(aboveOrBelowma50){
-            text = `*BUYYYYYYY-DAY-C*`
+            text = `*BUYYYYYYY-DAY-🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢*`
           }else{
-            text = `*SELLLLLLLL-DAY-C*`
+            text = `*SELLLLLLLL-DAY-🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴:*`
           }
           await this.webhooksService.sendSlackNotificationVN(timeframe,
             [ticker],
