@@ -1841,7 +1841,7 @@ export class WebhooksService {
     const addMsg = msg? `*msg:* ${msg} | ` :""
     const buysellTarget = slChannel !==this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING? `\n\t\t${addMsg} *TARGET:* ${StopNTarget?.target}  | \t |  *STOP LOSS:* ${StopNTarget?.stop}`:'BETTER SELL'
 
-    const display = `${sp500}${mkaboveOrBellow2}${HoldingList}${hourIn4}${last}${lastData?.close}(${aboveOrBellow}-${lastData?.MA200?.toFixed(2)})| ${lastData?.date} |`
+    const display = `${sp500}${mkaboveOrBellow2}${HoldingList}${hourIn4}${last}${lastData?.close}(${aboveOrBellow}-${lastData?.MA200?.toFixed(2)})|(MA50-${lastData?.MA50?.toFixed(2)})| ${lastData?.date} |`
 
     const formatted = symbols
       .map(
