@@ -368,7 +368,7 @@ export class TasksBullBearService {
           const channel = ticker==='QQQ'? this.stockHelperService.INTRA_30M_SL.US_30M_QQQ : this.stockHelperService.INTRA_30M_SL.US_30M_SPY
           let text = ''
           if(macdCrossAB){
-            text = aboveOrBelowma50?'*macdCrossNBL50-W*':'*macdCrossNAB-GOODDAYYYYYY*'
+            text = aboveOrBelowma50?'*macdCrossNAB-GOODDAYYYYYY*':'*macdCrossNBL50-W*'
           }else if(aboveOrBelowma50){
             text = `*BUYYYYYYY-DAY-C*`
           }else{
