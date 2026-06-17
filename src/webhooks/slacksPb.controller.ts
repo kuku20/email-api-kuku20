@@ -29,7 +29,9 @@ export class SlackPbController {
       this.processApply(postToCSLRE)
     }else{
       this.processApply(postToCSLRE)
-      await this.webhooksService.Update_Slack(payload.channel.id,payload.message.ts,"Remove Completed ✅"+ticker)
+      const textCheck =timeframe==='delete'? `<http://localhost:4200/price-log/${ticker}?daysRange=500|local> | <https://stockmarkets000.web.app/price-log/${ticker}?daysRange=500|production> | <https://www.tradingview.com/chart/mWoCISmu/?ticker=${ticker}|tradingview> |  <https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day |OtherLink>`
+                                            : ticker
+      await this.webhooksService.Update_Slack(payload.channel.id,payload.message.ts,"Updated ✅"+textCheck)
     }
     // await new Promise((resolve) => setTimeout(resolve, 2 * 60 * 1000));
     // let  fullData = await this.stockService.TwReveseNOAPI(ticker, timeframe);
@@ -57,5 +59,18 @@ export class SlackPbController {
     } catch (error) {
       await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,"TRY Again")
     }
+  }
+
+
+  @Post('add-holding-sl')
+  async  addHoldingSl(
+    @Body() body: any,
+  ) {
+    // console.log(body)
+    await this.webhooksService.fePostToHold(body.ticker)
+    return {
+      text: '⏳ Processing application...',
+      replace_original: false,
+    };
   }
 }
