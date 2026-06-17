@@ -2393,4 +2393,8 @@ async deleteAllMessages_SLack(channel: string) {
       throw error;
     }
   }
+
+  async fePostToHold(symbol){
+    await this.post2SlackBtnFn(this.stockHelperService.BTN_SL.HOLDING,symbol)
+  }
 }
