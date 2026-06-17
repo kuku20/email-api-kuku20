@@ -29,7 +29,7 @@ export class SlackPbController {
       this.processApply(postToCSLRE)
     }else{
       this.processApply(postToCSLRE)
-      const textCheck =timeframe==='delete'? `<http://localhost:4200/price-log/${ticker}?daysRange=500|local> | <https://stockmarkets000.web.app/price-log/${ticker}?daysRange=500|production> | <https://www.tradingview.com/chart/mWoCISmu/?ticker=${ticker}|tradingview> |  <https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day |OtherLink>`
+      const textCheck =timeframe==='remove'? `<http://localhost:4200/price-log/${ticker}?daysRange=500|local> | <https://stockmarkets000.web.app/price-log/${ticker}?daysRange=500|production> | <https://www.tradingview.com/chart/mWoCISmu/?ticker=${ticker}|tradingview> |  <https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day |OtherLink>`
                                             : ticker
       await this.webhooksService.Update_Slack(payload.channel.id,payload.message.ts,"Updated ✅"+textCheck)
     }
