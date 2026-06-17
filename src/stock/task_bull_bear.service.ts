@@ -128,6 +128,7 @@ export class TasksBullBearService {
               this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_200,textDetail,
               this.runon15or30
             );
+            await this.webhooksService.post2SlackBtnFn(this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_200,ticker,timeframe)
             await this.webhooksService.sendDiscord(
               `${textDetail}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
               `${ticker}-${timeframe}-${textDetail}`,
@@ -160,6 +161,7 @@ export class TasksBullBearService {
               this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,'blMa200MACDPMA50cR',
               this.runon15or30
             );
+            await this.webhooksService.post2SlackBtnFn(this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,ticker,timeframe)
             await this.webhooksService.sendDiscord(
               `${'blMa200MACDPMA50cR'}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
               `${ticker}-${timeframe}-${'blMa200MACDPMA50cR'}`,
@@ -190,6 +192,7 @@ export class TasksBullBearService {
               this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_BL,'macdCrossAB',
               this.runon15or30
             );
+            await this.webhooksService.post2SlackBtnFn(this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_BL,ticker,timeframe)
             await this.webhooksService.sendDiscord(
               `${'macdCrossAB'}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
               `${ticker}-${timeframe}-${'macdCrossAB'}`,

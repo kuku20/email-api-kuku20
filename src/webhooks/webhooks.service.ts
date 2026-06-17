@@ -2308,9 +2308,50 @@ async deleteAllMessages_SLack(channel: string) {
   //
   async post2SlackBtnFn(
     channel: string,
-    symbol
+    symbol,timeframe='1day'
   ) {
     const url =  ` <http://localhost:4200/price-log/${symbol}?daysRange=500|local> | <https://stockmarkets000.web.app/price-log/${symbol}?daysRange=500|production> | <https://www.tradingview.com/chart/mWoCISmu/?symbol=${symbol}|tradingview> |  <https://new-site-pwa.web.app/?stockTicker=${symbol}&endpoint=fm&timeframe=1day |OtherLink> `
+    const elementsort = timeframe==='1day'? [
+      {
+        type: 'button',
+        text: {
+          type: 'plain_text',
+          text: symbol+'-4Hour',
+        },
+        value: symbol,
+        action_id: '4hour',
+      },
+      {
+        type: 'button',
+        text: {
+          type: 'plain_text',
+          text: symbol+'-1day',
+        },
+        value: symbol,
+        action_id: '1day',
+      },
+      {
+        type: 'button',
+        text: {
+          type: 'plain_text',
+          text: 'Delete',
+        },
+        style: 'danger',
+        value: symbol,
+        action_id: 'remove',
+      },
+    ]:[
+      {
+        type: 'button',
+        text: {
+          type: 'plain_text',
+          text: symbol+'-'+timeframe,
+        },
+        value: symbol,
+        action_id: timeframe,
+        style: 'primary',
+      },
+    ]
     try {
       const { data } = await axios.post(
         'https://slack.com/api/chat.postMessage',
@@ -2330,36 +2371,7 @@ async deleteAllMessages_SLack(channel: string) {
             },
             {
               type: 'actions',
-              elements: [
-                {
-                  type: 'button',
-                  text: {
-                    type: 'plain_text',
-                    text: symbol+'-4Hour',
-                  },
-                  value: symbol,
-                  action_id: '4hour',
-                },
-                {
-                  type: 'button',
-                  text: {
-                    type: 'plain_text',
-                    text: symbol+'-1day',
-                  },
-                  value: symbol,
-                  action_id: '1day',
-                },
-                {
-                  type: 'button',
-                  text: {
-                    type: 'plain_text',
-                    text: 'Delete',
-                  },
-                  style: 'danger',
-                  value: symbol,
-                  action_id: 'remove',
-                },
-              ],
+              elements: elementsort,
             },
           ],
         },
