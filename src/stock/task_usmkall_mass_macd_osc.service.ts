@@ -517,13 +517,15 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
 
   @Cron('45 9,13 * * 1-5', { timeZone: 'America/New_York' }) // Every day at 9:45 AM and 1:45 1 PM ET on weekdays
   async runevery4hour(stocklist = DataSymbols.stock_500_symbols) {
-    const uniqueCombine = await this.LocalPLWR.getholdingList_W_other([...stocklist, ...DataSymbols.watchlist]);
+    // const uniqueCombine = await this.LocalPLWR.getholdingList_W_other([...stocklist, ...DataSymbols.watchlist]);
+    const uniqueCombine =  Array.from(new Set([...stocklist, ...DataSymbols.watchlist]))
     await this.runWatchlistGemini(uniqueCombine)
   }
 
   @Cron('30 16 * * 1-5', { timeZone: 'America/New_York' }) // 4:30 PM ET weekdays
   async runeverydayat4pm(stocklist = DataSymbols.above2billion) {
-    const uniqueCombine = await this.LocalPLWR.getholdingList_W_other([...stocklist, ...DataSymbols.watchlist]);
+    // const uniqueCombine = await this.LocalPLWR.getholdingList_W_other([...stocklist, ...DataSymbols.watchlist]);
+    const uniqueCombine =  Array.from(new Set([...stocklist, ...DataSymbols.watchlist]))
     await this.runWatchlistGemini(uniqueCombine, this.stockHelperService.US_DAILY_, '1day')
   }
 
