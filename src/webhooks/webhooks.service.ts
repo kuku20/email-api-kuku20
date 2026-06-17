@@ -2304,4 +2304,81 @@ async deleteAllMessages_SLack(channel: string) {
       return false;
     }
   }
+
+  //
+  async post2SlackBtnFn(
+    channel: string,
+    symbol
+  ) {
+    const url =  ` <http://localhost:4200/price-log/${symbol}?daysRange=500|local> | <https://stockmarkets000.web.app/price-log/${symbol}?daysRange=500|production> | <https://www.tradingview.com/chart/mWoCISmu/?symbol=${symbol}|tradingview> |  <https://new-site-pwa.web.app/?stockTicker=${symbol}&endpoint=fm&timeframe=1day |OtherLink> `
+    try {
+      const { data } = await axios.post(
+        'https://slack.com/api/chat.postMessage',
+        {
+          channel,
+          text: ``,
+          blocks: [
+            {
+              type: 'section',
+              text: {
+                type: 'mrkdwn',
+                text: [
+                  `*${symbol}* |`,
+                  url,
+                ].join(''),
+              },
+            },
+            {
+              type: 'actions',
+              elements: [
+                {
+                  type: 'button',
+                  text: {
+                    type: 'plain_text',
+                    text: symbol+'-4Hour',
+                  },
+                  value: symbol,
+                  action_id: '4hour',
+                },
+                {
+                  type: 'button',
+                  text: {
+                    type: 'plain_text',
+                    text: symbol+'-1day',
+                  },
+                  value: symbol,
+                  action_id: '1day',
+                },
+                {
+                  type: 'button',
+                  text: {
+                    type: 'plain_text',
+                    text: 'Delete',
+                  },
+                  style: 'danger',
+                  value: symbol,
+                  action_id: 'remove',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          headers: this.aiToolService.headers,
+        },
+      );
+  
+      if (!data.ok) {
+        console.error('Slack post error', channel, data);
+        return null;
+      }
+      return this.stockHelperService.getSlackMessageLink(
+        data.channel,
+        data.ts,
+      );
+    } catch (error) {
+      console.error('Slack post exception', error);
+      throw error;
+    }
+  }
 }

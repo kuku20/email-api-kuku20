@@ -22,8 +22,9 @@ export class TasksBullBearService {
   belowList = []
   belowListUp = []
   async onModuleInit() {
-    // const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stock-related/holding.json`,'')
-    // this.stockHelperService.HoldingList = Object.keys(holdingObj);
+    // const symbols = await this.LocalPLWR.getholdingList_W_other()
+    // this.logger.warn('Running getholdingList with stocklist length:', symbols);
+    // await this.postInteractiveText(this.stockHelperService.BTN_SL.WATCH,DataSymbols.watchlist)
     // console.log(`✅ Loaded stock-related/holding: has ${this.stockHelperService.HoldingList}`);
     // this.stockHelperService.setSlackToken('SLACK_USER_TOKEN');
 
@@ -398,5 +399,11 @@ export class TasksBullBearService {
 
     // Wait for all ticker promises to complete concurrently (with concurrency limit)
     await Promise.all(tickerPromises);
+  }
+
+  async postInteractiveText(webhook, symbols) {
+    await symbols.forEach(async symbol=>{
+     await this.webhooksService.post2SlackBtnFn(webhook,symbol)
+    })
   }
 }

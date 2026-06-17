@@ -988,5 +988,42 @@ async putToFBDynamic(endpoint:string, data: any,) {
       );
     }
   }
+
+  async TwReveseNOAPI(ticker: string, timefame: string) {
+    let tem = timefame;
+    if (timefame.includes('hour')) {
+      tem = timefame.slice(0, 2);
+    } else if (timefame.includes('week')) {
+      tem = '1week';
+    } else if (timefame.includes('month')) {
+      tem = '1month';
+    }
+    if(ticker.includes('USD')){
+      // ticker = this.stockHelperService.getmatch1only(ticker)
+      // return this.getCoinHistory(ticker, '5m')
+      ticker = this.stockHelperService.formatSymbol(ticker)
+    }
+    let BASE_URL = `https://api.twelvedata.com/time_series?symbol=${ticker}&interval=${tem}&outputsize=600&dp=2&apikey=`;
+    console.log(BASE_URL)
+    const response = await this.tryCatchtwelvedata(BASE_URL);
+    if (response?.status == 'ok') {
+      // us stock     "exchange_timezone": "America/New_York", ChartOutTwelveData
+      // btc don't turn to ChartOutTwelveDataUTC
+      const meta_timezone = response.meta.exchange_timezone
+      const responseRe =  response.values;
+      const reversedData = [...responseRe].reverse(); // clone + reverse
+      let dataOut
+      if(meta_timezone){
+        dataOut = plainToInstance(DTO.ChartOutTwelveData, reversedData);
+      } else if(!meta_timezone){
+        dataOut = plainToInstance(DTO.ChartOutTwelveDataUTC, reversedData, {
+          excludeExtraneousValues: true,
+        })
+      }
+      const newData = await this.stockHelperService.returnNewData(dataOut);
+      return newData.slice(-400); //
+    }
+    // return null;
+  }
 }
 
