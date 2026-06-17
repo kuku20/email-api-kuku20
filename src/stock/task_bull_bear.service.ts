@@ -38,6 +38,7 @@ export class TasksBullBearService {
     // await this.delete(-1)
     // await this.delete(0)
     // await this.bullBear('30min');
+    // await this.CHECKBULL_BEAR()
   }
 
   async  USTIMERUN(
@@ -278,5 +279,124 @@ export class TasksBullBearService {
 
   async postSLTest(webhooks =[ 'C0B77K2AG12','C0B6BFBKJ4X']) {
     await this.stockHelperService.sendBatchNotification('START','test',webhooks,this.webhooksService,1000,);
+  }
+
+  @Cron('*/15 9-16 * * 1-5', { timeZone: 'America/New_York' })
+  async CHECKBULL_BEAR(timeframe = '15min',symbols= ['QQQ','SPY']){
+    if (!this.stockHelperService.shouldRunTradingLogicUS(`15min`,this.logger)) {
+      return;
+    }
+    try {
+      await this.CHECKBULL_BEAR_USTIMERUN(
+        symbols,
+        this.allkeys,
+        'US_ALL',
+        'USSTOCK_WATCH',
+        2,
+        timeframe,
+      );
+    } catch (error) {
+      console.error('runAllWatchLists30 failed:', error);
+      throw error;
+    } 
+  }
+
+  async  CHECKBULL_BEAR_USTIMERUN(
+    intickers: string[],
+    api: any,
+    B_Channel,
+    HT_Channel,
+    delay,
+    timeframe = '5min',
+  ) {
+    const now = new Date().toLocaleString('en-US', {
+      timeZone: 'America/New_York',
+    });
+    if (intickers.length < 1) {
+      this.logger.log(`Don't have symbol ${timeframe} check (${now} ET)`);
+      return;
+    }
+    if (!this.stockHelperService.isMarketOpen()) {
+      this.logger.log(
+        `🕒 Market closed — skipping ${timeframe} check (${now} ET)`,
+      );
+      return;
+    }
+    this.logger.log(
+      `✅ Market open — running ${timeframe} trading logic (${now} ET)`,
+    );
+    await this.webhooksService.SendDcChannels([B_Channel, HT_Channel,],this.logger,'START='+timeframe);
+    const tickers = intickers;
+    await this.CHECKBULL_BEAR_processTickers(
+      tickers,
+      timeframe,
+      api,
+      delay,
+    );
+    await this.webhooksService.SendDcChannels([B_Channel, HT_Channel,],this.logger,'END='+timeframe);
+  }
+
+  private async CHECKBULL_BEAR_processTickers(
+    tickers: string[],
+    timeframe: string,
+    apikey: string,
+    delay = 2,
+  ) {
+    const limit = pLimit(8); // Limit the concurrency to 8 at a time
+
+    const washselllists =
+      (await this.LocalPLWR.loadWashSellList()) ||
+      this.LocalPLWR.getWashSellList();
+    // Delay 2 minutes before processing
+    await new Promise((resolve) => setTimeout(resolve, delay * 60 * 1000));
+
+    // Prepare ticker promises with concurrency limit
+    const tickerPromises = tickers.map((ticker) =>
+      limit(async () => {
+        if (washselllists?.includes(ticker)) {
+          console.log(`⏭️ Skipping ${ticker} — in wash sell list`);
+          return; // Skip this ticker and move on
+        }
+
+        try {
+          let data = await this.LocalPLWR.TwReveseNOAPI(ticker, timeframe);
+          const lastData = data[data.length - 1];
+          const secondLastData = data[data.length - 2];
+          const aboveOrBelowma50 = lastData.close > lastData.MA50
+          const macdCrossAB = lastData.divergence > 0 && secondLastData.divergence < 0
+          const channel = ticker==='QQQ'? this.stockHelperService.INTRA_30M_SL.US_30M_QQQ : this.stockHelperService.INTRA_30M_SL.US_30M_SPY
+          let text = ''
+          if(macdCrossAB){
+            text = aboveOrBelowma50?'*macdCrossNBL50-W*':'*macdCrossNAB-GOODDAYYYYYY*'
+          }else if(aboveOrBelowma50){
+            text = `*BUYYYYYYY-DAY-C*`
+          }else{
+            text = `*SELLLLLLLL-DAY-C*`
+          }
+          await this.webhooksService.sendSlackNotificationVN(timeframe,
+            [ticker],
+            lastData,
+            channel,text,
+            '15',
+          );
+          const time = new Date().toLocaleString('en-US', {timeZone: 'America/New_York',});
+          this.webhooksService.sendSlackNotification(`${text +'=='+time}================================`, channel),
+          this.logger.log(`${ticker} processed successfully.`);
+        } catch (error) {
+          // Send error notification and log the error
+          await this.webhooksService.sendDiscord(
+            `ERROR ${error.message} \n url: http://localhost:4200/price-log/${ticker}?daysRange=500`,
+            `RSIENDBOT ${ticker} at ${timeframe}`,
+            'Nono',
+            'ERORR_CALL',
+          );
+          
+          this.logger.error(`Error processing ${ticker}: ${error.message}`);
+        }
+      }),
+    );
+
+    // Wait for all ticker promises to complete concurrently (with concurrency limit)
+    await Promise.all(tickerPromises);
   }
 }
