@@ -2396,7 +2396,7 @@ async deleteAllMessages_SLack(channel: string) {
         value:symbol,
         action_id: option,
         style: 'primary',
-      }]:option==='full'?[
+      }]:option==='full_holding'?[
         // {
         //   type: 'button',
         //   text: {
@@ -2463,6 +2463,54 @@ async deleteAllMessages_SLack(channel: string) {
           value: symbol,
           action_id: 'delete_replys',
         },
+      ]:option==='full_watchlist'?[
+        {
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            text: symbol+'-'+'delete_thop',
+          },
+          value:symbol,
+          action_id: 'delete_thop',
+          style: 'danger',
+        },
+        {
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            text: symbol+'-4Hour',
+          },
+          value: symbol,
+          action_id: '4hour',
+        },
+        {
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            text: symbol+'-1day',
+          },
+          value: symbol,
+          action_id: '1day',
+        },
+        {
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            text: symbol+'-getCurrentPrice',
+          },
+          value: symbol,
+          action_id: 'getCurrentPrice',
+        },
+        {
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            text: 'Delete-all-replys',
+          },
+          style: 'danger',
+          value: symbol,
+          action_id: 'delete_replys',
+        },
       ]:[
       {
         type: 'button',
@@ -2510,8 +2558,8 @@ async deleteAllMessages_SLack(channel: string) {
   async fePostToHold(symbol){
     await this.post2SlackBtnFn(this.stockHelperService.BTN_SL.HOLDING,symbol)
   }
-  async fePostToHold2(symbol,price,option){
-    const textDs =  `*${symbol}* | ckInAt:*${price}* | <http://localhost:4200/price-log/${symbol}?daysRange=500|local> | <https://stockmarkets000.web.app/price-log/${symbol}?daysRange=500|production> | <https://www.tradingview.com/chart/mWoCISmu/?symbol=${symbol}|tradingview> |  <https://new-site-pwa.web.app/?stockTicker=${symbol}&endpoint=fm&timeframe=1day |OtherLink> `
+  async fePostToHold2(symbol,price,option,slackC=this.stockHelperService.BTN_SL.HOLDING){
+    const textDs =  `*${symbol}* ${price?`| ckInAt:*${price}`:''}* | <http://localhost:4200/price-log/${symbol}?daysRange=500|local> | <https://stockmarkets000.web.app/price-log/${symbol}?daysRange=500|production> | <https://www.tradingview.com/chart/mWoCISmu/?symbol=${symbol}|tradingview> |  <https://new-site-pwa.web.app/?stockTicker=${symbol}&endpoint=fm&timeframe=1day |OtherLink> `
     const element = this.slElementOptions(symbol,option)
     const blockEl = [
       {
@@ -2526,7 +2574,7 @@ async deleteAllMessages_SLack(channel: string) {
         elements: element,
       },
     ]
-    await this.post2SlackBtnFnWithOps(this.stockHelperService.BTN_SL.HOLDING,blockEl)
+    await this.post2SlackBtnFnWithOps(slackC,blockEl)
   }
 
   getSlBlock(symbol,option,textDs){

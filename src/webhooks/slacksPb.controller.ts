@@ -1,13 +1,11 @@
-import { Controller, Post, Body,Headers, UseGuards, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Post, Body,Headers} from '@nestjs/common';
 import { WebhooksService } from './webhooks.service';
-import { JwtGuard } from 'src/auth/guard';
-import { AdminUserAuthGuard } from 'src/stock-user/guard';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { StockService } from 'src/stock/stock.service';
+import { StockHelperService } from 'src/stock/stockHelper.service';
 
 @Controller('slack')
 export class SlackPbController {
-  constructor(private readonly webhooksService: WebhooksService, private readonly stockService: StockService) {}
+  constructor(private readonly webhooksService: WebhooksService, private readonly stockService: StockService,private readonly stockHelperService: StockHelperService) {}
 
   @Post('interactions')
   // @UseInterceptors(FileInterceptor('file'))
@@ -30,7 +28,8 @@ export class SlackPbController {
       await this.webhooksService.Update_Slack(payload.channel.id,payload.message.ts, `*${ticker}*  Check Me Out !!!!`)
       // update the btn and reply with more options 
       // 1 create blockoptions
-      const blockre = this.webhooksService.getSlBlock(ticker,'full',orgMsgText)
+      const fulloption = payload.channel.id ===this.stockHelperService.BTN_SL.HOLDING?'full_holding':'full_watchlist'
+      const blockre = this.webhooksService.getSlBlock(ticker,fulloption,orgMsgText)
       // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
       await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'withBlock',blockre)
     }else if(timeframe_acID==='getCurrentPrice'){
@@ -86,6 +85,7 @@ export class SlackPbController {
       const valueDelete = timeframe_acID==='delete_replys'?2:0
       const tss = await this.webhooksService.getReplyTs(postToCSLRE.channel, orgThread_ts,valueDelete)
       await this.webhooksService.deleteMessage_SLack(postToCSLRE.channel,tss)
+      // work on auto delete if in holding list
     } else if(timeframe_acID ==='1day'||timeframe_acID ==='4hour'){
         this.processApply(postToCSLRE)
     } else if(timeframe_acID ==='30min'){

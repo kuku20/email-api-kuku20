@@ -22,14 +22,14 @@ export class TasksBullBearService {
   belowList = []
   belowListUp = []
   async onModuleInit() {
-    // const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stock-related/holding.json`,'')
+    // const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stock-related/holding/TTD.json`,'')
     // console.log(holdingObj)
     // const allkeys = Object.keys(holdingObj)
     // console.log(allkeys)
     // const priceOfS = holdingObj[allkeys[0]].price
     // console.log(priceOfS)
-    // await allkeys.forEach(async symbol=>{
-    //   await this.webhooksService.fePostToHold2(symbol,holdingObj[symbol].price,'more_options')
+    // await DataSymbols.watchlist.forEach(async symbol=>{
+    //   await this.webhooksService.fePostToHold2(symbol,null,'more_options',this.stockHelperService.BTN_SL.WATCH)
     // })
     // this.logger.warn('Running getholdingList with stocklist length:', symbols);
     // await this.postInteractiveText(this.stockHelperService.BTN_SL.WATCH,DataSymbols.watchlist)
@@ -42,7 +42,7 @@ export class TasksBullBearService {
     
     //  await this.dailyCleanup()
     //  console.log('done')
-    // await this.webhooksService.deleteSLChannel(['C0B748C0BCM'])
+    // await this.webhooksService.deleteSLChannel([this.stockHelperService.BTN_SL.WATCH])
 
     // await this.delete(-1)
     // await this.delete(0)
