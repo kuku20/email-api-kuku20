@@ -368,10 +368,13 @@ export class TasksBullBearService {
           const secondLastData = data[data.length - 2];
           const aboveOrBelowma50 = lastData.close > lastData.MA50
           const macdCrossAB = lastData.divergence > 0 && secondLastData.divergence < 0
+          const macdCrossBL = lastData.divergence < 0 && secondLastData.divergence > 0
           const channel = ticker==='QQQ'? this.stockHelperService.INTRA_30M_SL.US_30M_QQQ : this.stockHelperService.INTRA_30M_SL.US_30M_SPY
           let text = ''
           if(macdCrossAB){
-            text = aboveOrBelowma50?'*macdCrossNAB-GOODDAYYYYYY🟢🟢*':'*macdCrossNBL50-W*'
+            text = aboveOrBelowma50?'*macdCrossNAB-GOODDAYYYYYY🟢🟢BUY_CALL_NOW🟢🟢*':'*macdCrossNBL50-🟢W*'
+          }else if(macdCrossBL){
+            text = aboveOrBelowma50?'*macdCrossNBL-CAREFULLDAYYYY🔴*':'macdCrossNBL-SELLLLLLLL-DAY-🔴🔴🔴BUY_PUT_NOW🔴🔴'
           }else if(aboveOrBelowma50){
             text = `*BUYYYYYYY-DAY-🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢*`
           }else{
