@@ -1876,23 +1876,7 @@ export class WebhooksService {
   }
   async GetGeminiReNPosted(timeframe:string,symbol:string, fullData, aiSlackCl = this.stockHelperService.AI_SL){
     // get ai call 
-    const timeframeFormatted = timeframe.replace(/(\d+)([a-zA-Z]+)/, '$1-$2').toLowerCase();
-    const metric = (await this.stockService.getMetric_FINHUB(symbol)).metric;
-    const recommending = `I will provide stock price data over a ${timeframeFormatted} period and related metrics.
-    Analyze the data and write a concise report (maximum 500 words) covering trend, momentum, support/resistance, technical signals, and estimated intrinsic value. Determine whether the stock appears undervalued, fairly valued, or overvalued.
-    Then provide:
-    - Recommendation: Buy, Hold, or Sell
-    - Confidence Level (Low / Medium / High)
-    - Entry Range
-    - Target Price(s) with upside probability 
-    - Stop-Loss
-    - Risk/Reward Ratio
-    - Key reasons supporting the recommendation
-    Base your analysis on the supplied data. If intrinsic value cannot be calculated precisely, estimate it using reasonable assumptions and state them clearly.
-    `;
-    const dataToAi = fullData.slice(-300).reverse()
-    // console.log('Data sent to AI:', dataToAi[0]);
-    const aiMesAsk = recommending + + `Metric: ${JSON.stringify(metric)}` +`. Stock data:+ ${JSON.stringify({symbol: symbol, data : dataToAi})}`;
+    const aiMesAsk = await this.autoRunReQS(symbol,fullData,timeframe)
     let getResFromGemini = '';
     let AIError = true;
     for (let i = 0; i < 3; i++) {
@@ -2301,11 +2285,13 @@ async deleteAllMessages_SLack(channel: string) {
   
       if (!data.ok) {
         console.error('update add failed:', data);
+        await this.reply_SLack(channel,ts,text)
         return false;
       }
 
       return { ok: true };
     } catch (error) {
+      await this.reply_SLack(channel,ts,text)
       console.error('update exception:', error);
       return false;
     }
@@ -2424,6 +2410,16 @@ async deleteAllMessages_SLack(channel: string) {
           type: 'button',
           text: {
             type: 'plain_text',
+            text: symbol+'-'+'delete_thop',
+          },
+          value:symbol,
+          action_id: 'delete_thop',
+          style: 'danger',
+        },
+        {
+          type: 'button',
+          text: {
+            type: 'plain_text',
             text: symbol+'-4Hour',
           },
           value: symbol,
@@ -2451,21 +2447,21 @@ async deleteAllMessages_SLack(channel: string) {
           type: 'button',
           text: {
             type: 'plain_text',
-            text: 'Delete-all-replys',
+            text: symbol+'-'+'sell_or_keep',
           },
-          style: 'danger',
-          value: symbol,
-          action_id: 'delete_replys',
+          value:symbol,
+          action_id: 'sell_or_keep',
+          style: 'primary',
         },
         {
           type: 'button',
           text: {
             type: 'plain_text',
-            text: symbol+'-'+'delete_thop',
+            text: 'Delete-all-replys',
           },
-          value:symbol,
-          action_id: 'delete_thop',
           style: 'danger',
+          value: symbol,
+          action_id: 'delete_replys',
         },
       ]:[
       {
@@ -2576,5 +2572,62 @@ async deleteAllMessages_SLack(channel: string) {
       }
     }
     return replyTs
+  }
+
+  async askTokeepIncread(symbol,fullData){
+    const holdingObj = await this.stockService.FireBaseApi_OB('get',`stock-related/holding/${symbol}.json`,'')
+    const recommending =`
+    I bought a ${symbol} stock at price ${holdingObj?.price}.
+    I will provide daily stock price data and related metrics. Based only on the supplied information, generate a concise report (maximum 300 words) covering:
+    * Trend
+    * Momentum
+    * Support and Resistance Levels
+    * Key Technical Signals
+    * Estimated Intrinsic Value
+    Determine whether the stock appears **Undervalued, Fairly Valued, or Overvalued**. If intrinsic value cannot be calculated precisely, estimate it using reasonable assumptions and clearly state them.
+    ### Recommendation for Existing Holders
+    Choose one:
+    * Buy More
+    * Hold
+    * Reduce Position
+    * Sell Entire Position
+    Explain the recommendation using:
+    * Valuation vs. intrinsic value
+    * Trend and momentum
+    * Risk/reward profile
+    * Upside/downside potential from the current price
+    Keep the analysis objective, data-driven, and concise.`
+    const metric = (await this.stockService.getMetric_FINHUB(symbol)).metric;
+    const dataToAi = fullData.slice(-300).reverse()
+    console.log('Data sent to AI:', dataToAi[0].date);
+    const aiMesAsk = recommending + + `Metric: ${JSON.stringify(metric)}` +`. Stock data:+ ${JSON.stringify({symbol: symbol, data : dataToAi})}`;
+    return aiMesAsk
+  }
+  
+  async autoRunReQS(symbol,fullData,timeframe){
+    const timeframeFormatted = timeframe.replace(/(\d+)([a-zA-Z]+)/, '$1-$2').toLowerCase();
+    const metric = (await this.stockService.getMetric_FINHUB(symbol)).metric;
+    const recommending = `I will provide stock price data over a ${timeframeFormatted} period and related metrics.
+    Analyze the data and write a concise report (maximum 500 words) covering trend, momentum, support/resistance, technical signals, and estimated intrinsic value. Determine whether the stock appears undervalued, fairly valued, or overvalued.
+    Then provide:
+    - Recommendation: Buy, Hold, or Sell
+    - Confidence Level (Low / Medium / High)
+    - Entry Range
+    - Target Price(s) with upside probability 
+    - Stop-Loss
+    - Risk/Reward Ratio
+    - Key reasons supporting the recommendation
+    Base your analysis on the supplied data. If intrinsic value cannot be calculated precisely, estimate it using reasonable assumptions and state them clearly.
+    `;
+    const dataToAi = fullData.slice(-300).reverse()
+    console.log('Data sent to AI:', dataToAi[0].date);
+    const aiMesAsk = recommending + + `Metric: ${JSON.stringify(metric)}` +`. Stock data:+ ${JSON.stringify({symbol: symbol, data : dataToAi})}`;
+    return aiMesAsk
+  }
+
+  async getMsgSendFromLLm(aiMesAsk){
+    const res = await this.aiToolService.getResFromGemini(aiMesAsk);
+    const trimdata = this.stockHelperService.markdownToSlack(res)
+    return trimdata;
   }
 }

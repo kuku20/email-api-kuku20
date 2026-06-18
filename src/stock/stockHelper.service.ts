@@ -1036,4 +1036,32 @@ SELL ALL
     //   );
     // };
   }
+  markdownToSlack(markdown) {
+  return markdown
+    // Convert headings
+    .replace(/^#{1,6}\s+\*\*(.*?)\*\*$/gm, '\n*$1*\n')
+    .replace(/^#{1,6}\s+(.*?)$/gm, '\n*$1*\n')
+
+    // Convert bold
+    .replace(/\*\*(.*?)\*\*/g, '*$1*')
+
+    // Convert markdown links
+    .replace(/\[(.*?)\]\((.*?)\)/g, '<$2|$1>')
+
+    // Convert horizontal rules
+    .replace(/^---+$/gm, '\n──────────\n')
+
+    // Convert bullet lists
+    .replace(/^\s*[-*+]\s+/gm, '• ')
+
+    // Convert numbered lists
+    .replace(/^\s*(\d+)\.\s+/gm, '$1. ')
+
+    // Remove non-breaking spaces
+    .replace(/\u00A0/g, ' ')
+
+    // Collapse excessive blank lines
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+  }
 }

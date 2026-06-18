@@ -772,7 +772,34 @@ async putToFBDynamic(endpoint:string, data: any,) {
         console.log(error);
       });
     }
-
+    async FireBaseApi_OB(method:'post'|'patch'|'put'|'delete'|'get',endpoint:string, data: any,) {
+      const firebaseRoot = this.configService.get<any>('FIREBASE_DATA')
+      let BASE_URL = `${firebaseRoot}/${endpoint}`;
+      try {
+        const response = await axios.request({
+          method: method || 'get',
+          url: BASE_URL,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          data: data,
+          maxBodyLength: Infinity,
+        });
+      
+        // Axios automatically parses JSON, so just return response.data
+        return response.data;
+      
+      } catch (error) {
+        // Match fetch's "return 'skipped'" behavior
+        if (error.response) {
+          console.error(`❌ Failed request. Status: ${error.response.status}`);
+        } else {
+          console.error(`❌ Network or Axios error: ${error.message}`);
+        }
+        return 'skipped';
+      }
+    }
+  
     async twelvedata(ticker: string, timefame: string) {
       let tem = timefame;
       if (timefame.includes('hour')) {

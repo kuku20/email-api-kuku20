@@ -94,7 +94,8 @@ export class AiToolService {
     const recommendingBuyOrSell = textL.includes(':buy')? 'buy'
       : textL.includes(':hold')? 'hold'
       : 'sell';
-    const nexMsg = `${msgRes.replace(/\*\*/g, '*')}`;
+    // const nexMsg = `${msgRes.replace(/\*\*/g, '*')}`;
+    const nexMsg = this.stockHelperService.markdownToSlack(msgRes)
     const locallink = `<http://localhost:4200/price-log/${symbol}?daysRange=500|${symbol}>`;
 
     const datacodeOPENAI = encodeURIComponent(message.length > 1800 ? message.slice(0, 7000) + '...' : message);

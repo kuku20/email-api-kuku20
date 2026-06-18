@@ -27,7 +27,7 @@ export class SlackPbController {
     if(timeframe_acID==='more_options'){
       // update the orginial with more options bellow
       const orgThreadUpdate = this.webhooksService.getSlBlock(ticker,'delete_thop',orgMsgText)
-      await this.webhooksService.Update_Slack(payload.channel.id,payload.message.ts,ticker+" Updated ✅ ")
+      await this.webhooksService.Update_Slack(payload.channel.id,payload.message.ts, `*${ticker}*  Check Me Out !!!!`)
       // update the btn and reply with more options 
       // 1 create blockoptions
       const blockre = this.webhooksService.getSlBlock(ticker,'full',orgMsgText)
@@ -91,6 +91,12 @@ export class SlackPbController {
     } else if(timeframe_acID ==='30min'){
       this.processApply(postToCSLRE)
       await this.webhooksService.Update_Slack(payload.channel.id,payload.message.ts,"Updated ✅"+ticker)
+    } else if(timeframe_acID==='sell_or_keep'){
+      // update meg to ask gimini
+      // await new Promise((resolve) => setTimeout(resolve, 0.1 * 60 * 1000));
+      console.log('sell_todod')
+      const updateMe = await this.webhooksService.reply_SLack(postToCSLRE.channel,payload.message.ts,'...running')
+      this.keepOradd(postToCSLRE,updateMe)
     }
     else{
       console.log('action')
@@ -123,7 +129,11 @@ export class SlackPbController {
         const lastData = fullData[fullData.length - 1];
         const lastdataText = `${lastData.close} @ *${lastData.date }* On ${postToCSLRE.timeframe}`
         await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,lastdataText)
-        await this.webhooksService.GeminiRecomendation(postToCSLRE, postToCSLRE.timeframe, [postToCSLRE.ticker], fullData);
+
+        const aiMesAsk = await this.webhooksService.autoRunReQS(postToCSLRE.ticker,fullData,postToCSLRE.timeframe)
+        const resAI = await this.webhooksService.getMsgSendFromLLm(aiMesAsk)
+        await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,resAI)
+        // await this.webhooksService.GeminiRecomendation(postToCSLRE, postToCSLRE.timeframe, [postToCSLRE.ticker], fullData);
       }else{
         return null
       }
@@ -132,6 +142,18 @@ export class SlackPbController {
     }
   }
 
+  async keepOradd(postToCSLRE: any, updateMe) {
+    console.log('run pross')
+    try {
+      const  fullData = await this.stockService.TwReveseNOAPI(postToCSLRE.ticker, '1day');
+      const aiMesAsk = await this.webhooksService.askTokeepIncread(postToCSLRE.ticker,fullData)
+      const resAI = await this.webhooksService.getMsgSendFromLLm(aiMesAsk)
+      await this.webhooksService.Update_Slack(postToCSLRE.channel,updateMe.ts,resAI)
+      return resAI
+    } catch (error) {
+      await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'error')
+    }
+  } 
 
   @Post('add-holding-sl')
   async  addHoldingSl(
