@@ -981,7 +981,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
             if (matched) {
               await this.webhooksService.sendSlackNotificationVN(timeframe,
                 [ticker],
-                data,
+                lastData,
                 DataSymbols.watchlist.includes(ticker)? slChannel.WATCH:ONMIRUNNOW.includes(ticker)?slChannel.WATCH_BUY :matched.hook,matched.msg,'500'
               );
             }
