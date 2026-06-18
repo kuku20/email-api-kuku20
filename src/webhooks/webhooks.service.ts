@@ -1969,19 +1969,23 @@ export class WebhooksService {
   async reply_SLack(
     channel: string,
     thread_ts: string,
-    text: string = `See original message: https://myworkspace.slack.com/archives/${channel}/p${thread_ts.replace(
-      '.',
-      '',
-    )}`,
+    text: string = `See original message: https://myworkspace.slack.com/archives/${channel}/p${thread_ts.replace('.','',)}`,
+    block?
   ) {
     try {
+      const withOrnotBlock = block?{
+        channel,
+        text,
+        blocks: block,
+        thread_ts, // reply target
+      }: {
+        channel,
+        text,
+        thread_ts, // reply target
+      }
       const { data } = await axios.post(
         'https://slack.com/api/chat.postMessage',
-        {
-          channel,
-          text,
-          thread_ts, // reply target
-        },
+        withOrnotBlock,
         { headers: this.aiToolService.headers },
       );
 
@@ -2269,24 +2273,26 @@ async deleteAllMessages_SLack(channel: string) {
   async Update_Slack(
     channel: string,
     ts: string,
-    text='✅ Application submitted'
+    text='✅ Application submitted',
+    block?
   ) {
     try {
+      const blockIn = block?block:[
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: text,
+          },
+        },
+      ]
       const { data } = await axios.post(
         'https://slack.com/api/chat.update',
         {
           channel: channel,
           ts: ts,
           text: text,
-          blocks: [
-            {
-              type: 'section',
-              text: {
-                type: 'mrkdwn',
-                text: text,
-              },
-            },
-          ],
+          blocks: blockIn
         },
         {
           headers: this.aiToolService.headers,
@@ -2393,8 +2399,182 @@ async deleteAllMessages_SLack(channel: string) {
       throw error;
     }
   }
-
+  slElementOptions(symbol,option){
+    const element = option==='more_options'?[
+      {
+        type: 'button',
+        text: {
+          type: 'plain_text',
+          text: symbol+'-'+option,
+        },
+        value:symbol,
+        action_id: option,
+        style: 'primary',
+      }]:option==='full'?[
+        // {
+        //   type: 'button',
+        //   text: {
+        //     type: 'plain_text',
+        //     text: symbol+'-30min',
+        //   },
+        //   value: symbol,
+        //   action_id: '30min',
+        // },
+        {
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            text: symbol+'-4Hour',
+          },
+          value: symbol,
+          action_id: '4hour',
+        },
+        {
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            text: symbol+'-1day',
+          },
+          value: symbol,
+          action_id: '1day',
+        },
+        {
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            text: symbol+'-getCurrentPrice',
+          },
+          value: symbol,
+          action_id: 'getCurrentPrice',
+        },
+        {
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            text: 'Delete-all-replys',
+          },
+          style: 'danger',
+          value: symbol,
+          action_id: 'delete_replys',
+        },
+        {
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            text: symbol+'-'+'delete_thop',
+          },
+          value:symbol,
+          action_id: 'delete_thop',
+          style: 'danger',
+        },
+      ]:[
+      {
+        type: 'button',
+        text: {
+          type: 'plain_text',
+          text: symbol+'-'+option,
+        },
+        value:symbol,
+        action_id: option,
+        style: 'primary',
+      },
+    ]
+    return element
+  }
+  async post2SlackBtnFnWithOps(
+    channel: string,
+    blockEl
+  ) {
+    try {
+      const { data } = await axios.post(
+        'https://slack.com/api/chat.postMessage',
+        {
+          channel,
+          text: ``,
+          blocks: blockEl,
+        },
+        {
+          headers: this.aiToolService.headers,
+        },
+      );
+  
+      if (!data.ok) {
+        console.error('Slack post error', channel, data);
+        return null;
+      }
+      return this.stockHelperService.getSlackMessageLink(
+        data.channel,
+        data.ts,
+      );
+    } catch (error) {
+      console.error('Slack post exception', error);
+      throw error;
+    }
+  }
   async fePostToHold(symbol){
     await this.post2SlackBtnFn(this.stockHelperService.BTN_SL.HOLDING,symbol)
+  }
+  async fePostToHold2(symbol,price,option){
+    const textDs =  `*${symbol}* | ckInAt:*${price}* | <http://localhost:4200/price-log/${symbol}?daysRange=500|local> | <https://stockmarkets000.web.app/price-log/${symbol}?daysRange=500|production> | <https://www.tradingview.com/chart/mWoCISmu/?symbol=${symbol}|tradingview> |  <https://new-site-pwa.web.app/?stockTicker=${symbol}&endpoint=fm&timeframe=1day |OtherLink> `
+    const element = this.slElementOptions(symbol,option)
+    const blockEl = [
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: textDs
+        },
+      },
+      {
+        type: 'actions',
+        elements: element,
+      },
+    ]
+    await this.post2SlackBtnFnWithOps(this.stockHelperService.BTN_SL.HOLDING,blockEl)
+  }
+
+  getSlBlock(symbol,option,textDs){
+    const element = this.slElementOptions(symbol,option)
+    const blockEl = [
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: textDs
+        },
+      },
+      {
+        type: 'actions',
+        elements: element,
+      },
+    ]
+    return blockEl
+  }
+
+  async getReplyTs(channel, ts,targer= 2){
+    const { data: replyData } = await axios.get(
+      'https://slack.com/api/conversations.replies',
+      {
+        headers: this.aiToolService.headers,
+        params: {
+          channel,
+          ts: ts,
+        },
+      },
+    );
+    const replyTs =[]
+    if (!replyData.ok) {
+      console.log( 'conversations.replies failed:',);
+    } else {
+      const replies = replyData.messages || [];
+
+      // Skip parent (index 0)
+      for (const reply of replies.slice(targer)) {
+        if (reply?.ts) {
+          replyTs.push(reply.ts);
+        }
+      }
+    }
+    return replyTs
   }
 }
