@@ -22,15 +22,16 @@ export class TasksBullBearService {
   belowList = []
   belowListUp = []
   async onModuleInit() {
-    // const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stock-related/holding/TTD.json`,'')
+    // const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stock-related/holding.json`,'')
     // console.log(holdingObj)
     // const allkeys = Object.keys(holdingObj)
     // console.log(allkeys)
     // const priceOfS = holdingObj[allkeys[0]].price
     // console.log(priceOfS)
-    // await DataSymbols.watchlist.forEach(async symbol=>{
-    //   await this.webhooksService.fePostToHold2(symbol,null,'more_options',this.stockHelperService.BTN_SL.WATCH)
+    // await allkeys.forEach(async symbol=>{
+    //   this.webhooksService.fePostToHold2(symbol,holdingObj[symbol].price,'more_options')
     // })
+    // await this.webhooksService.fePostToHold2('HAS',holdingObj['HAS'].price,'more_options',this.stockHelperService.BTN_SL.HOLDING)
     // this.logger.warn('Running getholdingList with stocklist length:', symbols);
     // await this.postInteractiveText(this.stockHelperService.BTN_SL.WATCH,DataSymbols.watchlist)
     // console.log(`✅ Loaded stock-related/holding: has ${this.stockHelperService.HoldingList}`);
