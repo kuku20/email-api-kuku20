@@ -116,6 +116,7 @@ export class Tasks_US_WEEKLY {
           let  data = await this.LocalPLWR.TwReveseNOAPI(ticker, timeframe);
 
           if (!Array.isArray(data) || data.length < 2) {
+            await this.stockHelperService.sendBatchNotification('START',`${true?'TwReveseNOAPI':'POLYGON2'}-`+ticker,[this.stockHelperService.Z_US_SL.Z_US_SL_OR4],this.webhooksService,500);
             this.logger.warn(`⚠️ No valid data for ${ticker} (${timeframe})`);
             return;
           }
