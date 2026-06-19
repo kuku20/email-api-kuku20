@@ -2487,6 +2487,16 @@ async deleteAllMessages_SLack(channel: string) {
           type: 'button',
           text: {
             type: 'plain_text',
+            text: symbol+'-30min',
+          },
+          value: symbol,
+          action_id: '30min',
+          style: 'primary',
+        },
+        {
+          type: 'button',
+          text: {
+            type: 'plain_text',
             text: symbol+'-4Hour',
           },
           value: symbol,
