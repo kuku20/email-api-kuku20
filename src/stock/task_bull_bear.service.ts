@@ -134,10 +134,10 @@ export class TasksBullBearService {
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               lastData,
-              this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_200,textDetail,
+              this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_200,
+              this.stockHelperService.bullbearUqiue+textDetail,
               this.runon15or30
             );
-            await this.webhooksService.post2SlackBtnFn(this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_200,ticker,timeframe)
             await this.webhooksService.sendDiscord(
               `${textDetail}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
               `${ticker}-${timeframe}-${textDetail}`,
@@ -151,7 +151,8 @@ export class TasksBullBearService {
           //   await this.webhooksService.sendSlackNotificationVN(timeframe,
           //     [ticker],
           //     lastData,
-          //     StochRSICross?this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_50:this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_100,textDetail+' ',
+          //     StochRSICross?this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_50:this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_100,
+          //     this.stockHelperService.bullbearUqiue+textDetail+' ',
           //     this.runon15or30
           //   );
           //   this.aboveList.push(ticker)
@@ -167,10 +168,10 @@ export class TasksBullBearService {
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               lastData,
-              this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,'blMa200MACDPMA50cR',
+              this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,
+              this.stockHelperService.bullbearUqiue+'blMa200MACDPMA50cR',
               this.runon15or30
             );
-            await this.webhooksService.post2SlackBtnFn(this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,ticker,timeframe)
             await this.webhooksService.sendDiscord(
               `${'blMa200MACDPMA50cR'}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
               `${ticker}-${timeframe}-${'blMa200MACDPMA50cR'}`,
@@ -183,7 +184,8 @@ export class TasksBullBearService {
           //   await this.webhooksService.sendSlackNotificationVN(timeframe,
           //     [ticker],
           //     lastData,
-          //     this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,'MA9crosMA20',
+          //     this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,
+          //     this.stockHelperService.bullbearUqiue+'MA9crosMA20',
           //     this.runon15or30
           //   );
           //   await this.webhooksService.sendDiscord(
@@ -198,10 +200,10 @@ export class TasksBullBearService {
             await this.webhooksService.sendSlackNotificationVN(timeframe,
               [ticker],
               lastData,
-              this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_BL,'macdCrossAB',
+              this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_BL,
+              this.stockHelperService.bullbearUqiue+'macdCrossAB',
               this.runon15or30
             );
-            await this.webhooksService.post2SlackBtnFn(this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_BL,ticker,timeframe)
             await this.webhooksService.sendDiscord(
               `${'macdCrossAB'}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
               `${ticker}-${timeframe}-${'macdCrossAB'}`,
@@ -381,13 +383,13 @@ export class TasksBullBearService {
           const channel = ticker==='QQQ'? this.stockHelperService.INTRA_30M_SL.US_30M_QQQ : this.stockHelperService.INTRA_30M_SL.US_30M_SPY
           let text = ''
           if(macdCrossAB){
-            text = aboveOrBelowma50?'*macdCrossNAB-GOODDAYYYYYY🟢🟢BUY_CALL_NOW🟢🟢*':'*macdCrossNBL50-🟢W*'
+            text = aboveOrBelowma50?'*macdCrossNAB-GOODDAYYYYYY🟢🟢🟢🟢BUY_CALL_NOW🟢🟢🟢🟢*':'*macdCrossNBL50-🟢🟢W*'
           }else if(macdCrossBL){
-            text = aboveOrBelowma50?'*macdCrossNBL-CAREFULLDAYYYY🔴*':'macdCrossNBL-SELLLLLLLL-DAY-🔴🔴🔴BUY_PUT_NOW🔴🔴'
+            text = aboveOrBelowma50?'*macdCrossNBL-CAREFULLDAYYYY🔴🔴*':'macdCrossNBL-SELLLLLLLL-DAY-🔴🔴🔴🔴BUY_PUT_NOW🔴🔴🔴🔴'
           }else if(aboveOrBelowma50){
-            text = `*BUYYYYYYY-DAY-🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢*`
+            text = `*BUYYYYYYY-DAY-🟢🟢🟢🟢🟢🟢*`
           }else{
-            text = `*SELLLLLLLL-DAY-🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴:*`
+            text = `*SELLLLLLLL-DAY-🔴🔴🔴🔴🔴🔴*`
           }
           await this.webhooksService.sendSlackNotificationVN(timeframe,
             [ticker],

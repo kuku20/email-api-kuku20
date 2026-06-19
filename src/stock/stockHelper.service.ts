@@ -1,6 +1,9 @@
 import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { StockData } from './dto/chartData';
-
+interface SlackMessage {
+  text: string;
+  ts: string;
+}
 @Injectable()
 export class StockHelperService {
   // aboveMA50api: string = `sun-04-19-2026-blowMA200`;
@@ -22,6 +25,8 @@ export class StockHelperService {
   ListMA50On4hour: string[] = [];
   HoldingList: string[] = [];
   Just2day: string[] = [];
+  watchlistSl_tss: SlackMessage[] = [];
+  bullbearUqiue = 'b6r_'
 
   slackTokenKey = 'SLACK_USER_TOKEN';
   setSlackToken(tokenKey: string) {

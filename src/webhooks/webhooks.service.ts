@@ -1862,7 +1862,16 @@ export class WebhooksService {
       if(!postToCSLRE || !postToCSLRE.ts || !postToCSLRE.channel){
         console.log('---SL-ERR---', postToCSLRE.error);
         throw new Error('Failed to post to Slack');
+      } else if(DataSymbols.watchlist.includes(symbols[0])&& msg.includes(this.stockHelperService.bullbearUqiue)){
+          const getTs = this.getTsBySymbol(symbols[0],this.stockHelperService.watchlistSl_tss)
+          if(getTs){
+            const signalThread = this.stockHelperService.getSlackMessageLink(this.stockHelperService.BTN_SL.WATCH, getTs);
+            this.reply_SLack(slChannel,postToCSLRE.ts,signalThread)
+          } else{
+            await this.post2SlackBtnFn(slChannel,symbols[0],timeframe)
+          }
       }
+      
       await new Promise(resolve => setTimeout(resolve, 5000));
       if(timeframe === '1day' && isFullDataArray){
         await this.GeminiRecomendation(postToCSLRE, timeframe, symbols, fullData);
@@ -2622,6 +2631,47 @@ async deleteAllMessages_SLack(channel: string) {
     return replyTs
   }
 
+  async getAllMsgCheck(channel: string) {
+    try {
+      const { data } = await axios.post(
+        'https://slack.com/api/conversations.history',
+        {
+          channel,
+          limit: 100,
+        },
+        {
+          headers: this.aiToolService.headers,
+        },
+      );
+  
+      if (!data.ok) {
+        console.log('History failed:', data);
+        return [];
+      }
+  
+      return (data.messages || []).map(
+        ({ text, ts }: { text?: string; ts: string }) => ({
+          text,
+          ts,
+        }),
+      );
+    } catch (error) {
+      console.error('Slack history error', error);
+      return [];
+    }
+  }
+
+  getTsBySymbol(symbol, messages: { text: string; ts: string }[]) {
+    const message = messages.find(({ text = '' }) =>
+      text.includes(symbol)
+    );
+  
+    return message?.ts ?? null;
+  }
+  
+  async onModuleInit() {
+    this.stockHelperService.watchlistSl_tss = await this.getAllMsgCheck(this.stockHelperService.BTN_SL.WATCH)
+  }
   async askTokeepIncread(symbol,fullData){
     const holdingObj = await this.stockService.FireBaseApi_OB('get',`stock-related/holding/${symbol}.json`,'')
     const recommending =`
