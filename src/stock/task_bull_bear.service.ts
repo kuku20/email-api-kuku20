@@ -53,7 +53,7 @@ export class TasksBullBearService {
     // await this.delete(-1)
     // await this.delete(0)
     // await this.bullBear('30min');
-    // await this.CHECKBULL_BEAR()
+    await this.CHECKBULL_BEAR()
   }
 
   async  USTIMERUN(
@@ -310,8 +310,8 @@ export class TasksBullBearService {
       await this.CHECKBULL_BEAR_USTIMERUN(
         symbols,
         this.allkeys,
-        'US_ALL',
-        'USSTOCK_WATCH',
+        'TSLA',
+        'SMCI',
         2,
         timeframe,
       );
@@ -345,7 +345,7 @@ export class TasksBullBearService {
     this.logger.log(
       `✅ Market open — running ${timeframe} trading logic (${now} ET)`,
     );
-    await this.webhooksService.SendDcChannels([B_Channel, HT_Channel,],this.logger,'START='+timeframe);
+    // await this.webhooksService.SendDcChannels([B_Channel, HT_Channel,],this.logger,'START='+timeframe);
     const tickers = intickers;
     await this.CHECKBULL_BEAR_processTickers(
       tickers,
@@ -353,7 +353,7 @@ export class TasksBullBearService {
       api,
       delay,
     );
-    await this.webhooksService.SendDcChannels([B_Channel, HT_Channel,],this.logger,'END='+timeframe);
+    // await this.webhooksService.SendDcChannels([B_Channel, HT_Channel,],this.logger,'END='+timeframe);
   }
 
   private async CHECKBULL_BEAR_processTickers(
@@ -404,6 +404,19 @@ export class TasksBullBearService {
           );
           const time = new Date().toLocaleString('en-US', {timeZone: 'America/New_York',});
           this.webhooksService.sendSlackNotification(`${text +'=='+time}================================`, channel),
+          await this.webhooksService.sendDiscord(
+            `${text}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+            `${ticker}-${timeframe}-${text}`,
+            lastData,
+            ticker==='QQQ'?'TSLA':'SMCI', 
+            data,
+          );
+          await this.webhooksService.sendDiscord(
+            `--------------------${text +'=='+time}---------------------------`,
+            `RSIENDBOT ${ticker} at ${timeframe}`,
+            'Nono',
+            ticker==='QQQ'?'TSLA':'SMCI', 
+          );
           this.logger.log(`${ticker} processed successfully.`);
         } catch (error) {
           // Send error notification and log the error
