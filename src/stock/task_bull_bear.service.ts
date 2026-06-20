@@ -53,7 +53,7 @@ export class TasksBullBearService {
     // await this.delete(-1)
     // await this.delete(0)
     // await this.bullBear('30min');
-    await this.CHECKBULL_BEAR()
+    // await this.CHECKBULL_BEAR()
   }
 
   async  USTIMERUN(
