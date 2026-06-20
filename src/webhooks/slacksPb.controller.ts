@@ -86,11 +86,11 @@ export class SlackPbController {
       const tss = await this.webhooksService.getReplyTs(postToCSLRE.channel, orgThread_ts,valueDelete)
       await this.webhooksService.deleteMessage_SLack(postToCSLRE.channel,tss)
       // work on auto delete if in holding list
-    } else if(timeframe_acID ==='1day'||timeframe_acID ==='4hour'){
+    } else if(timeframe_acID ==='1day'||timeframe_acID ==='4hour'||timeframe_acID ==='30min'){
         this.processApply(postToCSLRE)
-    } else if(timeframe_acID ==='30min'){
-      this.processApply(postToCSLRE)
-      await this.webhooksService.Update_Slack(payload.channel.id,payload.message.ts,"Updated ✅"+ticker)
+    // } else if(timeframe_acID ==='30min'){
+    //   this.processApply(postToCSLRE)
+    //   await this.webhooksService.Update_Slack(payload.channel.id,payload.message.ts,"Updated ✅"+ticker)
     } else if(timeframe_acID==='sell_or_keep'){
       // update meg to ask gimini
       // await new Promise((resolve) => setTimeout(resolve, 0.1 * 60 * 1000));

@@ -2406,15 +2406,15 @@ async deleteAllMessages_SLack(channel: string) {
         action_id: option,
         style: 'primary',
       }]:option==='full_holding'?[
-        // {
-        //   type: 'button',
-        //   text: {
-        //     type: 'plain_text',
-        //     text: symbol+'-30min',
-        //   },
-        //   value: symbol,
-        //   action_id: '30min',
-        // },
+        {
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            text: symbol+'-30min',
+          },
+          value: symbol,
+          action_id: '30min',
+        },
         {
           type: 'button',
           text: {

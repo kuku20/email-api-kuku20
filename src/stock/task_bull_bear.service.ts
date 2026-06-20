@@ -31,6 +31,11 @@ export class TasksBullBearService {
     // await allkeys.forEach(async symbol=>{
     //   this.webhooksService.fePostToHold2(symbol,holdingObj[symbol].price,'more_options')
     // })
+
+    //     await DataSymbols.watchlist.forEach(async symbol=>{
+    //   this.webhooksService.fePostToHold2(symbol,null,'more_options',this.stockHelperService.BTN_SL.WATCH)
+    // })
+
     // await this.webhooksService.fePostToHold2('HAS',holdingObj['HAS'].price,'more_options',this.stockHelperService.BTN_SL.HOLDING)
     // this.logger.warn('Running getholdingList with stocklist length:', symbols);
     // await this.postInteractiveText(this.stockHelperService.BTN_SL.WATCH,DataSymbols.watchlist)
