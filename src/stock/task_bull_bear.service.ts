@@ -295,6 +295,7 @@ export class TasksBullBearService {
     // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.Z_US_SL))
     // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.AI_SL))
     // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.INTRA_30M_SL))
+    // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.BULL_BEAR_SL_))
   }
 
   async postSLTest(webhooks =[ 'C0B77K2AG12','C0B6BFBKJ4X']) {
@@ -385,7 +386,7 @@ export class TasksBullBearService {
           const aboveOrBelowma50 = lastData.close > lastData.MA50
           const macdCrossAB = lastData.divergence > 0 && secondLastData.divergence < 0
           const macdCrossBL = lastData.divergence < 0 && secondLastData.divergence > 0
-          const channel = ticker==='QQQ'? this.stockHelperService.INTRA_30M_SL.US_30M_QQQ : this.stockHelperService.INTRA_30M_SL.US_30M_SPY
+          const channel = ticker==='QQQ'? this.stockHelperService.BULL_BEAR_SL_.QQQ : this.stockHelperService.BULL_BEAR_SL_.SPY
           let text = ''
           if(macdCrossAB){
             text = aboveOrBelowma50?'*macdCrossNAB-GOODDAYYYYYY🟢🟢🟢🟢BUY_CALL_NOW🟢🟢🟢🟢*':'*macdCrossNBL50-🟢🟢W*'
