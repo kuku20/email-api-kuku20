@@ -94,8 +94,8 @@ export class AiToolService {
     const recommendingBuyOrSell = textL.includes(':buy')? 'buy'
       : textL.includes(':hold')? 'hold'
       : 'sell';
-    // const nexMsg = `${msgRes.replace(/\*\*/g, '*')}`;
-    const nexMsg = this.stockHelperService.markdownToSlack(msgRes)
+    const nexMsg = `${msgRes.replace(/\*\*/g, '*')}`;
+    // const nexMsg = this.stockHelperService.markdownToSlack(msgRes)
     const locallink = `<http://localhost:4200/price-log/${symbol}?daysRange=500|${symbol}>`;
 
     const datacodeOPENAI = encodeURIComponent(message.length > 1800 ? message.slice(0, 7000) + '...' : message);
@@ -351,5 +351,83 @@ export class AiToolService {
       Authorization: `Bearer ${slackToken}`,
       'Content-Type': 'application/json; charset=utf-8',
     };
+  }
+
+  async postSlackJobApproval(
+    channel: string,
+    job: {
+      id: string;
+      title: string;
+      company: string;
+      score: number;
+      url?: string;
+    },
+  ) {
+    try {
+      const { data } = await axios.post(
+        'https://slack.com/api/chat.postMessage',
+        {
+          channel,
+          text: `Job Match ${job.score}%`,
+          blocks: [
+            {
+              type: 'section',
+              text: {
+                type: 'mrkdwn',
+                text: [
+                  `*${job.title}*`,
+                  `${job.company}`,
+                  `Score: ${job.score}%`,
+                ].join('\n'),
+              },
+            },
+            {
+              type: 'actions',
+              elements: [
+                {
+                  type: 'button',
+                  text: {
+                    type: 'plain_text',
+                    text: 'Apply',
+                  },
+                  style: 'primary',
+                  value: JSON.stringify({
+                    jobId: job.id,
+                    url: job.url,
+                  }),
+                  action_id: 'apply_job',
+                },
+                {
+                  type: 'button',
+                  text: {
+                    type: 'plain_text',
+                    text: 'Reject',
+                  },
+                  style: 'danger',
+                  value: job.id,
+                  action_id: 'reject_job',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          headers: this.headers,
+        },
+      );
+  
+      if (!data.ok) {
+        console.error('Slack post error', channel, data);
+        return null;
+      }
+  
+      return this.stockHelperService.getSlackMessageLink(
+        data.channel,
+        data.ts,
+      );
+    } catch (error) {
+      console.error('Slack post exception', error);
+      throw error;
+    }
   }
 }
