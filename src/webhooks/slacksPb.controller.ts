@@ -86,6 +86,15 @@ export class SlackPbController {
       const tss = await this.webhooksService.getReplyTs(postToCSLRE.channel, orgThread_ts,valueDelete)
       await this.webhooksService.deleteMessage_SLack(postToCSLRE.channel,tss)
       // work on auto delete if in holding list
+      if(timeframe_acID.includes('delete_fullc')){
+        //get all msg
+        const tss = await this.webhooksService.getAllMessages_SLack(postToCSLRE.channel)
+        if(timeframe_acID==='delete_fullc_keep2'){
+          await this.webhooksService.deleteMessage_SLack(postToCSLRE.channel,tss.slice(6,-1))
+        }
+        else{ 
+          await this.webhooksService.deleteMessage_SLack(postToCSLRE.channel,tss.slice(0,-1))}
+      }
     } else if(timeframe_acID ==='1day'||timeframe_acID ==='4hour'||timeframe_acID ==='30min'){
         this.processApply(postToCSLRE)
     // } else if(timeframe_acID ==='30min'){

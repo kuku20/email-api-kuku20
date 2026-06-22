@@ -2530,6 +2530,26 @@ async deleteAllMessages_SLack(channel: string) {
           value: symbol,
           action_id: 'delete_replys',
         },
+      ]:option==='clear_each'?[
+        {
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            text: 'Delete-all-delete_fullc',
+          },
+          style: 'danger',
+          value: symbol,
+          action_id: 'delete_fullc',
+        },
+        {
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            text: 'Delete-all-delete_fullc_keep2',
+          },
+          value: symbol,
+          action_id: 'delete_fullc_keep2',
+        }
       ]:[
       {
         type: 'button',
