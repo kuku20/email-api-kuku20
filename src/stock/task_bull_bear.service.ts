@@ -419,7 +419,7 @@ export class TasksBullBearService {
           let text = ''
           const macdGreenOrRed = lastData.divergence > 0 ?'YYYYYY🟢🟢':'LLLLLLL🔴🔴'
           if(macdCrossAB){
-            text = aboveOrBelowma50?'*macdCrossNAB-GOODD🟢🟢🟢BUY_CALL_NOW🟢🟢🟢*':'*macdCrossNBL50-🔴🔴🔴🔴🔴🔴*'
+            text = aboveOrBelowma50?'*macdCr_N🟢AB-GOODD🟢🟢🟢BUY_CALL_NOW🟢🟢🟢*':'*macdCr_N🔴BL50-🟢🟢🟢🟢🟢🔴*'
           }else if(macdCrossBL){
             text = aboveOrBelowma50?'*macdCrossNBL-🔴🔴🔴AB🔴🔴🔴*':'macdCrossNBL-SELLLLLLLL-DAY-🔴🔴🔴BUY_PUT_NOW🔴🔴🔴'
           }else if(aboveOrBelowma50){
