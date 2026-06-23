@@ -36,7 +36,8 @@ export class TasksBullBearService {
     //   this.webhooksService.fePostToHold2('QQQ',null,'clear_each',symbol)
     // })
     //     await DataSymbols.watchlist.forEach(async symbol=>{
-    //   this.webhooksService.fePostToHold2(symbol,null,'more_options',this.stockHelperService.BTN_SL.WATCH)
+    //       await new Promise((resolve) => setTimeout(resolve, 500));
+    //       await this.webhooksService.fePostToHold2(symbol,null,'more_options',this.stockHelperService.BTN_SL.WATCH)
     // })
 
     // await this.webhooksService.fePostToHold2('HAS',holdingObj['HAS'].price,'more_options',this.stockHelperService.BTN_SL.HOLDING)
@@ -51,12 +52,12 @@ export class TasksBullBearService {
     
     //  await this.dailyCleanup()
     //  console.log('done')
-    // await this.webhooksService.deleteSLChannel([this.stockHelperService.BTN_SL.HOLDING])
+    // await this.webhooksService.deleteSLChannel(['C0BANRCLEDV'])
 
     // await this.delete(-1)
     // await this.delete(0)
-    // await this.bullBear('15,0');
-    // await this.bullBear('30,0');
+    // await this.bullBear('15',0);
+    // await this.bullBear('30',0);
     // await this.CHECKBULL_BEAR('5min',0);
     // await this.CHECKBULL_BEAR('15min',0);
   }
@@ -271,7 +272,7 @@ export class TasksBullBearService {
     } finally {
       await Promise.all(
         Object.values(this.stockHelperService.INTRA_30M_SL).map((hook) =>
-          this.webhooksService.sendSlackNotification(`${time}================================`, hook),
+          this.webhooksService.sendSlackNotification(`${time}===${timeframe}min=============================`, hook),
         ),
       );
       this.runOnceAtOpen = false
