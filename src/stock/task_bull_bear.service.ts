@@ -435,7 +435,7 @@ export class TasksBullBearService {
             text,
           );
           const time = new Date().toLocaleString('en-US', {timeZone: 'America/New_York',});
-          this.webhooksService.sendSlackNotification(`${text +'=='+time}==================`, channel),
+          this.webhooksService.sendSlackNotification(`*${timeframe}*=${text +'=='+time}=`, channel),
           await this.webhooksService.sendDiscord(
             `${text}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
             `${ticker}-${timeframe}-${text}`,
