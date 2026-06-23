@@ -60,6 +60,7 @@ export class TasksBullBearService {
     // await this.bullBear('30',0);
     // await this.CHECKBULL_BEAR('5min',0);
     // await this.CHECKBULL_BEAR('15min',0);
+    // await this.CHECKBULL_BEAR('30min',0);
   }
 
   async  USTIMERUN(
@@ -326,6 +327,11 @@ export class TasksBullBearService {
     await this.CHECKBULL_BEAR('15min',3);
   }
 
+  @Cron('*/30 9-16 * * 1-5', { timeZone: 'America/New_York' })
+  async CHECKBULL_BEAR_30MIN() {
+    await this.CHECKBULL_BEAR('30min',4);
+  }
+
   async CHECKBULL_BEAR(timeframe = '15min',delay=2,symbols= ['QQQ','SPY']){
     if (!this.stockHelperService.shouldRunTradingLogicUS(timeframe,this.logger)) {
       return;
@@ -406,19 +412,20 @@ export class TasksBullBearService {
           let data = await this.LocalPLWR.TwReveseNOAPI(ticker, timeframe);
           const lastData = data[data.length - 1];
           const secondLastData = data[data.length - 2];
-          const aboveOrBelowma50 = lastData.close > lastData.MA50
+          const aboveOrBelowma50 = lastData.low > lastData.MA50
           const macdCrossAB = lastData.divergence > 0 && secondLastData.divergence < 0
           const macdCrossBL = lastData.divergence < 0 && secondLastData.divergence > 0
           const channel = ticker==='QQQ'? this.stockHelperService.BULL_BEAR_SL_.QQQ : this.stockHelperService.BULL_BEAR_SL_.SPY
           let text = ''
+          const macdGreenOrRed = lastData.divergence > 0 ?'YYYYYY🟢🟢🟢':'LLLLLLL🔴🔴🔴' +` | (${lastData.divergence})`
           if(macdCrossAB){
-            text = aboveOrBelowma50?'*macdCrossNAB-GOODDAYYYYYY🟢🟢🟢🟢BUY_CALL_NOW🟢🟢🟢🟢*':'*macdCrossNBL50-🟢🟢W*'
+            text = aboveOrBelowma50?'*macdCrossNAB-GOODD🟢🟢🟢BUY_CALL_NOW🟢🟢🟢*':'*macdCrossNBL50-🔴🔴🔴🔴🔴🔴*'
           }else if(macdCrossBL){
-            text = aboveOrBelowma50?'*macdCrossNBL-CAREFULLDAYYYY🔴🔴*':'macdCrossNBL-SELLLLLLLL-DAY-🔴🔴🔴🔴BUY_PUT_NOW🔴🔴🔴🔴'
+            text = aboveOrBelowma50?'*macdCrossNBL-🔴🔴🔴🔴🔴🔴*':'macdCrossNBL-SELLLLLLLL-DAY-🔴🔴🔴BUY_PUT_NOW🔴🔴🔴'
           }else if(aboveOrBelowma50){
-            text = `*BUYYYYYYY-DAY-🟢🟢🟢🟢🟢🟢*`
+            text = `*BUY🟢🟢🟢${macdGreenOrRed}*`
           }else{
-            text = `*SELLLLLLLL-DAY-🔴🔴🔴🔴🔴🔴*`
+            text = `*SELL🔴🔴🔴${macdGreenOrRed}*`
           }
           await this.webhooksService.sendSlackNotificationVN(
             timeframe,
@@ -428,7 +435,7 @@ export class TasksBullBearService {
             text,
           );
           const time = new Date().toLocaleString('en-US', {timeZone: 'America/New_York',});
-          this.webhooksService.sendSlackNotification(`${text +'=='+time}================================`, channel),
+          this.webhooksService.sendSlackNotification(`${text +'=='+time}==================`, channel),
           await this.webhooksService.sendDiscord(
             `${text}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
             `${ticker}-${timeframe}-${text}`,
