@@ -417,15 +417,15 @@ export class TasksBullBearService {
           const macdCrossBL = lastData.divergence < 0 && secondLastData.divergence > 0
           const channel = ticker==='QQQ'? this.stockHelperService.BULL_BEAR_SL_.QQQ : this.stockHelperService.BULL_BEAR_SL_.SPY
           let text = ''
-          const macdGreenOrRed = lastData.divergence > 0 ?'YYYYYY🟢🟢🟢':'LLLLLLL🔴🔴🔴' +` | (${lastData.divergence})`
+          const macdGreenOrRed = lastData.divergence > 0 ?'YYYYYY🟢🟢🟢':'LLLLLLL🔴🔴🔴'
           if(macdCrossAB){
             text = aboveOrBelowma50?'*macdCrossNAB-GOODD🟢🟢🟢BUY_CALL_NOW🟢🟢🟢*':'*macdCrossNBL50-🔴🔴🔴🔴🔴🔴*'
           }else if(macdCrossBL){
             text = aboveOrBelowma50?'*macdCrossNBL-🔴🔴🔴🔴🔴🔴*':'macdCrossNBL-SELLLLLLLL-DAY-🔴🔴🔴BUY_PUT_NOW🔴🔴🔴'
           }else if(aboveOrBelowma50){
-            text = `*BUY🟢🟢🟢${macdGreenOrRed}*`
+            text = `*BUY🟢🟢🟢${macdGreenOrRed}|(${lastData.divergence})*`
           }else{
-            text = `*SELL🔴🔴🔴${macdGreenOrRed}*`
+            text = `*SELL🔴🔴🔴${macdGreenOrRed}|(${lastData.divergence})*`
           }
           await this.webhooksService.sendSlackNotificationVN(
             timeframe,
