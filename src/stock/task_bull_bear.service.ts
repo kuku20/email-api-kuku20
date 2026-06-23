@@ -31,7 +31,10 @@ export class TasksBullBearService {
     // await allkeys.forEach(async symbol=>{
     //   this.webhooksService.fePostToHold2(symbol,holdingObj[symbol].price,'more_options')
     // })
-
+    // await Object.values(this.stockHelperService.INTRA_30M_SL).forEach(async symbol=>{
+    //   console.log(symbol)
+    //   this.webhooksService.fePostToHold2('QQQ',null,'clear_each',symbol)
+    // })
     //     await DataSymbols.watchlist.forEach(async symbol=>{
     //   this.webhooksService.fePostToHold2(symbol,null,'more_options',this.stockHelperService.BTN_SL.WATCH)
     // })
@@ -48,12 +51,14 @@ export class TasksBullBearService {
     
     //  await this.dailyCleanup()
     //  console.log('done')
-    // await this.webhooksService.deleteSLChannel([this.stockHelperService.BTN_SL.WATCH])
+    // await this.webhooksService.deleteSLChannel([this.stockHelperService.BTN_SL.HOLDING])
 
     // await this.delete(-1)
     // await this.delete(0)
-    // await this.bullBear('30min');
-    // await this.CHECKBULL_BEAR()
+    // await this.bullBear('15,0');
+    // await this.bullBear('30,0');
+    // await this.CHECKBULL_BEAR('5min',0);
+    // await this.CHECKBULL_BEAR('15min',0);
   }
 
   async  USTIMERUN(
@@ -131,17 +136,17 @@ export class TasksBullBearService {
           const MA9crosMA20 = lastMA9overMA15 && sndMA9overMA15
 
           const aboveOrBelowma50 = lastData.close > lastData.MA200
-          const oneTimeAt9h30 =lastData.date.includes('09:34:00')&& lastData.close >= lastData.MA9 && lastData.MA9 >= lastData.MA15 && lastData.MA15 >= lastData.MA50 && lastData.MA50 >= lastData.MA100 && lastData.MA100 >= lastData.MA200 && lastData.MA200 >= lastData.MA300
+          const oneTimeAt9h30 =lastData.date.includes('09:30:00')&& lastData.close >= lastData.MA9 && lastData.MA9 >= lastData.MA15 && lastData.MA15 >= lastData.MA50 && lastData.MA50 >= lastData.MA100 && lastData.MA100 >= lastData.MA200 && lastData.MA200 >= lastData.MA300
           const textDetail = oneTimeAt9h30?'Above all buy':StochRSICross?'StochRSICross': condition && aboveOrBelowma50?'CrossnAb200':''
           const blMa200MACDPMA50cR = lastData.close < lastData.MA200 && lastData.divergence > 0 && (lastData.close > lastData.MA50 && secondLastData.close < secondLastData.MA50)
           const macdCrossAB = lastData.divergence > 0 && secondLastData.divergence < 0
           if(oneTimeAt9h30){
-            await this.webhooksService.sendSlackNotificationVN(timeframe,
+            await this.webhooksService.sendSlackNotificationVN(
+              timeframe,
               [ticker],
               lastData,
               this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_200,
               this.stockHelperService.bullbearUqiue+textDetail,
-              this.runon15or30
             );
             await this.webhooksService.sendDiscord(
               `${textDetail}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
@@ -153,12 +158,12 @@ export class TasksBullBearService {
             return
           }
           // else if((StochRSICross || condition && aboveOrBelowma50)){
-          //   await this.webhooksService.sendSlackNotificationVN(timeframe,
+          //   await this.webhooksService.sendSlackNotificationVN(
+          //     timeframe,
           //     [ticker],
           //     lastData,
           //     StochRSICross?this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_50:this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_100,
           //     this.stockHelperService.bullbearUqiue+textDetail+' ',
-          //     this.runon15or30
           //   );
           //   this.aboveList.push(ticker)
           //   await this.webhooksService.sendDiscord(
@@ -170,12 +175,12 @@ export class TasksBullBearService {
           //   );
           // }
           else if(blMa200MACDPMA50cR){
-            await this.webhooksService.sendSlackNotificationVN(timeframe,
+            await this.webhooksService.sendSlackNotificationVN(
+              timeframe,
               [ticker],
               lastData,
               this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,
               this.stockHelperService.bullbearUqiue+'blMa200MACDPMA50cR',
-              this.runon15or30
             );
             await this.webhooksService.sendDiscord(
               `${'blMa200MACDPMA50cR'}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
@@ -186,12 +191,12 @@ export class TasksBullBearService {
             );
           } 
           // else if(MA9crosMA20){
-          //   await this.webhooksService.sendSlackNotificationVN(timeframe,
+          //   await this.webhooksService.sendSlackNotificationVN(
+          //     timeframe,
           //     [ticker],
           //     lastData,
           //     this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,
           //     this.stockHelperService.bullbearUqiue+'MA9crosMA20',
-          //     this.runon15or30
           //   );
           //   await this.webhooksService.sendDiscord(
           //     `${'MA9crosMA20'}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
@@ -202,12 +207,12 @@ export class TasksBullBearService {
           //   );
           // } 
           else if(macdCrossAB){
-            await this.webhooksService.sendSlackNotificationVN(timeframe,
+            await this.webhooksService.sendSlackNotificationVN(
+              timeframe,
               [ticker],
               lastData,
               this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_BL,
               this.stockHelperService.bullbearUqiue+'macdCrossAB',
-              this.runon15or30
             );
             await this.webhooksService.sendDiscord(
               `${'macdCrossAB'}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
@@ -235,11 +240,19 @@ export class TasksBullBearService {
     // Wait for all ticker promises to complete concurrently (with concurrency limit)
     await Promise.all(tickerPromises);
   }
-  runon15or30 :'30'|'15'|'5'|'60'= '30';
+
+  @Cron('*/15 9-16 * * 1-5', { timeZone: 'America/New_York' })
+  async bullBear_5MIN() {
+    await this.bullBear('15',3);
+  }
+
   @Cron('*/30 9-16 * * 1-5', { timeZone: 'America/New_York' })
-  // @Cron('34 9-16 * * 1-5', { timeZone: 'America/New_York' })
-  async bullBear(timeframe = '30min',symbols= DataSymbols.watchlist){
-    if (!this.stockHelperService.shouldRunTradingLogicUS(`${this.runon15or30}min`,this.logger)) {
+  async bullBear_15MIN() {
+    await this.bullBear('30',4);
+  }
+
+  async bullBear(timeframe :'30'|'15'|'5'|'60'= '15',delay = 3, symbols= DataSymbols.watchlist){
+    if (!this.stockHelperService.shouldRunTradingLogicUS(`${timeframe}min`,this.logger)) {
       return;
     }
     const time = new Date().toLocaleString('en-US', {timeZone: 'America/New_York',});
@@ -249,8 +262,8 @@ export class TasksBullBearService {
         this.allkeys,
         'US_ALL',
         'USSTOCK_WATCH',
-        4,
-        timeframe,
+        delay,
+        `${timeframe}min`,
       );
     } catch (error) {
       console.error('runAllWatchLists30 failed:', error);
@@ -302,9 +315,18 @@ export class TasksBullBearService {
     await this.stockHelperService.sendBatchNotification('START','test',webhooks,this.webhooksService,1000,);
   }
 
+  @Cron('*/5 9-16 * * 1-5', { timeZone: 'America/New_York' })
+  async CHECKBULL_BEAR_5MIN() {
+    await this.CHECKBULL_BEAR('5min',2);
+  }
+
   @Cron('*/15 9-16 * * 1-5', { timeZone: 'America/New_York' })
-  async CHECKBULL_BEAR(timeframe = '15min',symbols= ['QQQ','SPY']){
-    if (!this.stockHelperService.shouldRunTradingLogicUS(`15min`,this.logger)) {
+  async CHECKBULL_BEAR_15MIN() {
+    await this.CHECKBULL_BEAR('15min',3);
+  }
+
+  async CHECKBULL_BEAR(timeframe = '15min',delay=2,symbols= ['QQQ','SPY']){
+    if (!this.stockHelperService.shouldRunTradingLogicUS(timeframe,this.logger)) {
       return;
     }
     try {
@@ -313,11 +335,11 @@ export class TasksBullBearService {
         this.allkeys,
         'TSLA',
         'SMCI',
-        2,
+        delay,
         timeframe,
       );
     } catch (error) {
-      console.error('runAllWatchLists30 failed:', error);
+      console.error('timeframe failed:', error);
       throw error;
     } 
   }
@@ -397,11 +419,12 @@ export class TasksBullBearService {
           }else{
             text = `*SELLLLLLLL-DAY-🔴🔴🔴🔴🔴🔴*`
           }
-          await this.webhooksService.sendSlackNotificationVN(timeframe,
+          await this.webhooksService.sendSlackNotificationVN(
+            timeframe,
             [ticker],
             lastData,
-            channel,text,
-            '15',
+            channel,
+            text,
           );
           const time = new Date().toLocaleString('en-US', {timeZone: 'America/New_York',});
           this.webhooksService.sendSlackNotification(`${text +'=='+time}================================`, channel),

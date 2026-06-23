@@ -133,10 +133,12 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
               'RSI15AL',
               data,
             );
-            await this.webhooksService.sendSlackNotificationVN(timeframe,
+            await this.webhooksService.sendSlackNotificationVN(
+              timeframe,
               [ticker],
               lastData,
-              this.stockHelperService.US_DAILY_.RSI_15,'RSIBL15','500'
+              this.stockHelperService.US_DAILY_.RSI_15,
+              'RSIBL15',
             );
           }else if(signal && signal.RSI20up){
             await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSIALERT/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
@@ -147,10 +149,12 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
               'RSIALERT',
               data,
             );
-            await this.webhooksService.sendSlackNotificationVN(timeframe,
+            await this.webhooksService.sendSlackNotificationVN(
+              timeframe,
               [ticker],
               lastData,
-              this.stockHelperService.US_DAILY_.RSI_20,'RSI15-20','500'
+              this.stockHelperService.US_DAILY_.RSI_20,
+              'RSI15-20',
             );
           }else if(signal && signal.RSI25up){
             await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSI25AL/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
@@ -161,10 +165,12 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
               'RSI25AL',
               data,
             );
-            await this.webhooksService.sendSlackNotificationVN(timeframe,
+            await this.webhooksService.sendSlackNotificationVN(
+              timeframe,
               [ticker],
               lastData,
-              this.stockHelperService.US_DAILY_.RSI_25,'RSI20-25','500'
+              this.stockHelperService.US_DAILY_.RSI_25,
+              'RSI20-25',
             );
           }else if(signal && signal.RSI30up){
             await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSI30AL/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
@@ -233,10 +239,12 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
           const matched = webhookMap.find((w) => w.condition);
           const wlSl = timeframe === '1day'? this.stockHelperService.US_DAILY_.WATCH : this.stockHelperService.US_4H_.WATCH;
           if (matched) {
-            await this.webhooksService.sendSlackNotificationVN(timeframe,
+            await this.webhooksService.sendSlackNotificationVN(
+              timeframe,
               [ticker],
               data,
-              DataSymbols.watchlist.includes(ticker)? wlSl : matched.hook,matched.msg,'500'
+              DataSymbols.watchlist.includes(ticker)? wlSl : matched.hook,
+              matched.msg,
             );
           }
           this.logger.log(`${ticker} processed successfully.`);
@@ -495,10 +503,12 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
           const matched = webhookMap.find((w) => w.condition);
 
           if (matched) {
-            await this.webhooksService.sendSlackNotificationVN(timeframe,
+            await this.webhooksService.sendSlackNotificationVN(
+              timeframe,
               [ticker],
               lastData,
-              DataSymbols.watchlist.includes(ticker)? this.stockHelperService.US_4H_.WATCH :matched.hook,matched.msg,'500'
+              DataSymbols.watchlist.includes(ticker)? this.stockHelperService.US_4H_.WATCH :matched.hook,
+              matched.msg,
             );
           }
           this.logger.log(`${ticker} processed successfully.`);
@@ -606,10 +616,12 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
                 'RSI15AL',
                 data,
               );
-              await this.webhooksService.sendSlackNotificationVN(timeframe,
+              await this.webhooksService.sendSlackNotificationVN(
+                timeframe,
                 [ticker],
                 lastData,
-                this.stockHelperService.US_DAILY_.RSI_15,'RSIBL15','500'
+                this.stockHelperService.US_DAILY_.RSI_15,
+                'RSIBL15',
               );
             }else if(signal && signal.RSI20up){
               await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSIALERT/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
@@ -620,10 +632,12 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
                 'RSIALERT',
                 data,
               );
-              await this.webhooksService.sendSlackNotificationVN(timeframe,
+              await this.webhooksService.sendSlackNotificationVN(
+                timeframe,
                 [ticker],
                 lastData,
-                this.stockHelperService.US_DAILY_.RSI_20,'RSI15-20','500'
+                this.stockHelperService.US_DAILY_.RSI_20,
+                'RSI15-20',
               );
             }else if(signal && signal.RSI25up){
               await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSI25AL/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
@@ -634,10 +648,12 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
                 'RSI25AL',
                 data,
               );
-              await this.webhooksService.sendSlackNotificationVN(timeframe,
+              await this.webhooksService.sendSlackNotificationVN(
+                timeframe,
                 [ticker],
                 lastData,
-                this.stockHelperService.US_DAILY_.RSI_25,'RSI20-25','500'
+                this.stockHelperService.US_DAILY_.RSI_25,
+                'RSI20-25',
               );
             }else if(signal && signal.RSI30up){
               await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSI30AL/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
@@ -684,10 +700,12 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
             const {RecommendThreadLink,getResFromGemini} = await this.webhooksService.GetGeminiReNPosted(timeframe,ticker,data);
             const textL = getResFromGemini.toLowerCase().replace(/\s+/g, '').replace(/\*\*/g, '').replace(/\*/g, '')
             if(textL.includes(':buy')){
-             const {msg,postToCSLRE} = await this.webhooksService.sendSlackNotificationVN(timeframe,
+             const {msg,postToCSLRE} = await this.webhooksService.sendSlackNotificationVN(
+                timeframe,
                 [ticker],
                 lastData,
-                this.stockHelperService.HoldingList.includes(ticker)?this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING:slChannel.WATCH_BUY,'AI-BUY','500'
+                this.stockHelperService.HoldingList.includes(ticker)?this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING:slChannel.WATCH_BUY,
+                'AI-BUY',
               );
               await this.webhooksService.reply_SLack(
                 postToCSLRE.channel,
@@ -728,10 +746,12 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
               const matched = webhookMap.find((w) => w.condition);
     
               if (matched) {
-                const {msg,postToCSLRE} = await this.webhooksService.sendSlackNotificationVN(timeframe,
+                const {msg,postToCSLRE} = await this.webhooksService.sendSlackNotificationVN(
+                  timeframe,
                   [ticker],
                   lastData,
-                  this.stockHelperService.HoldingList.includes(ticker)?this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING_C_SELL:slChannel.WATCH,matched.msg,'500'
+                  this.stockHelperService.HoldingList.includes(ticker)?this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING_C_SELL:slChannel.WATCH,
+                  matched.msg,
                 );
                 await this.webhooksService.reply_SLack(
                   postToCSLRE.channel,
@@ -739,10 +759,12 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
                   RecommendThreadLink
                 );
               }else{
-                const {msg,postToCSLRE} = await this.webhooksService.sendSlackNotificationVN(timeframe,
+                const {msg,postToCSLRE} = await this.webhooksService.sendSlackNotificationVN(
+                  timeframe,
                   [ticker],
                   lastData,
-                  this.stockHelperService.HoldingList.includes(ticker)?this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING_C_SELL:slChannel.WATCH,'AI-Watch','500'
+                  this.stockHelperService.HoldingList.includes(ticker)?this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING_C_SELL:slChannel.WATCH,
+                  'AI-Watch'
                 );
                 await this.webhooksService.reply_SLack(
                   postToCSLRE.channel,
@@ -787,10 +809,12 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
             // if osc cross or stoch cross and not on daily timeframe then send last data to skip gemini 
             // otherwise send fulldata for better analysis for gemini to get recommendation.
             if (matched) {
-              await this.webhooksService.sendSlackNotificationVN(timeframe,
+              await this.webhooksService.sendSlackNotificationVN(
+                timeframe,
                 [ticker],
                 datasend,
-                DataSymbols.watchlist.includes(ticker)? slChannel.WATCH :matched.hook,matched.msg,'500'
+                DataSymbols.watchlist.includes(ticker)? slChannel.WATCH :matched.hook,
+                matched.msg,
               );
             }
           }
@@ -891,10 +915,12 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
                 'RSI15AL',
                 data,
               );
-              await this.webhooksService.sendSlackNotificationVN(timeframe,
+              await this.webhooksService.sendSlackNotificationVN(
+                timeframe,
                 [ticker],
                 lastData,
-                this.stockHelperService.US_DAILY_.RSI_15,'RSIBL15','500'
+                this.stockHelperService.US_DAILY_.RSI_15,
+                'RSIBL15',
               );
             }else if(signal && signal.RSI20up){
               await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSIALERT/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
@@ -905,10 +931,12 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
                 'RSIALERT',
                 data,
               );
-              await this.webhooksService.sendSlackNotificationVN(timeframe,
+              await this.webhooksService.sendSlackNotificationVN(
+                timeframe,
                 [ticker],
                 lastData,
-                this.stockHelperService.US_DAILY_.RSI_20,'RSI15-20','500'
+                this.stockHelperService.US_DAILY_.RSI_20,
+                'RSI15-20',
               );
             }else if(signal && signal.RSI25up){
               await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSI25AL/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
@@ -919,10 +947,12 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
                 'RSI25AL',
                 data,
               );
-              await this.webhooksService.sendSlackNotificationVN(timeframe,
+              await this.webhooksService.sendSlackNotificationVN(
+                timeframe,
                 [ticker],
                 lastData,
-                this.stockHelperService.US_DAILY_.RSI_25,'RSI20-25','500'
+                this.stockHelperService.US_DAILY_.RSI_25,
+                'RSI20-25',
               );
             }else if(signal && signal.RSI30up){
               await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSI30AL/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
@@ -984,10 +1014,12 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
             // if osc cross or stoch cross and not on daily timeframe then send last data to skip gemini 
             // otherwise send fulldata for better analysis for gemini to get recommendation.
             if (matched) {
-              await this.webhooksService.sendSlackNotificationVN(timeframe,
+              await this.webhooksService.sendSlackNotificationVN(
+                timeframe,
                 [ticker],
                 lastData,
-                DataSymbols.watchlist.includes(ticker)? slChannel.WATCH:ONMIRUNNOW.includes(ticker)?slChannel.WATCH_BUY :matched.hook,matched.msg,'500'
+                DataSymbols.watchlist.includes(ticker)? slChannel.WATCH:ONMIRUNNOW.includes(ticker)?slChannel.WATCH_BUY :matched.hook,
+                matched.msg,
               );
             }
           this.logger.log(`${ticker} processed successfully.`);

@@ -50,7 +50,7 @@ export class TestOndata_service {
     // const data = await this.LocalPLWR.FireBaseApi('get','stock-related/post-wash-sell.json','')
     const SLACK_WEBHOOKS_US50 = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/DyDay/${this.timeframe}/${this.endpointDate}.json`,'')
 
-    const tickers = Object.keys(SLACK_WEBHOOKS_US50);
+    const tickers =SLACK_WEBHOOKS_US50? Object.keys(SLACK_WEBHOOKS_US50):[];
     console.log(tickers.length);
     // // console.log(tickers.length);
     // this.comparePrice(0, SLACK_WEBHOOKS_US50);

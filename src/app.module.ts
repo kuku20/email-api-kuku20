@@ -164,7 +164,9 @@ import { Tasks_US_WEEKLY } from './stock/task_us_weekly.service';
     StockHelperService,
     WebhooksService,
     LocalPLWR,
-    AlphavantageService,AiToolService,StockService,
+    AlphavantageService,
+    AiToolService,
+    StockService,
     Tasks_US_WEEKLY,
     TasksService,
     TasksVNMKService,
@@ -176,7 +178,6 @@ import { Tasks_US_WEEKLY } from './stock/task_us_weekly.service';
     // SendEverydayService,
     // TasksUS_ALL_MK_MASS_Service,
     // TasksUS_ALL_MKService,
-    // TasksUSMKService_15MIN
     // TestOndata_service,
     // TasksUSMKService,
     // TasksUSMK_1MIN_Service,

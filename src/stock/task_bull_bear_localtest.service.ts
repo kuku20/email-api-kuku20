@@ -157,11 +157,12 @@ export class TasksBullBearLocalService {
           const compareMACDLine = lastData.MACDLine < result.mid
           const blMa200MACDPMA50cR = lastData.close < lastData.MA200 && lastData.divergence > 0 && (lastData.close > lastData.MA50 && secondLastData.close < secondLastData.MA50)
           if(oneTimeAt9h30){
-            await this.webhooksService.sendSlackNotificationVN(timeframe,
+            await this.webhooksService.sendSlackNotificationVN(
+              timeframe,
               [ticker],
               lastData,
-              this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_200,textDetail+' '+maxOfFour,
-              this.runon15or30
+              this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_200,
+              textDetail+' '+maxOfFour,
             );
             await this.webhooksService.sendDiscord(
               `${goup}-${textDetail}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
@@ -172,11 +173,12 @@ export class TasksBullBearLocalService {
             );
             return
           }else if((StochRSICross || condition && aboveOrBelowma50)){
-            await this.webhooksService.sendSlackNotificationVN(timeframe,
+            await this.webhooksService.sendSlackNotificationVN(
+              timeframe,
               [ticker],
               lastData,
-              StochRSICross?this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_50:this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_100,textDetail+' '+maxOfFour,
-              this.runon15or30
+              StochRSICross?this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_50:this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_100,
+              textDetail+' '+maxOfFour,
             );
             this.aboveList.push(ticker)
             if(goup==='SBUY'){
@@ -190,11 +192,12 @@ export class TasksBullBearLocalService {
               data,
             );
           }else if(blMa200MACDPMA50cR){
-            await this.webhooksService.sendSlackNotificationVN(timeframe,
+            await this.webhooksService.sendSlackNotificationVN(
+              timeframe,
               [ticker],
               lastData,
-              this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,'blMa200MACDPMA50cR'+maxOfFour,
-              this.runon15or30
+              this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,
+              'blMa200MACDPMA50cR'+maxOfFour,
             );
             await this.webhooksService.sendDiscord(
               `${goup}-${'blMa200MACDPMA50cR'}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,

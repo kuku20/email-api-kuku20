@@ -74,11 +74,12 @@ export class TaskHoldingService {
             secondLastData,
           );
           if(BlMA200_MA20_MA50_MA100_SELL){
-            await this.webhooksService.sendSlackNotificationVN(timeframe,
+            await this.webhooksService.sendSlackNotificationVN(
+              timeframe,
               [ticker],
               lastData,
-              this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING,'BlMA200_MA20_MA50_MA100_SELL',
-              this.runon15or30
+              this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING,
+              'BlMA200_MA20_MA50_MA100_SELL',
             );
             await this.webhooksService.sendDiscord(
               `SELLLLLL BlMA200_MA20_MA50_MA100_SELL-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
@@ -141,11 +142,11 @@ export class TaskHoldingService {
   })
   async runDaily() {
     const symbols = await this.LocalPLWR.getholdingList_W_other()
-    // await this.webhooksService.sendSlackNotificationVN(timeframe,
+    // await this.webhooksService.sendSlackNotificationVN(
+    //   timeframe,
     //   symbols,
     //   null,
     //   this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING,'',
-    //   '500'
     // );
     const webhooks = [this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING];
   

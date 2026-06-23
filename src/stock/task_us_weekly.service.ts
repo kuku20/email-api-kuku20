@@ -188,10 +188,12 @@ export class Tasks_US_WEEKLY {
           const matched = webhookMap.find((w) => w.condition);
 
           if (matched) {
-            await this.webhooksService.sendSlackNotificationVN(timeframe,
+            await this.webhooksService.sendSlackNotificationVN(
+              timeframe,
               [ticker],
               data,
-              DataSymbols.watchlist.includes(ticker)? this.stockHelperService.US_WK_.WATCH :matched.hook,matched.msg,'500'
+              DataSymbols.watchlist.includes(ticker)? this.stockHelperService.US_WK_.WATCH :matched.hook,
+              matched.msg,
             );
           }
           this.logger.log(`${ticker} processed successfully.`);

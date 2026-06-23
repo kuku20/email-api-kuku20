@@ -133,10 +133,12 @@ export class TasksUS_ALL_MK_MASS_Service {
                 'MA_BL_5_200', 
                 data,
               );
-              await this.webhooksService.sendSlackNotificationVN(timeframe,
+              await this.webhooksService.sendSlackNotificationVN(
+                timeframe,
                 [ticker],
                 lastData,
-                this.stockHelperService.US_DAILY_.OSC_BL,'OscCrossAb','500'
+                this.stockHelperService.US_DAILY_.OSC_BL,
+                'OscCrossAb',
               );
             }
           }
@@ -248,10 +250,12 @@ export class TasksUS_ALL_MK_MASS_Service {
             const matched = webhookMap.find((w) => w.condition);
 
             if (matched) {
-              await this.webhooksService.sendSlackNotificationVN(timeframe,
+              await this.webhooksService.sendSlackNotificationVN(
+                timeframe,
                 [ticker],
                 lastData,
-                DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL.US_30M_WATCH:matched.hook,'','500'
+                DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL.US_30M_WATCH:matched.hook,
+                '',
               );
             }
           }

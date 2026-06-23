@@ -64,10 +64,12 @@ export class TasksVNMKService {
           const matched = webhookMap.find(({ condition }) => condition);
 
           if (matched) {
-            await this.webhooksService.sendSlackNotificationVN('1day',
+            await this.webhooksService.sendSlackNotificationVN(
+              '1day',
               [symbol],
               lastData,
-              matched.hook,'','500'
+              matched.hook,
+              '',
             );
           }
           this.logger.log(`${ticker} processed successfully.`);

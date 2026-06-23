@@ -1285,11 +1285,12 @@ export class WebhooksService {
           'BUY_EARLY_DAY',
           data,
         );
-        await this.sendSlackNotificationVN(timeframe,
+        await this.sendSlackNotificationVN(
+          timeframe,
           [ticker],
           lastdata,
-          this.stockHelperService.Z_US_SL.Z_US_SL_2h_CROSS,sp500+'aboveAll',
-          '500'
+          this.stockHelperService.Z_US_SL.Z_US_SL_2h_CROSS,
+          sp500+'aboveAll',
         );
       }
   }
@@ -1522,11 +1523,12 @@ export class WebhooksService {
       }
       if(aboveMA50Second && belowMA50Third){
         if(timeframe === '1day'){
-          await this.sendSlackNotificationVN(timeframe,
+          await this.sendSlackNotificationVN(
+            timeframe,
             [ticker],
             lastData,
-            this.stockHelperService.Z_US_SL.Z_US_SL_J2DAY,'ABOVE_50_2C',
-            '500'
+            this.stockHelperService.Z_US_SL.Z_US_SL_J2DAY,
+            'ABOVE_50_2C',
           );
         }
         await this.FireBaseApi("put", `stock-related/${basePath}/twoday/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
@@ -1540,21 +1542,23 @@ export class WebhooksService {
             'US_15M_HT',
             data,
           );
-          await this.sendSlackNotificationVN(timeframe,
+          await this.sendSlackNotificationVN(
+            timeframe,
             [ticker],
             lastData,
-            this.stockHelperService.Z_US_SL.Z_US_SL_J3DAY,'PriceCrMA50_3C',
-            '500'
+            this.stockHelperService.Z_US_SL.Z_US_SL_J3DAY,
+            'PriceCrMA50_3C',
           );
         }else if(timeframe.includes('4hour')){
           const aboveOrBellow = lastData?.MA200 < lastData?.close ?'above':'bellow';
           const slackWebhook = lastData?.MA200 < lastData?.close ? this.stockHelperService.Z_US_SL.Z_US_SL_4h_3C_AB : this.stockHelperService.Z_US_SL.Z_US_SL_4h_3C_BL;
           const discordChannel = lastData?.MA200 < lastData?.close ? 'TSLA' : 'SMCI';
-          await this.sendSlackNotificationVN(timeframe,
+          await this.sendSlackNotificationVN(
+            timeframe,
             [ticker],
             lastData,
-            slackWebhook,'PriceCrMA50_3C',
-            '500'
+            slackWebhook,
+            'PriceCrMA50_3C',
           );
           await this.sendDiscord(
             `${sp500}BUY-PriceCrMA50_3C_${aboveOrBellow}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
@@ -1652,10 +1656,12 @@ export class WebhooksService {
         DataSymbols.watchlist.includes(ticker)?'WATCHLIST':timeframeKey,
         data,
       );
-      await this.sendSlackNotificationVN(timeframe,
+      await this.sendSlackNotificationVN(
+        timeframe,
         [ticker],
         lastData,
-        DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL.US_30M_WATCH:sltimeframeKey,'macdCross_AB','15'
+        DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL.US_30M_WATCH:sltimeframeKey,
+        'macdCross_AB'
       );
       return;
     }
@@ -1667,10 +1673,12 @@ export class WebhooksService {
         'MA_AB_50_100',
         data,
       );
-      await this.sendSlackNotificationVN(timeframe,
+      await this.sendSlackNotificationVN(
+        timeframe,
         [ticker],
         lastData,
-        DataSymbols.watchlist.includes(ticker)?this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING:sltimeframeKey,'macdCross_AB','15'
+        DataSymbols.watchlist.includes(ticker)?this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING:sltimeframeKey,
+        'macdCross_AB'
       );
       return;
     }  
@@ -1804,7 +1812,6 @@ export class WebhooksService {
     fullData: any,
     slChannel :string,
     msg :string,
-    range: '600' | '550' | '500' | '480' | '240' | '120' | '60' | '45' | '30' | '15' | '5' | '1',
   ) {
     const isFullDataArray = Array.isArray(fullData);
     let lastData = isFullDataArray? fullData[fullData.length - 1]: fullData;

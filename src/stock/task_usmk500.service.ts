@@ -154,11 +154,12 @@ export class TasksUSMKService_SP500 {
               secondLastData,
             );
             if(BlMA200_MA20_MA50_MA100_SELL){
-              await this.webhooksService.sendSlackNotificationVN(timeframe,
+              await this.webhooksService.sendSlackNotificationVN(
+                timeframe,
                 [ticker],
                 lastData,
-                this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING,'BlMA200_MA20_MA50_MA100_SELL',
-                this.runon15or30
+                this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING,
+                'BlMA200_MA20_MA50_MA100_SELL',
               );
               await this.webhooksService.sendDiscord(
                 `SELLLLLL BlMA200_MA20_MA50_MA100_SELL-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
@@ -199,11 +200,12 @@ export class TasksUSMKService_SP500 {
               'MA_BL_50_100', 
               data,
             );
-            await this.webhooksService.sendSlackNotificationVN(timeframe,
+            await this.webhooksService.sendSlackNotificationVN(
+              timeframe,
               [ticker],
               lastData,
-              DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL.US_30M_WATCH:this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_200,'allCondition',
-              this.runon15or30
+              DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL.US_30M_WATCH:this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_200,
+              'allCondition',
             );
           }
           if(this.runOnceAtOpen){
@@ -229,11 +231,12 @@ export class TasksUSMKService_SP500 {
           
           const matched = webhookMap.find((w) => w.condition);
           if (matched) {
-            await this.webhooksService.sendSlackNotificationVN(timeframe,
+            await this.webhooksService.sendSlackNotificationVN(
+              timeframe,
               [ticker],
               lastData,
-              DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL.US_30M_WATCH:matched.hook,'',
-              this.runon15or30
+              DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL.US_30M_WATCH:matched.hook,
+              '',
             );
           }
           this.logger.log(`${ticker} processed successfully.`);
@@ -419,11 +422,12 @@ export class TasksUSMKService_SP500 {
           const lastData = data[data.length - 1];
          
           if (true) {
-            await this.webhooksService.sendSlackNotificationVN(timeframe,
+            await this.webhooksService.sendSlackNotificationVN(
+              timeframe,
               [ticker],
               lastData,
-              this.stockHelperService.Z_US_SL.Z_US_SL_OR4,'',
-              this.runon15or30
+              this.stockHelperService.Z_US_SL.Z_US_SL_OR4,
+              '',
             );
             await this.webhooksService.sendDiscord(
               `BUY BUYBUY-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
