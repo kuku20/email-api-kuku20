@@ -353,8 +353,8 @@ export class TasksBullBearService {
         delay,
         timeframe,
       );
-      await this.CHECKBULL_5_15_30_1h(DataSymbols.watchlist,delay)
-      await this.webhooksService.sendSlackNotification('=====', this.stockHelperService.INTRA_30M_SL.US_30M_WATCH)
+      // await this.CHECKBULL_5_15_30_1h(DataSymbols.watchlist,delay)
+      // await this.webhooksService.sendSlackNotification('=====', this.stockHelperService.INTRA_30M_SL.US_30M_WATCH)
     } catch (error) {
       console.error('timeframe failed:', error);
       throw error;
