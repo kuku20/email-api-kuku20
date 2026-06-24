@@ -325,15 +325,15 @@ export class TasksBullBearService {
     await this.stockHelperService.sendBatchNotification('START','test',webhooks,this.webhooksService,1000,);
   }
 
-  @Cron('*/5 9-16 * * 1-5', { timeZone: 'America/New_York' })
+  // @Cron('*/5 9-16 * * 1-5', { timeZone: 'America/New_York' })
   async CHECKBULL_BEAR_5MIN() {
     await this.CHECKBULL_BEAR('5min',1);
   }
 
-  // @Cron('*/5 9-16 * * 1-5', { timeZone: 'America/New_York' })
-  // async CHECKBULL_BEAR_OTHER_5MIN() {
-  //   await this.CHECKBULL_BEAR_OTHER(2);
-  // }
+  @Cron('*/5 9-16 * * 1-5', { timeZone: 'America/New_York' })
+  async CHECKBULL_BEAR_OTHER_5MIN() {
+    await this.CHECKBULL_BEAR_OTHER(2);
+  }
 
   // @Cron('*/15 9-16 * * 1-5', { timeZone: 'America/New_York' })
   async CHECKBULL_BEAR_15MIN() {
@@ -461,13 +461,13 @@ export class TasksBullBearService {
             'Nono',
             ticker==='QQQ'?'TSLA':'SMCI', 
           );
-          if(text.includes('SELL🔴🔴BL🔴🔴')){
+          if(text.includes('SELL🔴🔴BL🔴🔴SELL🔴🔴')){
             const text2NDLAST = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(ticker,timeframe,data.slice(0, -1))
             const postToCSLRE = {
               channel:channel
             }
-            if(text2NDLAST.includes('BUY🟢🟢AB🟢🟢')){
-              // call 15,30,1 hour
+            if(text2NDLAST.includes('BUY🟢🟢AB🟢🟢SELL🔴🔴')){
+              // call 15,30,1 hour ; consider buy put wait the next 5min
               const timeframes = [
                 '15min',
                 '30min',
@@ -483,6 +483,31 @@ export class TasksBullBearService {
                   postToCSLRE
                 );
               }
+              this.webhooksService.sendSlackNotification('consider buy put wait the next 5min', channel)
+            }
+          } else if(text.includes('BUY🟢🟢AB🟢🟢')){
+            const text2NDLAST = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(ticker,timeframe,data.slice(0, -1))
+            const postToCSLRE = {
+              channel:channel
+            }
+            if(text2NDLAST.includes('SELL🔴🔴BL🔴🔴')){
+              // call 15,30,1 hour ; consider buy call wait the next 5min
+              const timeframes = [
+                '15min',
+                '30min',
+                '1hour',
+              ];
+            
+              for (const timeframe of timeframes) {
+                await this.stockHelperService.CHECKBULL_BEAR_processTickers(
+                  this.LocalPLWR,
+                  this.webhooksService,
+                  ticker,
+                  timeframe,
+                  postToCSLRE
+                );
+              }
+              this.webhooksService.sendSlackNotification('consider buy call wait the next 5min', channel)
             }
           }
           this.logger.log(`${ticker} processed successfully.`);
