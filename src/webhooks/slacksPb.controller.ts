@@ -26,6 +26,7 @@ export class SlackPbController {
     const orgMsgText = payload.message.text
     const orgThread_ts = payload.container.thread_ts
     const postToCSLRE = {channel:channel,ts:payload.message.ts,ticker:ticker,timeframe:timeframe_acID}
+    console.log('timeframe_acID',timeframe_acID)
     if(timeframe_acID==='more_options'){
       // update the orginial with more options bellow
       const orgThreadUpdate = this.webhooksService.getSlBlock(ticker,'delete_thop',orgMsgText)
@@ -240,7 +241,7 @@ export class SlackPbController {
       const getText = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(ticker,timeframe,data)
       const checkSym = (ticker==='QQQ'||ticker === 'SPY')
       if(checkSym){
-        this.webhooksService.sendSlackNotification(getText, postToCSLRE.channel)
+        this.webhooksService.sendSlackNotification(`${getText}=*CLICK_CALL*`, postToCSLRE.channel)
       }else{
         await this.webhooksService.reply_SLack(
           postToCSLRE.channel,

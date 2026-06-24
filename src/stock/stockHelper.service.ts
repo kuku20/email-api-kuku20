@@ -1085,7 +1085,7 @@ SELL ALL
     let text = ''
     const macdGreenOrRed = lastData.divergence > 0 ?'BUYY🟢🟢':'SELL🔴🔴'
     if(macdCrossAB){
-      text = aboveOrBelowma50?'*macdCr_N🟢AB-🟢🟢🟢BUY_CALL_NOW_BUYY🟢🟢🟢*':'*macdCr_N🔴BL50_BUYY🟢🟢🟢🔴🔴*'
+      text = aboveOrBelowma50?'*macdCr_N🟢AB🟢🟢BUYY🟢🟢🟢BUY_CALL_NOW_🟢*':'*macdCr_N🔴BL50_BUYY🟢🟢🟢🔴🔴*'
     }else if(macdCrossBL){
       text = aboveOrBelowma50?'*macdCrossNBL-🔴🔴🔴AB_SELL🔴🔴🔴*':'macdCrossNBL-SELLLLLLLL-DAY-🔴🔴🔴PUT_NOW_SELL🔴🔴🔴'
     }else if(aboveOrBelowma50){
@@ -1093,8 +1093,7 @@ SELL ALL
     }else{
       text = `*SELL🔴🔴BL🔴🔴${macdGreenOrRed}|(${lastData.divergence})*`
     }
-    const time = new Date().toLocaleString('en-US', {timeZone: 'America/New_York',});
-    return `*${ticker}* *${timeframe}* =${text +'=='+time}=*CLICK_CALL*`
+    return `*${ticker}* *${timeframe}* =${text +'=='+lastData.date}`
   } 
-  
+
 }
