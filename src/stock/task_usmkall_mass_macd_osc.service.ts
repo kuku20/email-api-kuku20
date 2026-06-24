@@ -529,7 +529,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
     await Promise.all(tickerPromises);
   }
 
-  @Cron('45 9,13 * * 1-5', { timeZone: 'America/New_York' }) // Every day at 9:45 AM and 1:45 1 PM ET on weekdays
+  // @Cron('45 9,13 * * 1-5', { timeZone: 'America/New_York' }) // Every day at 9:45 AM and 1:45 1 PM ET on weekdays
   // @Cron('36 9,11,13,15 * * 1-5', { timeZone: 'America/New_York' }) // everyday at 9:36,11:36,13:36:15:36 ET on weekdays
   async runevery4hour(stocklist = DataSymbols.stock_500_symbols) {
     // const uniqueCombine = await this.LocalPLWR.getholdingList_W_other([...stocklist, ...DataSymbols.watchlist]);
