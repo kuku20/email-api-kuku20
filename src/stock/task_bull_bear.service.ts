@@ -68,6 +68,7 @@ export class TasksBullBearService {
     // await this.CHECKBULL_BEAR('5min',0);
     // await this.CHECKBULL_BEAR('15min',0);
     // await this.CHECKBULL_BEAR('30min',0);
+    // await this.CHECKBULL_5_15_30_1h(['UNH'],0)
   }
 
   async  USTIMERUN(
@@ -250,12 +251,12 @@ export class TasksBullBearService {
     await Promise.all(tickerPromises);
   }
 
-  @Cron('*/15 9-16 * * 1-5', { timeZone: 'America/New_York' })
+  // @Cron('*/15 9-16 * * 1-5', { timeZone: 'America/New_York' })
   async bullBear_5MIN() {
     await this.bullBear('15',3);
   }
 
-  @Cron('*/30 9-16 * * 1-5', { timeZone: 'America/New_York' })
+  // @Cron('*/30 9-16 * * 1-5', { timeZone: 'America/New_York' })
   async bullBear_15MIN() {
     await this.bullBear('30',4);
   }
@@ -329,7 +330,7 @@ export class TasksBullBearService {
     await this.CHECKBULL_BEAR('5min',2);
   }
 
-  @Cron('*/15 9-16 * * 1-5', { timeZone: 'America/New_York' })
+  // @Cron('*/15 9-16 * * 1-5', { timeZone: 'America/New_York' })
   async CHECKBULL_BEAR_15MIN() {
     await this.CHECKBULL_BEAR('15min',3);
   }
@@ -352,6 +353,8 @@ export class TasksBullBearService {
         delay,
         timeframe,
       );
+      await this.CHECKBULL_5_15_30_1h(DataSymbols.watchlist,delay)
+      await this.webhooksService.sendSlackNotification('=====', this.stockHelperService.INTRA_30M_SL.US_30M_WATCH)
     } catch (error) {
       console.error('timeframe failed:', error);
       throw error;
@@ -430,8 +433,8 @@ export class TasksBullBearService {
           const time = new Date().toLocaleString('en-US', {timeZone: 'America/New_York',});
           this.webhooksService.sendSlackNotification(text, channel),
           await this.webhooksService.sendDiscord(
-            `${text}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-            `${ticker}-${timeframe}-${text}`,
+            `${text.substring(0,10)}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+            `${ticker}-${timeframe}-${text.substring(0,10)}`,
             lastData,
             ticker==='QQQ'?'TSLA':'SMCI', 
             data,
@@ -448,6 +451,84 @@ export class TasksBullBearService {
           await this.webhooksService.sendDiscord(
             `ERROR ${error.message} \n url: http://localhost:4200/price-log/${ticker}?daysRange=500`,
             `RSIENDBOT ${ticker} at ${timeframe}`,
+            'Nono',
+            'ERORR_CALL',
+          );
+          
+          this.logger.error(`Error processing ${ticker}: ${error.message}`);
+        }
+      }),
+    );
+
+    // Wait for all ticker promises to complete concurrently (with concurrency limit)
+    await Promise.all(tickerPromises);
+  }
+
+  async CHECKBULL_5_15_30_1h(
+    tickers: string[],
+    delay = 2,
+  ) {
+    const limit = pLimit(2); // Limit the concurrency to 8 at a time
+
+    const washselllists =[...(await this.LocalPLWR.loadWashSellList()) ||
+      this.LocalPLWR.getWashSellList(),'QQQ','SPY'];
+    // Delay 2 minutes before processing
+    await new Promise((resolve) => setTimeout(resolve, delay * 60 * 1000));
+
+    // Prepare ticker promises with concurrency limit
+    const tickerPromises = tickers.map((ticker) =>
+      limit(async () => {
+        if (washselllists?.includes(ticker)) {
+          console.log(`⏭️ Skipping ${ticker} — in wash sell list`);
+          return; // Skip this ticker and move on
+        }
+
+        try {
+          let FullText = '';
+          let bullishCount = 0;
+          
+          const timeframes = [
+            '5min',
+            '15min',
+            '30min',
+            '1hour',
+          ];
+          for (const tf of timeframes) {
+            const data = await this.LocalPLWR.TwReveseNOAPI(ticker, tf);
+          
+            if (!data?.length) {
+              break;
+            }
+          
+            const text = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
+              ticker,
+              tf,
+              data
+            );
+          
+            if (!text.includes('BUYY🟢🟢')) {
+              break;
+            }
+          
+            bullishCount++;
+            FullText += `${text}\n`;
+          }
+          if(bullishCount>3){
+            // this.webhooksService.sendSlackNotification(`\n ${ticker}: ${bullishCount}/${timeframes.length} bullish`+FullText, this.stockHelperService.INTRA_30M_SL.US_30M_WATCH)
+            await this.webhooksService.sendSlackNotificationVN(
+              '5min',
+              [ticker],
+              null,
+              this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,
+              `${this.stockHelperService.bullbearUqiue} \n${FullText} \n`
+            );
+          }
+          this.logger.log(`${ticker}: ${bullishCount}/${timeframes.length} bullish`);
+        } catch (error) {
+          // Send error notification and log the error
+          await this.webhooksService.sendDiscord(
+            `ERROR ${error.message} \n url: http://localhost:4200/price-log/${ticker}?daysRange=500`,
+            `RSIENDBOT ${ticker} at fullList`,
             'Nono',
             'ERORR_CALL',
           );
