@@ -65,7 +65,7 @@ export class TasksBullBearService {
     // await this.delete(0)
     // await this.bullBear('15',0);
     // await this.bullBear('30',0);
-    // await this.CHECKBULL_BEAR('5min',0);
+    // await this.CHECKBULL_BEAR_OTHER_5MIN();
     // await this.CHECKBULL_BEAR('15min',0);
     // await this.CHECKBULL_BEAR('30min',0);
     // await this.CHECKBULL_5_15_30_1h(['UNH'],0)
@@ -325,14 +325,14 @@ export class TasksBullBearService {
     await this.stockHelperService.sendBatchNotification('START','test',webhooks,this.webhooksService,1000,);
   }
 
-  // @Cron('*/5 9-16 * * 1-5', { timeZone: 'America/New_York' })
+  @Cron('*/5 9-16 * * 1-5', { timeZone: 'America/New_York' })
   async CHECKBULL_BEAR_5MIN() {
     await this.CHECKBULL_BEAR('5min',1);
   }
 
-  @Cron('*/5 9-16 * * 1-5', { timeZone: 'America/New_York' })
+  // @Cron('*/5 9-16 * * 1-5', { timeZone: 'America/New_York' })
   async CHECKBULL_BEAR_OTHER_5MIN() {
-    await this.CHECKBULL_BEAR_OTHER(2);
+    await this.CHECKBULL_BEAR_OTHER(1.5);
   }
 
   // @Cron('*/15 9-16 * * 1-5', { timeZone: 'America/New_York' })
