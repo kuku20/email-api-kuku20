@@ -2479,64 +2479,85 @@ async deleteAllMessages_SLack(channel: string) {
           value: symbol,
           action_id: 'delete_replys',
         },
-      ]:option==='full_watchlist'?[
+      ]:option==='accessory_full_watchlist'?[
         {
-          type: 'button',
-          text: {
-            type: 'plain_text',
-            text: symbol+'-'+'delete_thop',
-          },
-          value:symbol,
-          action_id: 'delete_thop',
-          style: 'danger',
+          type: 'actions',
+          elements:[ 
+            {
+              type: 'button',
+              text: {
+                type: 'plain_text',
+                text: symbol+'-'+'delete_thop',
+              },
+              value:symbol,
+              action_id: 'delete_thop',
+              style: 'danger',
+            },
+            {
+              type: 'button',
+              text: {
+                type: 'plain_text',
+                text: 'Delete-all-replys',
+              },
+              style: 'danger',
+              value: symbol,
+              action_id: 'delete_replys',
+            },
+            {
+              type: 'button',
+              text: {
+                type: 'plain_text',
+                text: symbol+'-30min',
+              },
+              value: symbol,
+              action_id: '30min',
+              style: 'primary',
+            },
+            {
+              type: 'button',
+              text: {
+                type: 'plain_text',
+                text: symbol+'-4Hour',
+              },
+              value: symbol,
+              action_id: '4hour',
+            },
+            {
+              type: 'button',
+              text: {
+                type: 'plain_text',
+                text: symbol+'-1day',
+              },
+              value: symbol,
+              action_id: '1day',
+            },
+            {
+              type: 'button',
+              text: {
+                type: 'plain_text',
+                text: symbol+'-getCurrentPrice',
+              },
+              value: symbol,
+              action_id: 'getCurrentPrice',
+            },    
+        ]
         },
         {
-          type: 'button',
+          type: "section",
           text: {
-            type: 'plain_text',
-            text: symbol+'-30min',
+            type: "mrkdwn",
+            text: "Select a interval"
           },
-          value: symbol,
-          action_id: '30min',
-          style: 'primary',
-        },
-        {
-          type: 'button',
-          text: {
-            type: 'plain_text',
-            text: symbol+'-4Hour',
-          },
-          value: symbol,
-          action_id: '4hour',
-        },
-        {
-          type: 'button',
-          text: {
-            type: 'plain_text',
-            text: symbol+'-1day',
-          },
-          value: symbol,
-          action_id: '1day',
-        },
-        {
-          type: 'button',
-          text: {
-            type: 'plain_text',
-            text: symbol+'-getCurrentPrice',
-          },
-          value: symbol,
-          action_id: 'getCurrentPrice',
-        },
-        {
-          type: 'button',
-          text: {
-            type: 'plain_text',
-            text: 'Delete-all-replys',
-          },
-          style: 'danger',
-          value: symbol,
-          action_id: 'delete_replys',
-        },
+          accessory: {
+            type: "external_select",
+            placeholder: {
+              type: "plain_text",
+              text: "Search timeframe"
+            },
+            action_id: "timeframe_interval",
+            min_query_length: 1
+          }
+        }
       ]:option==='clear_each'?[
         {
           type: 'button',
@@ -2556,6 +2577,45 @@ async deleteAllMessages_SLack(channel: string) {
           },
           value: symbol,
           action_id: 'delete_fullc_keep2',
+        }
+      ]:option==='accessory_price_check'?[
+        {
+          type: 'actions',
+          elements:[ {
+            type: 'button',
+            text: {
+              type: 'plain_text',
+              text: 'Delete-all-delete_fullc',
+            },
+            style: 'danger',
+            value: symbol,
+            action_id: 'delete_fullc',
+          },{
+            type: 'button',
+            text: {
+              type: 'plain_text',
+              text: 'Delete-all-delete_fullc_keep2',
+            },
+            value: symbol,
+            action_id: 'delete_fullc_keep2',
+          },
+        ]
+        },
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: "Select a interval"
+          },
+          accessory: {
+            type: "external_select",
+            placeholder: {
+              type: "plain_text",
+              text: "Search timeframe"
+            },
+            action_id: "timeframe_interval",
+            min_query_length: 1
+          }
         }
       ]:[
       {
@@ -2606,8 +2666,17 @@ async deleteAllMessages_SLack(channel: string) {
   }
   async fePostToHold2(symbol,price,option,slackC=this.stockHelperService.BTN_SL.HOLDING){
     const textDs =  `*${symbol}* ${price?`| ckInAt:*${price}`:''}* | <http://localhost:4200/price-log/${symbol}?daysRange=500|local> | <https://stockmarkets000.web.app/price-log/${symbol}?daysRange=500|production> | <https://www.tradingview.com/chart/mWoCISmu/?symbol=${symbol}|tradingview> |  <https://new-site-pwa.web.app/?stockTicker=${symbol}&endpoint=fm&timeframe=1day |OtherLink> `
-    const element = this.slElementOptions(symbol,option)
-    const blockEl = [
+    
+    const elementOraccessory = this.slElementOptions(symbol,option)
+    const blockEl =option.includes('accessory') ?[
+      {
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: textDs
+      },
+    },...elementOraccessory]
+    :[
       {
         type: 'section',
         text: {
@@ -2617,15 +2686,24 @@ async deleteAllMessages_SLack(channel: string) {
       },
       {
         type: 'actions',
-        elements: element,
+        elements: elementOraccessory,
       },
     ]
+    // console.log('blockEl',blockEl)
     await this.post2SlackBtnFnWithOps(slackC,blockEl)
   }
 
   getSlBlock(symbol,option,textDs){
     const element = this.slElementOptions(symbol,option)
-    const blockEl = [
+    const blockEl =option.includes('accessory') ?[
+      {
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: textDs
+      },
+    },...element]
+    :[
       {
         type: 'section',
         text: {

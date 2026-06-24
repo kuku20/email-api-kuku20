@@ -1,11 +1,16 @@
 import { Controller, Post, Body,Headers} from '@nestjs/common';
+import { Request, Response } from 'express';
 import { WebhooksService } from './webhooks.service';
 import { StockService } from 'src/stock/stock.service';
 import { StockHelperService } from 'src/stock/stockHelper.service';
 
 @Controller('slack')
 export class SlackPbController {
-  constructor(private readonly webhooksService: WebhooksService, private readonly stockService: StockService,private readonly stockHelperService: StockHelperService) {}
+  constructor(
+    private readonly webhooksService: WebhooksService, 
+    private readonly stockService: StockService,
+    private readonly stockHelperService: StockHelperService,
+  ) {}
 
   @Post('interactions')
   // @UseInterceptors(FileInterceptor('file'))
@@ -13,22 +18,21 @@ export class SlackPbController {
     @Headers() headers: any,
     @Body() body: any,
   ) {
-    // console.log(headers);
     const payload = JSON.parse(body.payload);
-
     const action = payload.actions[0];
     const ticker = action.value
     const timeframe_acID = action.action_id
+    const channel = payload.channel.id
     const orgMsgText = payload.message.text
     const orgThread_ts = payload.container.thread_ts
-    const postToCSLRE = {channel:payload.channel.id,ts:payload.message.ts,ticker:ticker,timeframe:timeframe_acID}
+    const postToCSLRE = {channel:channel,ts:payload.message.ts,ticker:ticker,timeframe:timeframe_acID}
     if(timeframe_acID==='more_options'){
       // update the orginial with more options bellow
       const orgThreadUpdate = this.webhooksService.getSlBlock(ticker,'delete_thop',orgMsgText)
       await this.webhooksService.Update_Slack(payload.channel.id,payload.message.ts, `*${ticker}*  Check Me Out !!!!`)
       // update the btn and reply with more options 
       // 1 create blockoptions
-      const fulloption = payload.channel.id ===this.stockHelperService.BTN_SL.HOLDING?'full_holding':'full_watchlist'
+      const fulloption = payload.channel.id ===this.stockHelperService.BTN_SL.HOLDING?'full_holding':'accessory_full_watchlist'
       const blockre = this.webhooksService.getSlBlock(ticker,fulloption,orgMsgText)
       // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
       await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'withBlock',blockre)
@@ -106,9 +110,33 @@ export class SlackPbController {
       console.log('sell_todod')
       const updateMe = await this.webhooksService.reply_SLack(postToCSLRE.channel,payload.message.ts,'...running')
       this.keepOradd(postToCSLRE,updateMe)
-    }
-    else{
-      console.log('action')
+    } else if(timeframe_acID.includes('timeframe_interval')){
+      const timeframe = action.selected_option.value
+      const symbol = payload.message.blocks[1].type==='actions'?payload.message.blocks[1].elements[0].value:'QQQ'
+      const isSupportedTimeframe = /(?:min|hour|day|week)$/.test(timeframe);
+      if(isSupportedTimeframe){
+        await this.CHECKBULL_BEAR_processTickers(symbol,timeframe,postToCSLRE)
+      }else {
+        console.error(`No timeframe specified for ${symbol}. Checking all timeframes...`);
+      
+        const timeframes = [
+          '15min',
+          '30min',
+          '1hour',
+          '4hour',
+          '1day'
+        ];
+      
+        for (const timeframe of timeframes) {
+          await this.CHECKBULL_BEAR_processTickers(
+            symbol,
+            timeframe,
+            postToCSLRE
+          );
+        }
+      }
+    } else{
+      console.log('action',timeframe_acID, ticker)
       await this.webhooksService.reply_SLack(postToCSLRE.channel,payload.message.ts,'postnone')
     }
     // console.log(action)
@@ -127,6 +155,30 @@ export class SlackPbController {
       text: '⏳ Processing application...',
       replace_original: false,
     };
+  }
+
+
+  @Post('suggestion')
+  async  handleBlockSugg(
+    @Body() body: any,
+  ) {
+    const payload = JSON.parse(body.payload);
+  
+    if (payload.type === 'block_suggestion') {
+      const stocks = ['5min', '15min','30min','1hour','4hour','1day','check_all'];
+  
+      return {
+        options: stocks.map(symbol => ({
+          text: {
+            type: 'plain_text',
+            text: symbol,
+          },
+          value: symbol,
+        })),
+      };
+    }
+  
+    return {};
   }
 
   async processApply(postToCSLRE: any) {
@@ -174,5 +226,31 @@ export class SlackPbController {
       text: '⏳ Processing application...',
       replace_original: false,
     };
+  }
+  private async CHECKBULL_BEAR_processTickers(
+      ticker: string,
+      timeframe: string,postToCSLRE
+    ) {
+      // Prepare ticker promises with concurrency limit
+      let data = await this.stockService.TwReveseNOAPI(ticker, timeframe);
+      if (!Array.isArray(data) || data.length < 2) {
+        await this.stockHelperService.sendBatchNotification('START',`${true?'TwReveseNOAPI':'POLYGON2'}-`+ticker,[this.stockHelperService.Z_US_SL.Z_US_SL_OR4],this.webhooksService,500);
+        return;
+      }
+      const getText = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(ticker,timeframe,data)
+      const checkSym = (ticker==='QQQ'||ticker === 'SPY')
+      if(checkSym){
+        this.webhooksService.sendSlackNotification(getText, postToCSLRE.channel)
+      }else{
+        await this.webhooksService.reply_SLack(
+          postToCSLRE.channel,
+          postToCSLRE.ts,
+          `======${getText}=*CLICK_CALL*======`
+        )
+      }
+
+  } async catch (error) {
+    // Send error notification and log the error
+    await this.webhooksService.sendSlackNotification(`ERORR_CALL`, this.stockHelperService.Z_US_SL.Z_US_SL_OR4)
   }
 }

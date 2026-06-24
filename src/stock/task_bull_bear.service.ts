@@ -31,14 +31,21 @@ export class TasksBullBearService {
     // await allkeys.forEach(async symbol=>{
     //   this.webhooksService.fePostToHold2(symbol,holdingObj[symbol].price,'more_options')
     // })
-    // await Object.values(this.stockHelperService.INTRA_30M_SL).forEach(async symbol=>{
+    // await Object.values(this.stockHelperService.BULL_BEAR_SL_).forEach(async symbol=>{
     //   console.log(symbol)
-    //   this.webhooksService.fePostToHold2('QQQ',null,'clear_each',symbol)
+    // this.webhooksService.fePostToHold2(symbol,null,'accessory_price_check',symbol)
     // })
-    //     await DataSymbols.watchlist.forEach(async symbol=>{
-    //       await new Promise((resolve) => setTimeout(resolve, 500));
-    //       await this.webhooksService.fePostToHold2(symbol,null,'more_options',this.stockHelperService.BTN_SL.WATCH)
-    // })
+    // this.webhooksService.fePostToHold2('SPY',null,'accessory_price_check',this.stockHelperService.BULL_BEAR_SL_.SPY)
+    // for (const symbol of DataSymbols.watchlist) {
+    //   await new Promise((resolve) => setTimeout(resolve, 1000));
+    
+    //   await this.webhooksService.fePostToHold2(
+    //     symbol,
+    //     null,
+    //     'more_options',
+    //     this.stockHelperService.BTN_SL.WATCH
+    //   );
+    // }
 
     // await this.webhooksService.fePostToHold2('HAS',holdingObj['HAS'].price,'more_options',this.stockHelperService.BTN_SL.HOLDING)
     // this.logger.warn('Running getholdingList with stocklist length:', symbols);
@@ -52,7 +59,7 @@ export class TasksBullBearService {
     
     //  await this.dailyCleanup()
     //  console.log('done')
-    // await this.webhooksService.deleteSLChannel(['C0BANRCLEDV'])
+    // await this.webhooksService.deleteSLChannel([this.stockHelperService.BTN_SL.WATCH])
 
     // await this.delete(-1)
     // await this.delete(0)
@@ -327,7 +334,7 @@ export class TasksBullBearService {
     await this.CHECKBULL_BEAR('15min',3);
   }
 
-  @Cron('*/30 9-16 * * 1-5', { timeZone: 'America/New_York' })
+  // @Cron('*/30 9-16 * * 1-5', { timeZone: 'America/New_York' })
   async CHECKBULL_BEAR_30MIN() {
     await this.CHECKBULL_BEAR('30min',4);
   }
@@ -411,22 +418,8 @@ export class TasksBullBearService {
         try {
           let data = await this.LocalPLWR.TwReveseNOAPI(ticker, timeframe);
           const lastData = data[data.length - 1];
-          const secondLastData = data[data.length - 2];
-          const aboveOrBelowma50 = lastData.low > lastData.MA50
-          const macdCrossAB = lastData.divergence > 0 && secondLastData.divergence < 0
-          const macdCrossBL = lastData.divergence < 0 && secondLastData.divergence > 0
           const channel = ticker==='QQQ'? this.stockHelperService.BULL_BEAR_SL_.QQQ : this.stockHelperService.BULL_BEAR_SL_.SPY
-          let text = ''
-          const macdGreenOrRed = lastData.divergence > 0 ?'YYYYYY🟢🟢':'LLLLLLL🔴🔴'
-          if(macdCrossAB){
-            text = aboveOrBelowma50?'*macdCr_N🟢AB-GOODD🟢🟢🟢BUY_CALL_NOW🟢🟢🟢*':'*macdCr_N🔴BL50-🟢🟢🟢🔴🔴*'
-          }else if(macdCrossBL){
-            text = aboveOrBelowma50?'*macdCrossNBL-🔴🔴🔴AB🔴🔴🔴*':'macdCrossNBL-SELLLLLLLL-DAY-🔴🔴🔴BUY_PUT_NOW🔴🔴🔴'
-          }else if(aboveOrBelowma50){
-            text = `*BUY🟢🟢AB🟢🟢${macdGreenOrRed}|(${lastData.divergence})*`
-          }else{
-            text = `*SELL🔴🔴BL🔴🔴${macdGreenOrRed}|(${lastData.divergence})*`
-          }
+          const text = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(ticker,timeframe,data)
           await this.webhooksService.sendSlackNotificationVN(
             timeframe,
             [ticker],
@@ -435,7 +428,7 @@ export class TasksBullBearService {
             text,
           );
           const time = new Date().toLocaleString('en-US', {timeZone: 'America/New_York',});
-          this.webhooksService.sendSlackNotification(`*${timeframe}*=${text +'=='+time}=`, channel),
+          this.webhooksService.sendSlackNotification(text, channel),
           await this.webhooksService.sendDiscord(
             `${text}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
             `${ticker}-${timeframe}-${text}`,

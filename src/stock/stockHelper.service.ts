@@ -1071,4 +1071,30 @@ SELL ALL
     .replace(/\n{3,}/g, '\n\n')
     .trim();
   }
+
+  async CHECKBULL_BEAR_ReTurnText(
+    ticker: string,
+    timeframe: string,
+    fullData:StockData[]
+  ) {
+    const lastData = fullData[fullData.length - 1];
+    const secondLastData = fullData[fullData.length - 2];
+    const aboveOrBelowma50 = lastData.low > lastData.MA50
+    const macdCrossAB = lastData.divergence > 0 && secondLastData.divergence < 0
+    const macdCrossBL = lastData.divergence < 0 && secondLastData.divergence > 0
+    let text = ''
+    const macdGreenOrRed = lastData.divergence > 0 ?'BUYY🟢🟢':'SELL🔴🔴'
+    if(macdCrossAB){
+      text = aboveOrBelowma50?'*macdCr_N🟢AB-🟢🟢🟢BUY_CALL_NOW_BUYY🟢🟢🟢*':'*macdCr_N🔴BL50_BUYY🟢🟢🟢🔴🔴*'
+    }else if(macdCrossBL){
+      text = aboveOrBelowma50?'*macdCrossNBL-🔴🔴🔴AB_SELL🔴🔴🔴*':'macdCrossNBL-SELLLLLLLL-DAY-🔴🔴🔴PUT_NOW_SELL🔴🔴🔴'
+    }else if(aboveOrBelowma50){
+      text = `*BUY🟢🟢AB🟢🟢${macdGreenOrRed}|(${lastData.divergence})*`
+    }else{
+      text = `*SELL🔴🔴BL🔴🔴${macdGreenOrRed}|(${lastData.divergence})*`
+    }
+    const time = new Date().toLocaleString('en-US', {timeZone: 'America/New_York',});
+    return `*${ticker}* *${timeframe}* =${text +'=='+time}=*CLICK_CALL*`
+  } 
+  
 }
