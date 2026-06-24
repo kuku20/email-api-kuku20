@@ -485,7 +485,7 @@ export class TasksBullBearService {
               }
               this.webhooksService.sendSlackNotification('consider buy put wait the next 5min', channel)
             }
-          } else if(text.includes('BUY🟢🟢AB🟢🟢')){
+          } else if(text.includes('BUY🟢🟢AB🟢🟢') || text.includes('BL50_BUYY🟢🟢🟢🔴🔴')){
             const text2NDLAST = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(ticker,timeframe,data.slice(0, -1))
             const postToCSLRE = {
               channel:channel
@@ -552,6 +552,7 @@ export class TasksBullBearService {
           let FullText = '';
           let bullishCount = 0;
           let bullishFCount = 0;
+          let aboveCount = 0;
           
           const timeframes = [
             '5min',
@@ -574,7 +575,9 @@ export class TasksBullBearService {
           
             bullishCount++;
             FullText += `${text}\n`;
-
+            if(text.includes('AB🟢🟢')){
+              aboveCount++
+            }
             if (text.includes('AB🟢🟢BUYY🟢🟢')) {
               bullishFCount++;
               if(bullishFCount>2){
@@ -605,8 +608,23 @@ export class TasksBullBearService {
               const blockre = this.webhooksService.getSlBlock(ticker,'accessory_price_check',ticker)
               // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
               await this.webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
+              break;
             }
             if (!text.includes('BUYY🟢🟢')) {
+              if(bullishFCount>0&& aboveCount>1){
+                const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
+                  '5min',
+                  [ticker],
+                  data[data.length-1],
+                  this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,
+                  `\n${FullText} \n`
+                );
+                const blockre = this.webhooksService.getSlBlock(ticker,'accessory_price_check',ticker)
+                // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
+                await this.webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
+                await this.webhooksService.addReaction_SLack(postToCSLRE.postToCSLRE.channel, postToCSLRE.postToCSLRE.ts, 'cold_face');
+                break;
+              }  
               break;
             }
           }
