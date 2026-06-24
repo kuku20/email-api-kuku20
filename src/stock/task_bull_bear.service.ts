@@ -56,7 +56,7 @@ export class TasksBullBearService {
     // await this.postSLTest(['C0B748C0BCM'])
     // await this.postSLTest(['C0B748C0BCM'])
 
-    
+        // await this.CHECKBULL_BEAR('5min',0);
     //  await this.dailyCleanup()
     //  console.log('done')
     // await this.webhooksService.deleteSLChannel([this.stockHelperService.BTN_SL.WATCH])
@@ -327,8 +327,13 @@ export class TasksBullBearService {
 
   @Cron('*/5 9-16 * * 1-5', { timeZone: 'America/New_York' })
   async CHECKBULL_BEAR_5MIN() {
-    await this.CHECKBULL_BEAR('5min',2);
+    await this.CHECKBULL_BEAR('5min',1);
   }
+
+  // @Cron('*/5 9-16 * * 1-5', { timeZone: 'America/New_York' })
+  // async CHECKBULL_BEAR_OTHER_5MIN() {
+  //   await this.CHECKBULL_BEAR_OTHER(2);
+  // }
 
   // @Cron('*/15 9-16 * * 1-5', { timeZone: 'America/New_York' })
   async CHECKBULL_BEAR_15MIN() {
@@ -353,14 +358,25 @@ export class TasksBullBearService {
         delay,
         timeframe,
       );
-      // await this.CHECKBULL_5_15_30_1h(DataSymbols.watchlist,delay)
-      // await this.webhooksService.sendSlackNotification('=====', this.stockHelperService.INTRA_30M_SL.US_30M_WATCH)
     } catch (error) {
       console.error('timeframe failed:', error);
       throw error;
     } 
   }
-
+  async CHECKBULL_BEAR_OTHER(delay=2,symbols= DataSymbols.watchlist){
+    if (!this.stockHelperService.shouldRunTradingLogicUS('5min',this.logger)) {
+      return;
+    }
+    try {
+      await this.CHECKBULL_5_15_30_1h(symbols,delay)
+      await this.webhooksService.sendSlackNotification(
+        '=================================================', 
+        this.stockHelperService.INTRA_30M_SL.US_30M_WATCH)
+    } catch (error) {
+      console.error('timeframe failed:', error);
+      throw error;
+    } 
+  }
   async  CHECKBULL_BEAR_USTIMERUN(
     intickers: string[],
     api: any,
@@ -445,6 +461,30 @@ export class TasksBullBearService {
             'Nono',
             ticker==='QQQ'?'TSLA':'SMCI', 
           );
+          if(text.includes('SELL🔴🔴BL🔴🔴')){
+            const text2NDLAST = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(ticker,timeframe,data.slice(0, -1))
+            const postToCSLRE = {
+              channel:channel
+            }
+            if(text2NDLAST.includes('BUY🟢🟢AB🟢🟢')){
+              // call 15,30,1 hour
+              const timeframes = [
+                '15min',
+                '30min',
+                '1hour',
+              ];
+            
+              for (const timeframe of timeframes) {
+                await this.stockHelperService.CHECKBULL_BEAR_processTickers(
+                  this.LocalPLWR,
+                  this.webhooksService,
+                  ticker,
+                  timeframe,
+                  postToCSLRE
+                );
+              }
+            }
+          }
           this.logger.log(`${ticker} processed successfully.`);
         } catch (error) {
           // Send error notification and log the error
@@ -468,7 +508,7 @@ export class TasksBullBearService {
     tickers: string[],
     delay = 2,
   ) {
-    const limit = pLimit(2); // Limit the concurrency to 8 at a time
+    const limit = pLimit(4); // Limit the concurrency to 8 at a time
 
     const washselllists =[...(await this.LocalPLWR.loadWashSellList()) ||
       this.LocalPLWR.getWashSellList(),'QQQ','SPY'];
@@ -486,6 +526,7 @@ export class TasksBullBearService {
         try {
           let FullText = '';
           let bullishCount = 0;
+          let bullishFCount = 0;
           
           const timeframes = [
             '5min',
@@ -506,23 +547,45 @@ export class TasksBullBearService {
               data
             );
           
+            bullishCount++;
+            FullText += `${text}\n`;
+
+            if (text.includes('AB🟢🟢BUYY🟢🟢')) {
+              bullishFCount++;
+              if(bullishFCount>2){
+                // this.webhooksService.sendSlackNotification(`\n ${ticker}: ${bullishCount}/${timeframes.length} bullish`+FullText, this.stockHelperService.INTRA_30M_SL.US_30M_WATCH)
+                const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
+                  '5min',
+                  [ticker],
+                  data[data.length-1],
+                  this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,
+                  `\n${FullText} \n`
+                );
+                const blockre = this.webhooksService.getSlBlock(ticker,'accessory_price_check',ticker)
+                // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
+                await this.webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
+                await this.webhooksService.addReaction_SLack(postToCSLRE.postToCSLRE.channel, postToCSLRE.postToCSLRE.ts, 'heart');
+                break;
+              }
+            }
+            if(bullishCount>3){
+              // this.webhooksService.sendSlackNotification(`\n ${ticker}: ${bullishCount}/${timeframes.length} bullish`+FullText, this.stockHelperService.INTRA_30M_SL.US_30M_WATCH)
+              const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
+                '5min',
+                [ticker],
+                data[data.length-1],
+                this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,
+                `\n${FullText} \n`
+              );
+              const blockre = this.webhooksService.getSlBlock(ticker,'accessory_price_check',ticker)
+              // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
+              await this.webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
+            }
             if (!text.includes('BUYY🟢🟢')) {
               break;
             }
+          }
           
-            bullishCount++;
-            FullText += `${text}\n`;
-          }
-          if(bullishCount>3){
-            // this.webhooksService.sendSlackNotification(`\n ${ticker}: ${bullishCount}/${timeframes.length} bullish`+FullText, this.stockHelperService.INTRA_30M_SL.US_30M_WATCH)
-            await this.webhooksService.sendSlackNotificationVN(
-              '5min',
-              [ticker],
-              null,
-              this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,
-              `${this.stockHelperService.bullbearUqiue} \n${FullText} \n`
-            );
-          }
           this.logger.log(`${ticker}: ${bullishCount}/${timeframes.length} bullish`);
         } catch (error) {
           // Send error notification and log the error

@@ -1089,11 +1089,39 @@ SELL ALL
     }else if(macdCrossBL){
       text = aboveOrBelowma50?'*macdCrossNBL-🔴🔴🔴AB_SELL🔴🔴🔴*':'macdCrossNBL-SELLLLLLLL-DAY-🔴🔴🔴PUT_NOW_SELL🔴🔴🔴'
     }else if(aboveOrBelowma50){
-      text = `*BUY🟢🟢AB🟢🟢${macdGreenOrRed}|(${lastData.divergence})*`
+      text = `*BUY🟢🟢AB🟢🟢${macdGreenOrRed}*`
     }else{
-      text = `*SELL🔴🔴BL🔴🔴${macdGreenOrRed}|(${lastData.divergence})*`
+      text = `*SELL🔴🔴BL🔴🔴${macdGreenOrRed}*`
     }
-    return `*${ticker}* *${timeframe}* =${text +'=='+lastData.date}`
+    return `*${ticker}* *${timeframe}* =${text}|(${lastData.divergence})==${lastData.date}`
   } 
 
+  async CHECKBULL_BEAR_processTickers(
+    stockService,
+    webhooksService,
+    ticker: string,
+    timeframe: string,
+    postToCSLRE
+  ) {
+    // Prepare ticker promises with concurrency limit
+    let data = await stockService.TwReveseNOAPI(ticker, timeframe);
+    if (!Array.isArray(data) || data.length < 2) {
+      await this.sendBatchNotification('START',`${true?'TwReveseNOAPI':'POLYGON2'}-`+ticker,[this.Z_US_SL.Z_US_SL_OR4],webhooksService,500);
+      return;
+    }
+    const getText = await this.CHECKBULL_BEAR_ReTurnText(ticker,timeframe,data)
+    const checkSym = (ticker==='QQQ'||ticker === 'SPY')
+    if(checkSym){
+      await webhooksService.sendSlackNotification(`${getText}=*CLICK_CALL*`, postToCSLRE.channel)
+    }else{
+      await webhooksService.reply_SLack(
+        postToCSLRE.channel,
+        postToCSLRE.ts,
+        `======${getText}=*CLICK_CALL*======`
+      )
+    }
+
+  } async catch (error) {
+    // Send error notification and log the error
+  }
 }
