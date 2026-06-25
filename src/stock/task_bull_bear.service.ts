@@ -60,12 +60,18 @@ export class TasksBullBearService {
     //  await this.dailyCleanup()
     //  console.log('done')
     // await this.webhooksService.deleteSLChannel([this.stockHelperService.BTN_SL.WATCH])
+    // const forRundaily2 = await this.LocalPLWR.FireBaseApi('get',`stock-related/forRundaily-po5b/4hour.json`,'')
+    // const allkeys2 = Object.keys(forRundaily2)
+    // console.log(allkeys2.length)
+    // await this.CHECKBULL_BEAR_OTHER(3,allkeys2);
 
+    // const uniqueCombine =  Array.from(new Set([...allkeys, ...DataSymbols.watchlist]))
+    // console.log(uniqueCombine.length)
     // await this.delete(-1)
     // await this.delete(0)
     // await this.bullBear('15',0);
     // await this.bullBear('30',0);
-    // await this.CHECKBULL_BEAR_OTHER_5MIN();
+    // await this.CHECKBULL_BEAR_OTHER(0);
     // await this.CHECKBULL_BEAR('15min',0);
     // await this.CHECKBULL_BEAR('30min',0);
     // await this.CHECKBULL_5_15_30_1h(['UNH'],0)
@@ -327,12 +333,22 @@ export class TasksBullBearService {
 
   @Cron('*/5 9-16 * * 1-5', { timeZone: 'America/New_York' })
   async CHECKBULL_BEAR_5MIN() {
-    await this.CHECKBULL_BEAR('5min',1);
+    await this.CHECKBULL_BEAR('5min',1.5);
   }
 
-  // @Cron('*/5 9-16 * * 1-5', { timeZone: 'America/New_York' })
+  // @Cron('*/5 9-16 * * 1-5', { timeZone: 'America/New_York' }) // washlist
   async CHECKBULL_BEAR_OTHER_5MIN() {
     await this.CHECKBULL_BEAR_OTHER(1.5);
+  }
+
+  // @Cron('*/15 9-16 * * 1-5', { timeZone: 'America/New_York' }) // other list at 15min
+  async CHECKBULL_BEAR_OTHER_15MIN() {
+    const forRundaily2 = await this.LocalPLWR.FireBaseApi('get',`stock-related/forRundaily-po5b/4hour.json`,'')
+    const allkeys2 = Object.keys(forRundaily2)
+    await this.CHECKBULL_BEAR_OTHER(3,allkeys2);
+    await this.webhooksService.sendSlackNotification(
+      '=================================================', 
+      this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_BL,)
   }
 
   // @Cron('*/15 9-16 * * 1-5', { timeZone: 'America/New_York' })
@@ -364,6 +380,7 @@ export class TasksBullBearService {
     } 
   }
   async CHECKBULL_BEAR_OTHER(delay=2,symbols= DataSymbols.watchlist){
+    this.stockHelperService.apitwelveCount = 0
     if (!this.stockHelperService.shouldRunTradingLogicUS('5min',this.logger)) {
       return;
     }
@@ -375,7 +392,9 @@ export class TasksBullBearService {
     } catch (error) {
       console.error('timeframe failed:', error);
       throw error;
-    } 
+    } finally{
+      console.log(this.stockHelperService.apitwelveCount)
+    }
   }
   async  CHECKBULL_BEAR_USTIMERUN(
     intickers: string[],
@@ -547,89 +566,164 @@ export class TasksBullBearService {
           console.log(`⏭️ Skipping ${ticker} — in wash sell list`);
           return; // Skip this ticker and move on
         }
-
+        const checktext = 'AB🟢🟢BUYY🟢🟢'
         try {
           let FullText = '';
           let bullishCount = 0;
           let bullishFCount = 0;
           let aboveCount = 0;
-          
-          const timeframes = [
-            '5min',
-            '15min',
-            '30min',
-            '1hour',
-          ];
-          for (const tf of timeframes) {
-            const data = await this.LocalPLWR.TwReveseNOAPI(ticker, tf);
-          
-            if (!data?.length) {
-              break;
-            }
-          
-            const text = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
+          const data_5min = await this.LocalPLWR.TwReveseNOAPI(ticker, '5min');
+          const text_5min = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
               ticker,
-              tf,
-              data
+              '5min',
+              data_5min
+          );
+          FullText += `${text_5min}\n`;
+          if(text_5min.includes(checktext)){
+            // send can buy: check macd call the 
+            const data_15min = await this.LocalPLWR.TwReveseNOAPI(ticker, '15min');
+            const text_15min = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
+              ticker,
+              '15min',
+              data_15min
             );
-          
-            bullishCount++;
-            FullText += `${text}\n`;
-            if(text.includes('AB🟢🟢')){
-              aboveCount++
-            }
-            if (text.includes('AB🟢🟢BUYY🟢🟢')) {
-              bullishFCount++;
-              if(bullishFCount>2){
-                // this.webhooksService.sendSlackNotification(`\n ${ticker}: ${bullishCount}/${timeframes.length} bullish`+FullText, this.stockHelperService.INTRA_30M_SL.US_30M_WATCH)
+            FullText += `${text_15min}\n`;
+            const inWt = DataSymbols.watchlist.includes(ticker) && (text_15min.includes('BUYY🟢🟢')|| text_15min.includes('AB🟢🟢'))
+            if(inWt){
+            // sent with good to buy check macd 0.1<0.6
+              const data_30min = await this.LocalPLWR.TwReveseNOAPI(ticker, '30min');
+              const text_30min = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
+                ticker,
+                '30min',
+                data_30min
+              );
+              FullText += `${text_30min}\n`;
+              if(text_30min.includes('BUYY🟢🟢')|| text_30min.includes('AB🟢🟢')){
+                // sent with good to buy check macd 0.1<0.6
+                const data_1hour = await this.LocalPLWR.TwReveseNOAPI(ticker, '1hour');
+                const text_1hour = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
+                  ticker,
+                  '1hour',
+                  data_1hour
+                );
+                FullText += `${text_1hour}\n`;
+                if(text_1hour.includes(checktext)){
+                  // sent with good to buy check macd 0.1<0.6
+                }
+                // send to watchlist
                 const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
                   '5min',
                   [ticker],
-                  data[data.length-1],
+                  data_5min[data_5min.length-1],
                   this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,
                   `\n${FullText} \n`
                 );
                 const blockre = this.webhooksService.getSlBlock(ticker,'accessory_price_check',ticker)
-                // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
+                  // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
                 await this.webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
-                await this.webhooksService.addReaction_SLack(postToCSLRE.postToCSLRE.channel, postToCSLRE.postToCSLRE.ts, 'heart');
-                break;
+                if(text_15min.includes(checktext)){
+                  await this.webhooksService.addReaction_SLack(postToCSLRE.postToCSLRE.channel, postToCSLRE.postToCSLRE.ts, 'heart');
+                } else if(text_30min.includes('macdCr_N')|| text_15min.includes('macdCr_N')){
+                  await this.webhooksService.addReaction_SLack(postToCSLRE.postToCSLRE.channel, postToCSLRE.postToCSLRE.ts, 'b');
+                }
+                return
+              } 
+              else {
+                console.log('stop at 30')
+                return
               }
-            }
-            if(bullishCount>3){
-              // this.webhooksService.sendSlackNotification(`\n ${ticker}: ${bullishCount}/${timeframes.length} bullish`+FullText, this.stockHelperService.INTRA_30M_SL.US_30M_WATCH)
+            } else if(text_15min.includes('macdCr_N')){
               const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
                 '5min',
                 [ticker],
-                data[data.length-1],
-                this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,
+                data_5min[data_5min.length-1],
+                this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_BL,
                 `\n${FullText} \n`
               );
-              const blockre = this.webhooksService.getSlBlock(ticker,'accessory_price_check',ticker)
-              // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
-              await this.webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
-              break;
+            } else {
+              console.log('stop at 15')
+              return
             }
-            if (!text.includes('BUYY🟢🟢')) {
-              if(bullishFCount>0&& aboveCount>1){
-                const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
-                  '5min',
-                  [ticker],
-                  data[data.length-1],
-                  this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,
-                  `\n${FullText} \n`
-                );
-                const blockre = this.webhooksService.getSlBlock(ticker,'accessory_price_check',ticker)
-                // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
-                await this.webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
-                await this.webhooksService.addReaction_SLack(postToCSLRE.postToCSLRE.channel, postToCSLRE.postToCSLRE.ts, 'cold_face');
-                break;
-              }  
-              break;
-            }
+          } else {
+            console.log('stop at 5')
+            return
           }
+          // const timeframes = [
+          //   '5min',
+          //   '15min',
+          //   '30min',
+          //   '1hour',
+          // ];
+          // for (const tf of timeframes) {
+          //   const data = await this.LocalPLWR.TwReveseNOAPI(ticker, tf);
           
-          this.logger.log(`${ticker}: ${bullishCount}/${timeframes.length} bullish`);
+          //   if (!data?.length) {
+          //     break;
+          //   }
+          
+          //   const text = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
+          //     ticker,
+          //     tf,
+          //     data
+          //   );
+          
+          //   bullishCount++;
+          //   FullText += `${text}\n`;
+          //   if(text.includes('AB🟢🟢')){
+          //     aboveCount++
+          //   }
+          //   if (text.includes('AB🟢🟢BUYY🟢🟢')) {
+          //     bullishFCount++;
+          //     if(bullishFCount>2){
+          //       // this.webhooksService.sendSlackNotification(`\n ${ticker}: ${bullishCount}/${timeframes.length} bullish`+FullText, this.stockHelperService.INTRA_30M_SL.US_30M_WATCH)
+          //       const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
+          //         '5min',
+          //         [ticker],
+          //         data[data.length-1],
+          //         this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,
+          //         `\n${FullText} \n`
+          //       );
+          //       const blockre = this.webhooksService.getSlBlock(ticker,'accessory_price_check',ticker)
+          //       // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
+          //       await this.webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
+          //       await this.webhooksService.addReaction_SLack(postToCSLRE.postToCSLRE.channel, postToCSLRE.postToCSLRE.ts, 'heart');
+          //       break;
+          //     }
+          //   }
+          //   if(bullishCount>3){
+          //     // this.webhooksService.sendSlackNotification(`\n ${ticker}: ${bullishCount}/${timeframes.length} bullish`+FullText, this.stockHelperService.INTRA_30M_SL.US_30M_WATCH)
+          //     const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
+          //       '5min',
+          //       [ticker],
+          //       data[data.length-1],
+          //       this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,
+          //       `\n${FullText} \n`
+          //     );
+          //     const blockre = this.webhooksService.getSlBlock(ticker,'accessory_price_check',ticker)
+          //     // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
+          //     await this.webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
+          //     break;
+          //   }
+          //   if (!text.includes('BUYY🟢🟢')) {
+          //     if(bullishFCount>0&& aboveCount>1){
+          //       const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
+          //         '5min',
+          //         [ticker],
+          //         data[data.length-1],
+          //         this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,
+          //         `\n${FullText} \n`
+          //       );
+          //       const blockre = this.webhooksService.getSlBlock(ticker,'accessory_price_check',ticker)
+          //       // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
+          //       await this.webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
+          //       await this.webhooksService.addReaction_SLack(postToCSLRE.postToCSLRE.channel, postToCSLRE.postToCSLRE.ts, 'cold_face');
+          //       break;
+          //     }  
+          //     break;
+          //   }
+          // }
+          
+          // this.logger.log(`${ticker}: ${bullishCount}/${timeframes.length} bullish`);
         } catch (error) {
           // Send error notification and log the error
           await this.webhooksService.sendDiscord(
