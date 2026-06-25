@@ -1,12 +1,13 @@
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Transform } from 'class-transformer';
 
 export class CompanyProfileDto {
   @Expose({ name: 'ticker' })
   symbol: string;
   @Expose()
   logo: string
-  @Expose({name:'marketCapitalization'})
-  marketCap: number
+  @Expose({ name: 'marketCapitalization' })
+  @Transform(({ value }) => value * 1000000)
+  marketCap: number;
   @Expose()
   name: string
   @Exclude()

@@ -60,6 +60,7 @@ export enum TimeRange {
   export enum StockMaketENUM {
     LOSERS = 'losers',
     GAINERS = 'gainers',
+    ACTIVES = 'most-actives'
   }
   
   export class FmpQueryDTO extends BaseRequire {

@@ -713,6 +713,7 @@ export class LocalPLWR {
         })
       }
       const newData = await this.stockHelperService.returnNewData(dataOut);
+      this.stockHelperService.apitwelveCount++
       return newData.slice(-400); //
     }
     // return null;
@@ -830,7 +831,7 @@ export class LocalPLWR {
       });
     
       // Axios automatically parses JSON, so just return response.data
-      return response.data;
+      return response.data || {};
     
     } catch (error) {
       // Match fetch's "return 'skipped'" behavior

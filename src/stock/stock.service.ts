@@ -205,9 +205,15 @@ export class StockService {
     return plainToClass(DTO.BulkRequestsDto, response);
   }
 
-  async gainersOrLosers_FMP(query: string) {
-    //losers/gainers
-    const BASE_URL = `https://financialmodelingprep.com/api/v3/stock_market/${query}?apikey=`;
+  async newFMP_NewEndPoint(query: string) {
+    //losers/gainers/most-actives
+    let apiendpoint
+    if(query ==='losers'||query==='gainers'){
+       apiendpoint = `biggest-${query}`
+    }else {
+      apiendpoint = query
+    }
+    const BASE_URL = `https://financialmodelingprep.com/stable/${apiendpoint}?apikey=`
     const response = await this.tryCatchF(BASE_URL, 'FMP_STOCK_API_KEY');
     return plainToClass(DTO.GainersOrLosersDto, response);
   }
@@ -297,7 +303,7 @@ export class StockService {
     } else if (type === FMPRType.MCP && stockTicker) {
       return this.bulkrequestsMulCom_FMP(stockTicker);
     } else if (type === FMPRType.GAINORlOSE && stockMarket) {
-      return this.gainersOrLosers_FMP(stockMarket);
+      return this.newFMP_NewEndPoint(stockMarket);
     } else if (type === FMPRType.SEARCH && stockTicker) {
       return this.tickerList_FMP(stockTicker);
     }
@@ -339,7 +345,29 @@ export class StockService {
   async companyProfile_FINNHUB(query: string) {
     const BASE_URL = `https://finnhub.io/api/v1/stock/profile2?symbol=${query}&token=`;
     const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
+    if (Object.keys(response).length === 0) {
+      // object is empty
+      const data = await this.getMarketCap(query)
+      const { ticker: symbol, ...rest } = data;
+      const result = {
+        symbol,
+        ...rest,
+      };
+      return result
+    } else {
     return plainToClass(DTO.CompanyProfileDto, response);
+    }
+  }
+
+  async getMarketCap(ticker: string) {
+    const BASE_URL = `https://api.api-ninjas.com/v1/marketcap?ticker=${ticker}`;
+    try {
+      const response = await axios.get(BASE_URL);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching market cap:', error.message);
+      throw error;
+    }
   }
 
   async insiderTransactions_FINNHUB(query: string) {
