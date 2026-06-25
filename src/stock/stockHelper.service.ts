@@ -27,6 +27,7 @@ export class StockHelperService {
   Just2day: string[] = [];
   watchlistSl_tss: SlackMessage[] = [];
   bullbearUqiue = 'b6r_'
+  apitwelveCount = 0
 
   slackTokenKey = 'SLACK_USER_TOKEN';
   setSlackToken(tokenKey: string) {
@@ -1093,7 +1094,7 @@ SELL ALL
     }else{
       text = `*SELL🔴🔴BL🔴🔴${macdGreenOrRed}*`
     }
-    return `*${ticker}* *${timeframe}* =${text}|(${lastData.divergence})==${lastData.date}`
+    return `*${ticker}* *${timeframe}* =${text}|(${lastData.divergence})==${lastData.date}=${lastData.close}`
   } 
 
   async CHECKBULL_BEAR_processTickers(
