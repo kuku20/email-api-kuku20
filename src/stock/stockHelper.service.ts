@@ -1135,7 +1135,7 @@ SELL ALL
     const macdCrossBL = lastData.divergence < 0 && secondLastData.divergence > 0
     let text = ''
     const macdGreenOrRed = lastData.divergence > 0 ?'BUYY🟢🟢':'SELL🔴🔴'
-    const isGreen = lastData.close > lastData.open ?'bar_green':'';
+    const isGreenOrRed = lastData.close > lastData.open ?'bar_🟢_green':lastData?.close < lastData?.open ?'bar_🔴_red':'';
     if(macdCrossAB){
       text = aboveOrBelowma50?'*macdCr_N🟢AB🟢🟢BUYY🟢🟢🟢BUY_CALL_NOW_🟢*':'*macdCr_N🔴BL50_BUYY🟢🟢🟢🔴🔴*'
     }else if(macdCrossBL){
@@ -1153,8 +1153,8 @@ SELL ALL
         fifthLastData.volume +
         sixthLastData.volume
       ) / 5;
-    const volumeUP = lastData.volume > avgVolume *1.5 ? "|BIGVol🟡🟡":''
-    return `*${ticker}* *${timeframe}* =${text}|(${lastData.divergence})|${isGreen}${volumeUP}==${lastData.date}=${lastData.close}`
+    const volumeUP = lastData.volume > avgVolume *1.5 ? "|BIG_🟡🟡_VOL":''
+    return `*${ticker}* *${timeframe}* =${text}|(${lastData.divergence})|${isGreenOrRed}${volumeUP}==${lastData.date}=${lastData.close}`
   } 
 
   async CHECKBULL_BEAR_processTickers(
