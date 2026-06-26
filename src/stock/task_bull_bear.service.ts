@@ -60,10 +60,11 @@ export class TasksBullBearService {
     //  await this.dailyCleanup()
     //  console.log('done')
     // await this.webhooksService.deleteSLChannel([this.stockHelperService.BTN_SL.WATCH])
+
     // const forRundaily2 = await this.LocalPLWR.FireBaseApi('get',`stock-related/forRundaily-po5b/4hour.json`,'')
     // const allkeys2 = Object.keys(forRundaily2)
     // console.log(allkeys2.length)
-    // await this.CHECKBULL_BEAR_OTHER(3,allkeys2);
+    // await this.CHECKBULL_BEAR_OTHER(0,allkeys2);
 
     // const uniqueCombine =  Array.from(new Set([...allkeys, ...DataSymbols.watchlist]))
     // console.log(uniqueCombine.length)
@@ -74,7 +75,7 @@ export class TasksBullBearService {
     // await this.CHECKBULL_BEAR_OTHER(0);
     // await this.CHECKBULL_BEAR('15min',0);
     // await this.CHECKBULL_BEAR('30min',0);
-    // await this.CHECKBULL_5_15_30_1h(['UNH'],0)
+    // await this.CHECKBULL_5_15_30_1h(0)
   }
 
   async  USTIMERUN(
@@ -336,7 +337,7 @@ export class TasksBullBearService {
     await this.CHECKBULL_BEAR('5min',1.5);
   }
 
-  // @Cron('*/5 9-16 * * 1-5', { timeZone: 'America/New_York' }) // washlist
+   @Cron('*/5 9-16 * * 1-5', { timeZone: 'America/New_York' }) // washlist
   async CHECKBULL_BEAR_OTHER_5MIN() {
     await this.CHECKBULL_BEAR_OTHER(1.5);
   }
@@ -502,7 +503,7 @@ export class TasksBullBearService {
                   postToCSLRE
                 );
               }
-              this.webhooksService.sendSlackNotification('consider buy put wait the next 5min', channel)
+              this.webhooksService.sendSlackNotification('CONSIDER BUY PUT; WAIT THE NEXT 5 MIN.', channel)
             }
           } else if(text.includes('BUY🟢🟢AB🟢🟢') || text.includes('BL50_BUYY🟢🟢🟢🔴🔴')){
             const text2NDLAST = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(ticker,timeframe,data.slice(0, -1))
@@ -526,7 +527,7 @@ export class TasksBullBearService {
                   postToCSLRE
                 );
               }
-              this.webhooksService.sendSlackNotification('consider buy call wait the next 5min', channel)
+              this.webhooksService.sendSlackNotification('CONSIDER BUY CALL; WAIT THE NEXT 5 MIN.', channel)
             }
           }
           this.logger.log(`${ticker} processed successfully.`);
@@ -579,7 +580,21 @@ export class TasksBullBearService {
               data_5min
           );
           FullText += `${text_5min}\n`;
-          if(text_5min.includes(checktext)){
+          if(text_5min.includes('BIG_🟡🟡_VOL')
+              && text_5min.includes('bar_🟢_green') 
+              && text_5min.includes('AB🟢🟢BUYY🟢🟢')){
+            const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
+              '5min',
+              [ticker],
+              data_5min[data_5min.length-1],
+              this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_50,
+              `\n${FullText} \n`
+            );
+            const blockre = this.webhooksService.getSlBlock(ticker,'accessory_price_check',ticker)
+              // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
+            await this.webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
+          }
+          else if(text_5min.includes(checktext)){
             // send can buy: check macd call the 
             const data_15min = await this.LocalPLWR.TwReveseNOAPI(ticker, '15min');
             const text_15min = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
@@ -607,10 +622,9 @@ export class TasksBullBearService {
                   data_1hour
                 );
                 FullText += `${text_1hour}\n`;
-                if(text_1hour.includes(checktext)){
+                if(text_30min.includes('BUYY🟢🟢')|| text_30min.includes('AB🟢🟢')){
                   // sent with good to buy check macd 0.1<0.6
-                }
-                // send to watchlist
+                                  // send to watchlist
                 const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
                   '5min',
                   [ticker],
@@ -623,10 +637,14 @@ export class TasksBullBearService {
                 await this.webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
                 if(text_15min.includes(checktext)){
                   await this.webhooksService.addReaction_SLack(postToCSLRE.postToCSLRE.channel, postToCSLRE.postToCSLRE.ts, 'heart');
+                  if(text_1hour.includes(checktext)){
+                    await this.webhooksService.addReaction_SLack(postToCSLRE.postToCSLRE.channel, postToCSLRE.postToCSLRE.ts, 'cold_face');
+                   }
                 } else if(text_30min.includes('macdCr_N')|| text_15min.includes('macdCr_N')){
                   await this.webhooksService.addReaction_SLack(postToCSLRE.postToCSLRE.channel, postToCSLRE.postToCSLRE.ts, 'b');
                 }
                 return
+                }
               } 
               else {
                 console.log('stop at 30')

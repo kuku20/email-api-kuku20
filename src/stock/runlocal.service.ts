@@ -777,8 +777,9 @@ export class LocalPLWR {
     const data = await this.FireBaseApi('get','stock-related/post-wash-sell.json','')
     const getwashsell30 = dbrs.getwashsell30(data);
     this.washSell30 = getwashsell30;
-    // console.table(this.washSell30)
+    // console.log(data)
     console.log(`✅ Loaded ${this.washSell30.length} wash-sell symbols`);
+    // console.table(this.washSell30)
     return getwashsell30
   }
 
