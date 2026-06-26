@@ -1153,7 +1153,8 @@ SELL ALL
         fifthLastData.volume +
         sixthLastData.volume
       ) / 5;
-    const volumeUP = lastData.volume > avgVolume *1.5 ? "|BIG_🟡🟡_VOL":''
+    const compareV = lastData.volume/secondLastData.volume
+    const volumeUP = lastData.volume > avgVolume *1.5 ? `|BIG_🟡🟡_VOL *${compareV?.toFixed(2)}*`:''
     return `*${ticker}* *${timeframe}* =${text}|(${lastData.divergence})|${isGreenOrRed}${volumeUP}==${lastData.date}=${lastData.close}`
   } 
 
