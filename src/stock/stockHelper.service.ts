@@ -150,6 +150,41 @@ export class StockHelperService {
     return dataIn;
   }
 
+  private calculateAngleBetweenMACDSignal(
+    prevMACD: number,
+    currMACD: number,
+    prevSignal: number,
+    currSignal: number,
+  ): number | null {
+    if (
+      prevMACD == null ||
+      currMACD == null ||
+      prevSignal == null ||
+      currSignal == null
+    ) {
+      return null;
+    }
+  
+    const m1 = currMACD - prevMACD;
+    const m2 = currSignal - prevSignal;
+  
+    const denominator = 1 + m1 * m2;
+  
+    // Prevent division by zero
+    if (Math.abs(denominator) < Number.EPSILON) {
+      return 90;
+    }
+  
+    return Number(
+      (
+        // Math.abs(Math.atan((m2 - m1) / denominator)) *
+        Math.atan((m2 - m1) / denominator) *
+        180 /
+        Math.PI
+      ).toFixed(2),
+    );
+  }
+
   /**
    * Simple Moving Average
    */
@@ -300,6 +335,15 @@ export class StockHelperService {
       SignalLine: signalLine[i],
       divergence: histogram[i],
       MACDDivergence: divergence[i],
+      // angleMACDsignal:
+      //   i > 0
+      //     ? this.calculateAngleBetweenMACDSignal(
+      //         macdLine[i - 1],
+      //         macdLine[i],
+      //         signalLine[i - 1],
+      //         signalLine[i],
+      //       )
+      //     : null,
     }));
   }
 
@@ -1078,13 +1122,20 @@ SELL ALL
     timeframe: string,
     fullData:StockData[]
   ) {
-    const lastData = fullData[fullData.length - 1];
-    const secondLastData = fullData[fullData.length - 2];
+    const [
+      lastData,
+      secondLastData,
+      thirdLastData,
+      fourthLastData,
+      fifthLastData,
+      sixthLastData,
+    ] = fullData.slice(-6).reverse();
     const aboveOrBelowma50 = lastData.low > lastData.MA50
     const macdCrossAB = lastData.divergence > 0 && secondLastData.divergence < 0
     const macdCrossBL = lastData.divergence < 0 && secondLastData.divergence > 0
     let text = ''
     const macdGreenOrRed = lastData.divergence > 0 ?'BUYY🟢🟢':'SELL🔴🔴'
+    const isGreen = lastData.close > lastData.open ?'bar_green':'';
     if(macdCrossAB){
       text = aboveOrBelowma50?'*macdCr_N🟢AB🟢🟢BUYY🟢🟢🟢BUY_CALL_NOW_🟢*':'*macdCr_N🔴BL50_BUYY🟢🟢🟢🔴🔴*'
     }else if(macdCrossBL){
@@ -1094,7 +1145,16 @@ SELL ALL
     }else{
       text = `*SELL🔴🔴BL🔴🔴${macdGreenOrRed}*`
     }
-    return `*${ticker}* *${timeframe}* =${text}|(${lastData.divergence})==${lastData.date}=${lastData.close}`
+    // by volume
+    const avgVolume =  (
+        secondLastData.volume +
+        thirdLastData.volume +
+        fourthLastData.volume +
+        fifthLastData.volume +
+        sixthLastData.volume
+      ) / 5;
+    const volumeUP = lastData.volume > avgVolume *1.5 ? "|BIGVol🟡🟡":''
+    return `*${ticker}* *${timeframe}* =${text}|(${lastData.divergence})|${isGreen}${volumeUP}==${lastData.date}=${lastData.close}`
   } 
 
   async CHECKBULL_BEAR_processTickers(
