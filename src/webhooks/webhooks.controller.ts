@@ -42,7 +42,7 @@ export class WebhooksController {
   ) {
     try {
       return await this.webhooksService.sendDiscordNotificationImage(
-        botname,
+        botname,message,
         file,
       );
     } catch (err) {

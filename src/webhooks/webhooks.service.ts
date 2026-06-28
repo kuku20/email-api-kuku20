@@ -534,6 +534,7 @@ export class WebhooksService {
 
   async sendDiscordNotificationImage(
     botname: string = 'Bot Alert',
+    message,
     file?: any,
   ) {
     const current = new Date().toISOString().replace(/T.*$/, '');
@@ -558,6 +559,7 @@ export class WebhooksService {
     // Prepare the options for the message
     let options: any = {
       username: botdt,
+      content: message,
       avatarURL: selectedAvatar,
     };
 

@@ -29,7 +29,7 @@ export class StockHelperService {
   bullbearUqiue = 'b6r_'
   apitwelveCount = 0
 
-  slackTokenKey = 'SLACK_USER_TOKEN';
+  slackTokenKey = 'SLACK_BOT_TOKEN';
   setSlackToken(tokenKey: string) {
     this.slackTokenKey = tokenKey;
   }
@@ -138,8 +138,12 @@ export class StockHelperService {
     dataIn = await this.calculateMovingAverage(dataIn, 10, 'MA10');
     dataIn = await this.calculateMovingAverage(dataIn, 15, 'MA15');
     dataIn = await this.calculateMovingAverage(dataIn, 20, 'MA20');
+    dataIn = await this.calculateAngleMAwithXaxis(dataIn, 1, 'MA20');
     dataIn = await this.calculateMovingAverage(dataIn, 50, 'MA50');
+    dataIn = await this.calculateAngleMAwithXaxis(dataIn, 1, 'MA50');
     dataIn = await this.calculateMovingAverage(dataIn, 100, 'MA100');
+    dataIn = await this.calculateMovingAverage(dataIn, 120, 'MA120');
+    dataIn = await this.calculateAngleMAwithXaxis(dataIn, 1, 'MA120');
     dataIn = await this.calculateMovingAverage(dataIn, 200, 'MA200');
     dataIn = await this.calculateMovingAverage(dataIn, 300, 'MA300');
     dataIn = await this.calculateRSI(dataIn);
@@ -203,6 +207,43 @@ export class StockHelperService {
         data[i][maLabel] = parseFloat(average?.toFixed(9)); // assign to current index
       } else {
         data[i][maLabel] = null; // optional clarity
+      }
+    }
+
+    return data;
+  }
+
+  /**
+   * Calculate Moving Average angle with the x-axis
+   */
+  async calculateAngleMAwithXaxis(
+    data: any[],
+    windowSize: number = 1,
+    maLabel: string,
+  ) {
+    if (!data?.length) return [];
+
+    const angleLabel = `${maLabel}_Angle`;
+
+    for (let i = 0; i < data.length; i++) {
+      if (i >= windowSize) {
+        const current = data[i][maLabel];
+        const previous = data[i - windowSize][maLabel];
+
+        if (current == null || previous == null) {
+          data[i][angleLabel] = null;
+          continue;
+        }
+
+        const deltaY = current - previous;
+        const deltaX = windowSize;
+
+        const angle =
+          Math.atan(deltaY / deltaX) * (180 / Math.PI);
+
+        data[i][angleLabel] = Number(angle.toFixed(4));
+      } else {
+        data[i][angleLabel] = null;
       }
     }
 
@@ -1135,6 +1176,32 @@ SELL ALL
     const macdCrossBL = lastData.divergence < 0 && secondLastData.divergence > 0
     let text = ''
     const macdGreenOrRed = lastData.divergence > 0 ?'BUYY🟢🟢':'SELL🔴🔴'
+    const getMACross = (
+      lastData: StockData,
+      secondLastData: StockData,
+      period: keyof StockData
+    ) => {
+      if (
+        lastData.close > lastData[period] &&
+        secondLastData.close < secondLastData[period]
+      ) {
+        return `CrAb${period}🟢🟢`;
+      }
+    
+      if (
+        lastData.close < lastData[period] &&
+        secondLastData.close > secondLastData[period]
+      ) {
+        return `CrBl${period}🔴🔴`;
+      }
+    
+      return '';
+    };
+    
+    const crMA50 = getMACross(lastData, secondLastData, 'MA50');
+    const crMA120 = getMACross(lastData, secondLastData, 'MA120');
+    const crMA200 = getMACross(lastData, secondLastData, 'MA200');
+    const crSignal = `${crMA50}${crMA120}${crMA200}${lastData.MA50_Angle}`
     const isGreenOrRed = lastData.close > lastData.open ?'bar_🟢_green':lastData?.close < lastData?.open ?'bar_🔴_red':'';
     if(macdCrossAB){
       text = aboveOrBelowma50?'*macdCr_N🟢AB🟢🟢BUYY🟢🟢🟢BUY_CALL_NOW_🟢*':'*macdCr_N🔴BL50_BUYY🟢🟢🟢🔴🔴*'
@@ -1155,7 +1222,7 @@ SELL ALL
       ) / 5;
     const compareV = lastData.volume/secondLastData.volume
     const volumeUP = lastData.volume > avgVolume *1.5 ? `|BIG_🟡🟡_VOL *${compareV?.toFixed(2)}*`:''
-    return `*${ticker}* *${timeframe}* =${text}|(${lastData.divergence})|${isGreenOrRed}${volumeUP}==${lastData.date}=${lastData.close}`
+    return `*${ticker}* *${timeframe}* =${text}|(${lastData.divergence})|${isGreenOrRed}${volumeUP}${crSignal}==${lastData.date}=${lastData.close}`
   } 
 
   async CHECKBULL_BEAR_processTickers(

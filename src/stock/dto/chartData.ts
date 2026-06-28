@@ -6,11 +6,13 @@ export interface StockData {
   close: number;
   volume: number;
   MA5: number;
+  MA120: number;
   MA10: number;
   MA20: number;
   MA50: number;
   MA100: number;
   MA200: number;
+  MA300?: number;
   RSI: number;
   StochRSI_K: number;
   StochRSI_D: number;
@@ -18,6 +20,8 @@ export interface StockData {
   SignalLine: number;
   divergence: number;
   MACDDivergence: any;
+  MA50_Angle?:any;
+  MA20_Angle?:any
 }
 export const stock_symbols2 = [
   'SFM',
