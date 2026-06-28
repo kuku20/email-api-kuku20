@@ -127,7 +127,7 @@ export class TaskCryptoService {
           if (BuyOnly_StochRSICrossAB200.PriceCrMA200) {
             await this.webhooksService.sendDiscord(
               `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA200 -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-              `${ticker}-${timeframe}-${lastData?.close}`, 
+              `${ticker}-ON-${timeframe}-${lastData?.close}`, 
               lastData,
               HT_Channel,
               data,

@@ -166,7 +166,7 @@ export class TasksBullBearService {
             );
             await this.webhooksService.sendDiscord(
               `${textDetail}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-              `${ticker}-${timeframe}-${textDetail}`,
+              `${ticker}-ON-${timeframe}-${textDetail}`,
               lastData,
               'WATCHLIST', 
               data,
@@ -184,7 +184,7 @@ export class TasksBullBearService {
           //   this.aboveList.push(ticker)
           //   await this.webhooksService.sendDiscord(
           //     `${textDetail}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-          //     `${ticker}-${timeframe}-${textDetail}`,
+          //     `${ticker}-ON-${timeframe}-${textDetail}`,
           //     lastData,
           //     StochRSICross?B_Channel:HT_Channel, 
           //     data,
@@ -200,7 +200,7 @@ export class TasksBullBearService {
             );
             await this.webhooksService.sendDiscord(
               `${'blMa200MACDPMA50cR'}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-              `${ticker}-${timeframe}-${'blMa200MACDPMA50cR'}`,
+              `${ticker}-ON-${timeframe}-${'blMa200MACDPMA50cR'}`,
               lastData,
               'US_15M_HT', 
               data,
@@ -216,7 +216,7 @@ export class TasksBullBearService {
           //   );
           //   await this.webhooksService.sendDiscord(
           //     `${'MA9crosMA20'}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-          //     `${ticker}-${timeframe}-${'MA9crosMA20'}`,
+          //     `${ticker}-ON-${timeframe}-${'MA9crosMA20'}`,
           //     lastData,
           //     'US_15M_HT', 
           //     data,
@@ -232,7 +232,7 @@ export class TasksBullBearService {
             );
             await this.webhooksService.sendDiscord(
               `${'macdCrossAB'}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-              `${ticker}-${timeframe}-${'macdCrossAB'}`,
+              `${ticker}-ON-${timeframe}-${'macdCrossAB'}`,
               lastData,
               'US_30M_HT', 
               data,
@@ -373,10 +373,11 @@ export class TasksBullBearService {
           let bullishCount = 0;
           let bullishFCount = 0;
           let aboveCount = 0;
-          const data_5min = await this.LocalPLWR.TwReveseNOAPI(ticker, '5min');
+          const timeframe = '5min'
+          const data_5min = await this.LocalPLWR.TwReveseNOAPI(ticker, timeframe);
           const text_5min = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
               ticker,
-              '5min',
+              timeframe,
               data_5min
           );
           FullText += `${text_5min}\n`;
@@ -389,7 +390,7 @@ export class TasksBullBearService {
             }
             await this.webhooksService.sendDiscord(
               FullText,
-              `${ticker}-${'5min'}-${'macdCrossAB'}`,
+              `${ticker}-ON-${timeframe}-${'macdCrossAB'}`,
               data_5min[data_5min.length-1],
               'US_EARLY_5MIN', 
               data_5min,
@@ -420,7 +421,7 @@ export class TasksBullBearService {
             await this.webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
             await this.webhooksService.sendDiscord(
               FullText,
-              `${ticker}-${'5min'}-${'macdCrossAB'}`,
+              `${ticker}-ON-${timeframe}-${'macdCrossAB'}`,
               data_5min[data_5min.length-1],
               'US_EARLY_15MIN', 
               data_5min,
@@ -459,7 +460,7 @@ export class TasksBullBearService {
                                   // send to watchlist
                   await this.webhooksService.sendDiscord(
                     FullText,
-                    `${ticker}-${'5min'}-${'macdCrossAB'}`,
+                    `${ticker}-ON-${timeframe}-${'macdCrossAB'}`,
                     data_5min[data_5min.length-1],
                     'US_5M_HT', 
                     data_5min,
@@ -499,7 +500,7 @@ export class TasksBullBearService {
               );
               await this.webhooksService.sendDiscord(
                 FullText,
-                `${ticker}-${'5min'}-${'macdCrossAB'}`,
+                `${ticker}-ON-${timeframe}-${'macdCrossAB'}`,
                 data_5min[data_5min.length-1],
                 'US_30M_HT', 
                 data_5min,

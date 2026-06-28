@@ -83,7 +83,7 @@ export class TaskQQQ_SPYService {
           this.webhooksService.sendSlackNotification(text, channel),
           // await this.webhooksService.sendDiscord(
           //   `${text.substring(0,10)}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-          //   `${ticker}-${timeframe}-${text.substring(0,10)}`,
+          //   `${ticker}-ON-${timeframe}-${text.substring(0,10)}`,
           //   lastData,
           //   ticker==='QQQ'?'TSLA':'SMCI', 
           //   null,

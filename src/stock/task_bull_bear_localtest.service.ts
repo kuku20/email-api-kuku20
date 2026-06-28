@@ -166,7 +166,7 @@ export class TasksBullBearLocalService {
             );
             await this.webhooksService.sendDiscord(
               `${goup}-${textDetail}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-              `${ticker}-${timeframe}-${textDetail}-${text}`,
+              `${ticker}-ON-${timeframe}-${textDetail}-${text}`,
               lastData,
               'WATCHLIST', 
               data,
@@ -186,7 +186,7 @@ export class TasksBullBearLocalService {
             }
             await this.webhooksService.sendDiscord(
               `${goup}-${textDetail}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-              `${ticker}-${timeframe}-${textDetail}-${text}`,
+              `${ticker}-ON-${timeframe}-${textDetail}-${text}`,
               lastData,
               StochRSICross?B_Channel:HT_Channel, 
               data,
@@ -201,7 +201,7 @@ export class TasksBullBearLocalService {
             );
             await this.webhooksService.sendDiscord(
               `${goup}-${'blMa200MACDPMA50cR'}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-              `${ticker}-${timeframe}-${'blMa200MACDPMA50cR'}-${text}`,
+              `${ticker}-ON-${timeframe}-${'blMa200MACDPMA50cR'}-${text}`,
               lastData,
               'US_15M_HT', 
               data,
@@ -213,7 +213,7 @@ export class TasksBullBearLocalService {
             }
             // await this.webhooksService.sendDiscord(
             //   `${goup}-condition -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-            //   `${ticker}-${timeframe}-condition-${text}`,
+            //   `${ticker}-ON-${timeframe}-condition-${text}`,
             //   lastData,
             //   HT_Channel, 
             //   data,

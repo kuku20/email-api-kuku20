@@ -80,9 +80,11 @@ export class WebhooksService {
     file?: any,
     extra?: any,
   ) {
+    // botname something like this: BOTCN ETHUSD-ON-5min
     const current = new Date().toISOString().replace(/T.*$/, '');
     const tickerON = botname.split(' ')[1].toUpperCase(); // ETHUSD-ON-5min
     const ticker = tickerON.split('-')[0].toUpperCase(); // ETHUSD
+    const timeframe = tickerON.split('-')[2].toLowerCase();
     const webhookCl = botname.split(' ')[0].toUpperCase();
     const WEBHOOKS = this.WEBHOOKS_ENV[webhookCl] || this.WEBHOOKS_ENV.Other;
     this.webhookClient = new WebhookClient({
@@ -108,10 +110,11 @@ export class WebhooksService {
     | **[sMk000-30m](https://stockmarkets000.web.app//price-log/${ticker}?daysRange=30)** \n
      | **[stock-chart-abc.web.app](https://stock-chart-abc.web.app/?stockTicker=${ticker})** 
      */
-    // const origin = `**[4200-on1m](https://stockmarkets000.web.app/price-log/${ticker})** | **[4200-5m](https://stockmarkets000.web.app/price-log/${ticker}?daysRange=5)** | **[4200-15m](https://stockmarkets000.web.app/price-log/${ticker}?daysRange=15)** \n **[3001-PO-day](https://new-site-for-stock-abc.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day)** | **[3001-FM-day](https://new-site-for-stock-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[3001-fm-1m](https://new-site-for-stock-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1min)** | **[3001-fm-5m](https://new-site-for-stock-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=5min)** | **[3001-fm-15m](https://new-site-for-stock-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=15min)** \n **[PB-view](https://stock-chart-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`;
-    // const origin = `**[4200-on1m](https://stockmarkets000.web.app/price-log/${ticker})** | **[4200-5m](https://stockmarkets000.web.app/price-log/${ticker}?daysRange=5)** | **[4200-15m](https://stockmarkets000.web.app/price-log/${ticker}?daysRange=15)** \n **[3001-PO-day](https://new-site-for-stock-abc.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day)** | \n **[PB-view](https://stock-chart-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`;
+    // const origin = `**[4200-on1m](https://stockmarkets000.web.app/price-log/${ticker})** | **[4200-5m](https://stockmarkets000.web.app/price-log/${ticker}?daysRange=5)** | **[4200-15m](https://stockmarkets000.web.app/price-log/${ticker}?daysRange=15)** \n **[3001-PO-day](https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day)** | **[3001-FM-day](https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[3001-fm-1m](https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1min)** | **[3001-fm-5m](https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=5min)** | **[3001-fm-15m](https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=15min)** \n **[PB-view](https://stock-chart-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`;
+    // const origin = `**[4200-on1m](https://stockmarkets000.web.app/price-log/${ticker})** | **[4200-5m](https://stockmarkets000.web.app/price-log/${ticker}?daysRange=5)** | **[4200-15m](https://stockmarkets000.web.app/price-log/${ticker}?daysRange=15)** \n **[3001-PO-day](https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day)** | \n **[PB-view](https://stock-chart-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`;
     // const origin = `**[4200-on1m](http://localhost:4200/price-log/${ticker})** | **[4200-5m](http://localhost:4200/price-log/${ticker}?daysRange=5)** | **[4200-15m](http://localhost:4200/price-log/${ticker}?daysRange=15)** \n **[3001-PO-day](http://localhost:3001/?stockTicker=${ticker}&endpoint=po&timeframe=1day)** | **[3001-FM-day](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[3001-fm-1m](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=1min)** | **[3001-fm-5m](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=5min)** | **[3001-fm-15m](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=15min)** \n **[PB-view](https://stock-chart-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`;
-    const origin = `**[4200-daily](http://localhost:4200/price-log/${ticker}?daysRange=500)** | **[prd-daily](https://stockmarkets000.web.app/price-log/${ticker}?daysRange=500)** \n **[3001-fm-day](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[prod-fm-day](https://new-site-for-stock-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)**  \n **[PB-view](https://stock-chart-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`;
+    const timeframeScore = timeframeScoreMap[timeframe] || 500;
+    const origin = `**[4200-daily](http://localhost:4200/price-log/${ticker}?daysRange=${timeframeScore})** | **[prd-daily](https://stockmarkets000.web.app/price-log/${ticker}?daysRange=${timeframeScore})** \n **[3001-fm-day](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=${timeframe})** | **[prod-fm-day](https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=${timeframe})**  \n **[PB-view](https://stock-chart-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=${timeframe})** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`;
 
     let gptres;
     if (extra) {
@@ -1201,7 +1204,7 @@ export class WebhooksService {
       );
       fs.appendFileSync(
         successPathfeature,
-        ` | https://new-site-for-stock-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day|\n`,
+        ` | https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day|\n`,
         'utf8',
       );
       const successPath_cvs = `${dir}/upsideAB80.cvs`;
@@ -1226,7 +1229,7 @@ export class WebhooksService {
     );
     fs.appendFileSync(
       successPathfeature,
-      ` | https://new-site-for-stock-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day|\n`,
+      ` | https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day|\n`,
       'utf8',
     );
     const successPath_cvs = `${dir}/Fails.cvs`;
@@ -1282,7 +1285,7 @@ export class WebhooksService {
           `${
             sp500
           }SBUY--aboveAll-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-          `${ticker}-${timeframe}-aboveAll-${lastdata?.close}`,
+          `${ticker}-ON-${timeframe}-aboveAll-${lastdata?.close}`,
           lastdata,
           'BUY_EARLY_DAY',
           data,
@@ -1325,7 +1328,7 @@ export class WebhooksService {
     //     `${
     //       sp500
     //     }SBUY--PriceCrMA50-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-    //     `${ticker}-${timeframe}-CrMA50-${lastdata?.close}`,
+    //     `${ticker}-ON-${timeframe}-CrMA50-${lastdata?.close}`,
     //     lastdata,
     //     DataSymbols.watchlist.includes(ticker)?'WATCHLIST': this.stockHelperService.ab50_3Candles_ALL.includes(ticker)?'US_EARLY_15MIN': HT_Channel,
     //     data,
@@ -1341,7 +1344,7 @@ export class WebhooksService {
     //     `${
     //       sp500
     //     }(SBUY--PriceCrMA100-MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-    //     `${ticker}-${timeframe}-CrMA100-${lastdata?.close}`,
+    //     `${ticker}-ON-${timeframe}-CrMA100-${lastdata?.close}`,
     //     lastdata,
     //     DataSymbols.watchlist.includes(ticker)?'WATCHLIST':this.stockHelperService.ab50_3Candles_ALL.includes(ticker)?'US_EARLY_15MIN':B_Channel,
     //     data,
@@ -1506,7 +1509,7 @@ export class WebhooksService {
     // if (PriceCrMA50) {
     //   await this.sendDiscord(
     //     `${sp500}SBUY-PriceCrMA50 -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-    //     `${ticker}-${timeframe}-CrMA50-${lastData?.close}`,
+    //     `${ticker}-ON-${timeframe}-CrMA50-${lastData?.close}`,
     //     lastData,
     //     timeframe === '1day' ? '200AB_LESS_05' : '200AB_LESS_1',
     //     data,
@@ -1539,7 +1542,7 @@ export class WebhooksService {
         if(timeframe === '1day'){
           await this.sendDiscord(
             `${sp500}SBUY-PriceCrMA50-3day -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-            `${ticker}-${timeframe}-CrMA50-${lastData?.close}`,
+            `${ticker}-ON-${timeframe}-CrMA50-${lastData?.close}`,
             lastData,
             'US_15M_HT',
             data,
@@ -1595,7 +1598,7 @@ export class WebhooksService {
         }
         await this.sendDiscord(
           `${sp500}SBUY-PriceCrMA50 -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-          `${ticker}-${timeframe}-CrMA50-${lastData?.close}`,
+          `${ticker}-ON-${timeframe}-CrMA50-${lastData?.close}`,
           lastData,
           timeframe === '1day' ? '200AB_LESS_05' : '200AB_LESS_1',
           data,
@@ -1734,7 +1737,7 @@ export class WebhooksService {
     if (MACDPositive && PriceCrMA50) {
       await this.sendDiscord(
         `SBUY-BuyOnly_MACDPositive-PriceCrMA50 -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-        `${ticker}-${timeframe}-CrMA50-${lastData?.close}`,
+        `${ticker}-ON-${timeframe}-CrMA50-${lastData?.close}`,
         lastData,
         timeframe === '1day' ? B_Channel : HT_Channel,
         data,
@@ -1750,7 +1753,7 @@ export class WebhooksService {
     // if (aboveMA50Count >= 2 && MACDPositive) {
     //   await this.sendDiscord(
     //     `SBUY-Continue-buy-keep-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-    //     `${ticker}-${timeframe}-${lastData?.close}`,
+    //     `${ticker}-ON-${timeframe}-${lastData?.close}`,
     //     lastData,
     //     timeframe === '1day' ? B_Channel : HT_Channel,
     //     data,
@@ -1760,7 +1763,7 @@ export class WebhooksService {
     if (MACDNegative && PriceCrMA50bl) {
       await this.sendDiscord(
         `SSELL-PriceCrMA50bl -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-        `${ticker}-${timeframe}-${lastData?.close}`,
+        `${ticker}-ON-${timeframe}-${lastData?.close}`,
         lastData,
         timeframe === '1day' ? HT_Channel : B_Channel,
         data,
@@ -1845,7 +1848,7 @@ export class WebhooksService {
     const HoldingList = this.stockHelperService.HoldingList.includes(symbols[0])?'💼':''
     const last = in3candles + hourIn4;
 
-    const timeframeScore = timeframeScoreMap[timeframe];
+    const timeframeScore = timeframeScoreMap[timeframe] || 500;
     const StopNTarget = await this.StopNTarget(lastData)
     const addMsg = msg? `*msg:* ${msg} | ` :""
     const buysellTarget = slChannel !==this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING? `\n\t\t${addMsg} *TARGET:* ${StopNTarget?.target}  | \t |  *STOP LOSS:* ${StopNTarget?.stop}`:'BETTER SELL'

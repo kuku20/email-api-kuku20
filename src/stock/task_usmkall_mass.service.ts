@@ -118,7 +118,7 @@ export class TasksUS_ALL_MK_MASS_Service {
             await this.webhooksService.FireBaseApi("put", `stockRSILAUP/macdCross_AB/OscConditionL/${timeframe}/${ticker}.json`, {lastData: lastData})
             await this.webhooksService.sendDiscord(
               `SBUY-OscConditionL -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-              `${ticker}-${timeframe}-OscConditionL-${lastData?.close}`,
+              `${ticker}-ON-${timeframe}-OscConditionL-${lastData?.close}`,
               lastData,
               'MA_BL_20_50', 
               data,
@@ -128,7 +128,7 @@ export class TasksUS_ALL_MK_MASS_Service {
               await this.webhooksService.FireBaseApi("put", `stockRSILAUP/macdCross_AB/OscCrossAb/${timeframe}/${ticker}.json`, {lastData: lastData})
               await this.webhooksService.sendDiscord(
                 `SBUY-OscCrossAb -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-                `${ticker}-${timeframe}-OscCrossAb-${lastData?.close}`,
+                `${ticker}-ON-${timeframe}-OscCrossAb-${lastData?.close}`,
                 lastData,
                 'MA_BL_5_200', 
                 data,
@@ -149,7 +149,7 @@ export class TasksUS_ALL_MK_MASS_Service {
               await this.webhooksService.FireBaseApi("put", `stockRSILAUP/macdCross_AB/${'upYet'}/EarlyUpyet/${timeframe}/${ticker}.json`, {lastData: lastData})
               {await this.webhooksService.sendDiscord(
                 `SBUY-EarlyUpyet -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-                `${ticker}-${timeframe}-EarlyUpyet-${lastData?.close}`,
+                `${ticker}-ON-${timeframe}-EarlyUpyet-${lastData?.close}`,
                 lastData,
                 'MA_AB_100_200', // already in macdcrab-1day MA_AB_5_20
                 data,
@@ -159,7 +159,7 @@ export class TasksUS_ALL_MK_MASS_Service {
             await this.webhooksService.FireBaseApi("put", `stockRSILAUP/macdCross_AB/${'upYet'}/ContinueUp/${timeframe}/${ticker}.json`, {lastData: lastData})
               await this.webhooksService.sendDiscord(
               `SBUY-ContinueUp -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-              `${ticker}-${timeframe}-ContinueUp-${lastData?.close}`,
+              `${ticker}-ON-${timeframe}-ContinueUp-${lastData?.close}`,
               lastData,
               'MA_BL_5_20',
               data,
@@ -501,7 +501,7 @@ export class TasksUS_ALL_MK_MASS_Service {
             await this.webhooksService.FireBaseApi("put", `stockRSILAUP/macdCross_AB/aboveOrBelowma50_12/${timeframe}/${ticker}.json`, {lastData: lastData})
             await this.webhooksService.sendDiscord(
               `SBUY-allCondition -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-              `${ticker}-${timeframe}-allCondition-${lastData?.close}`,
+              `${ticker}-ON-${timeframe}-allCondition-${lastData?.close}`,
               lastData,
               'MA_BL_50_100', 
               data,

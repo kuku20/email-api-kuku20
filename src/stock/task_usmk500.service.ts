@@ -195,7 +195,7 @@ export class TasksUSMKService_SP500 {
           if(allCondition){
             await this.webhooksService.sendDiscord(
               `SBUY-CrossAB -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-              `${ticker}-${timeframe}-CrossAB-${lastData?.close}`,
+              `${ticker}-ON-${timeframe}-CrossAB-${lastData?.close}`,
               lastData,
               'MA_BL_50_100', 
               data,
