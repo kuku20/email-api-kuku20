@@ -73,7 +73,7 @@ export class TasksBullBearService {
     // await this.delete(0)
     // await this.bullBear('15',0);
     // await this.bullBear('30',0);
-    // await this.CHECKBULL_BEAR_OTHER(0,['FUTU']);
+    // await this.CHECKBULL_BEAR_OTHER(0,);
     // await this.CHECKBULL_5_15_30_1h(0)
   }
 
@@ -319,6 +319,11 @@ export class TasksBullBearService {
   @Cron('*/5 9-16 * * 1-5', { timeZone: 'America/New_York' }) // washlist
   async CHECKBULL_BEAR_OTHER_5MIN() {
     await this.CHECKBULL_BEAR_OTHER(1.5);
+    const webhooks = [this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,
+      this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_100,
+      this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_50,
+    ]
+    await this.stockHelperService.sendBatchNotification('START','4hour',webhooks,this.webhooksService,300,);
   }
 
   // @Cron('*/15 9-16 * * 1-5', { timeZone: 'America/New_York' }) // other list at 15min
@@ -326,9 +331,11 @@ export class TasksBullBearService {
     const forRundaily2 = await this.LocalPLWR.FireBaseApi('get',`stock-related/forRundaily-po5b/4hour.json`,'')
     const allkeys2 = Object.keys(forRundaily2)
     await this.CHECKBULL_BEAR_OTHER(3,allkeys2);
-    await this.webhooksService.sendSlackNotification(
-      '=================================================', 
-      this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_BL,)
+    const webhooks = [this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_BL,
+        this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_200,
+        this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_BL_OT,
+      ]
+    await this.stockHelperService.sendBatchNotification('START','4hour',webhooks,this.webhooksService,300,);
   }
 
   async CHECKBULL_BEAR_OTHER(delay=2,symbols= DataSymbols.watchlist){
@@ -338,9 +345,6 @@ export class TasksBullBearService {
     }
     try {
       await this.CHECKBULL_5_15_30_1h(symbols,delay)
-      await this.webhooksService.sendSlackNotification(
-        '=================================================', 
-        this.stockHelperService.INTRA_30M_SL.US_30M_WATCH)
     } catch (error) {
       console.error('timeframe failed:', error);
       throw error;
@@ -384,15 +388,17 @@ export class TasksBullBearService {
           if(text_5min.includes('CrAbMA')){
             let nextText = ''
             if(text_5min.includes('CrAbMA50')){
-              nextText = 'PREPARE TO BUY'
-            } else if(text_5min.includes('CrAbMA50')){
-              nextText = 'BUY '
+              nextText = 'PREPARE TO BUY:'
+            } else if(text_5min.includes('CrAbMA120')){
+              nextText = 'BUY MORE:'
+            } else if(text_5min.includes('CrAbMA200')){
+              nextText = 'BUY MORE MORE: '
             }
             await this.webhooksService.sendDiscord(
-              FullText,
+              nextText+FullText,
               `${ticker}-ON-${timeframe}-${'macdCrossAB'}`,
               data_5min[data_5min.length-1],
-              'US_EARLY_5MIN', 
+              DataSymbols.watchlist.includes(ticker)?'US_EARLY_5MIN': 'US_5M_HT',
               data_5min,
             );
             
@@ -400,20 +406,18 @@ export class TasksBullBearService {
               '5min',
               [ticker],
               data_5min[data_5min.length-1],
-              this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_200,
+              DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_100:this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_200,
               `\n${FullText} \n`
             );
             const blockre = this.webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
             await this.webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
           }
-          if(text_5min.includes('BIG_🟡🟡_VOL')
-              && text_5min.includes('bar_🟢_green') 
-              && text_5min.includes('AB🟢🟢BUYY🟢🟢')){
+          if(text_5min.includes('BIG_🟡🟡_VOL') && text_5min.includes('bar_🟢_green') && text_5min.includes('AB🟢🟢BUYY🟢🟢')){
             const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
               '5min',
               [ticker],
               data_5min[data_5min.length-1],
-              this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_50,
+              DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_50:this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_BL,
               `\n${FullText} \n`
             );
             const blockre = this.webhooksService.getSlBlock(ticker,'accessory_price_check',ticker)
@@ -423,7 +427,7 @@ export class TasksBullBearService {
               FullText,
               `${ticker}-ON-${timeframe}-${'macdCrossAB'}`,
               data_5min[data_5min.length-1],
-              'US_EARLY_15MIN', 
+              DataSymbols.watchlist.includes(ticker)?'US_EARLY_15MIN': 'US_15M_HT',
               data_5min,
             );
           }
@@ -462,7 +466,7 @@ export class TasksBullBearService {
                     FullText,
                     `${ticker}-ON-${timeframe}-${'macdCrossAB'}`,
                     data_5min[data_5min.length-1],
-                    'US_5M_HT', 
+                    'US_30M_BUY', 
                     data_5min,
                   );
                   const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
@@ -495,7 +499,7 @@ export class TasksBullBearService {
                 '5min',
                 [ticker],
                 data_5min[data_5min.length-1],
-                this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_BL,
+                this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_BL_OT,
                 `\n${FullText} \n`
               );
               await this.webhooksService.sendDiscord(
