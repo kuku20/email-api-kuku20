@@ -348,9 +348,10 @@ export class StockService {
     if (Object.keys(response).length === 0) {
       // object is empty
       const data = await this.getMarketCap(query)
-      const { ticker: symbol, ...rest } = data;
+      const { ticker: symbol, market_cap:marketCap, ...rest } = data;
       const result = {
         symbol,
+        marketCap,
         ...rest,
       };
       return result
@@ -366,7 +367,6 @@ export class StockService {
       return response.data;
     } catch (error) {
       console.error('Error fetching market cap:', error.message);
-      throw error;
     }
   }
 
@@ -782,6 +782,7 @@ async putToFBDynamic(endpoint:string, data: any,) {
   async FireBaseApi(method:'post'|'patch'|'put'|'delete'|'get',endpoint:string, data: any,) {
     const firebaseRoot = this.configService.get<any>('FIREBASE_DATA')
     let BASE_URL = `${firebaseRoot}/${endpoint}`;
+    // console.log(BASE_URL)
     let config = {
       method: method,
       maxBodyLength: Infinity,

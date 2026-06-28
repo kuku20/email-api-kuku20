@@ -1010,7 +1010,6 @@ export class LocalPLWR {
       return response.data;
     } catch (error) {
       console.error('Error fetching market cap:', error.message);
-      throw error;
     }
   }
 
@@ -1054,5 +1053,57 @@ export class LocalPLWR {
     console.log(`✅ Loaded stock-related/holding: has ${this.stockHelperService.HoldingList.length} symbols`);
     const combine = [...stocklist,...this.stockHelperService.HoldingList]
     return Array.from(new Set(combine));
+  }
+
+  async newFMP_NewEndPoint(query: string,date?) {
+    //losers/gainers/most-actives/earnings-calendar
+    let apiendpoint
+    let dateex = ''
+    if(query ==='losers'||query==='gainers'){
+        apiendpoint = `biggest-${query}`
+    }else {
+      apiendpoint = query
+    }
+    if(date){
+      const daytestBF = date||0;
+      const dayend = this.stockHelperService.getDateNDaysAgo(-30 + daytestBF);
+      let dayStart = this.stockHelperService.getDateNDaysAgo(1 + daytestBF);;
+      dateex = `from=${dayStart}&to=${dayend}&`
+    }
+    const BASE_URL = `https://financialmodelingprep.com/stable/${apiendpoint}?${dateex}apikey=`
+    const response = await this.tryCatchF(BASE_URL, 'FMP_STOCK_API_KEY');
+    return response
+  }
+
+  async earningsCal_FINNHUB(start?: string, end?: string) {
+    const daytestBF = 0;
+    const dayend = this.stockHelperService.getDateNDaysAgo(-15 + daytestBF);
+    let dayStart = this.stockHelperService.getDateNDaysAgo(2 + daytestBF);;
+    const BASE_URL = `https://finnhub.io/api/v1/calendar/earnings?from=${dayStart}&to=${dayend}&token=`;
+    const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
+    return response.earningsCalendar;
+  }
+
+  async getMarketCap_FINNHUB(query: string) {
+    const BASE_URL = `https://finnhub.io/api/v1/stock/profile2?symbol=${query}&token=`;
+    const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
+    if (!response || Object.keys(response).length === 0) {
+      // object is empty
+      const data = await this.getMarketCap(query)
+      if (!data) {
+        console.error('No data returned');
+        return null; // or throw an error
+      }
+      
+      const { ticker: symbol, market_cap: marketCap, ...rest } = data;
+      
+      return {
+        symbol,
+        marketCap,
+        ...rest,
+      };
+    } else {
+    return plainToClass(DTO.CompanyProfileDto, response);
+    }
   }
 }

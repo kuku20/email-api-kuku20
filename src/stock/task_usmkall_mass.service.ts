@@ -50,7 +50,8 @@ export class TasksUS_ALL_MK_MASS_Service {
   // this.stockHelperService.aboveMA50api= this.rundayaogo
   //  await this.runOnly4h()
       // await this.runAllOn4h()
-    // await this.getMarket(DataSymbols.stock_usall_symbols_update);
+      //  const uniqueCombine4h = Array.from(new Set(combine4h));
+    // await this.getMarket(DataSymbols.blow500M);
     // await this.stockHelperService.writeAbove2BillionToFile(this.aboveTarget,`Above_${this.marketTarget}_Billion`);
     // await this.stockHelperService.writeAbove2BillionToFile(this.BelowTarget,`Below_${this.marketTarget}_Billion`);
     // this.stockHelperService.ListMA50On1day = await this.LocalPLWR.getArrSymbolFFire('${this.stockHelperService.aboveMA50api}/alldata/1day')as string[];
@@ -404,10 +405,10 @@ export class TasksUS_ALL_MK_MASS_Service {
 
 
         try {
-          let data = await this.LocalPLWR.getMarketCap(ticker);
+          let data = await this.LocalPLWR.getMarketCap_FINNHUB(ticker);
           // Process the data
           // console.table(data);
-          const mkb = data.market_cap / this.billion; // Convert to billions
+          const mkb = data.marketCap / this.billion; // Convert to billions
           console.log(`Market Cap for ${ticker}: ${mkb.toFixed(2)} billion USD`);
           if(mkb > this.marketTarget){
           this.aboveTarget.push(ticker)}else{
