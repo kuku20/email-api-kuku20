@@ -36,7 +36,7 @@ export class TasksBullBearGain_CalService {
 
   async CHECKBULL_BEAR_OTHER(delay=2,symbols= DataSymbols.watchlist){
     this.stockHelperService.apitwelveCount = 0
-    if (this.stockHelperService.shouldRunTradingLogicUS('5min',this.logger)) {
+    if (!this.stockHelperService.shouldRunTradingLogicUS('5min',this.logger)) {
       return;
     }
     try {
