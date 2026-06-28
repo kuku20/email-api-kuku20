@@ -36,7 +36,24 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
     // console.log('geminibuy', Object.keys(geminibuy)) 
     // await this.runOnlyDaily4hour(symbols)
     // await this.runWatchlistGemini(symbols);
-    // await this.runevery4hour()
+        // await this.runevery4hour(allkeys)
+        
+    // const forRundaily = await this.LocalPLWR.FireBaseApi('get',`stock-related/forRundaily2/4hour.json`,'')
+    // const allkeys = Object.keys(forRundaily)
+    // console.log(allkeys.length)
+    // const forRundaily2 = await this.LocalPLWR.FireBaseApi('get',`stock-related/forRundaily-po5b/4hour.json`,'')
+    // const allkeys2 = Object.keys(forRundaily2)
+    //     const uniqueCombine =  Array.from(new Set([...allkeys, ...allkeys2]))
+    //     console.log(uniqueCombine.length)
+    // console.log(allkeys2.length)
+
+    // await this.CHECKBULL_5_15_30_1h(
+    //   DataSymbols.above2billion,
+    //   '4hour',
+    //   this.stockHelperService.US_4H_,
+    //   false,
+    //   0,
+    // )
     // await this.runWatchlistGemini(symbols, this.stockHelperService.US_DAILY_, '1day');
     // await this.runAllOn1day(['IVZ']);
     // await this.runfullonms(['ABBV','ACN','MSFT']);
@@ -846,6 +863,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
     ];
     await this.stockHelperService.sendBatchNotification('START',timeframe,webhooks,this.webhooksService,1000,);
     await Promise.all([
+      // this.CHECKBULL_5_15_30_1h(
       this.basicMACDP_WITHMA50_runWatchlistGemini(
         stocklist,
         timeframe, slChannel,
@@ -1039,4 +1057,86 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
     // Wait for all ticker promises to complete concurrently (with concurrency limit)
     await Promise.all(tickerPromises);
   }
+
+    async CHECKBULL_5_15_30_1h(
+      tickers: string[],
+      timeframe:string,
+      slChannel=this.stockHelperService.US_4H_,
+      use_TwNoApi :boolean= true,
+      delay = 2
+    ) {
+      await this.webhooksService.FireBaseApi("delete", `stock-related/forRundaily-po5b/${timeframe}.json`,'')
+      const limit = pLimit(4); // Limit the concurrency to 8 at a time
+  
+      const washselllists =[...(await this.LocalPLWR.loadWashSellList()) ||
+        this.LocalPLWR.getWashSellList(),'QQQ','SPY'];
+      // Delay 2 minutes before processing
+      await new Promise((resolve) => setTimeout(resolve, delay * 60 * 1000));
+  
+      // Prepare ticker promises with concurrency limit
+      const tickerPromises = tickers.map((ticker) =>
+        limit(async () => {
+          if (washselllists?.includes(ticker)) {
+            console.log(`⏭️ Skipping ${ticker} — in wash sell list`);
+            return; // Skip this ticker and move on
+          }
+          const checktext = 'AB🟢🟢BUYY🟢🟢'
+          try {
+            let FullText = '';
+            let bullishCount = 0;
+            let bullishFCount = 0;
+            let aboveCount = 0;
+            const data = use_TwNoApi
+            ? await this.LocalPLWR.TwReveseNOAPI(ticker, timeframe)
+            : await this.LocalPLWR.getTickerFullChart_POLYGON2(
+                ticker,
+                timeframe,
+                this.dayago,
+              );
+            if (!Array.isArray(data) || data.length < 2) {
+              this.logger.warn(`⚠️ No valid data for ${ticker} (${timeframe})`);
+              await this.stockHelperService.sendBatchNotification('START',`${use_TwNoApi?'TwReveseNOAPI':'POLYGON2'}-`+ticker,[this.stockHelperService.Z_US_SL.Z_US_SL_OR4],this.webhooksService,500);
+              return;
+            }
+
+            const lastData = data[data.length-1]
+            const text_5min = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
+                ticker,
+                timeframe,
+                data
+            );
+            FullText += `${text_5min}\n`;
+            if(text_5min.includes(checktext)&& lastData.MACDLine < 0.4){
+              await this.webhooksService.FireBaseApi("put", `stock-related/forRundaily-po5b/${timeframe}/${ticker}.json`, {lastData: lastData})
+              // const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
+              //   timeframe,
+              //   [ticker],
+              //   data_5min[data_5min.length-1],
+              //   slChannel.MACDCR_BL,
+              //   `${FullText}`
+              // );
+              // const blockre = this.webhooksService.getSlBlock(ticker,'accessory_price_check',ticker)
+              //   // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
+              // await this.webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
+            } else {
+              console.log('stop at 5')
+              return
+            }
+          } catch (error) {
+            // Send error notification and log the error
+            await this.webhooksService.sendDiscord(
+              `ERROR ${error.message} \n url: http://localhost:4200/price-log/${ticker}?daysRange=500`,
+              `RSIENDBOT ${ticker} at fullList`,
+              'Nono',
+              'ERORR_CALL',
+            );
+            
+            this.logger.error(`Error processing ${ticker}: ${error.message}`);
+          }
+        }),
+      );
+  
+      // Wait for all ticker promises to complete concurrently (with concurrency limit)
+      await Promise.all(tickerPromises);
+    }
 }
