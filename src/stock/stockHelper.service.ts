@@ -1117,7 +1117,7 @@ SELL ALL
       try {
         console.log(`Sending notification to ${hook}: ${message}`);
         await service.sendSlackNotification(message, hook);
-        // await this.sleep(delayMs);
+        await this.sleep(delayMs);
       } catch (error) {
         console.log(error)
         console.error(`Failed to send notification to ${hook}`, error);

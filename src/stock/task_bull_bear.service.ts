@@ -57,6 +57,7 @@ export class TasksBullBearService {
     // await this.postSLTest(Object.values(this.stockHelperService.INTRA_30M_SL_))
     // await this.postSLTest([''])
     // await this.postSLTest([], 300)
+    // // // await this.postDeleteBtn()
 
 
     //  await this.dailyCleanup()
@@ -614,13 +615,13 @@ export class TasksBullBearService {
 
   async postSLTest(webhooks =[ 'C0B77K2AG12','C0B6BFBKJ4X'],timewait = 1000) {
     // await this.stockHelperService.sendBatchNotification('START','test',webhooks,this.webhooksService,timewait,);
-    // this.stockHelperService.sendBatchNotification('START','test',Object.values(this.stockHelperService.US_DAILY_),this.webhooksService,timewait,)
-    // this.stockHelperService.sendBatchNotification('START','test',Object.values(this.stockHelperService.US_4H_),this.webhooksService,timewait,)
-    // this.stockHelperService.sendBatchNotification('START','test',Object.values(this.stockHelperService.VN_SL_),this.webhooksService,timewait,)
-    // this.stockHelperService.sendBatchNotification('START','test',Object.values(this.stockHelperService.Z_US_SL_),this.webhooksService,timewait,)
-    // this.stockHelperService.sendBatchNotification('START','test',Object.values(this.stockHelperService.AI_SL),this.webhooksService,timewait,)
-    // this.stockHelperService.sendBatchNotification('START','test',Object.values(this.stockHelperService.INTRA_30M_SL_),this.webhooksService,timewait,)
-    // this.stockHelperService.sendBatchNotification('START','test',Object.values(this.stockHelperService.BULL_BEAR_SL_),this.webhooksService,timewait,)
+    this.stockHelperService.sendBatchNotification('START','test',Object.values(this.stockHelperService.US_DAILY_),this.webhooksService,timewait,)
+    this.stockHelperService.sendBatchNotification('START','test',Object.values(this.stockHelperService.US_4H_),this.webhooksService,timewait,)
+    this.stockHelperService.sendBatchNotification('START','test',Object.values(this.stockHelperService.VN_SL_),this.webhooksService,timewait,)
+    this.stockHelperService.sendBatchNotification('START','test',Object.values(this.stockHelperService.Z_US_SL_),this.webhooksService,timewait,)
+    this.stockHelperService.sendBatchNotification('START','test',Object.values(this.stockHelperService.AI_SL),this.webhooksService,timewait,)
+    this.stockHelperService.sendBatchNotification('START','test',Object.values(this.stockHelperService.INTRA_30M_SL_),this.webhooksService,timewait,)
+    this.stockHelperService.sendBatchNotification('START','test',Object.values(this.stockHelperService.BULL_BEAR_SL_),this.webhooksService,timewait,)
   }
 
   async postInteractiveText(webhook, symbols) {
@@ -628,15 +629,40 @@ export class TasksBullBearService {
      await this.webhooksService.post2SlackBtnFn(webhook,symbol)
     })
   }
+  async postDeleteBtn() {
+    const channels = [...Object.values(this.stockHelperService.US_DAILY_), 
+      ...Object.values(this.stockHelperService.US_4H_), 
+      ...Object.values(this.stockHelperService.VN_SL_), 
+      ...Object.values(this.stockHelperService.Z_US_SL_), 
+      ...Object.values(this.stockHelperService.AI_SL), 
+      ...Object.values(this.stockHelperService.INTRA_30M_SL_), 
+      ...Object.values(this.stockHelperService.BULL_BEAR_SL_), 
+      ...Object.values(this.stockHelperService.BTN_SL)];
+    await channels.forEach(async channel=>{
+        await this.webhooksService.fePostToHold2(
+          'QQQ',
+          null,
+          'clear_each',
+          channel
+      );
+    })
+          // await this.webhooksService.fePostToHold2(
+      //   'QQQ',
+      //   null,
+      //   'clear_each',
+      //   this.stockHelperService.BTN_SL.WATCH
+      // );
+  }
 
   // @Cron('0 19 * * 1-5', { timeZone: 'America/New_York' }) // Every weekday at 7:00 PM New York time
   async dailyCleanup() {    
-    // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.US_DAILY_))
-    // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.US_4H_))
-    // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.VN_SL_))
-    // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.Z_US_SL_))
-    // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.AI_SL))
-    // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.INTRA_30M_SL_))
-    // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.BULL_BEAR_SL_))
+    this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.US_DAILY_))
+    this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.US_4H_))
+    this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.VN_SL_))
+    this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.Z_US_SL_))
+    this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.AI_SL))
+    this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.INTRA_30M_SL_))
+    this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.BULL_BEAR_SL_))
+    this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.BTN_SL))
   }
 }
