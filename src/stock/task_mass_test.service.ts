@@ -154,9 +154,9 @@ export class TestOndata_service {
           if (!signal) return;
 
           const webhookMap = [
-            { condition: signal.PriceCrMA50 && signal.ContinueUp, hook: this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_50 },
-            { condition: signal.PriceCrMA100 && signal.ContinueUp, hook: this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_100 },
-            { condition: signal.PriceCrMA200 && signal.ContinueUp, hook: this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_200 },
+            { condition: signal.PriceCrMA50 && signal.ContinueUp, hook: this.stockHelperService.INTRA_30M_SL_.MACDCR_50 },
+            { condition: signal.PriceCrMA100 && signal.ContinueUp, hook: this.stockHelperService.INTRA_30M_SL_.MACDCR_100 },
+            { condition: signal.PriceCrMA200 && signal.ContinueUp, hook: this.stockHelperService.INTRA_30M_SL_.MACDCR_200 },
           ];
 
           const matched = webhookMap.find((w) => w.condition);

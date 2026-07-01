@@ -78,7 +78,7 @@ export class TaskHoldingService {
               timeframe,
               [ticker],
               lastData,
-              this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING,
+              this.stockHelperService.Z_US_SL_.HOLDING,
               'BlMA200_MA20_MA50_MA100_SELL',
             );
             await this.webhooksService.sendDiscord(
@@ -116,7 +116,7 @@ export class TaskHoldingService {
     const symbols = await this.LocalPLWR.getholdingList_W_other()
     this.logger.warn('Running getholdingList with stocklist length:', symbols.length);
 
-    const webhooks = [this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING];
+    const webhooks = [this.stockHelperService.Z_US_SL_.HOLDING];
   
     try {
       await this.stockHelperService.sendBatchNotification('START',`${this.runon15or30}min`,webhooks,this.webhooksService,1000,);
@@ -146,9 +146,9 @@ export class TaskHoldingService {
     //   timeframe,
     //   symbols,
     //   null,
-    //   this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING,'',
+    //   this.stockHelperService.Z_US_SL_.HOLDING,'',
     // );
-    const webhooks = [this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING];
+    const webhooks = [this.stockHelperService.Z_US_SL_.HOLDING];
   
     try {
 

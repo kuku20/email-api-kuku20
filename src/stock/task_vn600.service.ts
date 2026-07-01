@@ -55,10 +55,10 @@ export class TasksVNMKService {
             secondLastData,
           );
           const webhookMap = [
-            { condition: signal.PriceCrMA50 && signal.ContinueUp, hook: this.stockHelperService.VN_SL.VN_D_MACDCR_50 },
-            { condition: signal.PriceCrMA100 && signal.ContinueUp, hook: this.stockHelperService.VN_SL.VN_D_MACDCR_100 },
-            { condition: signal.PriceCrMA200 && signal.ContinueUp, hook: this.stockHelperService.VN_SL.VN_D_MACDCR_200 },
-            { condition: stockRSILAUP && macdCross.AB, hook: this.stockHelperService.VN_SL.VN_D_MACDCR_BL },
+            { condition: signal.PriceCrMA50 && signal.ContinueUp, hook: this.stockHelperService.VN_SL_.MACDCR_50 },
+            { condition: signal.PriceCrMA100 && signal.ContinueUp, hook: this.stockHelperService.VN_SL_.MACDCR_100 },
+            { condition: signal.PriceCrMA200 && signal.ContinueUp, hook: this.stockHelperService.VN_SL_.MACDCR_200 },
+            { condition: stockRSILAUP && macdCross.AB, hook: this.stockHelperService.VN_SL_.MACDCR_BL },
           ];
 
           const matched = webhookMap.find(({ condition }) => condition);
@@ -94,7 +94,7 @@ export class TasksVNMKService {
   @Cron('0 16 * * 1-5', { timeZone: 'America/New_York' })
   async runAllWatchLists() {
 
-    const webhooks = [...Object.values(this.stockHelperService.VN_SL)];
+    const webhooks = [...Object.values(this.stockHelperService.VN_SL_)];
 
     try {
       await this.stockHelperService.sendBatchNotification('START', `daily`,webhooks,this.webhooksService,1000,);

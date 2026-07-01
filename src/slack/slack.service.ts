@@ -40,11 +40,15 @@ export class SlackService implements OnModuleInit {
 
     // OPTIONAL: auto-create on startup
     // Comment this out if you don't want Slack API calls on boot
-    // await this.createDailyChannels(this.stockHelperService.AI_SL);
-    // await this.createDailyChannels(this.stockHelperService.INTRA_30M_SL);
-    // await this.createDailyChannels(this.stockHelperService.US_4H_);
-    // await this.createDailyChannels(this.stockHelperService.US_DAILY_);
-    // await this.createDailyChannels(this.stockHelperService.VN_SL);
+    // await this.createDailyChannels('BULL_BEAR_SL_',this.stockHelperService.BULL_BEAR_SL_,);
+    // await this.createDailyChannels('AI_SL',this.stockHelperService.AI_SL,);
+    // await this.createDailyChannels('INTRA_30M_SL_',this.stockHelperService.INTRA_30M_SL_,);
+    // await this.createDailyChannels('BTN_SL',this.stockHelperService.BTN_SL,);
+    // await this.createDailyChannels('US_4H_',this.stockHelperService.US_4H_,);
+    // await this.createDailyChannels('US_DAILY_',this.stockHelperService.US_DAILY_,);
+    // await this.createDailyChannels('VN_SL_',this.stockHelperService.VN_SL_,);
+    // await this.createDailyChannels('Z_US_SL_',this.stockHelperService.Z_US_SL_,);
+
     // this.stockHelperService.setSlackToken('SLACK_BOT_TOKEN_WEEKLY');
     // await this.createDailyChannels(this.stockHelperService.US_WK_); SLACK_BOT_TOKEN_WEEKLY
     // this.stockHelperService.setSlackToken('SLACK_USER_TRADING_TOKEN')
@@ -98,17 +102,21 @@ export class SlackService implements OnModuleInit {
 
       return result.channel;
     } catch (error: any) {
+      // console.log(error)
       if (error?.data?.error === 'name_taken') {
-        const channels =
+        try {
+          const channels =
           await this.client.conversations.list({
             limit: 1000,
           });
-
-        return channels.channels?.find(
-          (c) => c.name === channelName,
-        );
+          return channels.channels?.find(
+            (c) => c.name === channelName,
+          );
+        } catch (error) {
+          console.log(error?.data?.needed)
+        }
       }
-      console.log(error.data.needed);
+      console.log(1,error.data.needed);
 
     }
   }
@@ -132,26 +140,30 @@ export class SlackService implements OnModuleInit {
       );
     }
   }
-  async createDailyChannels(channels: Record<string, string> = {}) {
+  async createDailyChannels(
+    prefix: string,
+    channels: Record<string, string> = {},
+  ) {
+    const result: Record<string, string> = {};
+  
     for (const key of Object.keys(channels)) {
-      const channel =
-        await this.getOrCreateChannel(key);
-
-      channels[key] = channel?.id ?? '';
-      this.addUserToChannel(channels[key], 'U0B0HL7TC1W'); // U0B7A38HBK3
-      this.logger.log(
-        `${key} => ${channels[key]}`,
-      );
+      const channel = await this.getOrCreateChannel(`${prefix}${key}`);
+  
+      if (channel) {
+        await this.addUserToChannel(channel.id!, 'U0BE430MMUN');
+        result[key] = channel.id!;
+        await this.client.conversations.join({
+          channel: channel.id,
+        });
+    
+        console.log('Bot joined channel');
+      }
+  
+      this.logger.log(`${prefix}${key} => ${channel?.id}`);
     }
-
-    this.logger.log(
-      `Final channel map: ${JSON.stringify(
-        channels,
-        null,
-        2,
-      )}`,
-    );
-
-    return channels;
+  
+    this.logger.log(JSON.stringify(result, null, 2));
+  
+    return result;
   }
 }

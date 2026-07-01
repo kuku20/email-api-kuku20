@@ -161,7 +161,7 @@ export class TasksBullBearLocalService {
               timeframe,
               [ticker],
               lastData,
-              this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_200,
+              this.stockHelperService.INTRA_30M_SL_.MACDCR_200,
               textDetail+' '+maxOfFour,
             );
             await this.webhooksService.sendDiscord(
@@ -177,7 +177,7 @@ export class TasksBullBearLocalService {
               timeframe,
               [ticker],
               lastData,
-              StochRSICross?this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_50:this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_100,
+              StochRSICross?this.stockHelperService.INTRA_30M_SL_.MACDCR_50:this.stockHelperService.INTRA_30M_SL_.MACDCR_100,
               textDetail+' '+maxOfFour,
             );
             this.aboveList.push(ticker)
@@ -196,7 +196,7 @@ export class TasksBullBearLocalService {
               timeframe,
               [ticker],
               lastData,
-              this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,
+              this.stockHelperService.INTRA_30M_SL_.WATCH,
               'blMa200MACDPMA50cR'+maxOfFour,
             );
             await this.webhooksService.sendDiscord(
@@ -242,10 +242,10 @@ export class TasksBullBearLocalService {
   @Cron('*/15 9-16 * * 1-5', { timeZone: 'America/New_York' })
   async bullBear(timeframe = '5min',symbols= DataSymbols.watchlist){
     try {
-      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_50)
-      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_100)
-      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_200)
-      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', this.stockHelperService.INTRA_30M_SL.US_30M_WATCH)
+      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', this.stockHelperService.INTRA_30M_SL_.MACDCR_50)
+      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', this.stockHelperService.INTRA_30M_SL_.MACDCR_100)
+      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', this.stockHelperService.INTRA_30M_SL_.MACDCR_200)
+      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', this.stockHelperService.INTRA_30M_SL_.WATCH)
       await this.USTIMERUN(
         symbols,
         this.allkeys,
@@ -260,10 +260,10 @@ export class TasksBullBearLocalService {
       throw error;
     } finally {
       this.runOnceAtOpen = false
-      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_50)
-      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_100)
-      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_200)
-      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', this.stockHelperService.INTRA_30M_SL.US_30M_WATCH)
+      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', this.stockHelperService.INTRA_30M_SL_.MACDCR_50)
+      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', this.stockHelperService.INTRA_30M_SL_.MACDCR_100)
+      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', this.stockHelperService.INTRA_30M_SL_.MACDCR_200)
+      this.webhooksService.sendSlackNotification('daily+2026-05-01================================', this.stockHelperService.INTRA_30M_SL_.WATCH)
       const percentof = this.aboveListUP.length/this.aboveList.length
       const percentofeve = this.belowListUp.length/this.belowList.length
       this.logger.log(percentof)

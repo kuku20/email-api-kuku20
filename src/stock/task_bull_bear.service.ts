@@ -36,7 +36,7 @@ export class TasksBullBearService {
     //   console.log(symbol)
     // this.webhooksService.fePostToHold2(symbol,null,'accessory_price_check',symbol)
     // })
-    // this.webhooksService.fePostToHold2('SPY',null,'accessory_price_check',this.stockHelperService.BULL_BEAR_SL_.SPY)
+    // this.webhooksService.fePostToHold2('QQQ',null,'accessory_price_check',this.stockHelperService.BULL_BEAR_SL_.QQQ)
     // for (const symbol of DataSymbols.watchlist) {
     //   await new Promise((resolve) => setTimeout(resolve, 1000));
     
@@ -54,8 +54,9 @@ export class TasksBullBearService {
     // console.log(`✅ Loaded stock-related/holding: has ${this.stockHelperService.HoldingList}`);
     // this.stockHelperService.setSlackToken('SLACK_USER_TOKEN');
 
-    // await this.postSLTest(['C0B748C0BCM'])
-    // await this.postSLTest(['C0B748C0BCM'])
+    // await this.postSLTest(Object.values(this.stockHelperService.INTRA_30M_SL_))
+    // await this.postSLTest([''])
+    // await this.postSLTest([], 300)
 
 
     //  await this.dailyCleanup()
@@ -161,7 +162,7 @@ export class TasksBullBearService {
               timeframe,
               [ticker],
               lastData,
-              this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_200,
+              this.stockHelperService.INTRA_30M_SL_.MACDCR_200,
               this.stockHelperService.bullbearUqiue+textDetail,
             );
             await this.webhooksService.sendDiscord(
@@ -178,7 +179,7 @@ export class TasksBullBearService {
           //     timeframe,
           //     [ticker],
           //     lastData,
-          //     StochRSICross?this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_50:this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_100,
+          //     StochRSICross?this.stockHelperService.INTRA_30M_SL_.MACDCR_50:this.stockHelperService.INTRA_30M_SL_.MACDCR_100,
           //     this.stockHelperService.bullbearUqiue+textDetail+' ',
           //   );
           //   this.aboveList.push(ticker)
@@ -195,7 +196,7 @@ export class TasksBullBearService {
               timeframe,
               [ticker],
               lastData,
-              this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,
+              this.stockHelperService.INTRA_30M_SL_.WATCH,
               this.stockHelperService.bullbearUqiue+'blMa200MACDPMA50cR',
             );
             await this.webhooksService.sendDiscord(
@@ -211,7 +212,7 @@ export class TasksBullBearService {
           //     timeframe,
           //     [ticker],
           //     lastData,
-          //     this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,
+          //     this.stockHelperService.INTRA_30M_SL_.WATCH,
           //     this.stockHelperService.bullbearUqiue+'MA9crosMA20',
           //   );
           //   await this.webhooksService.sendDiscord(
@@ -227,7 +228,7 @@ export class TasksBullBearService {
               timeframe,
               [ticker],
               lastData,
-              this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_BL,
+              this.stockHelperService.INTRA_30M_SL_.MACDCR_BL,
               this.stockHelperService.bullbearUqiue+'macdCrossAB',
             );
             await this.webhooksService.sendDiscord(
@@ -286,7 +287,7 @@ export class TasksBullBearService {
       throw error;
     } finally {
       await Promise.all(
-        Object.values(this.stockHelperService.INTRA_30M_SL).map((hook) =>
+        Object.values(this.stockHelperService.INTRA_30M_SL_).map((hook) =>
           this.webhooksService.sendSlackNotification(`${time}===${timeframe}min=============================`, hook),
         ),
       );
@@ -319,9 +320,9 @@ export class TasksBullBearService {
   @Cron('*/5 9-16 * * 1-5', { timeZone: 'America/New_York' }) // washlist
   async CHECKBULL_BEAR_OTHER_5MIN() {
     await this.CHECKBULL_BEAR_OTHER(1.5);
-    const webhooks = [this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,
-      this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_100,
-      this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_50,
+    const webhooks = [this.stockHelperService.INTRA_30M_SL_.WATCH,
+      this.stockHelperService.INTRA_30M_SL_.MACDCR_100,
+      this.stockHelperService.INTRA_30M_SL_.MACDCR_50,
     ]
     await this.stockHelperService.sendBatchNotification('START','4hour',webhooks,this.webhooksService,300,);
   }
@@ -331,9 +332,9 @@ export class TasksBullBearService {
     const forRundaily2 = await this.LocalPLWR.FireBaseApi('get',`stock-related/forRundaily-po5b/4hour.json`,'')
     const allkeys2 = Object.keys(forRundaily2)
     await this.CHECKBULL_BEAR_OTHER(3,allkeys2);
-    const webhooks = [this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_BL,
-        this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_200,
-        this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_BL_OT,
+    const webhooks = [this.stockHelperService.INTRA_30M_SL_.MACDCR_BL,
+        this.stockHelperService.INTRA_30M_SL_.MACDCR_200,
+        this.stockHelperService.INTRA_30M_SL_.MACDCR_BL_OT,
       ]
     await this.stockHelperService.sendBatchNotification('START','4hour',webhooks,this.webhooksService,300,);
   }
@@ -406,7 +407,7 @@ export class TasksBullBearService {
               '5min',
               [ticker],
               data_5min[data_5min.length-1],
-              DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_100:this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_200,
+              DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL_.MACDCR_100:this.stockHelperService.INTRA_30M_SL_.MACDCR_200,
               `\n${FullText} \n`
             );
             const blockre = this.webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
@@ -417,7 +418,7 @@ export class TasksBullBearService {
               '5min',
               [ticker],
               data_5min[data_5min.length-1],
-              DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_50:this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_BL,
+              DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL_.MACDCR_50:this.stockHelperService.INTRA_30M_SL_.MACDCR_BL,
               `\n${FullText} \n`
             );
             const blockre = this.webhooksService.getSlBlock(ticker,'accessory_price_check',ticker)
@@ -473,7 +474,7 @@ export class TasksBullBearService {
                     '5min',
                     [ticker],
                     data_5min[data_5min.length-1],
-                    this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,
+                    this.stockHelperService.INTRA_30M_SL_.WATCH,
                     `\n${FullText} \n`
                   );
                   const blockre = this.webhooksService.getSlBlock(ticker,'accessory_price_check',ticker)
@@ -499,7 +500,7 @@ export class TasksBullBearService {
                 '5min',
                 [ticker],
                 data_5min[data_5min.length-1],
-                this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_BL_OT,
+                this.stockHelperService.INTRA_30M_SL_.MACDCR_BL_OT,
                 `\n${FullText} \n`
               );
               await this.webhooksService.sendDiscord(
@@ -544,12 +545,12 @@ export class TasksBullBearService {
           //   if (text.includes('AB🟢🟢BUYY🟢🟢')) {
           //     bullishFCount++;
           //     if(bullishFCount>2){
-          //       // this.webhooksService.sendSlackNotification(`\n ${ticker}: ${bullishCount}/${timeframes.length} bullish`+FullText, this.stockHelperService.INTRA_30M_SL.US_30M_WATCH)
+          //       // this.webhooksService.sendSlackNotification(`\n ${ticker}: ${bullishCount}/${timeframes.length} bullish`+FullText, this.stockHelperService.INTRA_30M_SL_.WATCH)
           //       const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
           //         '5min',
           //         [ticker],
           //         data[data.length-1],
-          //         this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,
+          //         this.stockHelperService.INTRA_30M_SL_.WATCH,
           //         `\n${FullText} \n`
           //       );
           //       const blockre = this.webhooksService.getSlBlock(ticker,'accessory_price_check',ticker)
@@ -560,12 +561,12 @@ export class TasksBullBearService {
           //     }
           //   }
           //   if(bullishCount>3){
-          //     // this.webhooksService.sendSlackNotification(`\n ${ticker}: ${bullishCount}/${timeframes.length} bullish`+FullText, this.stockHelperService.INTRA_30M_SL.US_30M_WATCH)
+          //     // this.webhooksService.sendSlackNotification(`\n ${ticker}: ${bullishCount}/${timeframes.length} bullish`+FullText, this.stockHelperService.INTRA_30M_SL_.WATCH)
           //     const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
           //       '5min',
           //       [ticker],
           //       data[data.length-1],
-          //       this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,
+          //       this.stockHelperService.INTRA_30M_SL_.WATCH,
           //       `\n${FullText} \n`
           //     );
           //     const blockre = this.webhooksService.getSlBlock(ticker,'accessory_price_check',ticker)
@@ -579,7 +580,7 @@ export class TasksBullBearService {
           //         '5min',
           //         [ticker],
           //         data[data.length-1],
-          //         this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,
+          //         this.stockHelperService.INTRA_30M_SL_.WATCH,
           //         `\n${FullText} \n`
           //       );
           //       const blockre = this.webhooksService.getSlBlock(ticker,'accessory_price_check',ticker)
@@ -611,8 +612,15 @@ export class TasksBullBearService {
     await Promise.all(tickerPromises);
   }
 
-  async postSLTest(webhooks =[ 'C0B77K2AG12','C0B6BFBKJ4X']) {
-    await this.stockHelperService.sendBatchNotification('START','test',webhooks,this.webhooksService,1000,);
+  async postSLTest(webhooks =[ 'C0B77K2AG12','C0B6BFBKJ4X'],timewait = 1000) {
+    // await this.stockHelperService.sendBatchNotification('START','test',webhooks,this.webhooksService,timewait,);
+    // this.stockHelperService.sendBatchNotification('START','test',Object.values(this.stockHelperService.US_DAILY_),this.webhooksService,timewait,)
+    // this.stockHelperService.sendBatchNotification('START','test',Object.values(this.stockHelperService.US_4H_),this.webhooksService,timewait,)
+    // this.stockHelperService.sendBatchNotification('START','test',Object.values(this.stockHelperService.VN_SL_),this.webhooksService,timewait,)
+    // this.stockHelperService.sendBatchNotification('START','test',Object.values(this.stockHelperService.Z_US_SL_),this.webhooksService,timewait,)
+    // this.stockHelperService.sendBatchNotification('START','test',Object.values(this.stockHelperService.AI_SL),this.webhooksService,timewait,)
+    // this.stockHelperService.sendBatchNotification('START','test',Object.values(this.stockHelperService.INTRA_30M_SL_),this.webhooksService,timewait,)
+    // this.stockHelperService.sendBatchNotification('START','test',Object.values(this.stockHelperService.BULL_BEAR_SL_),this.webhooksService,timewait,)
   }
 
   async postInteractiveText(webhook, symbols) {
@@ -625,10 +633,10 @@ export class TasksBullBearService {
   async dailyCleanup() {    
     // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.US_DAILY_))
     // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.US_4H_))
-    // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.VN_SL))
-    // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.Z_US_SL))
+    // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.VN_SL_))
+    // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.Z_US_SL_))
     // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.AI_SL))
-    // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.INTRA_30M_SL))
+    // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.INTRA_30M_SL_))
     // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.BULL_BEAR_SL_))
   }
 }

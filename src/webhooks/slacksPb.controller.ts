@@ -235,7 +235,7 @@ export class SlackPbController {
       // Prepare ticker promises with concurrency limit
       let data = await this.stockService.TwReveseNOAPI(ticker, timeframe);
       if (!Array.isArray(data) || data.length < 2) {
-        await this.stockHelperService.sendBatchNotification('START',`${true?'TwReveseNOAPI':'POLYGON2'}-`+ticker,[this.stockHelperService.Z_US_SL.Z_US_SL_OR4],this.webhooksService,500);
+        await this.stockHelperService.sendBatchNotification('START',`${true?'TwReveseNOAPI':'POLYGON2'}-`+ticker,[this.stockHelperService.Z_US_SL_.OR4],this.webhooksService,500);
         return;
       }
       const getText = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(ticker,timeframe,data)
@@ -252,6 +252,6 @@ export class SlackPbController {
 
   } async catch (error) {
     // Send error notification and log the error
-    await this.webhooksService.sendSlackNotification(`ERORR_CALL`, this.stockHelperService.Z_US_SL.Z_US_SL_OR4)
+    await this.webhooksService.sendSlackNotification(`ERORR_CALL`, this.stockHelperService.Z_US_SL_.OR4)
   }
 }

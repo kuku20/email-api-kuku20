@@ -54,7 +54,7 @@ export class WebhooksService {
 
   async sendSlackNotification(message: string, other = '1day') {
     const BASE_URL =
-      other === '1day' ? this.stockHelperService.Z_US_SL.Z_US_SL_OR : other === '4hour' ? this.stockHelperService.Z_US_SL.Z_US_SL_OR4 :other;
+      other === '1day' ? this.stockHelperService.Z_US_SL_.OR : other === '4hour' ? this.stockHelperService.Z_US_SL_.OR4 :other;
     const nexMsg = `================================${message.replace(
       /\*\*/g,
       '*',
@@ -1294,7 +1294,7 @@ export class WebhooksService {
           timeframe,
           [ticker],
           lastdata,
-          this.stockHelperService.Z_US_SL.Z_US_SL_2h_CROSS,
+          this.stockHelperService.Z_US_SL_['2h_CROSS'],
           sp500+'aboveAll',
         );
       }
@@ -1532,7 +1532,7 @@ export class WebhooksService {
             timeframe,
             [ticker],
             lastData,
-            this.stockHelperService.Z_US_SL.Z_US_SL_J2DAY,
+            this.stockHelperService.Z_US_SL_.J2DAY,
             'ABOVE_50_2C',
           );
         }
@@ -1551,12 +1551,12 @@ export class WebhooksService {
             timeframe,
             [ticker],
             lastData,
-            this.stockHelperService.Z_US_SL.Z_US_SL_J3DAY,
+            this.stockHelperService.Z_US_SL_.J3DAY,
             'PriceCrMA50_3C',
           );
         }else if(timeframe.includes('4hour')){
           const aboveOrBellow = lastData?.MA200 < lastData?.close ?'above':'bellow';
-          const slackWebhook = lastData?.MA200 < lastData?.close ? this.stockHelperService.Z_US_SL.Z_US_SL_4h_3C_AB : this.stockHelperService.Z_US_SL.Z_US_SL_4h_3C_BL;
+          const slackWebhook = lastData?.MA200 < lastData?.close ? this.stockHelperService.Z_US_SL_['4h_3C_AB'] : this.stockHelperService.Z_US_SL_['4h_3C_BL'];
           const discordChannel = lastData?.MA200 < lastData?.close ? 'TSLA' : 'SMCI';
           await this.sendSlackNotificationVN(
             timeframe,
@@ -1648,7 +1648,7 @@ export class WebhooksService {
     const  downtrend = lastData.divergence < 0 
     const basePath = blowMA200 ? this.stockHelperService.aboveMA50api : `${this.stockHelperService.aboveMA50api}-aboveMA200`;
     const timeframeKey = timeframe === '1day' ? 'MA_AB_5_20' :timeframe === '4hour'  ? 'MA_AB_5_200' : timeframe === '2hour' ? 'MA_AB_20_50' : 'MA_AB_100_200';
-    const sltimeframeKey = timeframe === '1day' ? this.stockHelperService.US_DAILY_.MACDCR_BL :timeframe === '4hour'  ? this.stockHelperService.US_4H_.MACDCR_BL : this.stockHelperService.Z_US_SL.Z_US_SL_2h_CROSS;
+    const sltimeframeKey = timeframe === '1day' ? this.stockHelperService.US_DAILY_.MACDCR_BL :timeframe === '4hour'  ? this.stockHelperService.US_4H_.MACDCR_BL : this.stockHelperService.Z_US_SL_['2h_CROSS'];
     const lastDataOnTime = await this.stockHelperService.TurnDateToUnderFM(lastData.date);
     if (stockRSILAUP && macdCross.AB) {
       await this.FireBaseApi("put", `stockRSILAUP/macdCross_AB/${basePath}/${timeframe}/${ticker}.json`, {lastData: lastData})
@@ -1665,7 +1665,7 @@ export class WebhooksService {
         timeframe,
         [ticker],
         lastData,
-        DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL.US_30M_WATCH:sltimeframeKey,
+        DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL_.WATCH:sltimeframeKey,
         'macdCross_AB'
       );
       return;
@@ -1682,7 +1682,7 @@ export class WebhooksService {
         timeframe,
         [ticker],
         lastData,
-        DataSymbols.watchlist.includes(ticker)?this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING:sltimeframeKey,
+        DataSymbols.watchlist.includes(ticker)?this.stockHelperService.Z_US_SL_.HOLDING:sltimeframeKey,
         'macdCross_AB'
       );
       return;
@@ -1779,7 +1779,7 @@ export class WebhooksService {
     other = '1day',
   ) {
     const BASE_URL =
-      other === '1day'? this.stockHelperService.Z_US_SL.Z_US_SL_OR : this.stockHelperService.Z_US_SL.Z_US_SL_OR4;
+      other === '1day'? this.stockHelperService.Z_US_SL_.OR : this.stockHelperService.Z_US_SL_.OR4;
     let hourIn4 = '';
     if(this.stockHelperService.above50andBelow200 && this.stockHelperService.above50andBelow200.length > 0){
       hourIn4 = this.stockHelperService.above50andBelow200.includes(symbols[0]) ? '4️⃣ *BL200* 🟢🟢' : '';
@@ -1851,7 +1851,7 @@ export class WebhooksService {
     const timeframeScore = timeframeScoreMap[timeframe] || 500;
     const StopNTarget = await this.StopNTarget(lastData)
     const addMsg = msg? `*msg:* ${msg} | ` :""
-    const buysellTarget = slChannel !==this.stockHelperService.Z_US_SL.Z_US_SL_HOLDING? `\n\t\t${addMsg} *TARGET:* ${StopNTarget?.target}  | \t |  *STOP LOSS:* ${StopNTarget?.stop}`:'BETTER SELL'
+    const buysellTarget = slChannel !==this.stockHelperService.Z_US_SL_.HOLDING? `\n\t\t${addMsg} *TARGET:* ${StopNTarget?.target}  | \t |  *STOP LOSS:* ${StopNTarget?.stop}`:'BETTER SELL'
 
     const display = `${sp500}${mkaboveOrBellow2}${HoldingList}${hourIn4}${last}${lastData?.close}(${aboveOrBellow}-${lastData?.MA200?.toFixed(2)})|(MA50-${lastData?.MA50?.toFixed(2)})| ${lastData?.date} |`
 
@@ -2020,7 +2020,8 @@ export class WebhooksService {
       );
 
       if (!data.ok) {
-        console.log('Slack post error',data.error ,channel,text);
+        
+        console.log('Slack post error',data ,channel,text);
         if(data.error === 'message_limit_exceeded' && this.count <= 3){
           this.count++;
           // let's sent to discord if slack message limit exceeded

@@ -129,12 +129,12 @@ export class TasksUS_ALL_MK_4HOUR_Service {
     const tslaDc = `<https://discord.com/channels/1306113720979689523/1380037316143349922|4HOUR_RUN_LOOK_TSLA_DC> ${'='.repeat(32)}`
     const smciDc = `<https://discord.com/channels/1306113720979689523/1348653615992143924|4HOUR_RUN_LOOK_SMCI_DC>${'='.repeat(32)}`
     const macd4huorDc = `<https://discord.com/channels/1306113720979689523/1436948457247080589|4HOUR_RUN_LOOK_MACDCRAB_DC> ${'='.repeat(32)}`
-    this.webhooksService.sendSlackNotification('START_'+tslaDc, this.stockHelperService.Z_US_SL.Z_US_SL_4h_3C_AB);
-    this.webhooksService.sendSlackNotification('START_'+smciDc, this.stockHelperService.Z_US_SL.Z_US_SL_4h_3C_BL);
+    this.webhooksService.sendSlackNotification('START_'+tslaDc, this.stockHelperService.Z_US_SL_['4h_3C_AB']);
+    this.webhooksService.sendSlackNotification('START_'+smciDc, this.stockHelperService.Z_US_SL_['4h_3C_BL']);
     this.webhooksService.sendSlackNotification('START_'+macd4huorDc, this.stockHelperService.US_4H_.MACDCR_BL);
 
-    const slma50 = `**[LOOK_US30ABMA50_SL](https://myworkspace.slack.com/archives/${this.stockHelperService.Z_US_SL.Z_US_SL_4h_3C_AB})**`
-    const slma100 = `**[LOOK_US30ABMA100_SL](https://myworkspace.slack.com/archives/${this.stockHelperService.Z_US_SL.Z_US_SL_4h_3C_BL})**`
+    const slma50 = `**[LOOK_US30ABMA50_SL](https://myworkspace.slack.com/archives/${this.stockHelperService.Z_US_SL_['4h_3C_AB']})**`
+    const slma100 = `**[LOOK_US30ABMA100_SL](https://myworkspace.slack.com/archives/${this.stockHelperService.Z_US_SL_['4h_3C_BL']})**`
     const slmacd = `**[LOOK_US30ABMA100_SL](https://myworkspace.slack.com/archives/${this.stockHelperService.US_4H_.MACDCR_BL})**`
     await this.webhooksService.SendDcChannels(['TSLA'],this.logger,`START_4OUR_${slma50}`);
     await this.webhooksService.SendDcChannels(['SMCI'],this.logger,`START_4OUR_${slma100}`);
@@ -143,8 +143,8 @@ export class TasksUS_ALL_MK_4HOUR_Service {
     await this.runOnly4h(this.stockHelperService.NextRound_4hourALL);
 
     await this.webhooksService.sendlast('200BL_OV_NEG_01', '200BL_OV_NEG_05');
-    this.webhooksService.sendSlackNotification('END_'+tslaDc, this.stockHelperService.Z_US_SL.Z_US_SL_4h_3C_AB);
-    this.webhooksService.sendSlackNotification('END_'+smciDc, this.stockHelperService.Z_US_SL.Z_US_SL_4h_3C_BL);
+    this.webhooksService.sendSlackNotification('END_'+tslaDc, this.stockHelperService.Z_US_SL_['4h_3C_AB']);
+    this.webhooksService.sendSlackNotification('END_'+smciDc, this.stockHelperService.Z_US_SL_['4h_3C_BL']);
     this.webhooksService.sendSlackNotification('END_'+macd4huorDc, this.stockHelperService.US_4H_.MACDCR_BL);
     await this.webhooksService.SendDcChannels(['TSLA'],this.logger,`END_4HOUR_${slma50}`);
     await this.webhooksService.SendDcChannels(['SMCI'],this.logger,`END_4OUR_${slma100}`);
@@ -175,12 +175,12 @@ export class TasksUS_ALL_MK_4HOUR_Service {
     await this.webhooksService.SendDcChannels(['MA_AB_20_50'],this.logger,`START_2HOUR_${sl2hourCr}`);
     
     const dcMA_AB_20_50 = `<https://discord.com/channels/1306113720979689523/1436948534346911904|2HOUR> ${'='.repeat(32)}`
-    this.webhooksService.sendSlackNotification('START_'+dcMA_AB_20_50, this.stockHelperService.Z_US_SL.Z_US_SL_2h_CROSS);
+    this.webhooksService.sendSlackNotification('START_'+dcMA_AB_20_50, this.stockHelperService.Z_US_SL_['2h_CROSS']);
 
     await  this.runOnly2h(this.stockHelperService.NextRound_2hourALL)
 
     await this.webhooksService.SendDcChannels(['MA_AB_20_50'],this.logger,`END_2HOUR_${sl2hourCr}`);
-    this.webhooksService.sendSlackNotification('END_'+dcMA_AB_20_50, this.stockHelperService.Z_US_SL.Z_US_SL_2h_CROSS);
+    this.webhooksService.sendSlackNotification('END_'+dcMA_AB_20_50, this.stockHelperService.Z_US_SL_['2h_CROSS']);
   }
 
 

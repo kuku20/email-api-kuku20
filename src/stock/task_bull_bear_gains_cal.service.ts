@@ -33,9 +33,9 @@ export class TasksBullBearGain_CalService {
   async CHECKBULL_BEAR_OTHER_5MIN() {
     const symbols =   await this.getTodaySymbols()
     await this.CHECKBULL_BEAR_OTHER(1.5,symbols);
-    const webhooks = [this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_BL,
-      this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_200,
-      this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_BL_OT,
+    const webhooks = [this.stockHelperService.INTRA_30M_SL_.MACDCR_BL,
+      this.stockHelperService.INTRA_30M_SL_.MACDCR_200,
+      this.stockHelperService.INTRA_30M_SL_.MACDCR_BL_OT,
     ]
     await this.stockHelperService.sendBatchNotification('START','4hour',webhooks,this.webhooksService,300,);
   }
@@ -108,7 +108,7 @@ export class TasksBullBearGain_CalService {
               '5min',
               [ticker],
               data_5min[data_5min.length-1],
-              DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_100:this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_200,
+              DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL_.MACDCR_100:this.stockHelperService.INTRA_30M_SL_.MACDCR_200,
               `\n${FullText} \n`
             );
             const blockre = this.webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
@@ -119,7 +119,7 @@ export class TasksBullBearGain_CalService {
               '5min',
               [ticker],
               data_5min[data_5min.length-1],
-              DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_50:this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_BL,
+              DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL_.MACDCR_50:this.stockHelperService.INTRA_30M_SL_.MACDCR_BL,
               `\n${FullText} \n`
             );
             const blockre = this.webhooksService.getSlBlock(ticker,'accessory_price_check',ticker)
@@ -175,7 +175,7 @@ export class TasksBullBearGain_CalService {
                     '5min',
                     [ticker],
                     data_5min[data_5min.length-1],
-                    this.stockHelperService.INTRA_30M_SL.US_30M_WATCH,
+                    this.stockHelperService.INTRA_30M_SL_.WATCH,
                     `\n${FullText} \n`
                   );
                   const blockre = this.webhooksService.getSlBlock(ticker,'accessory_price_check',ticker)
@@ -201,7 +201,7 @@ export class TasksBullBearGain_CalService {
                 '5min',
                 [ticker],
                 data_5min[data_5min.length-1],
-                this.stockHelperService.INTRA_30M_SL.US_30M_MACDCR_BL_OT,
+                this.stockHelperService.INTRA_30M_SL_.MACDCR_BL_OT,
                 `\n${FullText} \n`
               );
               await this.webhooksService.sendDiscord(

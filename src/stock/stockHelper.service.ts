@@ -34,75 +34,75 @@ export class StockHelperService {
     this.slackTokenKey = tokenKey;
   }
   AI_SL = {
-    "AI_BUY": "C0B6SH7PRL7",
-    "AI_ERORR": "C0B79ETB41F",
-    "AI_PRICE": "C0B79ET5YP3",
-    "AI_RE_BUY": "C0B77KWCTHQ",
-    "AI_RE_HOLD": "C0B7B8CEPK6",
-    "AI_RE_SELL": "C0B77KW07NE",
-    "AI_OTHER_ALGO": "C0B748C0BCM"
+    "AI_BUY": "C0BDW0M7K71",
+    "AI_ERORR": "C0BED9VV6BB",
+    "AI_PRICE": "C0BDW0MFNEB",
+    "AI_RE_BUY": "C0BF5NS9BS4",
+    "AI_RE_HOLD": "C0BE9BPA754",
+    "AI_RE_SELL": "C0BEBE78ZMY",
+    "AI_OTHER_ALGO": "C0BF5NRPW8Y"
   }
   BULL_BEAR_SL_={
-    "QQQ": "C0BB38WBFDG",
-    "SPY": "C0BAZSSLDPF",
+    "QQQ": "C0BDVTH05M5",
+    "SPY": "C0BEBBP36DQ"
   }
-  INTRA_30M_SL = {
-    "US_30M_MACDCR_50": "C0B77L78RQA",
-    "US_30M_MACDCR_100": "C0B748QD877",
-    "US_30M_MACDCR_200": "C0B748Q1QP7",
-    "US_30M_MACDCR_BL": "C0B79F4SNJV",
-    "US_30M_MACDCR_BL_OT": "C0BDV0R7ZV2",
-    "US_30M_WATCH": "C0B7B8PQP8U"
+  INTRA_30M_SL_ = {
+    "MACDCR_50": "C0BE82TEZA9",
+    "MACDCR_100": "C0BE9BP4J5C",
+    "MACDCR_200": "C0BE82TJ16H",
+    "MACDCR_BL": "C0BDW0MCXP1",
+    "MACDCR_BL_OT": "C0BDW0N16EB",
+    "WATCH": "C0BDW0MQ1D5"
   }
   BTN_SL={
-    "HOLDING": "C0BANRCJDB9",
-    "WATCH": "C0BANRCLEDV",
+    "HOLDING": "C0BED9WJNRF",
+    "WATCH": "C0BE9BPPJTY"
   }
   US_4H_ = {
-    "STOCHRSI": "C0B6S6EK8GP",
-    "MACDCR_50": "C0B75J37RU6",
-    "MACDCR_100": "C0B7191503V",
-    "MACDCR_200": "C0B7B8Q7B6Y",
-    "MACDCR_BL": "C0B748NQ9DK",
-    "OSC_50": "C0B77L7KKFC",
-    "OSC_100": "C0B75J2C22J",
-    "OSC_200": "C0B748PNBFF",
-    "OSC_BL": "C0B75J408NS",
-    "WATCH": "C0B79F4P0MP",
-    "WATCH_BUY": "C0B8Q7S6137",
+    "STOCHRSI": "C0BE54AE0PM",
+    "MACDCR_50": "C0BE9BPEN6A",
+    "MACDCR_100": "C0BE9BPNYNS",
+    "MACDCR_200": "C0BE9BPQPL6",
+    "MACDCR_BL": "C0BEF3YSHMJ",
+    "OSC_50": "C0BDW0MRZE3",
+    "OSC_100": "C0BEF3Y5C76",
+    "OSC_200": "C0BED9WS73K",
+    "OSC_BL": "C0BE549PALB",
+    "WATCH": "C0BE549SLAX",
+    "WATCH_BUY": "C0BE82UQ9GV"
   }
   US_DAILY_ = {
-    "STOCHRSI": "C0B6S5ABATZ",
-    "MACDCR_50": "C0B6S5ACDB9",
-    "MACDCR_100": "C0B6S59SAVD",
-    "MACDCR_200": "C0B6S5A6NGP",
-    "MACDCR_BL": "C0B717VRNF5",
-    "OSC_50": "C0B81TFTURE",
-    "OSC_100": "C0B81TEP5MW",
-    "OSC_200": "C0B77K2HECS",
-    "OSC_BL": "C0B79DZRKNV",
-    "WATCH": "C0B717X3KT5",
-    "WATCH_BUY": "C0B8Q7RB9FX",
-    "RSI_15": "C0B77K2AQP4",
-    "RSI_20": "C0B6S59GVKR",
-    "RSI_25": "C0B7B7KTKNY"
+    "STOCHRSI": "C0BE9BQ46ES",
+    "MACDCR_50": "C0BEBE8CMEW",
+    "MACDCR_100": "C0BF5NSKRK2",
+    "MACDCR_200": "C0BED9X9541",
+    "MACDCR_BL": "C0BE82UUYF7",
+    "OSC_50": "C0BED9XHLU9",
+    "OSC_100": "C0BDW0N8KU7",
+    "OSC_200": "C0BEF3YQS12",
+    "OSC_BL": "C0BDW0NMARM",
+    "WATCH": "C0BF5NTS0EL",
+    "WATCH_BUY": "C0BF5NT09EC",
+    "RSI_15": "C0BE54ABFEX",
+    "RSI_20": "C0BEF3YU5FE",
+    "RSI_25": "C0BE9BQ769L"
   }
-  VN_SL = {
-    "VN_D_MACDCR_50": "C0B75J31XB8",
-    "VN_D_MACDCR_100": "C0B79F47CSD",
-    "VN_D_MACDCR_200": "C0B6S6F3HST",
-    "VN_D_MACDCR_BL": "C0B81UM57UY"
+  VN_SL_ = {
+    "MACDCR_50": "C0BDW0P4ZAB",
+    "MACDCR_100": "C0BE54AD151",
+    "MACDCR_200": "C0BF5NTDHG8",
+    "MACDCR_BL": "C0BEF3YQ6MS"
    }
-   Z_US_SL = {
-    "Z_US_SL_4h_3C_AB": "C0B79NFE401",
-    "Z_US_SL_4h_3C_BL": "C0B74FZSUJH",
-    "Z_US_SL_2h_CROSS": "C0B71GB82M9",
-    "Z_US_SL_HOLDING": "C0B826H2ADN",
-    "Z_US_SL_HOLDING_C_SELL": "C0B8C5LSTL7",
-    "Z_US_SL_J2DAY": "C0B75RDBJG6",
-    "Z_US_SL_J3DAY": "C0B75RD90UE",
-    "Z_US_SL_OR": "C0B79NF825P",
-    "Z_US_SL_OR4": "C0B74FZQZRT"
+   Z_US_SL_ = {
+    "4h_3C_AB": "C0BED9XMWD7",
+    "4h_3C_BL": "C0BE9BQCDEJ",
+    "2h_CROSS": "C0BDW0NR2KH",
+    "HOLDING": "C0BE54B52V9",
+    "HOLDING_C_SELL": "C0BEF3ZN8BW",
+    "J2DAY": "C0BE82V286R",
+    "J3DAY": "C0BE82VJDEH",
+    "OR": "C0BE54BGCD9",
+    "OR4": "C0BEBE96W7L"
    }
    US_WK_ = {
     "STOCHRSI": "C0B769TEVK8",
@@ -1115,9 +1115,11 @@ SELL ALL
   
     for (const hook of webhooks) {
       try {
+        console.log(`Sending notification to ${hook}: ${message}`);
         await service.sendSlackNotification(message, hook);
-        await this.sleep(delayMs);
+        // await this.sleep(delayMs);
       } catch (error) {
+        console.log(error)
         console.error(`Failed to send notification to ${hook}`, error);
       }
     }
@@ -1236,7 +1238,7 @@ SELL ALL
     // Prepare ticker promises with concurrency limit
     let data = await stockService.TwReveseNOAPI(ticker, timeframe);
     if (!Array.isArray(data) || data.length < 2) {
-      await this.sendBatchNotification('START',`${true?'TwReveseNOAPI':'POLYGON2'}-`+ticker,[this.Z_US_SL.Z_US_SL_OR4],webhooksService,500);
+      await this.sendBatchNotification('START',`${true?'TwReveseNOAPI':'POLYGON2'}-`+ticker,[this.Z_US_SL_.OR4],webhooksService,500);
       return;
     }
     const getText = await this.CHECKBULL_BEAR_ReTurnText(ticker,timeframe,data)
