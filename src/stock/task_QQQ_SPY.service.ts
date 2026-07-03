@@ -25,7 +25,7 @@ export class TaskQQQ_SPYService {
     await this.CHECKBULL_BEAR(0)
   }
 
-  @Cron('*/5 9-16 * * 1-5', { timeZone: 'America/New_York' })
+  // @Cron('*/5 9-16 * * 1-5', { timeZone: 'America/New_York' })
   async CHECKBULL_BEAR_5MIN() {
     await this.CHECKBULL_BEAR(1.5);
   }
