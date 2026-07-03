@@ -52,7 +52,8 @@ export class StockHelperService {
     "MACDCR_200": "C0BE82TJ16H",
     "MACDCR_BL": "C0BDW0MCXP1",
     "MACDCR_BL_OT": "C0BDW0N16EB",
-    "WATCH": "C0BDW0MQ1D5"
+    "WATCH": "C0BDW0MQ1D5",
+    "ALLGREEN":'C0BEFD29QHK'
   }
   BTN_SL={
     "HOLDING": "C0BED9WJNRF",
@@ -606,21 +607,21 @@ async calculateOSC(
     return match ? `${match[1]}` : symbol;
   }
 
-  // Common NYSE holidays (update annually)
+  // NYSE full market holidays - 2026
   private readonly holidays = [
-    '2026-01-01', // New Year’s Day
+    '2026-01-01', // New Year's Day (Thursday)
     '2026-01-19', // Martin Luther King Jr. Day
-    '2026-02-16', // Presidents’ Day
+    '2026-02-16', // Washington's Birthday (Presidents' Day)
     '2026-04-03', // Good Friday
     '2026-05-25', // Memorial Day
-    '2026-06-19', // Juneteenth
-    '2026-07-04', // Independence Day
+    '2026-06-19', // Juneteenth National Independence Day (Observed)
+    '2026-07-03', // Independence Day (Observed)
     '2026-09-07', // Labor Day
-    '2026-11-26', // Thanksgiving
-    '2026-12-25', // Christmas
+    '2026-11-26', // Thanksgiving Day
+    '2026-12-25', // Christmas Day
   ];
 
-  // Half trading days (market closes at 1:00 PM ET)
+  // NYSE early close (1:00 PM ET) - 2026
   private readonly halfDays = [
     '2026-11-27', // Day after Thanksgiving
     '2026-12-24', // Christmas Eve
@@ -1188,22 +1189,31 @@ SELL ALL
         lastData.close > lastData[period] &&
         secondLastData.close < secondLastData[period]
       ) {
-        return `CrAb${period}🟢🟢`;
+        return 'CR_AB';
       }
     
       if (
         lastData.close < lastData[period] &&
         secondLastData.close > secondLastData[period]
       ) {
-        return `CrBl${period}🔴🔴`;
+        return 'CR_BL';
       }
-    
+      if (
+        lastData.close > lastData[period] ){
+        return 'AB';
+      }
+      if (
+        lastData.close < lastData[period] ){
+        return 'BL';
+      }
       return '';
     };
-    
-    const crMA50 = getMACross(lastData, secondLastData, 'MA50');
-    const crMA120 = getMACross(lastData, secondLastData, 'MA120');
-    const crMA200 = getMACross(lastData, secondLastData, 'MA200');
+    const crMA50Text = getMACross(lastData, secondLastData, 'MA50')
+    const crMA120Text = getMACross(lastData, secondLastData, 'MA120')
+    const crMA200Text = getMACross(lastData, secondLastData, 'MA200')
+    const crMA50 = crMA50Text==='CR_AB'? '`CrAbMA50🟢🟢`':crMA50Text==='AB'?'50AB🟢':'CrBlMA50🔴';
+    const crMA120 = crMA120Text ==='CR_AB' && crMA50Text==='AB'? '`CrAbMA50CrAbMA120🟢🟢`':crMA120Text==='AB'?'120AB🟢':'CrBlMA120🔴';
+    const crMA200 = crMA200Text ==='CR_AB' && crMA50Text==='AB' && crMA120Text==='AB' ? '`CrAbMA50CrAbMA120CrAbMA200🟢🟢`':crMA200Text==='AB'?'200AB🟢':'CrBlMA200🔴';
     const crSignal = `${crMA50}${crMA120}${crMA200}${lastData.MA50_Angle}`
     const isGreenOrRed = lastData.close > lastData.open ?'bar_🟢_green':lastData?.close < lastData?.open ?'bar_🔴_red':'';
     if(macdCrossAB){

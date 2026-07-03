@@ -324,6 +324,7 @@ export class TasksBullBearService {
     const webhooks = [this.stockHelperService.INTRA_30M_SL_.WATCH,
       this.stockHelperService.INTRA_30M_SL_.MACDCR_100,
       this.stockHelperService.INTRA_30M_SL_.MACDCR_50,
+      this.stockHelperService.INTRA_30M_SL_.ALLGREEN
     ]
     await this.stockHelperService.sendBatchNotification('START','4hour',webhooks,this.webhooksService,300,);
   }
@@ -387,15 +388,13 @@ export class TasksBullBearService {
               data_5min
           );
           FullText += `${text_5min}\n`;
-          if(text_5min.includes('CrAbMA')){
-            let nextText = ''
-            if(text_5min.includes('CrAbMA50')){
-              nextText = 'PREPARE TO BUY:'
-            } else if(text_5min.includes('CrAbMA120')){
+          if(text_5min.includes('CrAbMA50')){
+            let nextText = 'PREPARE TO BUY:'
+            if(text_5min.includes('CrAbMA50CrAbMA120')){
               nextText = 'BUY MORE:'
-            } else if(text_5min.includes('CrAbMA200')){
-              nextText = 'BUY MORE MORE: '
-            }
+            } else if(text_5min.includes('CrAbMA50CrAbMA120CrAbMA200')){
+              nextText = 'BUY MORE MORE:'
+            } 
             await this.webhooksService.sendDiscord(
               nextText+FullText,
               `${ticker}-ON-${timeframe}-${'macdCrossAB'}`,
@@ -461,7 +460,34 @@ export class TasksBullBearService {
                   data_1hour
                 );
                 FullText += `${text_1hour}\n`;
-                if(text_30min.includes('BUYY🟢🟢')|| text_30min.includes('AB🟢🟢')){
+                if(!FullText.includes('🔴')){
+                  await this.webhooksService.sendDiscord(
+                    FullText,
+                    `${ticker}-ON-${timeframe}-${'macdCrossAB'}`,
+                    data_1hour[data_1hour.length-1],
+                    'US_ALL', 
+                    data_1hour,
+                  );
+                  const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
+                    '5min',
+                    [ticker],
+                    data_1hour[data_1hour.length-1],
+                    this.stockHelperService.INTRA_30M_SL_.ALLGREEN,
+                    `\n${FullText} \n`
+                  );
+                  const blockre = this.webhooksService.getSlBlock(ticker,'accessory_price_check',ticker)
+                    // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
+                  await this.webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
+                  if(text_15min.includes(checktext)){
+                    await this.webhooksService.addReaction_SLack(postToCSLRE.postToCSLRE.channel, postToCSLRE.postToCSLRE.ts, 'heart');
+                    if(text_1hour.includes(checktext)){
+                      await this.webhooksService.addReaction_SLack(postToCSLRE.postToCSLRE.channel, postToCSLRE.postToCSLRE.ts, 'cold_face');
+                    }
+                  } else if(text_30min.includes('macdCr_N')|| text_15min.includes('macdCr_N')){
+                    await this.webhooksService.addReaction_SLack(postToCSLRE.postToCSLRE.channel, postToCSLRE.postToCSLRE.ts, 'b');
+                  }
+                  return
+                }else if(text_30min.includes('BUYY🟢🟢')|| text_30min.includes('AB🟢🟢')){
                   // sent with good to buy check macd 0.1<0.6
                                   // send to watchlist
                   await this.webhooksService.sendDiscord(
