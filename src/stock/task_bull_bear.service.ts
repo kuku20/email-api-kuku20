@@ -463,7 +463,7 @@ export class TasksBullBearService {
                 if(!FullText.includes('🔴')){
                   await this.webhooksService.sendDiscord(
                     FullText,
-                    `${ticker}-ON-${timeframe}-${'macdCrossAB'}`,
+                    `${ticker}-ON-${`1hour`}-${'macdCrossAB'}`,
                     data_1hour[data_1hour.length-1],
                     'US_ALL', 
                     data_1hour,

@@ -5815,7 +5815,8 @@ export const watchlist = [
   'VRT',
   'XOM',
   'SPCX',
-  'GLXY'
+  'GLXY',
+  'ADBE',
 ];
 interface Watchlist {
   [key: string]: {
@@ -5840,17 +5841,25 @@ export const watchlistBB: Watchlist = {
   MSFT: { BULL: ['MSFU', 'MSFL'], BEAR: ['MSFD'] },
   QQQ: { BULL: ['TQQQ', 'QLD'], BEAR: ['SQQQ', 'QID', 'PSQ'] },
   SPY: { BULL: ['SSO', 'UPRO'], BEAR: ['SH', 'SPXU', 'SDS'] },
+  AMD: { BULL: ['AMDL'], BEAR: ['DAMD'] },
+  PLTR: { BULL: ['PLTD', 'PLTG', 'PLTU', 'PTIR', 'PLTA'], BEAR: ['PLTZ'] },
+  COIN: { BULL: ['CONL', 'COIA'], BEAR: ['CONI'] },
+  NBIS: { BULL: ['NBIL', 'NEBX', 'NBIG'], BEAR: ['NBIZ'] },
+  QCOM: { BULL: ['QCML', 'QCMU'], BEAR: ['QCMD'] },
+  TSM: { BULL: ['TSMU', 'TSMX'], BEAR: ['TSMZ', 'STSM'] },
+  SPCX: {
+    BULL: ['SPCH', 'SPCU', 'LOFF', 'SPAL', 'SPCF'],
+    BEAR: ['SSPC', 'SPCQ', 'SPCG'],
+  },
+  NFLX: { BULL: ['NFXL', 'NFLU'], BEAR: ['NFXS'] },
   DJT: { BULL: ['DJTU'], BEAR: [] },
   TTD: { BULL: ['TTDU'], BEAR: [] },
   INTC: { BULL: ['INTW'], BEAR: [] },
   UNH: { BULL: ['UNHG'], BEAR: [] },
-  AMD: { BULL: ['AMDL'], BEAR: ['DAMD'] },
   AVGO: { BULL: ['AVGX', 'AVGU'], BEAR: [] },
   ORCL: { BULL: ['ORCX'], BEAR: [] },
-  PLTR: { BULL: ['PLTD', 'PLTG', 'PLTU', 'PTIR', 'PLTA'], BEAR: ['PLTZ'] },
   BABA: { BULL: ['BABX'], BEAR: [] },
   BULL: { BULL: ['BULX'], BEAR: [] },
-  COIN: { BULL: ['CONL', 'COIA'], BEAR: ['CONI'] },
   CRWD: { BULL: ['CRWL'], BEAR: [] },
   DELL: { BULL: ['DLLL'], BEAR: [] },
   ETOR: { BULL: ['ETRL'], BEAR: [] },
@@ -5861,13 +5870,10 @@ export const watchlistBB: Watchlist = {
   META: { BULL: ['FBL', 'METU'], BEAR: [] },
   MRVL: { BULL: ['MVLL', 'MRVU'], BEAR: [] },
   MU: { BULL: ['MULL'], BEAR: [] },
-  NBIS: { BULL: ['NBIL', 'NEBX', 'NBIG'], BEAR: ['NBIZ'] },
   NOW: { BULL: ['NOWL'], BEAR: [] },
   PDD: { BULL: ['PDDL'], BEAR: [] },
-  QCOM: { BULL: ['QCML', 'QCMU'], BEAR: ['QCMD'] },
   RDDT: { BULL: ['RDTL'], BEAR: [] },
   RIVN: { BULL: ['RVNL'], BEAR: [] },
-  TSM: { BULL: ['TSMU', 'TSMX'], BEAR: ['TSMZ', 'STSM'] },
   UBER: { BULL: ['UBRL'], BEAR: [] },
   VRT: { BULL: ['VRTL'], BEAR: [] },
   CRCL: { BULL: ['CRCA'], BEAR: [] },
@@ -5878,12 +5884,11 @@ export const watchlistBB: Watchlist = {
   OKLO: { BULL: ['OKLL'], BEAR: [] },
   HOOD: { BULL: ['ROBN'], BEAR: [] },
   FIG: { BULL: ['FIGG'], BEAR: [] },
-  NFLX: { BULL: ['NFXL', 'NFLU'], BEAR: ['NFXS'] },
   LULU: { BULL: ['LULG'], BEAR: [] },
   GLW: { BULL: ['GLWG'], BEAR: [] },
   AAL: { BULL: ['AALG'], BEAR: [] },
-  GLXY: { BULL: ['GLXU','GLGG'], BEAR: [] },
-  SPCX: { BULL: ['SPCH','SPCU','LOFF','SPAL','SPCF'], BEAR: ['SSPC','SPCQ','SPCG'] },
+  GLXY: { BULL: ['GLXU', 'GLGG'], BEAR: [] },
+  ADBE: { BULL: ['ADBG', 'ADBU'], BEAR: [] },
 };
 
 export const above2billion = [
@@ -16882,7 +16887,4 @@ export const blow500M = [
   'CTA PR A',
 ];
 
-export const skipSymbols =[
-'ETWO',
-'RDUS'
-]
+export const skipSymbols = ['ETWO', 'RDUS'];

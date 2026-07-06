@@ -1235,7 +1235,7 @@ SELL ALL
       ) / 5;
     const compareV = lastData.volume/secondLastData.volume
     const volumeUP = lastData.volume > avgVolume *1.5 ? `|BIG_🟡🟡_VOL *${compareV?.toFixed(2)}*`:''
-    return `*${ticker}* *${timeframe}* =${text}|(${lastData.divergence})|${isGreenOrRed}${volumeUP}${crSignal}==${lastData.date}=${lastData.close}`
+    return `*${ticker}* *${timeframe}* =${text}|(${lastData.divergence})|${isGreenOrRed}${volumeUP}${crSignal}==${lastData.date}=*${lastData.close}*`
   } 
 
   async CHECKBULL_BEAR_processTickers(
