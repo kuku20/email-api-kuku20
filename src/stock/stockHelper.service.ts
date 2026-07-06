@@ -1248,7 +1248,7 @@ SELL ALL
     // Prepare ticker promises with concurrency limit
     let data = await stockService.TwReveseNOAPI(ticker, timeframe);
     if (!Array.isArray(data) || data.length < 2) {
-      await this.sendBatchNotification('START',`${true?'TwReveseNOAPI':'POLYGON2'}-`+ticker,[this.Z_US_SL_.OR4],webhooksService,500);
+      await this.sendBatchNotification('START',`${true?'TwReveseNOAPI':'POLYGON2'}-`+`<https://new-site-pwa.web.app/?stockTicker=THR&endpoint=po&timeframe=1day|${ticker}>`,[this.Z_US_SL_.OR4],webhooksService,500);
       return;
     }
     const getText = await this.CHECKBULL_BEAR_ReTurnText(ticker,timeframe,data)

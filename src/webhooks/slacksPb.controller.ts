@@ -235,7 +235,7 @@ export class SlackPbController {
       // Prepare ticker promises with concurrency limit
       let data = await this.stockService.TwReveseNOAPI(ticker, timeframe);
       if (!Array.isArray(data) || data.length < 2) {
-        await this.stockHelperService.sendBatchNotification('START',`${true?'TwReveseNOAPI':'POLYGON2'}-`+ticker,[this.stockHelperService.Z_US_SL_.OR4],this.webhooksService,500);
+        await this.stockHelperService.sendBatchNotification('START',`${true?'TwReveseNOAPI':'POLYGON2'}-`+`<https://new-site-pwa.web.app/?stockTicker=THR&endpoint=po&timeframe=1day|${ticker}>`,[this.stockHelperService.Z_US_SL_.OR4],this.webhooksService,500);
         return;
       }
       const getText = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(ticker,timeframe,data)
