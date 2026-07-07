@@ -22,6 +22,9 @@ export class TasksBullBearService {
   belowList = []
   belowListUp = []
   async onModuleInit() {
+    const addToDailyRun = await this.LocalPLWR.FireBaseApi('get',`stock-related/addToDailyRun.json`,'')
+    const moreSymbols = Object.keys(addToDailyRun)
+    console.log('moreSymbols',moreSymbols)
 
     // const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stock-related/holding.json`,'')
     // console.log(holdingObj)
@@ -347,7 +350,10 @@ export class TasksBullBearService {
       return;
     }
     try {
-      await this.CHECKBULL_5_15_30_1h(symbols,delay)
+      const addToDailyRun = await this.LocalPLWR.FireBaseApi('get',`stock-related/addToDailyRun.json`,'')
+      const moreSymbols = Object.keys(addToDailyRun)
+      const uniqueCombine =  Array.from(new Set([...moreSymbols, ...DataSymbols.watchlist]))
+      await this.CHECKBULL_5_15_30_1h(uniqueCombine,delay)
     } catch (error) {
       console.error('timeframe failed:', error);
       throw error;
@@ -412,8 +418,8 @@ export class TasksBullBearService {
             );
             const blockre = this.webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
             await this.webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
-          }
-          if(text_5min.includes('BIG_🟡🟡_VOL') && text_5min.includes('bar_🟢_green') && text_5min.includes('AB🟢🟢BUYY🟢🟢')){
+          } else if(text_5min.includes('BIG_🟡🟡_VOL') && text_5min.includes('bar_🟢_green')){
+            // && text_5min.includes('AB🟢🟢BUYY🟢🟢')
             const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
               '5min',
               [ticker],
@@ -431,8 +437,7 @@ export class TasksBullBearService {
               DataSymbols.watchlist.includes(ticker)?'US_EARLY_15MIN': 'US_15M_HT',
               data_5min,
             );
-          }
-          else if(text_5min.includes(checktext)){
+          } else if(text_5min.includes(checktext)){
             // send can buy: check macd call the 
             const data_15min = await this.LocalPLWR.TwReveseNOAPI(ticker, '15min');
             const text_15min = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
@@ -487,7 +492,7 @@ export class TasksBullBearService {
                     await this.webhooksService.addReaction_SLack(postToCSLRE.postToCSLRE.channel, postToCSLRE.postToCSLRE.ts, 'b');
                   }
                   return
-                }else if(text_30min.includes('BUYY🟢🟢')|| text_30min.includes('AB🟢🟢')){
+                } else if(text_30min.includes('BUYY🟢🟢')|| text_30min.includes('AB🟢🟢')){
                   // sent with good to buy check macd 0.1<0.6
                                   // send to watchlist
                   await this.webhooksService.sendDiscord(
@@ -516,6 +521,30 @@ export class TasksBullBearService {
                     await this.webhooksService.addReaction_SLack(postToCSLRE.postToCSLRE.channel, postToCSLRE.postToCSLRE.ts, 'b');
                   }
                   return
+                } else {
+                  console.log('stop at 15')
+                  // buy earlly if 
+                  const last5min = data_5min[data_5min.length-1]
+                  const MACDP = last5min.divergence > 0
+                  const closeCrosMA50 = last5min.close > last5min.MA50 && data_5min[data_5min.length-2].close < data_5min[data_5min.length-2].MA50
+                  const closeCrosMA200 = last5min.close > last5min.MA200 && data_5min[data_5min.length-2].close < data_5min[data_5min.length-2].MA200
+                  if(MACDP && closeCrosMA50){
+                    await this.webhooksService.sendDiscord(
+                      FullText,
+                      `${ticker}-ON-${timeframe}-${'macdCrossAB'}`,
+                      data_5min[data_5min.length-1],
+                      'USSTOCK_WATCH', 
+                      data_5min,
+                    );}else if(MACDP && closeCrosMA200){
+                      await this.webhooksService.sendDiscord(
+                        FullText,
+                        `${ticker}-ON-${timeframe}-${'closeCrosMA200'}`,
+                        data_5min[data_5min.length-1],
+                        'USSTOCK_WATCH', 
+                        data_5min,
+                      );
+                    }
+                  return
                 }
               } 
               else {
@@ -532,13 +561,34 @@ export class TasksBullBearService {
               );
               await this.webhooksService.sendDiscord(
                 FullText,
-                `${ticker}-ON-${timeframe}-${'macdCrossAB'}`,
+                `${ticker}-ON-${timeframe}-${'15-macdCrossAB'}`,
                 data_5min[data_5min.length-1],
                 'US_30M_HT', 
                 data_5min,
               );
             } else {
               console.log('stop at 15')
+              // buy earlly if 
+              const last5min = data_5min[data_5min.length-1]
+              const MACDP = last5min.divergence > 0
+              const closeCrosMA50 = last5min.close > last5min.MA50 && data_5min[data_5min.length-2].close < data_5min[data_5min.length-2].MA50
+              const closeCrosMA200 = last5min.close > last5min.MA200 && data_5min[data_5min.length-2].close < data_5min[data_5min.length-2].MA200
+              if(MACDP && closeCrosMA50){
+                await this.webhooksService.sendDiscord(
+                  FullText,
+                  `${ticker}-ON-${timeframe}-${'macdCrossAB'}`,
+                  data_5min[data_5min.length-1],
+                  'USSTOCK_WATCH', 
+                  data_5min,
+                );}else if(MACDP && closeCrosMA200){
+                  await this.webhooksService.sendDiscord(
+                    FullText,
+                    `${ticker}-ON-${timeframe}-${'closeCrosMA200'}`,
+                    data_5min[data_5min.length-1],
+                    'USSTOCK_WATCH', 
+                    data_5min,
+                  );
+                }
               return
             }
           } else {
