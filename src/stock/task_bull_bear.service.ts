@@ -393,6 +393,11 @@ export class TasksBullBearService {
               timeframe,
               data_5min
           );
+          const last5min = data_5min[data_5min.length-1]
+          const MACDP = last5min.divergence > 0
+          const closeCrosMA50 = last5min.close > last5min.MA50 && data_5min[data_5min.length-2].close < data_5min[data_5min.length-2].MA50
+          const closeCrosMA200 = last5min.close > last5min.MA200 && data_5min[data_5min.length-2].close < data_5min[data_5min.length-2].MA200
+
           FullText += `${text_5min}\n`;
           if(text_5min.includes('CrAbMA50')){
             let nextText = 'PREPARE TO BUY:'
@@ -524,10 +529,6 @@ export class TasksBullBearService {
                 } else {
                   console.log('stop at 15')
                   // buy earlly if 
-                  const last5min = data_5min[data_5min.length-1]
-                  const MACDP = last5min.divergence > 0
-                  const closeCrosMA50 = last5min.close > last5min.MA50 && data_5min[data_5min.length-2].close < data_5min[data_5min.length-2].MA50
-                  const closeCrosMA200 = last5min.close > last5min.MA200 && data_5min[data_5min.length-2].close < data_5min[data_5min.length-2].MA200
                   if(MACDP && closeCrosMA50){
                     await this.webhooksService.sendDiscord(
                       FullText,
@@ -535,7 +536,8 @@ export class TasksBullBearService {
                       data_5min[data_5min.length-1],
                       'USSTOCK_WATCH', 
                       data_5min,
-                    );}else if(MACDP && closeCrosMA200){
+                    );
+                  } else if(MACDP && closeCrosMA200){
                       await this.webhooksService.sendDiscord(
                         FullText,
                         `${ticker}-ON-${timeframe}-${'closeCrosMA200'}`,
@@ -543,12 +545,29 @@ export class TasksBullBearService {
                         'USSTOCK_WATCH', 
                         data_5min,
                       );
-                    }
+                  }
                   return
                 }
-              } 
-              else {
+              } else {
                 console.log('stop at 30')
+                // buy earlly if 
+                if(MACDP && closeCrosMA50){
+                  await this.webhooksService.sendDiscord(
+                    FullText,
+                    `${ticker}-ON-${timeframe}-${'macdCrossAB'}`,
+                    data_5min[data_5min.length-1],
+                    'USSTOCK_WATCH', 
+                    data_5min,
+                  );
+                } else if(MACDP && closeCrosMA200){
+                  await this.webhooksService.sendDiscord(
+                    FullText,
+                    `${ticker}-ON-${timeframe}-${'closeCrosMA200'}`,
+                    data_5min[data_5min.length-1],
+                    'USSTOCK_WATCH', 
+                    data_5min,
+                  );
+                }
                 return
               }
             } else if(text_15min.includes('macdCr_N')){
@@ -580,7 +599,8 @@ export class TasksBullBearService {
                   data_5min[data_5min.length-1],
                   'USSTOCK_WATCH', 
                   data_5min,
-                );}else if(MACDP && closeCrosMA200){
+                );
+              } else if(MACDP && closeCrosMA200){
                   await this.webhooksService.sendDiscord(
                     FullText,
                     `${ticker}-ON-${timeframe}-${'closeCrosMA200'}`,
