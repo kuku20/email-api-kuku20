@@ -69,9 +69,9 @@ curl --location '{{rootUrl}}/stock{{newfhep}}/insider-transactions?stockTicker=R
 ### get insider transactions
 curl --location '{{rootUrl}}/stock{{newfhep}}/insider-transactions?stockTicker=ROKU'
 ### Get company profile
-curl --location '{{rootUrl}}/stock{{newfhep}}/company-profile?stockTicker=aal'
+curl --location '{{rootUrl}}/stock{{newfhep}}/company-profile?stockTicker=AAL'
 ###
-{{rootUrl}}/stock/fh/earnings?end=2024-01-17
+{{rootUrl}}/stock/fh/earnings?end=2026-06-26
 ### Get ticker news for 5day
 # curl --location '{{rootUrl}}/stock/news-v1?stockTicker=AAL'
 ### Get ticker news from 2023-01-11 to 2023-02-11
@@ -123,7 +123,10 @@ curl --location '{{rootUrl}}/stock{{newfmep}}/multiple-company-prices?stockTicke
 ### Get losers
 curl --location '{{rootUrl}}/stock{{newfmep}}/gainers-or-losers?stockMarket=losers'
 ### Get gainers
-curl --location '{{rootUrl}}/stock{{newfmep}}/gainers-or-losers'
+curl --location '{{rootUrl}}/stock{{newfmep}}/gainers-or-losers?stockMarket=gainers'
+
+### Get most-actives
+curl --location '{{rootUrl}}/stock{{newfmep}}/gainers-or-losers?stockMarket=most-actives'
 ###
 GET /stock{{newfmep}}/gainers-or-losers?stockMarket=gainers HTTP/1.1
 Host: localhost:3000
@@ -146,10 +149,10 @@ curl --location '{{rootUrl}}/stock/chartdata/{{timespanfmp}}?stockTicker=QQQ&ran
 curl --location '{{rootUrl}}/stock/daily-chart?stockTicker=TSLA&start=2024-10-23&end=2024-10-24'
 
 ###
-@srcEndPoint = po
+@srcEndPoint = fm
 ## po, fm
 ### get data for chart with start day and end day
-curl --location '{{rootUrl}}/stock/chartdata/v2/{{srcEndPoint}}?stockTicker=QQQ&start=2024-01-20&end=2025-10-24'
+curl --location '{{rootUrl}}/stock/chartdata/v2/{{srcEndPoint}}?stockTicker=QQQ&start=2025-01-20&end=2026-05-24'
 
 
 ### get metric from finhub
@@ -293,7 +296,7 @@ GET http://localhost:3000/stock/chartdata/v2/fm?stockTicker=MDB&start=2025-11-15
 GET http://localhost:3000/stock/chartdata/v2/po?stockTicker=QQQ&start=2025-11-15&end=2025-11-16
 
 ### get po
-GET http://localhost:3000/stock/githublocalfm/fm?ticker=TTD&timeframe=5min
+GET http://localhost:3000/stock/githublocalfm/fm?ticker=AAPL&timeframe=1day
 
 ### get fm
 GET http://localhost:3000/stock/githublocalfm/fm?ticker=BTCUSD&timeframe=5min

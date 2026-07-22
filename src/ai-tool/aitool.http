@@ -15,7 +15,7 @@ curl --location '{{rootUrl}}/auth/v2/signin' \
 curl --location '{{rootUrl}}/auth/v2/signout'
 
 ### Sign IN
-curl --location '{{rootUrl}}/ai-tool/gemini' \
+curl --location '{{rootUrl}}/ai-tool/deepseek' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "message": "I give the data on share prices over today, write a report of no more than 400 words describing the stocks performance and recommending whether to buy, hold or sell:",
@@ -43,10 +43,10 @@ curl --location '{{rootUrl}}/ai-tool/get-advice' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "message": "I give the data bellow, just guess the high, low, and close the next 1 days using teachnical analysis base on your gut, it do NOT need to be accurate JUST GUESS",
-    "ticker":"QQQ",
-    "start":"2024-10-16",
-    "end":"2024-10-18",
-    "selectedApi":"po",
+    "ticker":"SMCI",
+    "start":"2024-11-21",
+    "end":"2024-11-21",
+    "selectedApi":"fm",
     "type":"guess"
 }'
 
@@ -69,4 +69,20 @@ curl --location 'http://localhost:3000/ai-tool/fb/guess/ENPH'
 ### test with out aaa guess
 curl --location 'http://localhost:3000/ai-tool/fb/losers/2024-10-24'
 
+###
+curl https://api.x.ai/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer xai-jul0Ztv854AEa1q79X6PD75MLofQMby2sjLOGD9e5ZhYtCXSXeAy8V2QirhO2cQnMTcSPQ2lEPgWppr5" -d '{
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a test assistant."
+    },
+    {
+      "role": "user",
+      "content": "Testing. Just say hi and hello world and nothing else."
+    }
+  ],
+  "model": "grok-beta",
+  "stream": false,
+  "temperature": 0
+}'
 

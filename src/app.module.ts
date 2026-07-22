@@ -70,6 +70,7 @@ import { SlackService } from './slack/slack.service';
 import { Tasks_US_WEEKLY } from './stock/task_us_weekly.service';
 import { TaskQQQ_SPYService } from './stock/task_QQQ_SPY.service';
 import { TasksBullBearGain_CalService } from './stock/task_bull_bear_gains_cal.service';
+import { TasksGainsLosersService } from './stock/task_gains_losrs.service';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -189,7 +190,8 @@ import { TasksBullBearGain_CalService } from './stock/task_bull_bear_gains_cal.s
     // TasksUSMKService_SP500,
     // TasksUS_ALL_MK_4HOUR_Service,
     // TasksBullBearService,
-    // TasksBullBearGain_CalService
+    // TasksBullBearGain_CalService,
+    // TasksGainsLosersService
   ],
 })
 export class AppModule {}

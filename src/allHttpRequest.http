@@ -33,23 +33,6 @@ curl --location '{{path}}/stock/dividends?stockTicker=ROKU'
 curl --location '{{path}}/stock/earnings?end=2023-11-05'
 
 
-### get insider transactions
-curl --location '{{path}}/stock/insider-transactions?stockTicker=ROKU'
-
-### get multiple-company-prices
-curl --location '{{path}}/stock/multiple-company-prices?stockTicker=ROKU,AAL,bill'
-
-### Get current price
-curl --location '{{path}}/stock/v2/realtimeprice?stockTicker=ROKU'
-
-### Get losers
-curl --location '{{path}}/stock/gainers-or-losers?stockMarket=losers'
-### Get gainers
-curl --location '{{path}}/stock/gainers-or-losers?stockMarket=gainers'
-
-### Get company profile
-curl --location '{{path}}/stock/company-profile?stockTicker=aal'
-
 
 ### validation 
 curl --location '{{path}}/auth/v2/signup' \
@@ -74,3 +57,8 @@ curl --location '{{path}}/auth/v2/me'
 
 ### signout
 curl --location '{{path}}/auth/v2/signout'
+
+
+https://nestjs-api.koyeb.app/mega/stream?url=https%3A%2F%2Fmega.nz%2Ffile%2FoTgiCKib%23M2TyXr8cBTJzUI1oFyyZ9L92Of0hRv5VxbDvOBncGbs
+
+http://localhost:3000/mega/stream?url=https%3A%2F%2Fmega.nz%2Ffile%2FoTgiCKib%23M2TyXr8cBTJzUI1oFyyZ9L92Of0hRv5VxbDvOBncGbs

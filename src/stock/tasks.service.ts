@@ -377,6 +377,15 @@ export class TasksService {
     }
     return  last.close > last.MA200;
   }
+
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  async deleteFB() {
+    await this.LocalPLWR.FireBaseApi(
+      'delete',
+      `${this.stockHelperService.todayUpGains}.json`,
+      {},
+    );
+  }
 }
 
 

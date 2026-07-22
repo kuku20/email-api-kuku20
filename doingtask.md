@@ -60,3 +60,15 @@
 - Refer to the [Slack API documentation](https://api.slack.com) for detailed guidance.
 - Ensure your Ngrok session is active when testing.
 - Secure your endpoints using Slack's signing secret.
+
+
+ ngrok http 3000
+
+
+https://juice-muskiness-splashed.ngrok-free.dev/slack/interactions
+
+https://nestjs-api.koyeb.app/slack/interactions
+
+https://nestjs-api.koyeb.app/slack/suggestion
+
+https://api.slack.com/apps/A0B7TNVEKBP/interactive-messages

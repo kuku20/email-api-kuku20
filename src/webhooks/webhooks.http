@@ -52,3 +52,12 @@ curl --location '{{rootUrl}}/webhooks/delete-messages-all' \
 
 ###
 http://localhost:3000/stock/fh/company-profile?stockTicker=AMZN
+
+
+
+### Post to Slack Interactions
+curl --location '{{rootUrl}}/slack/interactions' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "message": "Hello Slack! This is a test interaction message."
+}'

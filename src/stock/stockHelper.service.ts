@@ -8,6 +8,7 @@ interface SlackMessage {
 export class StockHelperService {
   // aboveMA50api: string = `sun-04-19-2026-blowMA200`;
   aboveMA50api: string = `run-daily`;
+  todayUpGains = 'today-gainers-losers';
   ab50_bl200_3Candles: string[] = [];
   stockRSILAUP_4hourALL: string[] = [];
   NextRound_4hourALL: string[] = [];
@@ -1234,7 +1235,7 @@ SELL ALL
         sixthLastData.volume
       ) / 5;
     const compareV = lastData.volume/secondLastData.volume
-    const volumeUP = lastData.volume > avgVolume *1.5 ? `|BIG_🟡🟡_VOL *${compareV?.toFixed(2)}*`:''
+    const volumeUP = (lastData.volume > avgVolume *1.5 && lastData.close > lastData.open && lastData.divergence > 0) ? `|BIG_🟡🟡_VOL *${compareV?.toFixed(2)}*`:''
     return `*${ticker}* *${timeframe}* =${text}|(${lastData.divergence})|${isGreenOrRed}${volumeUP}${crSignal}==${lastData.date}=*${lastData.close}*`
   } 
 
@@ -1248,7 +1249,7 @@ SELL ALL
     // Prepare ticker promises with concurrency limit
     let data = await stockService.TwReveseNOAPI(ticker, timeframe);
     if (!Array.isArray(data) || data.length < 2) {
-      await this.sendBatchNotification('START',`${true?'TwReveseNOAPI':'POLYGON2'}-`+`<https://new-site-pwa.web.app/?stockTicker=THR&endpoint=po&timeframe=1day|${ticker}>`,[this.Z_US_SL_.OR4],webhooksService,500);
+      await this.sendBatchNotification('START',`${true?'TwReveseNOAPI':'POLYGON2'}-`+`<https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day|${ticker}>`,[this.Z_US_SL_.OR4],webhooksService,500);
       return;
     }
     const getText = await this.CHECKBULL_BEAR_ReTurnText(ticker,timeframe,data)

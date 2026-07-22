@@ -2090,19 +2090,24 @@ async getAllMessages_SLack(channel: string): Promise<string[]> {
             );
 
             if (!replyData.ok) {
-              console.log( 'conversations.replies failed:',);
+              console.log( 'conversations.replies failed:');
             } else {
               const replies = replyData.messages || [];
 
               // Skip parent (index 0)
               for (const reply of replies.slice(1)) {
                 if (reply?.ts) {
-                  replyTs.push(reply.ts);
+                  // replyTs.push(reply.ts);
+                  await new Promise((r) => setTimeout(r, 100));
+                  const results = await this.deleteMessage_SLack(
+                    channel,
+                    [reply.ts],
+                  );
                 }
               }
             }
           } catch (error) {
-            console.log('conversations.replies exception:',);
+            console.log('conversations.replies exception:',error.response.data);
           }
         }
 
@@ -2167,7 +2172,7 @@ async deleteMessage_SLack(
         });
       }
 
-      await sleep(1200);
+      await sleep(500);
     } catch (error) {
 
 

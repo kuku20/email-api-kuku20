@@ -115,7 +115,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
           );
           // let  data = await this.LocalPLWR.TwReveseNOAPI(ticker, timeframe);
           if (!Array.isArray(data) || data.length < 2) {
-            await this.stockHelperService.sendBatchNotification('START',`${false?'TwReveseNOAPI':'POLYGON2'}-`+`<https://new-site-pwa.web.app/?stockTicker=THR&endpoint=po&timeframe=1day|${ticker}>`,[this.stockHelperService.Z_US_SL_.OR4],this.webhooksService,500);
+            await this.stockHelperService.sendBatchNotification('START',`${false?'TwReveseNOAPI':'POLYGON2'}-`+`<https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day|${ticker}>`,[this.stockHelperService.Z_US_SL_.OR4],this.webhooksService,500);
             this.logger.warn(`⚠️ No valid data for ${ticker} (${timeframe})`);
             return;
           }
@@ -447,7 +447,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
           let  data = await this.LocalPLWR.TwReveseNOAPI(ticker, timeframe);
 
           if (!Array.isArray(data) || data.length < 2) {
-            await this.stockHelperService.sendBatchNotification('START',`${true?'TwReveseNOAPI':'POLYGON2'}-`+`<https://new-site-pwa.web.app/?stockTicker=THR&endpoint=po&timeframe=1day|${ticker}>`,[this.stockHelperService.Z_US_SL_.OR4],this.webhooksService,500);
+            await this.stockHelperService.sendBatchNotification('START',`${true?'TwReveseNOAPI':'POLYGON2'}-`+`<https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day|${ticker}>`,[this.stockHelperService.Z_US_SL_.OR4],this.webhooksService,500);
 
             this.logger.warn(`⚠️ No valid data for ${ticker} (${timeframe})`);
             return;
@@ -609,7 +609,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
           let  data = await this.LocalPLWR.TwReveseNOAPI(ticker, timeframe);
 
           if (!Array.isArray(data) || data.length < 2) {
-            await this.stockHelperService.sendBatchNotification('START',`${true?'TwReveseNOAPI':'POLYGON2'}-`+`<https://new-site-pwa.web.app/?stockTicker=THR&endpoint=po&timeframe=1day|${ticker}>`,[this.stockHelperService.Z_US_SL_.OR4],this.webhooksService,500);
+            await this.stockHelperService.sendBatchNotification('START',`${true?'TwReveseNOAPI':'POLYGON2'}-`+`<https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day|${ticker}>`,[this.stockHelperService.Z_US_SL_.OR4],this.webhooksService,500);
             this.logger.warn(`⚠️ No valid data for ${ticker} (${timeframe})`);
             return;
           }
@@ -911,7 +911,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
             );
           if (!Array.isArray(data) || data.length < 2) {
             this.logger.warn(`⚠️ No valid data for ${ticker} (${timeframe})`);
-            await this.stockHelperService.sendBatchNotification('START',`${use_TwNoApi?'TwReveseNOAPI':'POLYGON2'}-`+`<https://new-site-pwa.web.app/?stockTicker=THR&endpoint=po&timeframe=1day|${ticker}>`,[this.stockHelperService.Z_US_SL_.OR4],this.webhooksService,500);
+            await this.stockHelperService.sendBatchNotification('START',`${use_TwNoApi?'TwReveseNOAPI':'POLYGON2'}-`+`<https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day|${ticker}>`,[this.stockHelperService.Z_US_SL_.OR4],this.webhooksService,500);
             return;
           }
           const lastData = data[data.length - 1];
@@ -1095,7 +1095,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
               );
             if (!Array.isArray(data) || data.length < 2) {
               this.logger.warn(`⚠️ No valid data for ${ticker} (${timeframe})`);
-              await this.stockHelperService.sendBatchNotification('START',`${use_TwNoApi?'TwReveseNOAPI':'POLYGON2'}-`+`<https://new-site-pwa.web.app/?stockTicker=THR&endpoint=po&timeframe=1day|${ticker}>`,[this.stockHelperService.Z_US_SL_.OR4],this.webhooksService,500);
+              await this.stockHelperService.sendBatchNotification('START',`${use_TwNoApi?'TwReveseNOAPI':'POLYGON2'}-`+`<https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day|${ticker}>`,[this.stockHelperService.Z_US_SL_.OR4],this.webhooksService,500);
               return;
             }
 
