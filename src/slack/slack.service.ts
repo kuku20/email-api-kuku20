@@ -6,6 +6,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { WebClient } from '@slack/web-api';
 import { StockHelperService } from 'src/stock/stockHelper.service';
+import { WebhooksService } from 'src/webhooks/webhooks.service';
 
 
 /*
@@ -21,6 +22,7 @@ export class SlackService implements OnModuleInit {
   private readonly client: WebClient;
 
   constructor(
+    private readonly webhooksService: WebhooksService,
     private readonly configService: ConfigService,
     private readonly stockHelperService: StockHelperService,
   ) {
@@ -40,19 +42,25 @@ export class SlackService implements OnModuleInit {
 
     // OPTIONAL: auto-create on startup
     // Comment this out if you don't want Slack API calls on boot
-    // await this.createDailyChannels('BULL_BEAR_SL_',this.stockHelperService.BULL_BEAR_SL_,);
-    // await this.createDailyChannels('AI_SL',this.stockHelperService.AI_SL,);
-    // await this.createDailyChannels('INTRA_30M_SL_',this.stockHelperService.INTRA_30M_SL_,);
-    // await this.createDailyChannels('BTN_SL',this.stockHelperService.BTN_SL,);
-    // await this.createDailyChannels('US_4H_',this.stockHelperService.US_4H_,);
-    // await this.createDailyChannels('US_DAILY_',this.stockHelperService.US_DAILY_,);
-    // await this.createDailyChannels('VN_SL_',this.stockHelperService.VN_SL_,);
-    // await this.createDailyChannels('Z_US_SL_',this.stockHelperService.Z_US_SL_,);
+    let botUserId = null
+    // botUserId = this.getBotOrUserId('SLACK_BOT_TOKEN')
+    
+    // await this.createDailyChannels('AI_SL',this.stockHelperService.AI_SL,botUserId);
+    // await this.createDailyChannels('BULL_BEAR_SL_',this.stockHelperService.BULL_BEAR_SL_,botUserId);
+    // await this.createDailyChannels('INTRA_30M_SL_',this.stockHelperService.INTRA_30M_SL_,botUserId);
+    // await this.createDailyChannels('BTN_SL',this.stockHelperService.BTN_SL,botUserId);
+    // await this.createDailyChannels('US_4H_',this.stockHelperService.US_4H_,botUserId);
+    // await this.createDailyChannels('US_DAILY_',this.stockHelperService.US_DAILY_,botUserId);
+    // await this.createDailyChannels('VN_SL_',this.stockHelperService.VN_SL_,botUserId);
+    // await this.createDailyChannels('Z_US_SL_',this.stockHelperService.Z_US_SL_,botUserId);
 
     // this.stockHelperService.setSlackToken('SLACK_BOT_TOKEN_WEEKLY');
     // await this.createDailyChannels(this.stockHelperService.US_WK_); SLACK_BOT_TOKEN_WEEKLY
     // this.stockHelperService.setSlackToken('SLACK_USER_TRADING_TOKEN')
     // await this.createDailyChannels(this.stockHelperService.US_WK_); 
+
+    // await this.dailyCleanup()
+    // await this.postDeleteBtn()
   }
 
   private normalizeChannelName(name: string): string {
@@ -143,14 +151,14 @@ export class SlackService implements OnModuleInit {
   async createDailyChannels(
     prefix: string,
     channels: Record<string, string> = {},
+    addId2Channel?
   ) {
     const result: Record<string, string> = {};
-  
     for (const key of Object.keys(channels)) {
       const channel = await this.getOrCreateChannel(`${prefix}${key}`);
   
-      if (channel) {
-        await this.addUserToChannel(channel.id!, 'U0BE430MMUN');
+      if (channel && addId2Channel) {
+        await this.addUserToChannel(channel.id!, addId2Channel);
         result[key] = channel.id!;
         await this.client.conversations.join({
           channel: channel.id,
@@ -165,5 +173,41 @@ export class SlackService implements OnModuleInit {
     this.logger.log(JSON.stringify(result, null, 2));
   
     return result;
+  }
+  async postDeleteBtn() {
+    const channels = [
+      ...Object.values(this.stockHelperService.US_DAILY_), 
+      ...Object.values(this.stockHelperService.US_4H_), 
+      ...Object.values(this.stockHelperService.VN_SL_), 
+      ...Object.values(this.stockHelperService.Z_US_SL_), 
+      ...Object.values(this.stockHelperService.AI_SL), 
+      ...Object.values(this.stockHelperService.INTRA_30M_SL_), 
+      ...Object.values(this.stockHelperService.BULL_BEAR_SL_), 
+      ...Object.values(this.stockHelperService.BTN_SL)
+    ];
+    await channels.forEach(async channel=>{
+        await this.webhooksService.fePostToHold2(
+          'QQQ',
+          null,
+          'clear_each',
+          channel
+      );
+    })
+  }
+  async dailyCleanup() {    
+    await this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.US_DAILY_))
+    await this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.US_4H_))
+    await this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.VN_SL_))
+    await this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.Z_US_SL_))
+    await this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.AI_SL))
+    await this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.BTN_SL))
+    await this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.INTRA_30M_SL_))
+    await this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.BULL_BEAR_SL_))
+  }
+  async getBotOrUserId(token='SLACK_BOT_TOKEN'){
+    this.stockHelperService.slackTokenKey = token;
+    const auth = await this.client.auth.test();
+    console.log(auth.user_id); // Bot's user ID
+    return auth.user_id;
   }
 }

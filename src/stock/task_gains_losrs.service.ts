@@ -18,7 +18,7 @@ export class TasksGainsLosersService {
   ) {}
   private readonly logger = new Logger(TasksGainsLosersService.name);
   async onModuleInit() {
-     await this.getGainsLosers()
+    //  await this.getGainsLosers()
     // await this.deleteFB();
   }
   @Cron('*/6 9-16 * * 1-5', { timeZone: 'America/New_York' }) // washlist

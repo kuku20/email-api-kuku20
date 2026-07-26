@@ -31,80 +31,83 @@ export class StockHelperService {
   apitwelveCount = 0
 
   slackTokenKey = 'SLACK_BOT_TOKEN';
+  skipPostDiscord = false;
+  slackPosted = []
   setSlackToken(tokenKey: string) {
     this.slackTokenKey = tokenKey;
   }
   AI_SL = {
-    "AI_BUY": "C0BDW0M7K71",
-    "AI_ERORR": "C0BED9VV6BB",
-    "AI_PRICE": "C0BDW0MFNEB",
-    "AI_RE_BUY": "C0BF5NS9BS4",
-    "AI_RE_HOLD": "C0BE9BPA754",
-    "AI_RE_SELL": "C0BEBE78ZMY",
-    "AI_OTHER_ALGO": "C0BF5NRPW8Y"
+    "AI_BUY": "C0BKW5WDZ8S",
+    "AI_ERORR": "C0BKU6DC7FG",
+    "AI_PRICE": "C0BKPU9QFKM",
+    "AI_RE_BUY": "C0BKZSKE5N0",
+    "AI_RE_HOLD": "C0BLQFR4STA",
+    "AI_RE_SELL": "C0BKU6DH6DU",
+    "AI_OTHER_ALGO": "C0BKW5W4W74"
   }
   BULL_BEAR_SL_={
-    "QQQ": "C0BDVTH05M5",
-    "SPY": "C0BEBBP36DQ"
+    "QQQ": "C0BKU6DPH2S",
+    "SPY": "C0BKZSJQENQ"
   }
   INTRA_30M_SL_ = {
-    "MACDCR_50": "C0BE82TEZA9",
-    "MACDCR_100": "C0BE9BP4J5C",
-    "MACDCR_200": "C0BE82TJ16H",
-    "MACDCR_BL": "C0BDW0MCXP1",
-    "MACDCR_BL_OT": "C0BDW0N16EB",
-    "WATCH": "C0BDW0MQ1D5",
-    "ALLGREEN":'C0BEFD29QHK'
+    "MACDCR_50": "C0BKU6E11GE",
+    "MACDCR_100": "C0BKU6DLT2A",
+    "MACDCR_200": "C0BKPU95CUB",
+    "MACDCR_BL": "C0BKSSZ7RJ9",
+    "MACDCR_BL_OT": "C0BKY3P929F",
+    "WATCH": "C0BKZSJH6N8",
+    "ALLGREEN": "C0BKPUAFCTD",
+    "EARLY_CHECK": "C0BKZSK6NE8"
   }
   BTN_SL={
-    "HOLDING": "C0BED9WJNRF",
-    "WATCH": "C0BE9BPPJTY"
+    "HOLDING": "C0BKSSYU93P",
+    "WATCH": "C0BKU6DH8DU"
   }
   US_4H_ = {
-    "STOCHRSI": "C0BE54AE0PM",
-    "MACDCR_50": "C0BE9BPEN6A",
-    "MACDCR_100": "C0BE9BPNYNS",
-    "MACDCR_200": "C0BE9BPQPL6",
-    "MACDCR_BL": "C0BEF3YSHMJ",
-    "OSC_50": "C0BDW0MRZE3",
-    "OSC_100": "C0BEF3Y5C76",
-    "OSC_200": "C0BED9WS73K",
-    "OSC_BL": "C0BE549PALB",
-    "WATCH": "C0BE549SLAX",
-    "WATCH_BUY": "C0BE82UQ9GV"
+    "STOCHRSI": "C0BKPU9L7M1",
+    "MACDCR_50": "C0BKU6DUUJJ",
+    "MACDCR_100": "C0BKSSZ7GNR",
+    "MACDCR_200": "C0BKY3P9J3B",
+    "MACDCR_BL": "C0BLQFKMWP2",
+    "OSC_50": "C0BKSSYU82Z",
+    "OSC_100": "C0BKST05093",
+    "OSC_200": "C0BKU6E3JF8",
+    "OSC_BL": "C0BKY2C3TL1",
+    "WATCH": "C0BKU6EP7KQ",
+    "WATCH_BUY": "C0BKW5WN53L"
   }
   US_DAILY_ = {
-    "STOCHRSI": "C0BE9BQ46ES",
-    "MACDCR_50": "C0BEBE8CMEW",
-    "MACDCR_100": "C0BF5NSKRK2",
-    "MACDCR_200": "C0BED9X9541",
-    "MACDCR_BL": "C0BE82UUYF7",
-    "OSC_50": "C0BED9XHLU9",
-    "OSC_100": "C0BDW0N8KU7",
-    "OSC_200": "C0BEF3YQS12",
-    "OSC_BL": "C0BDW0NMARM",
-    "WATCH": "C0BF5NTS0EL",
-    "WATCH_BUY": "C0BF5NT09EC",
-    "RSI_15": "C0BE54ABFEX",
-    "RSI_20": "C0BEF3YU5FE",
-    "RSI_25": "C0BE9BQ769L"
+    "STOCHRSI": "C0BKZSKBUTE",
+    "MACDCR_50": "C0BKZSKSCAY",
+    "MACDCR_100": "C0BKSSZ1FAR",
+    "MACDCR_200": "C0BKW5WVAUS",
+    "MACDCR_BL": "C0BKPU9KR7D",
+    "OSC_50": "C0BKZSKRVNG",
+    "OSC_100": "C0BLQFRHZME",
+    "OSC_200": "C0BKEQF50NT",
+    "OSC_BL": "C0BLQFSJKQ8",
+    "WATCH": "C0BKW5X09L2",
+    "WATCH_BUY": "C0BLQFHGHBJ",
+    "RSI_15": "C0BKSSZ91RB",
+    "RSI_20": "C0BKPUAPCH1",
+    "RSI_25": "C0BKY3Q5A3B"
   }
   VN_SL_ = {
-    "MACDCR_50": "C0BDW0P4ZAB",
-    "MACDCR_100": "C0BE54AD151",
-    "MACDCR_200": "C0BF5NTDHG8",
-    "MACDCR_BL": "C0BEF3YQ6MS"
+    "MACDCR_50": "C0BKEQFEA23",
+    "MACDCR_100": "C0BKEQFL3U7",
+    "MACDCR_200": "C0BKZSL56AG",
+    "MACDCR_BL": "C0BKEQFF52B"
    }
    Z_US_SL_ = {
-    "4h_3C_AB": "C0BED9XMWD7",
-    "4h_3C_BL": "C0BE9BQCDEJ",
-    "2h_CROSS": "C0BDW0NR2KH",
-    "HOLDING": "C0BE54B52V9",
-    "HOLDING_C_SELL": "C0BEF3ZN8BW",
-    "J2DAY": "C0BE82V286R",
-    "J3DAY": "C0BE82VJDEH",
-    "OR": "C0BE54BGCD9",
-    "OR4": "C0BEBE96W7L"
+    "4h_3C_AB": "C0BKY3PAY8Z",
+    "4h_3C_BL": "C0BKY3PV17B",
+    "2h_CROSS": "C0BKU6DSXSA",
+    "HOLDING": "C0BKU6ET21L",
+    "HOLDING_C_SELL": "C0BKW5WU99Q",
+    "J2DAY": "C0BKZSKS7FW",
+    "J3DAY": "C0BLQFRP880",
+    "OR": "C0BKPUAF9LK",
+    "OR4": "C0BKZSLGUN8"
    }
    US_WK_ = {
     "STOCHRSI": "C0B769TEVK8",
@@ -1112,7 +1115,7 @@ SELL ALL
     service:any,
     delayMs = 1000,
   ): Promise<void> {
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toISOString().slice(0, 16).replace('T', ' ');
     const message = `${type}+${timeframe}+${today}+${type}${'='.repeat(50)}`;
   
     for (const hook of webhooks) {
@@ -1222,9 +1225,9 @@ SELL ALL
     }else if(macdCrossBL){
       text = aboveOrBelowma50?'*macdCrossNBL-🔴🔴🔴AB_SELL🔴🔴🔴*':'macdCrossNBL-SELLLLLLLL-DAY-🔴🔴🔴PUT_NOW_SELL🔴🔴🔴'
     }else if(aboveOrBelowma50){
-      text = `*BUY🟢🟢AB🟢🟢${macdGreenOrRed}*`
+      text = `*BUY🟢🟢AB🟢🟢${macdGreenOrRed}*(MA50:${lastData.MA50})`
     }else{
-      text = `*SELL🔴🔴BL🔴🔴${macdGreenOrRed}*`
+      text = `*SELL🔴🔴BL🔴🔴${macdGreenOrRed}*(MA50:${lastData.MA50})`
     }
     // by volume
     const avgVolume =  (

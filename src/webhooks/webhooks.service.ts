@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import puppeteer from 'puppeteer';
 import axios from 'axios';
 import * as Timer from '../stock/compareTime';
 import { ConfigService } from '@nestjs/config';
-import { AttachmentBuilder, EmbedBuilder, WebhookClient } from 'discord.js';
+import { AttachmentBuilder, EmbedBuilder, WebhookClient,  Client,
+  GatewayIntentBits, } from 'discord.js';
 import pLimit from 'p-limit';
 import { StockHelperService } from 'src/stock/stockHelper.service';
 import * as DataSymbols from '../stock/dto/chartData';
@@ -29,8 +30,9 @@ const timeframeScoreMap: Record<Timeframe, number> = {
 };
 
 @Injectable()
-export class WebhooksService {
+export class WebhooksService implements OnModuleInit{
   private webhookClient: WebhookClient;
+  private discordBot: Client;
   private WEBHOOKS_ENV: Record<string, string>;
   private WEBHOOKS_CN: Record<string, string>;
   private rsiChannels: string[];
@@ -50,6 +52,10 @@ export class WebhooksService {
     );
     const channelsStr = this.configService.get<string>('RSI_CHANNELS') || '';
     this.rsiChannels = channelsStr.split(',').map((c) => c.trim());
+
+    this.discordBot = new Client({
+      intents: [GatewayIntentBits.Guilds],
+    });
   }
 
   async sendSlackNotification(message: string, other = '1day') {
@@ -176,17 +182,25 @@ export class WebhooksService {
     // ✅ If there's a file (image), attach it
     // Ensure you are passing a proper Buffer here
     if (file && file instanceof Buffer) {
-      const filename = 'capture.png'; // Name the image file
+      const filename = `${ticker}.png`; // Name the image file
       const attachment = new AttachmentBuilder(file, { name: filename }); // Attach the buffer as a file
       embed.setImage(`attachment://${filename}`);
       options.files = [attachment]; // Add to options
     } else if (file) {
-      const filename = 'capture.png';
+      const filename = `${ticker}.png`;
       const attachment = new AttachmentBuilder(file.buffer, { name: filename });
       embed.setImage(`attachment://${filename}`);
       options.files = [attachment];
     }
-    const sentMessage = await this.webhookClient.send(options);
+    let sentMessage
+    try {
+      sentMessage = await this.withTimeout(
+        this.webhookClient.send(options),
+        15000, // 10 seconds
+      );
+    } catch (err) {
+      return null
+    }
     const WEBHOOKS_CNA = this.WEBHOOKS_CN[webhookCl] || this.WEBHOOKS_CN.Other;
     await this.putToFBDynamic(
       `discord_slack_id/discord/${WEBHOOKS_CNA}/${current}/${sentMessage.id}.json`,
@@ -208,11 +222,23 @@ export class WebhooksService {
     //     ...options,
     //   });
     // }
-    return { msg: 'post to discord success', ...sentMessage };
+    return { msg: 'post to discord success', ...sentMessage};
   }
   async RsiToDatabase(target: any, current: any, data: any) {
     const firebaseUrl = `alerts/${target}/${current}.json`;
     await this.putToFBDynamic(firebaseUrl, data, 'put');
+  }
+
+  async withTimeout<T>(
+    promise: Promise<T>,
+    ms: number,
+  ): Promise<T> {
+    return Promise.race([
+      promise,
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error(`Timeout after ${ms}ms`)), ms),
+      ),
+    ]);
   }
 
   async StopNTarget(lastdata: any) {
@@ -567,7 +593,7 @@ export class WebhooksService {
     };
 
     if (file) {
-      const filename = 'capture.png';
+      const filename = `${ticker}.png`;
       const attachment = new AttachmentBuilder(file.buffer, { name: filename });
       options.files = [attachment];
     }
@@ -622,6 +648,9 @@ export class WebhooksService {
     channel: string,
     data?: any,
   ) {
+    if(this.stockHelperService.skipPostDiscord){
+      return { msg: 'Skipping Discord post due to skipPostDiscord flag' };
+    }
     try {
       const fileBuffer = await this.captureChart(
         data,
@@ -1443,7 +1472,7 @@ export class WebhooksService {
   };
 
   if (file) {
-    const filename = 'capture.png';
+     const filename = `${ticker}.png`;
     const attachment = new AttachmentBuilder(file.buffer, { name: filename });
     options.files = [attachment];
   }
@@ -1818,6 +1847,7 @@ export class WebhooksService {
     slChannel :string,
     msg :string,
   ) {
+    this.stockHelperService.slackPosted.push(slChannel)
     const isFullDataArray = Array.isArray(fullData);
     let lastData = isFullDataArray? fullData[fullData.length - 1]: fullData;
     const BASE_URL = slChannel;
@@ -2797,6 +2827,13 @@ async deleteAllMessages_SLack(channel: string) {
   
   async onModuleInit() {
     this.stockHelperService.watchlistSl_tss = await this.getAllMsgCheck(this.stockHelperService.BTN_SL.WATCH)
+    await this.discordBot.login(
+      this.configService.get<string>('DISCORD_BOT_TOKEN'),
+    );
+
+    console.log('Discord bot connected');
+    // await this.clearChannel('1440511808644452493')// big_vol1
+    // await this.clearChannel('1457917895421067396')// big_vol2
   }
   async askTokeepIncread(symbol,fullData){
     const holdingObj = await this.stockService.FireBaseApi_OB('get',`stock-related/holding/${symbol}.json`,'')
@@ -2853,5 +2890,54 @@ async deleteAllMessages_SLack(channel: string) {
     const res = await this.aiToolService.getResFromGemini(aiMesAsk);
     const trimdata = this.stockHelperService.markdownToSlack(res)
     return trimdata;
+  }
+
+  async replyToMessage(
+    channelId: string,
+    messageId: string,
+    content: string,
+    imageBuffer?:any
+  ) {
+    if(this.stockHelperService.skipPostDiscord){
+      return { msg: 'Skipping Discord post due to skipPostDiscord flag' };
+    }
+    const channel = await this.discordBot.channels.fetch(channelId);
+  
+    if (!channel || !channel.isTextBased()) {
+      throw new Error('Invalid channel');
+    }
+    const filename = 'chart.png';
+
+    const attachment = new AttachmentBuilder(imageBuffer, {
+      name: filename,
+    });
+    const message = await channel.messages.fetch(messageId);
+  
+    const sentMessage = await message.reply({
+      content,
+      files: imageBuffer ? [attachment] : [],
+    });
+    const imageUrl = sentMessage.attachments.first()?.url;
+    return { msg: 'post to discord success', imageUrl:imageUrl};
+  }
+  async clearChannel(channelId: string) {
+    const channel = await this.discordBot.channels.fetch(channelId);
+    if (!channel || !channel.isTextBased()) {
+      throw new Error('Invalid channel');
+    }
+    while (true) {
+      const messages = await channel.messages.fetch({ limit: 100 });
+
+      if (messages.size === 0) break;
+  
+      for (const message of messages.values()) {
+        console.log(message.id, message.author.username);
+        try {
+          await message.delete();
+        } catch (err) {
+          console.log(`Failed to delete ${message.id}`, err.rawError);
+        }
+      }
+    }
   }
 }
