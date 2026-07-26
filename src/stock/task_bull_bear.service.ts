@@ -388,12 +388,20 @@ export class TasksBullBearService {
           let aboveCount = 0;
           const timeframe = '5min'
           const data_5min = await this.LocalPLWR.TwReveseNOAPI(ticker, timeframe);
+          const last5min = data_5min[data_5min.length-1]
+          const isWithinRange = this.webhooksService.checktimeMinutesEST(
+            ticker,
+            last5min?.date,
+            5,
+          );
+          if (!isWithinRange) {
+            return 0
+          }
           const text_5min = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
               ticker,
               timeframe,
               data_5min
           );
-          const last5min = data_5min[data_5min.length-1]
           const MACDP = last5min.divergence > 0
           const closeCrosMA50 = last5min.close > last5min.MA50 && data_5min[data_5min.length-2].close < data_5min[data_5min.length-2].MA50
           const closeCrosMA200 = last5min.close > last5min.MA200 && data_5min[data_5min.length-2].close < data_5min[data_5min.length-2].MA200

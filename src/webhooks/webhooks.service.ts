@@ -669,14 +669,14 @@ export class WebhooksService implements OnModuleInit{
       throw err;
     }
   }
-  async checktimeMinutesEST(ticker: string, date, time: number) {
+  checktimeMinutesEST(ticker: string, date, time: number) {
     const isWithinRange = Timer.checkIfWithin5MinutesEST(date, time);
     if (isWithinRange) {
-      console.log(ticker, `✅ Within ±${time} minutes of EST time`);
+      console.log(ticker, `✅ Within ±${time} minutes of EST time`,isWithinRange);
       // check one
       return true;
     } else {
-      console.log(ticker, `❌ Outside  ±${time} minutes of EST time: `, date);
+      console.log(ticker, `❌ Outside  ±${time} minutes of EST time: `, isWithinRange,date);
       // await this.sendDiscord(
       //   `ERROR \n url: http://localhost:4200/price-log/${ticker}?daysRange=30`,
       //   `RSIENDBOT ${ticker} at ${date}`,
