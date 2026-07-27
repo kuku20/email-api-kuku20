@@ -1115,7 +1115,7 @@ SELL ALL
     service:any,
     delayMs = 1000,
   ): Promise<void> {
-    const today = new Date().toISOString().slice(0, 16).replace('T', ' ');
+    const today = this.getCSTTime();
     const message = `${type}+${timeframe}+${today}+${type}${'='.repeat(50)}`;
   
     for (const hook of webhooks) {
@@ -1269,5 +1269,12 @@ SELL ALL
 
   } async catch (error) {
     // Send error notification and log the error
+  }
+
+  getCSTTime() {
+    return new Date().toLocaleString('sv-SE', {
+      timeZone: 'America/Chicago',
+      hour12: false,
+    }).slice(0, 16);
   }
 }
