@@ -18,69 +18,95 @@ export class TasksGainsLosersService {
   ) {}
   private readonly logger = new Logger(TasksGainsLosersService.name);
   async onModuleInit() {
-    //  await this.getGainsLosers()
+    // await this.getGainsLosers();
     // await this.deleteFB();
   }
+  sendORnot = [];
   @Cron('*/6 9-16 * * 1-5', { timeZone: 'America/New_York' }) // washlist
   async getGainsLosers() {
-    if (!this.stockHelperService.shouldRunTradingLogicUS(`5min`,this.logger)) {
+    if (this.stockHelperService.shouldRunTradingLogicUS(`5min`, this.logger)) {
       return;
     }
+
+    this.sendORnot = [];
+
     const gainersClass = await this.LocalPLWR.newFMP_NewEndPoint('gainers');
     const gainers = instanceToPlain(gainersClass) as any[];
-    gainers
-      .filter((each) => DataSymbols.allabove500million.includes(each.symbol))
-      .forEach(async (each) => {
+
+    const filtered = gainers.filter((each) =>
+      DataSymbols.allabove500million.includes(each.symbol),
+    );
+    await Promise.all(
+      filtered.map(async (each) => {
         const ticker = each.symbol;
         const indata = await this.getSymbol(ticker);
-        // console.log('indata', typeof(indata), indata);
 
-        if (indata=== "null") {
-          console.log('getGainsLosers');
-          const pist = await this.LocalPLWR.FireBaseApi(
+        if (indata === 'null') {
+          await this.LocalPLWR.FireBaseApi(
             'put',
             `${this.stockHelperService.todayUpGains}/${ticker}.json`,
             { data: each },
           );
-          console.log('pist', pist);
-          // getdata and post to slack and discord
-          if(true){
-            const timeframe = '5min';
-            const data_5min = await this.LocalPLWR.TwReveseNOAPI(
+
+          const timeframe = '5min';
+          const data_5min = await this.LocalPLWR.TwReveseNOAPI(
+            ticker,
+            timeframe,
+          );
+
+          let text_5min =
+            await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
               ticker,
               timeframe,
-            );
-            const text_5min =
-              await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
-                ticker,
-                timeframe,
-                data_5min,
-              );
-            await this.webhooksService.sendDiscord(
-              text_5min,
-              `${ticker}-ON-${timeframe}-${'macdCrossAB'}`,
-              data_5min[data_5min.length - 1],
-              DataSymbols.watchlist.includes(ticker)
-                ? 'MA_BL_5_20'
-                : 'MA_BL_5_200',
               data_5min,
             );
-  
-            const postToCSLRE =
-              await this.webhooksService.sendSlackNotificationVN(
-                '5min',
-                [ticker],
-                data_5min[data_5min.length - 1],
-                DataSymbols.watchlist.includes(ticker)
-                  ? this.stockHelperService.Z_US_SL_['4h_3C_AB']
-                  : this.stockHelperService.Z_US_SL_['4h_3C_BL'],
-                `\n${text_5min} \n`,
-              );
+
+          const discodedata = await this.webhooksService.sendDiscord(
+            text_5min,
+            `${ticker}-ON-${timeframe}-macdCrossAB`,
+            data_5min[data_5min.length - 1],
+            DataSymbols.watchlist.includes(ticker)
+              ? 'MA_BL_5_20'
+              : 'MA_BL_5_200',
+            data_5min,
+          );
+
+          const imageUrl =
+            discodedata?.embeds?.[0]?.image?.url ??
+            discodedata?.attachments?.first()?.url;
+
+          if (imageUrl) {
+            text_5min += `<${imageUrl}|Chart>\n`;
           }
-          return;
+
+          const webhook = DataSymbols.watchlist.includes(ticker)
+            ? this.stockHelperService.Z_US_SL_['4h_3C_AB']
+            : this.stockHelperService.Z_US_SL_['4h_3C_BL'];
+
+          await this.webhooksService.sendSlackNotificationVN(
+            '5min',
+            [ticker],
+            data_5min[data_5min.length - 1],
+            webhook,
+            `\n${text_5min}\n`,
+          );
+
+          this.sendORnot.push(webhook);
         }
-      });
-      await this.stockHelperService.sendBatchNotification('START','checking',[ this.stockHelperService.Z_US_SL_['4h_3C_AB'],this.stockHelperService.Z_US_SL_['4h_3C_BL'],],this.webhooksService,100,);
+      }),
+    );
+
+    console.log(this.sendORnot);
+
+    const webhooks = [...new Set(this.sendORnot)];
+
+    await this.stockHelperService.sendBatchNotification(
+      'START',
+      'checking',
+      webhooks,
+      this.webhooksService,
+      100,
+    );
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
