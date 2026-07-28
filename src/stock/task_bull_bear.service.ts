@@ -423,7 +423,7 @@ export class TasksBullBearService {
             } 
             const discodedata = await this.webhooksService.sendDiscord(
               `**${nextText}**`+FullText,
-              `${ticker}-ON-${timeframe}-${'macdCrossAB'}`,
+              `${ticker}-ON-${timeframe}-${'macdCrossAB-'}`,
               data_5min[data_5min.length-1],
               DataSymbols.watchlist.includes(ticker)?'US_EARLY_5MIN': 'US_5M_HT',
               data_5min,
@@ -454,7 +454,7 @@ export class TasksBullBearService {
 
               const discodedata = await this.webhooksService.sendDiscord(
                 FullText,
-                `${ticker}-ON-${timeframe}-${'macdCrossAB'}`,
+                `${ticker}-ON-${timeframe}-${'BIG_🟡🟡_VOL'}`,
                 data_5min[data_5min.length-1],
                 DataSymbols.watchlist.includes(ticker)?'US_EARLY_15MIN': 'US_15M_HT',
                 data_5min,
@@ -765,7 +765,7 @@ export class TasksBullBearService {
           } else if(text_5min.includes('macdCr_N')){
             const discodedata = await this.webhooksService.sendDiscord(
               `**macdCr_N_be_prepare**`+FullText,
-              `${ticker}-ON-${timeframe}-${'macdCrossAB'}`,
+              `${ticker}-ON-${timeframe}-${'macdCr_N_be_prepare'}`,
               data_5min[data_5min.length-1],
               'EARLY_AB200',
               data_5min,

@@ -2072,7 +2072,7 @@ export class WebhooksService implements OnModuleInit{
 
       if (!data.ok) {
         
-        console.log('Slack post error',data ,channel,text);
+        console.log('Slack post error:post_SLack',data ,channel,text);
         if(data.error === 'message_limit_exceeded' && this.count <= 3){
           this.count++;
           // let's sent to discord if slack message limit exceeded
@@ -2081,6 +2081,15 @@ export class WebhooksService implements OnModuleInit{
             `ERORR_CALL RSIENDBOT`,
             JSON.stringify('lastdata'),
           );
+        }else if(data.error === 'account_inactive'&& this.count <= 3){
+          this.count++;
+          // let's sent to discord if slack message limit exceeded
+          await this.sendDiscordNotification(
+            `account_inactive:${channel}, ${text.substring(0, 100)}...`,
+            `ERORR_CALL RSIENDBOT`,
+            JSON.stringify('lastdata'),
+          );
+          return null
         }
       }
 
