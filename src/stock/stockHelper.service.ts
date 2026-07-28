@@ -28,6 +28,7 @@ export class StockHelperService {
   HoldingList: string[] = [];
   Just2day: string[] = [];
   watchlistSl_tss: SlackMessage[] = [];
+  holdingSl_tss: SlackMessage[] = [];
   lastPosted: SlackMessage[] = [];
   public readonly bullbearUqiue = 'b6r_'
   bullbearDaily= 'setTorun'

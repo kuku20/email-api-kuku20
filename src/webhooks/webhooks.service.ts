@@ -1917,15 +1917,22 @@ export class WebhooksService implements OnModuleInit{
       if(!postToCSLRE || !postToCSLRE.ts || !postToCSLRE.channel){
         console.log('---SL-ERR---', postToCSLRE.error);
         throw new Error('Failed to post to Slack');
-      } else if(DataSymbols.watchlist.includes(symbols[0])&& (msg.includes(this.stockHelperService.bullbearUqiue)||this.stockHelperService.bullbearDaily.includes(this.stockHelperService.bullbearUqiue))){
-          const getTs = this.getTsBySymbol(symbols[0],this.stockHelperService.watchlistSl_tss)
-          if(getTs){
-            const signalThread = this.stockHelperService.getSlackMessageLink(this.stockHelperService.BTN_SL.WATCH, getTs);
-            this.reply_SLack(slChannel,postToCSLRE.ts,signalThread)
-            this.reply_SLack(this.stockHelperService.BTN_SL.WATCH,getTs,formatted)
+      } else if((msg.includes(this.stockHelperService.bullbearUqiue)||this.stockHelperService.bullbearDaily.includes(this.stockHelperService.bullbearUqiue))){
+        const tsNCh =
+            this.getTsBySymbol(symbols[0], this.stockHelperService.watchlistSl_tss) ||
+            this.getTsBySymbol(symbols[0], this.stockHelperService.holdingSl_tss);
+            console.log(tsNCh)
+          if (tsNCh) {
+            const signalThread = this.stockHelperService.getSlackMessageLink(
+              tsNCh.channel,
+              tsNCh.ts
+            );
+            await this.reply_SLack(slChannel, postToCSLRE.ts, signalThread);
+            await this.reply_SLack(tsNCh.channel, tsNCh.ts, formatted);
           } else{
-            await this.post2SlackBtnFn(slChannel,symbols[0],timeframe)
-            this.reply_SLack(this.stockHelperService.BTN_SL.WATCH,getTs,formatted)
+            const blockre = this.getSlBlock(symbols[0],'accessory_full_watchlist',symbols[0])
+            await this.reply_SLack(slChannel,postToCSLRE.ts,'withBlock',blockre)
+            // await this.post2SlackBtnFn(slChannel,symbols[0],timeframe)
           }
       }
       await new Promise(resolve => setTimeout(resolve, 5000));
@@ -2813,16 +2820,27 @@ async deleteAllMessages_SLack(channel: string) {
           headers: this.aiToolService.headers,
         },
       );
-  
       if (!data.ok) {
         console.log('History failed:', data);
         return [];
       }
-  
-      return (data.messages || []).map(
+      const seen = new Set<string>();
+      return (data.messages || [])
+      .filter(({ text }) => {
+        if (!text) return false;
+    
+        if (seen.has(text)) {
+          return false;
+        }
+    
+        seen.add(text);
+        return true;
+      })
+      .map(
         ({ text, ts }: { text?: string; ts: string }) => ({
           text,
           ts,
+          channel
         }),
       );
     } catch (error) {
@@ -2831,16 +2849,17 @@ async deleteAllMessages_SLack(channel: string) {
     }
   }
 
-  getTsBySymbol(symbol, messages: { text: string; ts: string }[]) {
+  getTsBySymbol(symbol, messages: any[]) {
     const message = messages.find(({ text = '' }) =>
       text.includes(symbol)
     );
   
-    return message?.ts ?? null;
+    return message?.ts?{ts:message?.ts,channel:message.channel}:null;
   }
   
   async onModuleInit() {
     this.stockHelperService.watchlistSl_tss = await this.getAllMsgCheck(this.stockHelperService.BTN_SL.WATCH)
+    this.stockHelperService.holdingSl_tss = await this.getAllMsgCheck(this.stockHelperService.BTN_SL.HOLDING)
     await this.discordBot.login(
       this.configService.get<string>('DISCORD_BOT_TOKEN'),
     );
