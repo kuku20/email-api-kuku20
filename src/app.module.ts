@@ -173,7 +173,7 @@ import { TasksGainsLosersService } from './stock/task_gains_losrs.service';
 
     Tasks_US_WEEKLY,
     TasksService,
-    TasksVNMKService,
+    // TasksVNMKService,
     TaskCryptoService,
     TasksForexService,
     TaskQQQ_SPYService,
