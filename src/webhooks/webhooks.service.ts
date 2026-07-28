@@ -643,24 +643,37 @@ export class WebhooksService implements OnModuleInit{
 
   async sendDiscord(
     message: string,
-    ticker: string,
+    ticker_on_timeframe: string,
     lastdata: any,
     channel: string,
     data?: any,
   ) {
+    const lastSymbolPosted = {
+      text: ticker_on_timeframe.split('-')[0],
+      ts: lastdata.date
+    }
+    const index = this.stockHelperService.lastPosted.findIndex(
+      x => x.text === lastSymbolPosted.text
+    );
+    
+    if (index >= 0) {
+      this.stockHelperService.lastPosted[index] = lastSymbolPosted;
+    } else {
+      this.stockHelperService.lastPosted.push(lastSymbolPosted);
+    }
     if(this.stockHelperService.skipPostDiscord){
       return { msg: 'Skipping Discord post due to skipPostDiscord flag' };
     }
     try {
       const fileBuffer = await this.captureChart(
         data,
-        ticker,
+        ticker_on_timeframe,
         channel,
         message,
       );
       return await this.sendDiscordNotification(
         message,
-        `${channel} ${ticker}`,
+        `${channel} ${ticker_on_timeframe}`,
         JSON.stringify(lastdata),
         fileBuffer,
       );
@@ -1904,16 +1917,17 @@ export class WebhooksService implements OnModuleInit{
       if(!postToCSLRE || !postToCSLRE.ts || !postToCSLRE.channel){
         console.log('---SL-ERR---', postToCSLRE.error);
         throw new Error('Failed to post to Slack');
-      } else if(DataSymbols.watchlist.includes(symbols[0])&& msg.includes(this.stockHelperService.bullbearUqiue)){
+      } else if(DataSymbols.watchlist.includes(symbols[0])&& (msg.includes(this.stockHelperService.bullbearUqiue)||this.stockHelperService.bullbearDaily.includes(this.stockHelperService.bullbearUqiue))){
           const getTs = this.getTsBySymbol(symbols[0],this.stockHelperService.watchlistSl_tss)
           if(getTs){
             const signalThread = this.stockHelperService.getSlackMessageLink(this.stockHelperService.BTN_SL.WATCH, getTs);
             this.reply_SLack(slChannel,postToCSLRE.ts,signalThread)
+            this.reply_SLack(this.stockHelperService.BTN_SL.WATCH,getTs,formatted)
           } else{
             await this.post2SlackBtnFn(slChannel,symbols[0],timeframe)
+            this.reply_SLack(this.stockHelperService.BTN_SL.WATCH,getTs,formatted)
           }
       }
-      
       await new Promise(resolve => setTimeout(resolve, 5000));
       if(timeframe === '1day' && isFullDataArray){
         await this.GeminiRecomendation(postToCSLRE, timeframe, symbols, fullData);

@@ -24,7 +24,7 @@ export class TasksGainsLosersService {
   sendORnot = [];
   @Cron('*/6 9-16 * * 1-5', { timeZone: 'America/New_York' }) // washlist
   async getGainsLosers() {
-    if (this.stockHelperService.shouldRunTradingLogicUS(`5min`, this.logger)) {
+    if (!this.stockHelperService.shouldRunTradingLogicUS(`5min`, this.logger)) {
       return;
     }
 

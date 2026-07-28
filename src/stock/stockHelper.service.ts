@@ -1,9 +1,10 @@
 import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { StockData } from './dto/chartData';
 interface SlackMessage {
-  text: string;
-  ts: string;
+  text: string; // or symbol
+  ts: string; // or lastPostTime
 }
+
 @Injectable()
 export class StockHelperService {
   // aboveMA50api: string = `sun-04-19-2026-blowMA200`;
@@ -27,7 +28,9 @@ export class StockHelperService {
   HoldingList: string[] = [];
   Just2day: string[] = [];
   watchlistSl_tss: SlackMessage[] = [];
-  bullbearUqiue = 'b6r_'
+  lastPosted: SlackMessage[] = [];
+  public readonly bullbearUqiue = 'b6r_'
+  bullbearDaily= 'setTorun'
   apitwelveCount = 0
 
   slackTokenKey = 'SLACK_BOT_TOKEN';
@@ -1104,7 +1107,7 @@ SELL ALL
   }
 
 
-  private sleep(ms: number): Promise<void> {
+  sleep(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
   

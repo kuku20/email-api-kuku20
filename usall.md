@@ -1040,7 +1040,6 @@
 'WK',
 'URBN',
 'SIG',
-'CWAN',
 'PLUG',
 'AGX',
 'BC',
