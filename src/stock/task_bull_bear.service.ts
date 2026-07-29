@@ -783,14 +783,14 @@ export class TasksBullBearService {
             );
 
           } else if(!text_5min.includes('🟢')){
-            const data_15min = await this.LocalPLWR.TwReveseNOAPI(ticker, '15min');
-            const text_15min = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
+            const data_1hour = await this.LocalPLWR.TwReveseNOAPI(ticker, '1hour');
+            const text_1hour = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
               ticker,
-              '15min',
-              data_15min
+              '1hour',
+              data_1hour
             );
-            FullText += `${text_15min}\n`;
-            if(!text_15min.includes('🟢')){
+            FullText += `${text_1hour}\n`;
+            if(!text_1hour.includes('🟢')){
               const data_30min = await this.LocalPLWR.TwReveseNOAPI(ticker, '30min');
               const text_30min = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
                 ticker,
@@ -800,26 +800,34 @@ export class TasksBullBearService {
               FullText += `${text_30min}\n`;
               let displaytext = '5_15_all_red'
               if(!text_30min.includes('🟢')){
-                displaytext += '30too_buysome'
+                const data_15min = await this.LocalPLWR.TwReveseNOAPI(ticker, '15min');
+                const text_15min = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
+                  ticker,
+                  '15min',
+                  data_15min
+                );
+                FullText += `${text_15min}\n`;
+                if(!text_15min.includes('🟢')){
+                  const discodedata = await this.webhooksService.sendDiscord(
+                    FullText,
+                    `${ticker}-ON-${timeframe}-${displaytext}`,
+                    data_5min[data_5min.length-1],
+                    'MA_AB_50_100', 
+                    data_5min,
+                  );
+                  const imageUlr = discodedata?.embeds?.[0]?.image?.url || (discodedata?.attachments??discodedata?.attachments?.first()?.url);
+                  if(imageUlr){
+                    FullText += `<${imageUlr}|Chart> \n`
+                  }
+                  const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
+                    '5min',
+                    [ticker],
+                    data_5min[data_5min.length-1],
+                    this.stockHelperService.INTRA_30M_SL_.D_DOWN,
+                    `*${displaytext}*`+`\n${FullText} \n`
+                  );
+                }
               }
-              const discodedata = await this.webhooksService.sendDiscord(
-                FullText,
-                `${ticker}-ON-${timeframe}-${displaytext}`,
-                data_5min[data_5min.length-1],
-                'MA_AB_50_100', 
-                data_5min,
-              );
-              const imageUlr = discodedata?.embeds?.[0]?.image?.url || (discodedata?.attachments??discodedata?.attachments?.first()?.url);
-              if(imageUlr){
-                FullText += `<${imageUlr}|Chart> \n`
-              }
-              const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
-                '5min',
-                [ticker],
-                data_5min[data_5min.length-1],
-                this.stockHelperService.INTRA_30M_SL_.D_DOWN,
-                `*${displaytext}*`+`\n${FullText} \n`
-              );
             }
 
           } else {
