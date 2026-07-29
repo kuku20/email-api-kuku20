@@ -71,6 +71,7 @@ import { Tasks_US_WEEKLY } from './stock/task_us_weekly.service';
 import { TaskQQQ_SPYService } from './stock/task_QQQ_SPY.service';
 import { TasksBullBearGain_CalService } from './stock/task_bull_bear_gains_cal.service';
 import { TasksGainsLosersService } from './stock/task_gains_losrs.service';
+import { SirvService } from './webhooks/sirv.service';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -170,7 +171,7 @@ import { TasksGainsLosersService } from './stock/task_gains_losrs.service';
     AlphavantageService,
     AiToolService,
     StockService,
-
+    SirvService,
     Tasks_US_WEEKLY,
     TasksService,
     // TasksVNMKService,

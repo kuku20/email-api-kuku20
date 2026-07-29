@@ -1,14 +1,14 @@
-import { Controller, Post, Body, UseGuards, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, UploadedFile, UseInterceptors, Delete, Param } from '@nestjs/common';
 import { WebhooksService } from './webhooks.service';
 import { JwtGuard } from 'src/auth/guard';
 import { AdminUserAuthGuard } from 'src/stock-user/guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { StockService } from 'src/stock/stock.service';
-
+import { SirvService } from './sirv.service';
 // @UseGuards(JwtGuard)
 @Controller('webhooks')
 export class WebhooksController {
-  constructor(private readonly webhooksService: WebhooksService, private readonly stockService: StockService) {}
+  constructor(private readonly webhooksService: WebhooksService, private readonly stockService: StockService, private readonly sirvService: SirvService,) {}
 
   @UseGuards(JwtGuard)
   @Post('discord')
@@ -50,6 +50,28 @@ export class WebhooksController {
       throw err;
     }
   }
+  @Post('discord3')
+  @UseInterceptors(FileInterceptor('file'))
+  uploadImage(
+    @UploadedFile()
+    file: import('multer').File,
+    @Body('message') message: string,
+    @Body('botname') botname: string,
+    @Body('lastdata') lastdata: string,
+  ) {
+    console.log("thisis image 3")
+    return this.sirvService.uploadImage(file);
+  }
+
+  @Delete('image/:filename')
+  deleteImage(
+    @Param('filename')
+    filename: string,
+  ) {
+    return this.sirvService.deleteImage(
+      `/uploads/${filename}`,
+    );
+  } 
 
   @UseGuards(JwtGuard)
   @Post('slack')

@@ -12,6 +12,7 @@ import * as fs from 'fs';
 import { channel } from 'diagnostics_channel';
 import { AiToolService } from 'src/ai-tool/ai-tool.service';
 import { StockService } from 'src/stock/stock.service';
+import { SirvService } from './sirv.service';
 type Timeframe = '1month' | '1week' | '1day' | '8hour' | '4hour' | '2hour' | '1hour' | '45min' | '30min' | '15min' | '5min' | '1min';
 
 const timeframeScoreMap: Record<Timeframe, number> = {
@@ -40,6 +41,7 @@ export class WebhooksService implements OnModuleInit{
     private readonly configService: ConfigService,
     private readonly stockHelperService: StockHelperService,
     private readonly aiToolService: AiToolService,
+    private readonly sirvService: SirvService,
     private readonly stockService: StockService
   ) {
     // Parse JSON from env vars
@@ -655,13 +657,33 @@ export class WebhooksService implements OnModuleInit{
     const index = this.stockHelperService.lastPosted.findIndex(
       x => x.text === lastSymbolPosted.text
     );
-    
     if (index >= 0) {
       this.stockHelperService.lastPosted[index] = lastSymbolPosted;
     } else {
       this.stockHelperService.lastPosted.push(lastSymbolPosted);
     }
+
     if(this.stockHelperService.skipPostDiscord){
+      const fileBuffer = await this.captureChart(
+        data,
+        ticker_on_timeframe,
+        channel,
+        message,
+      );
+      
+      if(fileBuffer){
+        const postTo = await this.sirvService.uploadImage(fileBuffer)
+        const payload = {
+          embeds: [
+            {
+              image: {
+                url: postTo.url,
+              },
+            },
+          ],
+        };
+        return { msg: 'Skipping Discord post due to skipPostDiscord flag', ...payload };
+      }
       return { msg: 'Skipping Discord post due to skipPostDiscord flag' };
     }
     try {
@@ -1921,7 +1943,6 @@ export class WebhooksService implements OnModuleInit{
         const tsNCh =
             this.getTsBySymbol(symbols[0], this.stockHelperService.watchlistSl_tss) ||
             this.getTsBySymbol(symbols[0], this.stockHelperService.holdingSl_tss);
-            console.log(tsNCh)
           if (tsNCh) {
             const signalThread = this.stockHelperService.getSlackMessageLink(
               tsNCh.channel,
