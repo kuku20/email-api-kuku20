@@ -61,7 +61,8 @@ export class StockHelperService {
     "MACDCR_BL_OT": "C0BL0Q4S0MD",
     "WATCH": "C0BLE64B8T0",
     "ALLGREEN": "C0BL0Q5RCQ7",
-    "EARLY_CHECK": "C0BLKS15QDS"
+    "EARLY_CHECK": "C0BLKS15QDS",
+    "D_DOWN": "C0BLMUP8VLN",
   }
   BTN_SL={
   "HOLDING": "C0BL0Q5P32B",

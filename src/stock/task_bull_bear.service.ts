@@ -83,7 +83,7 @@ export class TasksBullBearService {
     // await this.CHECKBULL_5_15_30_1h(0)
     // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.Z_US_SL_))
     // this.stockHelperService.bullbearDaily = this.stockHelperService.bullbearUqiue
-    // await this.CHECKBULL_5_15_30_1h(['TTD'],0)
+    // await this.CHECKBULL_5_15_30_1h(['CAPR'],0)
     // await this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.INTRA_30M_SL_))
   }
 
@@ -398,9 +398,9 @@ export class TasksBullBearService {
             10,
           );
           const getLastTimePost = this.webhooksService.getTsBySymbol(ticker,this.stockHelperService.lastPosted)
-          const match = getLastTimePost ===  last5min?.date
+          const match = getLastTimePost?.ts ===  last5min?.date
           if (!isWithinRange || match) {
-            await this.webhooksService.sendSlackNotification(`*${ticker}|${last5min.close}|${last5min?.date}* || ${getLastTimePost}`,this.stockHelperService.Z_US_SL_.OR4);
+            await this.webhooksService.sendSlackNotification(`*${ticker}|${last5min.close}|${last5min?.date}* || ${getLastTimePost?.ts}`,this.stockHelperService.Z_US_SL_.OR4);
             await this.stockHelperService.sleep(100);
             return 0
           }
@@ -782,7 +782,47 @@ export class TasksBullBearService {
               `*macdCr_N_be_prepare*`+`\n${FullText} \n`
             );
 
-          } else{
+          } else if(!text_5min.includes('🟢')){
+            const data_15min = await this.LocalPLWR.TwReveseNOAPI(ticker, '15min');
+            const text_15min = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
+              ticker,
+              '15min',
+              data_15min
+            );
+            FullText += `${text_15min}\n`;
+            if(!text_15min.includes('🟢')){
+              const data_30min = await this.LocalPLWR.TwReveseNOAPI(ticker, '30min');
+              const text_30min = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
+                ticker,
+                '30min',
+                data_30min
+              );
+              FullText += `${text_30min}\n`;
+              let displaytext = '5_15_all_red'
+              if(!text_30min.includes('🟢')){
+                displaytext += '30too_buysome'
+              }
+              const discodedata = await this.webhooksService.sendDiscord(
+                FullText,
+                `${ticker}-ON-${timeframe}-${displaytext}`,
+                data_5min[data_5min.length-1],
+                'MA_AB_50_100', 
+                data_5min,
+              );
+              const imageUlr = discodedata?.embeds?.[0]?.image?.url || (discodedata?.attachments??discodedata?.attachments?.first()?.url);
+              if(imageUlr){
+                FullText += `<${imageUlr}|Chart> \n`
+              }
+              const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
+                '5min',
+                [ticker],
+                data_5min[data_5min.length-1],
+                this.stockHelperService.INTRA_30M_SL_.D_DOWN,
+                `*${displaytext}*`+`\n${FullText} \n`
+              );
+            }
+
+          } else {
             console.log('stop at 5')
             return
           }
