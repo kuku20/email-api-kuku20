@@ -39,7 +39,7 @@ export class TaskQQQ_SPYService {
   async CHECKBULL_BEAR_30MIN() {
     await this.CHECKBULL_BEAR(4,'30min',);
   }
-  async CHECKBULL_BEAR(delay=2,timeframe = '5min',tickers= ['QQQ','SPY']){
+  async CHECKBULL_BEAR(delay=2,timeframe = '5min',tickers= ['QQQ']){
     if (!this.stockHelperService.shouldRunTradingLogicUS(timeframe,this.logger)) {
       return;
     }
@@ -80,7 +80,8 @@ export class TaskQQQ_SPYService {
             text,
           );
           const time = new Date().toLocaleString('en-US', {timeZone: 'America/New_York',});
-          this.webhooksService.sendSlackNotification(text, channel),
+          this.webhooksService.sendSlackNotification(text, channel);
+          const text2NDLAST = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(ticker,timeframe,data.slice(0, -1))
           // await this.webhooksService.sendDiscord(
           //   `${text.substring(0,10)}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
           //   `${ticker}-ON-${timeframe}-${text.substring(0,10)}`,
@@ -95,7 +96,6 @@ export class TaskQQQ_SPYService {
             ticker==='QQQ'?'TSLA':'SMCI', 
           );
           if(text.includes('SELL🔴🔴BL🔴🔴SELL🔴🔴')){
-            const text2NDLAST = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(ticker,timeframe,data.slice(0, -1))
             const postToCSLRE = {
               channel:channel
             }
@@ -116,6 +116,7 @@ export class TaskQQQ_SPYService {
                   postToCSLRE
                 );
               }
+              this.stockHelperService.bullbearDaily = this.stockHelperService.bullbearUqiue
               this.webhooksService.sendSlackNotification(`GODOWN...WAIT:CONSIDER BUY PUT; WAIT THE NEXT ${timeframe}.`, channel)
               await this.webhooksService.sendDiscord(
                 `--------------------${`GODOWN...WAIT:CONSIDER BUY PUT; WAIT THE NEXT ${timeframe}.` +'=='+time}---------------------------`,
@@ -123,6 +124,7 @@ export class TaskQQQ_SPYService {
                 'Nono',
                 ticker==='QQQ'?'TSLA':'SMCI', 
               );
+              this.stockHelperService.bullbearDaily = "this.stockHelperService.bullbearUqiue"
             }
           } else if(text.includes('BUY🟢🟢AB🟢🟢') || text.includes('BL50_BUYY🟢🟢🟢🔴🔴')){
             const text2NDLAST = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(ticker,timeframe,data.slice(0, -1))
@@ -146,6 +148,7 @@ export class TaskQQQ_SPYService {
                   postToCSLRE
                 );
               }
+              this.stockHelperService.bullbearDaily = this.stockHelperService.bullbearUqiue
               this.webhooksService.sendSlackNotification(`GOUP...WAIT:CONSIDER BUY CALL; WAIT THE NEXT ${timeframe}.`, channel)
               await this.webhooksService.sendDiscord(
                 `--------------------${`GOUP...WAIT:CONSIDER BUY CALL; WAIT THE NEXT ${timeframe}.` +'=='+time}---------------------------`,
@@ -153,7 +156,31 @@ export class TaskQQQ_SPYService {
                 'Nono',
                 ticker==='QQQ'?'TSLA':'SMCI', 
               );
+              this.stockHelperService.bullbearDaily = 'this.stockHelperService.bullbearUqiue'
             }
+          } 
+          if(!text2NDLAST.includes('🔴') && text.includes('🔴')){
+            this.stockHelperService.bullbearDaily = this.stockHelperService.bullbearUqiue
+            // green go red, buy put
+            await this.webhooksService.sendSlackNotificationVN(
+              timeframe,
+              [ticker],
+              lastData,
+              channel,
+              '*CONSIDER BUY PUT*'+text,
+            );
+            this.stockHelperService.bullbearDaily = 'nomore'
+          } else if(!text2NDLAST.includes('🟢') && text.includes('🟢')){
+            this.stockHelperService.bullbearDaily = this.stockHelperService.bullbearUqiue
+            // red go green, buy call
+            await this.webhooksService.sendSlackNotificationVN(
+              timeframe,
+              [ticker],
+              lastData,
+              channel,
+              '*CONSIDER BUY CALL*'+text,
+            );
+            this.stockHelperService.bullbearDaily = 'nomore'
           }
           this.logger.log(`${ticker} processed successfully.`);
         } catch (error) {
