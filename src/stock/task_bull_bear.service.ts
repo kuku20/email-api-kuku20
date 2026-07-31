@@ -415,12 +415,12 @@ export class TasksBullBearService {
 
           FullText += `${text_5min}\n`;
           if(text_5min.includes('CrAbMA50')){
-            let nextText = 'PREPARE TO BUY:'
-            if(text_5min.includes('CrAbMA50CrAbMA120')){
-              nextText = 'BUY MORE:'
-            } else if(text_5min.includes('CrAbMA50CrAbMA120CrAbMA200')){
-              nextText = 'BUY MORE MORE:'
-            } 
+            let nextText = 'PREPARE_TO_BUY_50:'
+            if(text_5min.includes('CrAbMA50CrAbMA120CrAbMA200')){
+              nextText = 'BUY_MORE_MORE_200:'
+            } else if(text_5min.includes('CrAbMA50CrAbMA120')){
+              nextText = 'BUY_MORE_120:'
+            }  
             const discodedata = await this.webhooksService.sendDiscord(
               `**${nextText}**`+FullText,
               `${ticker}-ON-${timeframe}-${'macdCrossAB-'}`,

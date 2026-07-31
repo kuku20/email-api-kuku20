@@ -70,6 +70,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
     // console.log(data.slice(-1), data.length)
     // let  data2 = await this.LocalPLWR.TwReveseNOAPI("TSLA",'1week');
     // console.log(data2.slice(-1), data2.length)
+    // await this.sendBtnAt3()
   }
 
   async USTIMERUN(
@@ -1138,5 +1139,24 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
   
       // Wait for all ticker promises to complete concurrently (with concurrency limit)
       await Promise.all(tickerPromises);
+    }
+
+    @Cron('0 16 * * 1-5', { timeZone: 'America/New_York' })
+    async sendBtnAt3(){
+      this.stockHelperService.watchlistSl_tss = await this.webhooksService.getAllMsgCheck(this.stockHelperService.BTN_SL.WATCH)
+      for (const symbol of DataSymbols.watchlist) {
+        // for (const symbol of ['ADBE']){
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const tsNCh =
+        this.webhooksService.getTsBySymbol(symbol, this.stockHelperService.watchlistSl_tss) 
+        if (tsNCh) {
+          const signalThread = this.stockHelperService.getSlackMessageLink(
+            tsNCh.channel,
+            tsNCh.ts
+          );
+          const blockre = this.webhooksService.getSlBlock(symbol,'accessory_full_watchlist',symbol)
+          await this.webhooksService.reply_SLack(tsNCh.channel,tsNCh.ts,'withBlock',blockre)
+        } 
+      }
     }
 }
