@@ -5800,6 +5800,8 @@ export const watchlist = [
   'SPCX',
   'GLXY',
   'ADBE',
+  'IBM',
+  'RBLX',
 ];
 interface Watchlist {
   [key: string]: {
@@ -5872,6 +5874,8 @@ export const watchlistBB: Watchlist = {
   AAL: { BULL: ['AALG'], BEAR: [] },
   GLXY: { BULL: ['GLXU', 'GLGG'], BEAR: [] },
   ADBE: { BULL: ['ADBG', 'ADBU'], BEAR: [] },
+  IBM: { BULL: ['IBX'], BEAR: [] },
+  RBLX: { BULL: ['RBLU'], BEAR: [] },
 };
 
 export const above2billion = [
