@@ -400,7 +400,7 @@ export class TasksBullBearService {
           const getLastTimePost = this.webhooksService.getTsBySymbol(ticker,this.stockHelperService.lastPosted)
           const match = getLastTimePost?.ts ===  last5min?.date
           if (!isWithinRange || match) {
-            await this.webhooksService.sendSlackNotification(`*${ticker}|${last5min.close}|${last5min?.date}* || ${getLastTimePost?.ts}`,this.stockHelperService.Z_US_SL_.OR4);
+            await this.webhooksService.sendSlackNotification(`* <https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day|${ticker}> |${last5min.close}|${last5min?.date}* || ${getLastTimePost?.ts}`,this.stockHelperService.Z_US_SL_.OR4);
             await this.stockHelperService.sleep(100);
             return 0
           }
