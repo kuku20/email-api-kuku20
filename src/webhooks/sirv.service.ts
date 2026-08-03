@@ -164,47 +164,41 @@ export class SirvService {
    * Example:
    * /uploads/abc-123.png
    */
-  async deleteImage(
-    filename: string,
-  ): Promise<{
-    success: boolean;
-    deleted: string;
-  }> {
-    if (!filename?.trim()) {
-      throw new BadRequestException(
-        'Filename is required',
-      );
-    }
+  async deleteImage(filename: string) {
 
-    const normalizedFilename =
-      filename.startsWith('/')
-        ? filename
-        : `/${filename}`;
-
+    const normalizedFilename = filename.startsWith('/')
+      ? filename
+      : `/${filename}`;
     try {
       const token = await this.getToken();
-
       await axios.post(
         `${this.apiUrl}/files/delete`,
+        null,
         {
-          filename: normalizedFilename,
-        },
-        {
+          params: {
+            filename: normalizedFilename,
+          },
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
           },
         },
       );
-
       return {
         success: true,
         deleted: normalizedFilename,
       };
-    } catch (error: unknown) {
-      throw new InternalServerErrorException(
-        `Sirv delete failed: ${this.getErrorMessage(error)}`,
-      );
+    } catch (error: any) {
+      console.log('Sirv status:', error.response?.status);
+      console.log('Sirv data:', error.response?.data);
+    
+      // throw new InternalServerErrorException(
+      //   `Sirv delete failed: ${
+      //     error.response?.data?.message ||
+      //     error.message
+      //   }`,
+      // );
+    } finally {
+      console.log('deleteImage',filename);
     }
   }
 

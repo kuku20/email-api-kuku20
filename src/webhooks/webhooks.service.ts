@@ -1925,8 +1925,7 @@ export class WebhooksService implements OnModuleInit{
         (s) =>
           `• *${s}* → ${display}` +
           `  < <http://localhost:4200/price-log/${s}?daysRange=${timeframeScore}|local> | <https://stockmarkets000.web.app/price-log/${s}?daysRange=${timeframeScore}|production> | <https://www.tradingview.com/chart/mWoCISmu/?symbol=${s}|tradingview> |  <https://new-site-pwa.web.app/?stockTicker=${s}&endpoint=fm&timeframe=${timeframe}|OtherLink> | ${timeframe}`+
-          `${buysellTarget} +
-          \n\t ${bullbearxx}`,
+          `${buysellTarget} +${bullbearxx}`,
       )
       .join('\n');
 
@@ -1949,7 +1948,33 @@ export class WebhooksService implements OnModuleInit{
               tsNCh.ts
             );
             await this.reply_SLack(slChannel, postToCSLRE.ts, signalThread);
-            await this.reply_SLack(tsNCh.channel, tsNCh.ts, formatted);
+            const blockre =      [
+              {
+                type: 'section',
+                text: {
+                  type: 'mrkdwn',
+                  text: formatted,
+                },
+              },    
+              {
+                type: "section",
+                block_id: symbols[0],
+                text: {
+                  type: "mrkdwn",
+                  text: "Select a interval"
+                },
+                accessory: {
+                  type: "external_select",
+                  placeholder: {
+                    type: "plain_text",
+                    text: "Search timeframe"
+                  },
+                  action_id: "timeframe_interval",
+                  min_query_length: 1
+                }
+              }
+            ]
+            await this.reply_SLack(tsNCh.channel, tsNCh.ts, formatted,blockre);
           } else{
             const blockre = this.getSlBlock(symbols[0],'accessory_full_watchlist',symbols[0])
             await this.reply_SLack(slChannel,postToCSLRE.ts,'withBlock',blockre)
@@ -2636,6 +2661,7 @@ async deleteAllMessages_SLack(channel: string) {
         },
         {
           type: "section",
+          block_id: symbol,
           text: {
             type: "mrkdwn",
             text: "Select a interval"
@@ -2695,6 +2721,7 @@ async deleteAllMessages_SLack(channel: string) {
         },
         {
           type: "section",
+          block_id: symbol,
           text: {
             type: "mrkdwn",
             text: "Select a interval"
@@ -2718,7 +2745,7 @@ async deleteAllMessages_SLack(channel: string) {
         },
         value:symbol,
         action_id: option,
-        style: 'primary',
+        style: 'danger',
       },
     ]
     return element

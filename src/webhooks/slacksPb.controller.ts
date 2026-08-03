@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { WebhooksService } from './webhooks.service';
 import { StockService } from 'src/stock/stock.service';
 import { StockHelperService } from 'src/stock/stockHelper.service';
+import { SirvService } from './sirv.service';
 
 @Controller('slack')
 export class SlackPbController {
@@ -10,6 +11,7 @@ export class SlackPbController {
     private readonly webhooksService: WebhooksService, 
     private readonly stockService: StockService,
     private readonly stockHelperService: StockHelperService,
+    private readonly sirvService: SirvService,
   ) {}
 
   @Post('interactions')
@@ -113,7 +115,12 @@ export class SlackPbController {
       this.keepOradd(postToCSLRE,updateMe)
     } else if(timeframe_acID.includes('timeframe_interval')){
       const timeframe = action.selected_option.value
-      const symbol = payload.message.blocks[1].type==='actions'?payload.message.blocks[1].elements[0].value:'QQQ'
+      const symbol =
+        payload.message.blocks[1].type === 'actions'
+          ? payload.message.blocks[1].elements[0].value
+          : action?.block_id
+          ? action?.block_id
+          : 'QQQ';
       const isSupportedTimeframe = /(?:min|hour|day|week)$/.test(timeframe);
       if(isSupportedTimeframe){
         await this.CHECKBULL_BEAR_processTickers(symbol,timeframe,postToCSLRE)
@@ -136,6 +143,11 @@ export class SlackPbController {
           );
         }
       }
+    } else if(timeframe_acID ==='clear_itself'){
+      const filename = action.value
+      const x = await this.sirvService.deleteImage(filename)
+      const y = await this.webhooksService.deleteMessage_SLack(postToCSLRE.channel,[payload.message.ts])
+      // console.log('clear_itself',x,y)
     } else{
       console.log('action',timeframe_acID, ticker)
       await this.webhooksService.reply_SLack(postToCSLRE.channel,payload.message.ts,'postnone')
@@ -238,16 +250,81 @@ export class SlackPbController {
         await this.stockHelperService.sendBatchNotification('START',`${true?'TwReveseNOAPI':'POLYGON2'}-`+`<https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day|${ticker}>`,[this.stockHelperService.Z_US_SL_.OR4],this.webhooksService,500);
         return;
       }
-      const getText = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(ticker,timeframe,data)
-      const checkSym = (ticker==='QQQ'||ticker === 'SPY')
-      if(checkSym){
-        this.webhooksService.sendSlackNotification(`${getText}=*CLICK_CALL*`, postToCSLRE.channel)
-      }else{
-        await this.webhooksService.reply_SLack(
-          postToCSLRE.channel,
-          postToCSLRE.ts,
-          `======${getText}=*CLICK_CALL*======`
-        )
+
+      let getText = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(ticker,timeframe,data)
+      const updateMe = await this.webhooksService.reply_SLack(postToCSLRE.channel, postToCSLRE.ts, `======${getText}=*CLICK_CALL*======`)
+      const fileBuffer = await this.webhooksService.captureChart(
+        data,
+        ticker,
+        'sirv',
+        getText,
+      );
+      let getImageSirv
+      if(fileBuffer){
+        getImageSirv = await this.sirvService.uploadImage(fileBuffer)
+        getText += `\n <${getImageSirv.url}|Chart-${ticker}-${timeframe}>`
+        const blocks = [
+          {
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: `======${getText}=*CLICK_CALL*======`,
+            },
+          },
+          {
+            type: "image",
+            image_url: getImageSirv.url,
+            alt_text: `Chart-${ticker}-${timeframe}`,
+          },
+          {
+            type: 'actions',
+            elements: [
+              {
+                type: 'button',
+                text: {
+                  type: 'plain_text',
+                  text: `${ticker}-clear_itself`,
+                },
+                value: getImageSirv.filename,
+                action_id: 'clear_itself',
+                style: 'danger',
+              },
+            ],
+          },
+          {
+            type: "section",
+            block_id: ticker,
+            text: {
+              type: "mrkdwn",
+              text: "Select a interval"
+            },
+            accessory: {
+              type: "external_select",
+              placeholder: {
+                type: "plain_text",
+                text: "Search timeframe"
+              },
+              action_id: "timeframe_interval",
+              min_query_length: 1
+            }
+          }
+        ];
+        // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'',blocks)
+        await this.webhooksService.Update_Slack(postToCSLRE.channel,updateMe.ts,'updateWithimage',blocks)
+      } else {
+        await this.webhooksService.Update_Slack(postToCSLRE.channel,updateMe.ts,`======${getText}=*NO IMAGE*======`)
+      }
+      // const checkSym = (ticker==='QQQ'||ticker === 'SPY')
+      // console.log(getImageSirv)
+      // if(checkSym){
+      //   this.webhooksService.sendSlackNotification(`${getText}=*CLICK_CALL*`, postToCSLRE.channel)
+      // }else
+      {
+        // await this.webhooksService.reply_SLack(
+        //   postToCSLRE.channel,
+        //   postToCSLRE.ts,
+        //   `======${getText}=*CLICK_CALL*======`
+        // )
       }
 
   } async catch (error) {
