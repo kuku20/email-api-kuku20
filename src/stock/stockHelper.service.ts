@@ -36,6 +36,7 @@ export class StockHelperService {
 
   slackTokenKey = 'SLACK_BOT_TOKEN';
   skipPostDiscord = false;
+  railwayBoolen = true;
   slackPosted = []
   setSlackToken(tokenKey: string) {
     this.slackTokenKey = tokenKey;

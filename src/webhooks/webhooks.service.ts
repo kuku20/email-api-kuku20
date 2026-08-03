@@ -404,7 +404,7 @@ export class WebhooksService implements OnModuleInit{
     const timeframe = tickerasall.split('-')[1];
     const path = `${channel}/${ticker}-ON-${timeframe}`.toUpperCase();
 
-    if (this.configService.get('NODE_ENV') === 'production') {
+    if (this.configService.get('NODE_ENV') === 'production' && this.stockHelperService.railwayBoolen) {
       // // turn off on local
       // await this.FireBaseApi('put', `stock-data/${path}.json`, slicedData);
       return null;
