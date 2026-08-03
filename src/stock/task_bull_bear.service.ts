@@ -83,7 +83,8 @@ export class TasksBullBearService {
     // await this.CHECKBULL_5_15_30_1h(0)
     // this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.Z_US_SL_))
     // this.stockHelperService.bullbearDaily = this.stockHelperService.bullbearUqiue
-    // await this.CHECKBULL_5_15_30_1h(['NBIS'],0)
+    // await this.CHECKBULL_BEAR_OTHER_5MIN(0,);
+    // await this.CHECKBULL_5_15_30_1h(['SPCX'],0)
     // await this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.INTRA_30M_SL_))
   }
 
@@ -428,17 +429,18 @@ export class TasksBullBearService {
               DataSymbols.watchlist.includes(ticker)?'US_EARLY_5MIN': 'US_5M_HT',
               data_5min,
             );//       imageUrl = sentMessage.embeds[0]?.image?.url || sentMessage.attachments.first()?.url;
-            const msgDiscord = `https://discord.com/channels/1306113720979689523/${discodedata?.channel_id}/${discodedata?.id}`
             const imageUlr = discodedata?.embeds?.[0]?.image?.url || (discodedata?.attachments??discodedata?.attachments?.first()?.url);
-            if(imageUlr){
-              FullText += `<${imageUlr}|Chart> || <${msgDiscord}|Discord-o6l-msg>`
+            if(discodedata && discodedata?.channel_id){
+              const msgDiscord = `https://discord.com/channels/1306113720979689523/${discodedata?.channel_id}/${discodedata?.id}`
+              FullText += `<${msgDiscord}|Discord-o6l-msg>` // <${imageUlr}|Chart> || 
             }
             const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
               '5min',
               [ticker],
               data_5min[data_5min.length-1],
               DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL_.MACDCR_100:this.stockHelperService.INTRA_30M_SL_.MACDCR_200,
-              `*${nextText}*`+`\n${FullText} \n`
+              `*${nextText}*`+`\n${FullText} \n`,
+              imageUlr
             );
             // const blockre = this.webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
             // await this.webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
@@ -466,33 +468,57 @@ export class TasksBullBearService {
                 DataSymbols.watchlist.includes(ticker)?'US_EARLY_15MIN': 'US_15M_HT',
                 text_15min,
               );
-              const replyData = await this.webhooksService.replyToMessage(
-                discodedata.channel_id,
-                discodedata.id,
-                text_15min,
-                fileBuffer
-              );
-              const msgDiscord = `https://discord.com/channels/1306113720979689523/${discodedata?.channel_id}/${discodedata?.id}`
               const imageUlr = discodedata?.embeds?.[0]?.image?.url || (discodedata?.attachments??discodedata?.attachments?.first()?.url);
-              if(imageUlr){
-                FullText += `<${imageUlr}|Chart> || <${msgDiscord}|Discord-o6l-msg>`
-              }
               const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
                 '5min',
                 [ticker],
                 data_5min[data_5min.length-1],
                 DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL_.MACDCR_50:this.stockHelperService.INTRA_30M_SL_.MACDCR_BL,
-                `*BIG_🟡🟡_VOL*`+`\n${FullText} \n`
+                `*BIG_🟡🟡_VOL*`+`\n${FullText} \n`,
+                imageUlr
               );
+              if(discodedata && discodedata?.channel_id){
+                const msgDiscord = `https://discord.com/channels/1306113720979689523/${discodedata?.channel_id}/${discodedata?.id}`
+                FullText += `<${msgDiscord}|Discord-o6l-msg>` // <${imageUlr}|Chart> || 
+              
+                const replyData = await this.webhooksService.replyToMessage(
+                  discodedata.channel_id,
+                  discodedata.id,
+                  text_15min,
+                  fileBuffer
+                );
+                const replyImage = replyData.imageUrl;
+                if(replyImage){
+                  const chart15m = `<${replyImage}|15-Chart> \n`
+                  await this.webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,chart15m)
+                }
+              }
               // const blockre = this.webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
                 // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
-              const replyImage = replyData.imageUrl;
-              if(replyImage){
-                const chart15m = `<${replyImage}|15-Chart> \n`
-                await this.webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,chart15m)
-              }
               // await this.webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
             }
+          } else if(text_5min.includes('macdCr_N')){
+            const discodedata = await this.webhooksService.sendDiscord(
+              `**macdCr_N_be_prepare**`+FullText,
+              `${ticker}-ON-${timeframe}-${'macdCr_N_be_prepare'}`,
+              data_5min[data_5min.length-1],
+              'EARLY_AB200',
+              data_5min,
+            );
+            const imageUlr = discodedata?.embeds?.[0]?.image?.url || (discodedata?.attachments??discodedata?.attachments?.first()?.url);
+            if(discodedata && discodedata?.channel_id){
+              const msgDiscord = `https://discord.com/channels/1306113720979689523/${discodedata?.channel_id}/${discodedata?.id}`
+              FullText += `<${msgDiscord}|Discord-o6l-msg>` // <${imageUlr}|Chart> || 
+            }
+            const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
+              '5min',
+              [ticker],
+              data_5min[data_5min.length-1],
+              this.stockHelperService.INTRA_30M_SL_.MACDCR_BL,
+              `*macdCr_N_be_prepare*`+`\n${FullText} \n`,
+              imageUlr
+            );
+
           } else if(!text_5min.includes('🔴')){
           // } else if(text_5min.includes(checktext)){
             // send can buy: check macd call the 
@@ -532,17 +558,18 @@ export class TasksBullBearService {
                     'US_ALL', 
                     data_5min,
                   );
-                  const msgDiscord = `https://discord.com/channels/1306113720979689523/${discodedata?.channel_id}/${discodedata?.id}`
                   const imageUlr = discodedata?.embeds?.[0]?.image?.url || (discodedata?.attachments??discodedata?.attachments?.first()?.url);
-                  if(imageUlr){
-                    FullText += `<${imageUlr}|Chart> || <${msgDiscord}|Discord-o6l-msg>`
+                  if(discodedata && discodedata?.channel_id){
+                    const msgDiscord = `https://discord.com/channels/1306113720979689523/${discodedata?.channel_id}/${discodedata?.id}`
+                    FullText += `<${msgDiscord}|Discord-o6l-msg>` // <${imageUlr}|Chart> || 
                   }
                   const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
                     '5min',
                     [ticker],
                     data_5min[data_5min.length-1],
                     this.stockHelperService.INTRA_30M_SL_.ALLGREEN,
-                    `*${allGreen}*`+`\n${FullText} \n`
+                    `*${allGreen}*`+`\n${FullText} \n`,
+                    imageUlr
                   );
                   // const blockre = this.webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
                     // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
@@ -566,17 +593,18 @@ export class TasksBullBearService {
                     'US_30M_BUY', 
                     data_5min,
                   );
-                  const msgDiscord = `https://discord.com/channels/1306113720979689523/${discodedata?.channel_id}/${discodedata?.id}`
                   const imageUlr = discodedata?.embeds?.[0]?.image?.url || (discodedata?.attachments??discodedata?.attachments?.first()?.url);
-                  if(imageUlr){
-                    FullText += `<${imageUlr}|Chart> || <${msgDiscord}|Discord-o6l-msg>`
+                  if(discodedata && discodedata?.channel_id){
+                    const msgDiscord = `https://discord.com/channels/1306113720979689523/${discodedata?.channel_id}/${discodedata?.id}`
+                    FullText += `<${msgDiscord}|Discord-o6l-msg>` // <${imageUlr}|Chart> || 
                   }
                   const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
                     '5min',
                     [ticker],
                     data_5min[data_5min.length-1],
                     this.stockHelperService.INTRA_30M_SL_.WATCH,
-                    `*5_allgreen_30BOrAb*`+`\n${FullText} \n`
+                    `*5_allgreen_30BOrAb*`+`\n${FullText} \n`,
+                    imageUlr
                   );
                   // const blockre = this.webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
                     // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
@@ -601,17 +629,18 @@ export class TasksBullBearService {
                       'USSTOCK_WATCH', 
                       data_5min,
                     );
-                    const msgDiscord = `https://discord.com/channels/1306113720979689523/${discodedata?.channel_id}/${discodedata?.id}`
                     const imageUlr = discodedata?.embeds?.[0]?.image?.url || (discodedata?.attachments??discodedata?.attachments?.first()?.url);
-                    if(imageUlr){
-                      FullText += `<${imageUlr}|Chart> || <${msgDiscord}|Discord-o6l-msg>`
+                    if(discodedata && discodedata?.channel_id){
+                      const msgDiscord = `https://discord.com/channels/1306113720979689523/${discodedata?.channel_id}/${discodedata?.id}`
+                      FullText += `<${msgDiscord}|Discord-o6l-msg>` // <${imageUlr}|Chart> || 
                     }
                     const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
                       '5min',
                       [ticker],
                       data_5min[data_5min.length-1],
                       this.stockHelperService.INTRA_30M_SL_.EARLY_CHECK,
-                      `*5_allgreen_15_red_ab50*`+`\n${FullText} \n`
+                      `*5_allgreen_15_red_ab50*`+`\n${FullText} \n`,
+                      imageUlr
                     );
                     // const blockre = this.webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
                     // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
@@ -624,17 +653,18 @@ export class TasksBullBearService {
                         'USSTOCK_WATCH', 
                         data_5min,
                       );
-                      const msgDiscord = `https://discord.com/channels/1306113720979689523/${discodedata?.channel_id}/${discodedata?.id}`
                       const imageUlr = discodedata?.embeds?.[0]?.image?.url || (discodedata?.attachments??discodedata?.attachments?.first()?.url);
-                      if(imageUlr){
-                        FullText += `<${imageUlr}|Chart> || <${msgDiscord}|Discord-o6l-msg>`
+                      if(discodedata && discodedata?.channel_id){
+                        const msgDiscord = `https://discord.com/channels/1306113720979689523/${discodedata?.channel_id}/${discodedata?.id}`
+                        FullText += `<${msgDiscord}|Discord-o6l-msg>` // <${imageUlr}|Chart> || 
                       }
                       const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
                         '5min',
                         [ticker],
                         data_5min[data_5min.length-1],
                         this.stockHelperService.INTRA_30M_SL_.EARLY_CHECK,
-                        `*5_allgreen_15_red_ab200*`+`\n${FullText} \n`
+                        `*5_allgreen_15_red_ab200*`+`\n${FullText} \n`,
+                        imageUlr
                       );
                       // const blockre = this.webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
                       // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
@@ -653,17 +683,18 @@ export class TasksBullBearService {
                     'USSTOCK_WATCH', 
                     data_5min,
                   );
-                  const msgDiscord = `https://discord.com/channels/1306113720979689523/${discodedata?.channel_id}/${discodedata?.id}`
                   const imageUlr = discodedata?.embeds?.[0]?.image?.url || (discodedata?.attachments??discodedata?.attachments?.first()?.url);
-                  if(imageUlr){
-                    FullText += `<${imageUlr}|Chart> || <${msgDiscord}|Discord-o6l-msg>`
+                  if(discodedata && discodedata?.channel_id){
+                    const msgDiscord = `https://discord.com/channels/1306113720979689523/${discodedata?.channel_id}/${discodedata?.id}`
+                    FullText += `<${msgDiscord}|Discord-o6l-msg>` // <${imageUlr}|Chart> || 
                   }
                   const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
                     '5min',
                     [ticker],
                     data_5min[data_5min.length-1],
                     this.stockHelperService.INTRA_30M_SL_.EARLY_CHECK,
-                    `*5_allgreen_ab200_30_red*`+`\n${FullText} \n`
+                    `*5_allgreen_ab200_30_red*`+`\n${FullText} \n`,
+                    imageUlr
                   );
                   // const blockre = this.webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
                   // // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
@@ -676,17 +707,18 @@ export class TasksBullBearService {
                     'USSTOCK_WATCH', 
                     data_5min,
                   );
-                  const msgDiscord = `https://discord.com/channels/1306113720979689523/${discodedata?.channel_id}/${discodedata?.id}`
                   const imageUlr = discodedata?.embeds?.[0]?.image?.url || (discodedata?.attachments??discodedata?.attachments?.first()?.url);
-                  if(imageUlr){
-                    FullText += `<${imageUlr}|Chart> || <${msgDiscord}|Discord-o6l-msg>`
+                  if(discodedata && discodedata?.channel_id){
+                    const msgDiscord = `https://discord.com/channels/1306113720979689523/${discodedata?.channel_id}/${discodedata?.id}`
+                    FullText += `<${msgDiscord}|Discord-o6l-msg>` // <${imageUlr}|Chart> || 
                   }
                   const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
                     '5min',
                     [ticker],
                     data_5min[data_5min.length-1],
                     this.stockHelperService.INTRA_30M_SL_.EARLY_CHECK,
-                    `*5_allgreen_30_red*`+`\n${FullText} \n`
+                    `*5_allgreen_30_red*`+`\n${FullText} \n`,
+                    imageUlr
                   );
                   // const blockre = this.webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
                   // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
@@ -702,17 +734,18 @@ export class TasksBullBearService {
                 'US_30M_HT', 
                 data_5min,
               );
-              const msgDiscord = `https://discord.com/channels/1306113720979689523/${discodedata?.channel_id}/${discodedata?.id}`
               const imageUlr = discodedata?.embeds?.[0]?.image?.url || (discodedata?.attachments??discodedata?.attachments?.first()?.url);
-              if(imageUlr){
-                FullText += `<${imageUlr}|Chart> || <${msgDiscord}|Discord-o6l-msg>`
+              if(discodedata && discodedata?.channel_id){
+                const msgDiscord = `https://discord.com/channels/1306113720979689523/${discodedata?.channel_id}/${discodedata?.id}`
+                FullText += `<${msgDiscord}|Discord-o6l-msg>` // <${imageUlr}|Chart> || 
               }
               const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
                 '5min',
                 [ticker],
                 data_5min[data_5min.length-1],
                 this.stockHelperService.INTRA_30M_SL_.MACDCR_BL_OT,
-                `*15_macdCr_N*`+`\n${FullText} \n`
+                `*15_macdCr_N*`+`\n${FullText} \n`,
+                imageUlr
               );
               // const blockre = this.webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
               // // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
@@ -732,17 +765,18 @@ export class TasksBullBearService {
                     'USSTOCK_WATCH', 
                     data_5min,
                   );
-                  const msgDiscord = `https://discord.com/channels/1306113720979689523/${discodedata?.channel_id}/${discodedata?.id}`
                   const imageUlr = discodedata?.embeds?.[0]?.image?.url || (discodedata?.attachments??discodedata?.attachments?.first()?.url);
-                  if(imageUlr){
-                    FullText += `<${imageUlr}|Chart> || <${msgDiscord}|Discord-o6l-msg>`
+                  if(discodedata && discodedata?.channel_id){
+                    const msgDiscord = `https://discord.com/channels/1306113720979689523/${discodedata?.channel_id}/${discodedata?.id}`
+                    FullText += `<${msgDiscord}|Discord-o6l-msg>` // <${imageUlr}|Chart> || 
                   }
                   const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
                     '5min',
                     [ticker],
                     data_5min[data_5min.length-1],
                     this.stockHelperService.INTRA_30M_SL_.EARLY_CHECK,
-                    `*5_allgreen_MA200*`+`\n${FullText} \n`
+                    `*5_allgreen_MA200*`+`\n${FullText} \n`,
+                    imageUlr
                   );
                   // const blockre = this.webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
                   // // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
@@ -755,17 +789,18 @@ export class TasksBullBearService {
                     'USSTOCK_WATCH', 
                     data_5min,
                   );
-                  const msgDiscord = `https://discord.com/channels/1306113720979689523/${discodedata?.channel_id}/${discodedata?.id}`
                   const imageUlr = discodedata?.embeds?.[0]?.image?.url || (discodedata?.attachments??discodedata?.attachments?.first()?.url);
-                  if(imageUlr){
-                    FullText += `<${imageUlr}|Chart> || <${msgDiscord}|Discord-o6l-msg>`
+                  if(discodedata && discodedata?.channel_id){
+                    const msgDiscord = `https://discord.com/channels/1306113720979689523/${discodedata?.channel_id}/${discodedata?.id}`
+                    FullText += `<${msgDiscord}|Discord-o6l-msg>` // <${imageUlr}|Chart> || 
                   }
                   const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
                     '5min',
                     [ticker],
                     data_5min[data_5min.length-1],
                     this.stockHelperService.INTRA_30M_SL_.EARLY_CHECK,
-                  `*5_allgreen_MACDP*`+`\n${FullText} \n`
+                  `*5_allgreen_MACDP*`+`\n${FullText} \n`,
+                  imageUlr
                   );
                   // const blockre = this.webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
                   // // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
@@ -773,27 +808,6 @@ export class TasksBullBearService {
                 }  
               return
             }
-          } else if(text_5min.includes('macdCr_N')){
-            const discodedata = await this.webhooksService.sendDiscord(
-              `**macdCr_N_be_prepare**`+FullText,
-              `${ticker}-ON-${timeframe}-${'macdCr_N_be_prepare'}`,
-              data_5min[data_5min.length-1],
-              'EARLY_AB200',
-              data_5min,
-            );
-            const msgDiscord = `https://discord.com/channels/1306113720979689523/${discodedata?.channel_id}/${discodedata?.id}`
-            const imageUlr = discodedata?.embeds?.[0]?.image?.url || (discodedata?.attachments??discodedata?.attachments?.first()?.url);
-            if(imageUlr){
-              FullText += `<${imageUlr}|Chart> || <${msgDiscord}|Discord-o6l-msg>`
-            }
-            const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
-              '5min',
-              [ticker],
-              data_5min[data_5min.length-1],
-              this.stockHelperService.INTRA_30M_SL_.MACDCR_BL,
-              `*macdCr_N_be_prepare*`+`\n${FullText} \n`
-            );
-
           } else if(!text_5min.includes('🟢')){
             const data_1hour = await this.LocalPLWR.TwReveseNOAPI(ticker, '1hour');
             const text_1hour = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
@@ -827,17 +841,18 @@ export class TasksBullBearService {
                     'MA_AB_50_100', 
                     data_5min,
                   );
-                  const msgDiscord = `https://discord.com/channels/1306113720979689523/${discodedata?.channel_id}/${discodedata?.id}`
                   const imageUlr = discodedata?.embeds?.[0]?.image?.url || (discodedata?.attachments??discodedata?.attachments?.first()?.url);
-                  if(imageUlr){
-                    FullText += `<${imageUlr}|Chart> || <${msgDiscord}|Discord-o6l-msg>`
+                  if(discodedata && discodedata?.channel_id){
+                    const msgDiscord = `https://discord.com/channels/1306113720979689523/${discodedata?.channel_id}/${discodedata?.id}`
+                    FullText += `<${msgDiscord}|Discord-o6l-msg>` // <${imageUlr}|Chart> || 
                   }
                   const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
                     '5min',
                     [ticker],
                     data_5min[data_5min.length-1],
                     this.stockHelperService.INTRA_30M_SL_.D_DOWN,
-                    `*${displaytext}*`+`\n${FullText} \n`
+                    `*${displaytext}*`+`\n${FullText} \n`,
+                    imageUlr
                   );
                 }
               }

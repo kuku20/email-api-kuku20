@@ -88,7 +88,7 @@ export class TasksGainsLosersService {
             [ticker],
             data_5min[data_5min.length - 1],
             webhook,
-            `\n${text_5min}\n`,
+            `getGainsLosers \n${text_5min}\n`,
           );
 
           this.sendORnot.push(webhook);

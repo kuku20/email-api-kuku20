@@ -1881,6 +1881,7 @@ export class WebhooksService implements OnModuleInit{
     fullData: any,
     slChannel :string,
     msg :string,
+    imgUrl?: any,
   ) {
     this.stockHelperService.slackPosted.push(slChannel)
     const isFullDataArray = Array.isArray(fullData);
@@ -1928,13 +1929,28 @@ export class WebhooksService implements OnModuleInit{
           `${buysellTarget} +${bullbearxx}`,
       )
       .join('\n');
-
-    const payload = {
-      text: formatted,
-    };
+    const blocksel = imgUrl?[
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: formatted,
+        },
+      },
+      {
+        type: "image",
+        image_url: imgUrl,
+        alt_text: `Chart-${symbols[0]}-${timeframe}`,
+      },]:[{
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: formatted,
+        },
+      },]
     try {
       // await axios.post(BASE_URL, payload);
-      const postToCSLRE = await this.post_SLack(BASE_URL, formatted);
+      const postToCSLRE = await this.post_SLack(BASE_URL, blocksel);
       if(!postToCSLRE || !postToCSLRE.ts || !postToCSLRE.channel){
         console.log('---SL-ERR---', postToCSLRE.error);
         throw new Error('Failed to post to Slack');
@@ -1948,14 +1964,44 @@ export class WebhooksService implements OnModuleInit{
               tsNCh.ts
             );
             await this.reply_SLack(slChannel, postToCSLRE.ts, signalThread);
-            const blockre =      [
+            const blockre =   imgUrl?   [
               {
                 type: 'section',
                 text: {
                   type: 'mrkdwn',
                   text: formatted,
                 },
+              },
+              {
+                type: "image",
+                image_url: imgUrl,
+                alt_text: `Chart-${symbols[0]}-${timeframe}`,
               },    
+              {
+                type: "section",
+                block_id: symbols[0],
+                text: {
+                  type: "mrkdwn",
+                  text: "Select a interval"
+                },
+                accessory: {
+                  type: "external_select",
+                  placeholder: {
+                    type: "plain_text",
+                    text: "Search timeframe"
+                  },
+                  action_id: "timeframe_interval",
+                  min_query_length: 1
+                }
+              }
+            ]:[
+              {
+                type: 'section',
+                text: {
+                  type: 'mrkdwn',
+                  text: formatted,
+                },
+              },
               {
                 type: "section",
                 block_id: symbols[0],
@@ -2108,11 +2154,12 @@ export class WebhooksService implements OnModuleInit{
   // POST MESSAGE
   // =========================
   count = 1
-  async post_SLack(channel: string, text: string) {
+  async post_SLack(channel: string, text: any) {
+    const blockOrNot = typeof(text)==='string'? {text:text}: { text: 'Stock Alert',blocks:text}
     try {
       const { data } = await axios.post(
         'https://slack.com/api/chat.postMessage',
-        { channel, text },
+        { channel, ...blockOrNot },
         { headers: this.aiToolService.headers },
       );
 
@@ -2278,7 +2325,7 @@ async deleteMessage_SLack(
         });
       }
 
-      await sleep(500);
+      await sleep(400);
     } catch (error) {
 
 
