@@ -253,6 +253,7 @@ export class SlackPbController {
 
       let getText = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(ticker,timeframe,data)
       const updateMe = await this.webhooksService.reply_SLack(postToCSLRE.channel, postToCSLRE.ts, `======${getText}=*CLICK_CALL*======`)
+      this.stockHelperService.railwayBoolen = false
       const fileBuffer = await this.webhooksService.captureChart(
         data,
         ticker,
@@ -311,6 +312,7 @@ export class SlackPbController {
         ];
         // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'',blocks)
         await this.webhooksService.Update_Slack(postToCSLRE.channel,updateMe.ts,'updateWithimage',blocks)
+        this.stockHelperService.railwayBoolen = true
       } else {
         await this.webhooksService.Update_Slack(postToCSLRE.channel,updateMe.ts,`======${getText}=*NO IMAGE*======`)
       }
