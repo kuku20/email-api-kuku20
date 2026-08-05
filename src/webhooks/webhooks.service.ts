@@ -133,7 +133,7 @@ export class WebhooksService implements OnModuleInit{
     let setmess = extra ? `${origin} | ${gptres}` : origin;
 
     if (!file && !message?.includes('SELLCR')) {
-      setmess = `${setmess} | **[C.MISS.4200](http://localhost:4200/capture-click/${webhookCl}/${tickerON})** | **[C.MISS.PROD](https://stockmarkets000.web.app/capture-click/${webhookCl}/${tickerON})**`;
+      setmess = `${setmess} | **[C.MISS.4200](http://localhost:4200/capture-target/${webhookCl}/${ticker})** | **[C.MISS.PROD](https://stockmarkets000.web.app/capture-target/${webhookCl}/${ticker})**`;
     }
     if (botdt.includes('RSIENDBOT')) {
       options = {
@@ -1929,7 +1929,10 @@ export class WebhooksService implements OnModuleInit{
           `${buysellTarget} +${bullbearxx}`,
       )
       .join('\n');
-    const blocksel = imgUrl?[
+    const hasImage =
+    typeof imgUrl === "string" &&
+    imgUrl.trim().length > 0;
+    const blocksel = hasImage?[
       {
         type: 'section',
         text: {
@@ -1947,7 +1950,26 @@ export class WebhooksService implements OnModuleInit{
           type: 'mrkdwn',
           text: formatted,
         },
-      },]
+        
+      },
+        {
+      type: "section",
+      block_id: symbols[0],
+      text: {
+        type: "mrkdwn",
+        text: "Select a interval"
+      },
+      accessory: {
+        type: "external_select",
+        placeholder: {
+          type: "plain_text",
+          text: "Search timeframe"
+        },
+        action_id: "timeframe_interval",
+        min_query_length: 1
+      }
+    }]
+      console.log("imgUrl",imgUrl)
     try {
       // await axios.post(BASE_URL, payload);
       const postToCSLRE = await this.post_SLack(BASE_URL, blocksel);
@@ -1963,8 +1985,13 @@ export class WebhooksService implements OnModuleInit{
               tsNCh.channel,
               tsNCh.ts
             );
+            console.log("signalThread", signalThread)
             await this.reply_SLack(slChannel, postToCSLRE.ts, signalThread);
-            const blockre =   imgUrl?   [
+                  console.log("imgUrl",imgUrl)
+            const hasImage =
+                  typeof imgUrl === "string" &&
+                  imgUrl.trim().length > 0;
+            const blockre =   hasImage?   [
               {
                 type: 'section',
                 text: {
