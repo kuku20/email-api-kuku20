@@ -154,10 +154,10 @@ export class SlackPbController {
       let blockre 
       if(filename === 'turnOn') {
         setValue = true
-        blockre = this.webhooksService.getSlBlock('turnOff','turn_On_Off','turnOff')
+        blockre = this.webhooksService.slElementOptions('turnOff','turn_On_Off')
       } else {
         setValue = false
-        blockre = this.webhooksService.getSlBlock('turnOn','turn_On_Off','turnOn')
+        blockre = this.webhooksService.slElementOptions('turnOn','turn_On_Off')
       }
       await this.webhooksService.Update_Slack(payload.channel.id,payload.message.ts, `*${ticker}*  Check Me Out !!!!`,blockre)
       await this.stockService.FireBaseApi(
