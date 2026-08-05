@@ -2810,7 +2810,21 @@ async deleteAllMessages_SLack(channel: string) {
             min_query_length: 1
           }
         }
-      ]:[
+      ]:option==='turn_On_Off'?[{
+            type: 'actions',
+            elements: [
+              {
+                type: 'button',
+                text: {
+                  type: 'plain_text',
+                  text: `${symbol}-turn_On_Off`,
+                },
+                value: symbol,
+                action_id: 'turn_On_Off',
+                style: 'danger',
+              },
+            ],
+          },]:[
       {
         type: 'button',
         text: {
