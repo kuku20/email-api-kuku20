@@ -148,6 +148,23 @@ export class SlackPbController {
       const x = await this.sirvService.deleteImage(filename)
       const y = await this.webhooksService.deleteMessage_SLack(postToCSLRE.channel,[payload.message.ts])
       // console.log('clear_itself',x,y)
+    } else if(timeframe_acID ==='turn_On_Off') {
+      const filename = action.value
+      let setValue
+      let blockre 
+      if(filename === 'turnOn') {
+        setValue = true
+        blockre = this.webhooksService.getSlBlock('turnOff','turn_On_Off','turnOff')
+      } else {
+        setValue = false
+        blockre = this.webhooksService.getSlBlock('turnOn','turn_On_Off','turnOn')
+      }
+      await this.webhooksService.Update_Slack(payload.channel.id,payload.message.ts, `*${ticker}*  Check Me Out !!!!`,blockre)
+      await this.stockService.FireBaseApi(
+        'put',
+        `stock-related/turnOffNow.json`,
+        { data: setValue },
+      );
     } else{
       console.log('action',timeframe_acID, ticker)
       await this.webhooksService.reply_SLack(postToCSLRE.channel,payload.message.ts,'postnone')

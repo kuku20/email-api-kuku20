@@ -72,6 +72,7 @@ import { TaskQQQ_SPYService } from './stock/task_QQQ_SPY.service';
 import { TasksBullBearGain_CalService } from './stock/task_bull_bear_gains_cal.service';
 import { TasksGainsLosersService } from './stock/task_gains_losrs.service';
 import { SirvService } from './webhooks/sirv.service';
+import { PowerService } from './stock/z.power.service';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -193,6 +194,7 @@ import { SirvService } from './webhooks/sirv.service';
     // TasksBullBearService,
     // TasksBullBearGain_CalService,
     // TasksGainsLosersService
+    // PowerService
   ],
 })
 export class AppModule {}
