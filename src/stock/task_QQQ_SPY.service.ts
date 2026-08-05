@@ -118,6 +118,13 @@ export class TaskQQQ_SPYService {
               }
               this.stockHelperService.bullbearDaily = this.stockHelperService.bullbearUqiue
               this.webhooksService.sendSlackNotification(`GODOWN...WAIT:CONSIDER BUY PUT; WAIT THE NEXT ${timeframe}.`, channel)
+              await this.webhooksService.sendSlackNotificationVN(
+                timeframe,
+                [ticker],
+                lastData,
+                this.stockHelperService.Z_US_SL_.J3DAY,
+                '*CONSIDER BUY PUT 🔴🔴🔴*'+text,
+              );
               await this.webhooksService.sendDiscord(
                 `--------------------${`GODOWN...WAIT:CONSIDER BUY PUT; WAIT THE NEXT ${timeframe}.` +'=='+time}---------------------------`,
                 `RSIENDBOT ${ticker} at ${timeframe}`,
@@ -149,7 +156,14 @@ export class TaskQQQ_SPYService {
                 );
               }
               this.stockHelperService.bullbearDaily = this.stockHelperService.bullbearUqiue
-              this.webhooksService.sendSlackNotification(`GOUP...WAIT:CONSIDER BUY CALL; WAIT THE NEXT ${timeframe}.`, channel)
+              this.webhooksService.sendSlackNotification(`GOUP...WAIT:CONSIDER BUY CALL🟢🟢🟢; WAIT THE NEXT ${timeframe}.`, channel)
+              await this.webhooksService.sendSlackNotificationVN(
+                timeframe,
+                [ticker],
+                lastData,
+                this.stockHelperService.Z_US_SL_.J3DAY,
+                '*CONSIDER BUY CALL🟢🟢🟢*'+text,
+              );
               await this.webhooksService.sendDiscord(
                 `--------------------${`GOUP...WAIT:CONSIDER BUY CALL; WAIT THE NEXT ${timeframe}.` +'=='+time}---------------------------`,
                 `RSIENDBOT ${ticker} at ${timeframe}`,
@@ -167,7 +181,14 @@ export class TaskQQQ_SPYService {
               [ticker],
               lastData,
               channel,
-              '*CONSIDER BUY PUT*'+text,
+              '*CONSIDER BUY PUT🔴🔴🔴*'+text,
+            );
+            await this.webhooksService.sendSlackNotificationVN(
+              timeframe,
+              [ticker],
+              lastData,
+              this.stockHelperService.Z_US_SL_.J3DAY,
+              '*CONSIDER BUY PUT🔴🔴🔴*'+text,
             );
             this.stockHelperService.bullbearDaily = 'nomore'
           } else if(!text2NDLAST.includes('🟢') && text.includes('🟢')){
@@ -178,7 +199,14 @@ export class TaskQQQ_SPYService {
               [ticker],
               lastData,
               channel,
-              '*CONSIDER BUY CALL*'+text,
+              '*CONSIDER BUY CALL🟢🟢🟢*'+text,
+            );
+            await this.webhooksService.sendSlackNotificationVN(
+              timeframe,
+              [ticker],
+              lastData,
+              this.stockHelperService.Z_US_SL_.J3DAY,
+              '*CONSIDER BUY CALL🟢🟢🟢*'+text,
             );
             this.stockHelperService.bullbearDaily = 'nomore'
           }
