@@ -406,7 +406,7 @@ export class WebhooksService implements OnModuleInit{
 
     if (this.configService.get('NODE_ENV') === 'production' && this.stockHelperService.railwayBoolen) {
       // // turn off on local
-      await this.FireBaseApi('put', `stock-data/${path}.json`, slicedData);
+      await this.FireBaseApi('put', `stock-data/${ticker.toUpperCase()}.json`, slicedData);
       return null;
     }
 
