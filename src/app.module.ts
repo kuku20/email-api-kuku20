@@ -191,7 +191,7 @@ import { PowerService } from './stock/z.power.service';
     // TasksUSMK_1MIN_Service,
     // TasksUSMKService_SP500,
     // TasksUS_ALL_MK_4HOUR_Service,
-    // TasksBullBearService,
+    TasksBullBearService,
     // TasksBullBearGain_CalService,
     // TasksGainsLosersService
     // PowerService
