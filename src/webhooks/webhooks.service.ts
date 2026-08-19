@@ -403,11 +403,11 @@ export class WebhooksService implements OnModuleInit{
       return null; // skip if ticker contains a dot
     }
     const timeframe = tickerasall.split('-')[1];
-    const path = `${channel}/${ticker}-ON-${timeframe}`.toUpperCase();
+    const pathSym = `${channel}/${ticker}`.toUpperCase();
 
     if (this.configService.get('NODE_ENV') === 'production' && this.stockHelperService.railwayBoolen) {
       // // turn off on local
-      await this.FireBaseApi('put', `stock-data/${ticker.toUpperCase()}.json`, slicedData);
+      await this.FireBaseApi('put', `stock-data/${pathSym}.json`, slicedData);
       return null;
     }
 
