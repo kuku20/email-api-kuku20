@@ -175,7 +175,7 @@ import { getTaskProviders } from './task.providers';
     StockService,
     SirvService,
     
-    ...getTaskProviders(new ConfigService()),
+    // ...getTaskProviders(new ConfigService()),
     
     // TaskHoldingService,
     // SlackService,
