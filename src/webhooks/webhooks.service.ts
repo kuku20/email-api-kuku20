@@ -224,7 +224,8 @@ export class WebhooksService implements OnModuleInit{
     //     ...options,
     //   });
     // }
-    return { msg: 'post to discord success', ...sentMessage};
+    const ProductImageUrl = file ? null: `https://stockmarkets000.web.app/capture-target/${webhookCl}/${ticker.toUpperCase()}`;
+    return { msg: 'post to discord success', ...sentMessage, ProductImageUrl};
   }
   async RsiToDatabase(target: any, current: any, data: any) {
     const firebaseUrl = `alerts/${target}/${current}.json`;
@@ -402,11 +403,11 @@ export class WebhooksService implements OnModuleInit{
       return null; // skip if ticker contains a dot
     }
     const timeframe = tickerasall.split('-')[1];
-    const path = `${channel}/${ticker}-ON-${timeframe}`.toUpperCase();
+    const pathSym = `${channel}/${ticker}`.toUpperCase();
 
     if (this.configService.get('NODE_ENV') === 'production' && this.stockHelperService.railwayBoolen) {
       // // turn off on local
-      // await this.FireBaseApi('put', `stock-data/${path}.json`, slicedData);
+      await this.FireBaseApi('put', `stock-data/${pathSym}.json`, slicedData);
       return null;
     }
 

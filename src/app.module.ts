@@ -175,7 +175,14 @@ import { getTaskProviders } from './task.providers';
     StockService,
     SirvService,
     
-    // ...getTaskProviders(new ConfigService()),
+    ...getTaskProviders(new ConfigService()),
+//     Tasks_US_WEEKLY,
+//     TasksService,
+//     // TasksVNMKService,
+//     TaskCryptoService,
+//     TasksForexService,
+//     TaskQQQ_SPYService,
+//     TasksUS_ALL_MK_MASS_MACD_OSC,
     
     // TaskHoldingService,
     // SlackService,
