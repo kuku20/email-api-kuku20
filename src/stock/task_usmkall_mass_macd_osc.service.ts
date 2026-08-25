@@ -56,7 +56,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
     // )
     // await this.runWatchlistGemini(symbols, this.stockHelperService.US_DAILY_, '1day');
     // await this.runAllOn1day(['IVZ']);
-    await this.runfullonms();
+    // await this.runfullonms(['ABBV','ACN','MSFT']);
     // await this.runAllWatchLists(Object.keys(geminibuy));
     // await this.runAllOn1day([
     //   'NVDA',
