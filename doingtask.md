@@ -72,3 +72,8 @@ https://nestjs-api.koyeb.app/slack/interactions
 https://nestjs-api.koyeb.app/slack/suggestion
 
 https://api.slack.com/apps/A0B7TNVEKBP/interactive-messages
+
+if it buy
+
+1.fix the gains_lors to send image in option
+2.fix qqq sent to new channel for easy x

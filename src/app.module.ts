@@ -73,6 +73,7 @@ import { TasksBullBearGain_CalService } from './stock/task_bull_bear_gains_cal.s
 import { TasksGainsLosersService } from './stock/task_gains_losrs.service';
 import { SirvService } from './webhooks/sirv.service';
 import { PowerService } from './stock/z.power.service';
+import { getTaskProviders } from './task.providers';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -173,13 +174,15 @@ import { PowerService } from './stock/z.power.service';
     AiToolService,
     StockService,
     SirvService,
-    Tasks_US_WEEKLY,
-    TasksService,
-    // TasksVNMKService,
-    TaskCryptoService,
-    TasksForexService,
-    TaskQQQ_SPYService,
-    TasksUS_ALL_MK_MASS_MACD_OSC,
+    
+    ...getTaskProviders(new ConfigService()),
+//     Tasks_US_WEEKLY,
+//     TasksService,
+//     // TasksVNMKService,
+//     TaskCryptoService,
+//     TasksForexService,
+//     TaskQQQ_SPYService,
+//     TasksUS_ALL_MK_MASS_MACD_OSC,
     
     // TaskHoldingService,
     // SlackService,
@@ -191,9 +194,9 @@ import { PowerService } from './stock/z.power.service';
     // TasksUSMK_1MIN_Service,
     // TasksUSMKService_SP500,
     // TasksUS_ALL_MK_4HOUR_Service,
-    // TasksBullBearService,
     // TasksBullBearGain_CalService,
-    // TasksGainsLosersService
+    // TasksBullBearService,
+    // TasksGainsLosersService,
     // PowerService
   ],
 })
