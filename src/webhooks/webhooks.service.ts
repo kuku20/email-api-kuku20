@@ -136,9 +136,10 @@ export class WebhooksService implements OnModuleInit{
       setmess = `${setmess} | **[C.MISS.4200](http://localhost:4200/capture-target/${webhookCl}/${ticker})** | **[C.MISS.PROD](https://stockmarkets000.web.app/capture-target/${webhookCl}/${ticker})**`;
     }
     if (botdt.includes('RSIENDBOT')) {
+      const SERVER_LOCATION = process.env.SERVER_LOCATION || process.env.PORT ||'unknow';
       options = {
         username: botdt,
-        content: message,
+        content: `${message}\n\n📍 Server: ${SERVER_LOCATION}`,
       };
     } else if (lastData === '{}') {
       embed = new EmbedBuilder()
