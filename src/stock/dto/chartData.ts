@@ -5795,6 +5795,10 @@ export const watchlist = [
   'ADBE',
   'IBM',
   'RBLX',
+  'IREN',
+  'SOFI',
+  'NU',
+  'FN'
 ];
 interface Watchlist {
   [key: string]: {
@@ -5869,6 +5873,10 @@ export const watchlistBB: Watchlist = {
   ADBE: { BULL: ['ADBG', 'ADBU'], BEAR: [] },
   IBM: { BULL: ['IBX'], BEAR: [] },
   RBLX: { BULL: ['RBLU'], BEAR: [] },
+  IREN: { BULL: ['IRE','IREX','IREG'], BEAR: ['IREZ'] },
+  SOFI: { BULL: ['SOFX','SOFA'], BEAR: [] },
+  NU: { BULL: ['NUG',], BEAR: [] },
+  FN: { BULL: ['FNG',], BEAR: [] },
 };
 
 export const above2billion = [
