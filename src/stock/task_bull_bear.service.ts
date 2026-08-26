@@ -41,6 +41,7 @@ export class TasksBullBearService {
     //   console.log(symbol)
     // this.webhooksService.fePostToHold2(symbol,null,'accessory_price_check',symbol)
     // })
+    // this.webhooksService.fePostToHold2('SPY',null,'accessory_price_check',this.stockHelperService.BULL_BEAR_SL_.SPY)
     // this.webhooksService.fePostToHold2('QQQ',null,'accessory_price_check',this.stockHelperService.BULL_BEAR_SL_.QQQ)
     // for (const symbol of DataSymbols.watchlist) {
     //   await new Promise((resolve) => setTimeout(resolve, 1000));

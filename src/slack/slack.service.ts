@@ -42,9 +42,9 @@ export class SlackService implements OnModuleInit {
 
     // OPTIONAL: auto-create on startup
     // Comment this out if you don't want Slack API calls on boot
-    let botUserId = null
+    // let botUserId = 'U0BSWKPP4MU'
     // botUserId = this.getBotOrUserId('SLACK_BOT_TOKEN')
-    
+    //  console.log(botUserId)
     // await this.createDailyChannels('AI_SL',this.stockHelperService.AI_SL,botUserId);
     // await this.createDailyChannels('BULL_BEAR_SL_',this.stockHelperService.BULL_BEAR_SL_,botUserId);
     // await this.createDailyChannels('INTRA_30M_SL_',this.stockHelperService.INTRA_30M_SL_,botUserId);
