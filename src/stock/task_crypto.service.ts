@@ -46,29 +46,29 @@ export class TaskCryptoService {
         const lastData = data[data.length - 1];
         const secondLastData = data[data.length - 2];
 
-        // await this.webhooksService.compareAndSend1hour(
-        //   data,
-        //   lastData,
-        //   secondLastData,
-        //   ticker,
-        //   timeframe,
-        //   B_Channel,
-        //   HT_Channel,
-        // );
-        const isWithinRange = this.webhooksService.checktimeMinutesEST(
+        await this.webhooksService.compareAndSend1hour(
+          data,
+          lastData,
+          secondLastData,
           ticker,
-          lastData?.date,
-          13,
+          timeframe,
+          B_Channel,
+          HT_Channel,
         );
-        if (isWithinRange) {
-          await this.webhooksService.runCrOn_MA50(
-            data,
-            ticker,
-            timeframe,
-            HT_Channel,
-            B_Channel,
-          );
-        }
+        // const isWithinRange = this.webhooksService.checktimeMinutesEST(
+        //   ticker,
+        //   lastData?.date,
+        //   13,
+        // );
+        // if (isWithinRange) {
+        //   await this.webhooksService.runCrOn_MA50(
+        //     data,
+        //     ticker,
+        //     timeframe,
+        //     HT_Channel,
+        //     B_Channel,
+        //   );
+        // }
         this.logger.log(`${ticker} processed successfully.`);
       } catch (error) {
         this.webhooksService.sendDiscord(
@@ -434,6 +434,15 @@ export class TaskCryptoService {
       'CRYPTO_WATCH',
       'CRYPTO_ALL',
       0,
+    );
+  }
+
+  async onModuleInit() {
+    this.webhooksService.sendDiscord(
+      `Run On deploy:**TaskCryptoService**`,
+      `RSIENDBOT TaskCryptoService`,
+      'Nono',
+      'ERORR_CALL',
     );
   }
 }

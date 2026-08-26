@@ -108,7 +108,7 @@ export class TasksForexService {
     );
   }
   @Cron(CronExpression.EVERY_4_HOURS)
-  async handle4hourForex() {
+  async handle4hourForex(timehold = 3) {
     const tickers = ['EURUSD', 'GBPUSD'];
     // const tickers = ['EURUSD'];
     await this.processTickers1hour(
@@ -117,7 +117,16 @@ export class TasksForexService {
       '5f7e0b2da2b5c849dfd5a3dc7938b82c02a7c6f4',
       '4HOUR_BUY_FX',
       '4HOUR_SELL_FX',
-      3,
+      timehold,
+    );
+  }
+
+  async onModuleInit() {
+    this.webhooksService.sendDiscord(
+      `Run On deploy: **TasksForexService**`,
+      `RSIENDBOT ON TasksForexService`,
+      'Nono',
+      'ERORR_CALL',
     );
   }
 }

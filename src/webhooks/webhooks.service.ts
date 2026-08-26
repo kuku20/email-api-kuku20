@@ -732,15 +732,6 @@ export class WebhooksService implements OnModuleInit{
     B_Channel,
     HT_Channel,
   ) {
-    if (timeframe === '4h' || timeframe === '1day') {
-      await this.sendDiscord(
-        `JUST WATCH_ME-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
-        `${ticker}-ON-${timeframe}`,
-        lastdata,
-        HT_Channel,
-        data,
-      );
-    }
     const Over200NUpBuy = await this.stockHelperService.Over200NUpBuy(
       lastdata,
       Secondlastdata,
@@ -865,6 +856,17 @@ export class WebhooksService implements OnModuleInit{
     if (Under200NDownSell) {
       await this.sendDiscord(
         `SELLCRLLLL Under200NDownSell-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `${ticker}-ON-${timeframe}`,
+        lastdata,
+        HT_Channel,
+        data,
+      );
+      return;
+    }
+
+    if (timeframe === '4h' || timeframe === '1day') {
+      await this.sendDiscord(
+        `JUST WATCH_ME-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
         HT_Channel,
