@@ -132,7 +132,8 @@ export class WebhooksService implements OnModuleInit{
     }
     let setmess = extra ? `${origin} | ${gptres}` : origin;
 
-    if (!file && !message?.includes('SELLCR')) {
+    // if (!file && !message?.includes('SELLCR')) {
+      if (!file) {
       setmess = `${setmess} | **[C.MISS.4200](http://localhost:4200/capture-target/${webhookCl}/${ticker})** | **[C.MISS.PROD](https://stockmarkets000.web.app/capture-target/${webhookCl}/${ticker})**`;
     }
     if (botdt.includes('RSIENDBOT')) {
@@ -787,7 +788,7 @@ export class WebhooksService implements OnModuleInit{
         `SELLCRLLLL priceBlMA200SELL-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
-        B_Channel,
+        HT_Channel,
         data,
       );
       return;
