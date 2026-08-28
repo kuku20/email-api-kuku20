@@ -34,7 +34,7 @@ export class StockHelperService {
   bullbearDaily= 'setTorun'
   apitwelveCount = 0
 
-  slackTokenKey = 'SLACK_USER_TOKEN';
+  slackTokenKey = 'SLACK_BOT_TOKEN';
   skipPostDiscord = false;
   railwayBoolen = true;
   slackPosted = []

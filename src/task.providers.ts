@@ -15,15 +15,15 @@ export function getTaskProviders(
     config: ConfigService,
 ): Provider[] {
   const providers: Provider[] = [
-    Tasks_US_WEEKLY,
-    TasksService,
-    TasksUS_ALL_MK_MASS_MACD_OSC,
     // TasksVNMKService
   ];
   if (config.get<any>( 'TURN_ON1_OFF0') === "1") {
     providers.push(TaskCryptoService);
     providers.push(TasksForexService);
     providers.push(TaskQQQ_SPYService);
+    providers.push(TasksUS_ALL_MK_MASS_MACD_OSC);
+    providers.push(Tasks_US_WEEKLY);
+    providers.push(TasksService);
   }
 
   return providers;
