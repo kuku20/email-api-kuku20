@@ -138,9 +138,10 @@ export class WebhooksService implements OnModuleInit{
     }
     if (botdt.includes('RSIENDBOT')) {
       const SERVER_LOCATION = process.env.SERVER_LOCATION || process.env.PORT ||'unknow';
+      const isNotQQQOrSPY =!botname.includes('QQQ') && !botname.includes('SPY');
       options = {
         username: botdt,
-        content: `${message}\n\n📍 Server: ${SERVER_LOCATION}`,
+        content: isNotQQQOrSPY?`${message}\n\n📍 Server: ${SERVER_LOCATION}`:message,
       };
     } else if (lastData === '{}') {
       embed = new EmbedBuilder()

@@ -18,12 +18,12 @@ export function getTaskProviders(
     Tasks_US_WEEKLY,
     TasksService,
     TasksUS_ALL_MK_MASS_MACD_OSC,
-    TaskQQQ_SPYService,
     // TasksVNMKService
   ];
   if (config.get<any>( 'TURN_ON1_OFF0') === "1") {
     providers.push(TaskCryptoService);
     providers.push(TasksForexService);
+    providers.push(TaskQQQ_SPYService);
   }
 
   return providers;
