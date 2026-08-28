@@ -403,7 +403,7 @@ export class TasksBullBearService {
           const match = getLastTimePost?.ts ===  last5min?.date
           if (!isWithinRange || match) {
             await this.webhooksService.sendSlackNotification(`* <https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day|${ticker}> |${last5min.close}|${last5min?.date}* || ${getLastTimePost?.ts}`,this.stockHelperService.Z_US_SL_.OR4);
-            await this.stockHelperService.sleep(100);
+            await this.stockHelperService.sleep(200);
             return 0
           }
           const text_5min = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
