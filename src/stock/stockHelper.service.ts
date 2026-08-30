@@ -41,6 +41,21 @@ export class StockHelperService {
   setSlackToken(tokenKey: string) {
     this.slackTokenKey = tokenKey;
   }
+  DC_SL_MT ={
+    US_EARLY_5MIN:'',
+    CR_1H_BUY:'S1GvvzfYhXoKsG4bXjtX',
+    CR_1H_HT:'1Z7lKD6JJlXzc35T3OoR',
+    CR_4H_BUY:'kDzIP4BiFSWMLDqwu44v',
+    CR_4H_HT:'wSYme1JvO7soz4tPSfhl',
+    CRYPTO_WATCH:'X6PeO7uviblIVISnIsZy',
+    CRYPTO_ALL :'OIM5pM75CnURO8c39ypE',
+    '4HOUR_SELL_FX':'gFZsI8iIssKTzl2hWMHS',
+    '4HOUR_BUY_FX':'HBuFs7hqHxoYhvvNQH1K',
+    '1HOUR_SELL_FX':'r22jz5FSDK9arDGbDHkV',
+    '1HOUR_BUY_FX':'RE5MquLYgVbukvbpCMcC',
+    '30MIN_BUY_FX':'pjzbRkYk6sv2RDhxTMT1',
+    '30MIN_SELL_FX':'gUzLIjZaWpqS0zHWNLDI'
+  }
   AI_SL = {
     "AI_BUY": "C0BT0KZJFRV",
     "AI_ERORR": "C0BTE34QP70",

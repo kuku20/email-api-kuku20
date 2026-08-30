@@ -13,6 +13,7 @@ import { channel } from 'diagnostics_channel';
 import { AiToolService } from 'src/ai-tool/ai-tool.service';
 import { StockService } from 'src/stock/stock.service';
 import { SirvService } from './sirv.service';
+import { MessagesService } from 'src/slack/messages.service';
 type Timeframe = '1month' | '1week' | '1day' | '8hour' | '4hour' | '2hour' | '1hour' | '45min' | '30min' | '15min' | '5min' | '1min';
 
 const timeframeScoreMap: Record<Timeframe, number> = {
@@ -42,7 +43,8 @@ export class WebhooksService implements OnModuleInit{
     private readonly stockHelperService: StockHelperService,
     private readonly aiToolService: AiToolService,
     private readonly sirvService: SirvService,
-    private readonly stockService: StockService
+    private readonly stockService: StockService,
+    private readonly messagesService: MessagesService
   ) {
     // Parse JSON from env vars
     this.WEBHOOKS_ENV = JSON.parse(
@@ -228,8 +230,16 @@ export class WebhooksService implements OnModuleInit{
     //   });
     // }
     const ProductImageUrl = file ? null: `https://stockmarkets000.web.app/capture-target/${webhookCl}/${ticker.toUpperCase()}`;
+    if(ProductImageUrl && !webhookCl.includes('ERORR_CALL')){
+      const channelWeb = this.stockHelperService.DC_SL_MT[webhookCl] || '1yHUrbPtNS0yygBxsezD'
+      const discordmsg =webhookCl+'\n'+message+  `\n <https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}|Discord-o6l-msg>|| <${ProductImageUrl}|prodUrl>`
+      
+      await this.messagesService.sendMessage("workspace-1",channelWeb, "bot-1", ticker,discordmsg)
+    }
     return { msg: 'post to discord success', ...sentMessage, ProductImageUrl};
   }
+
+
   async RsiToDatabase(target: any, current: any, data: any) {
     const firebaseUrl = `alerts/${target}/${current}.json`;
     await this.putToFBDynamic(firebaseUrl, data, 'put');

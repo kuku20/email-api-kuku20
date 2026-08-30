@@ -7,10 +7,12 @@ import { StockHelperService } from 'src/stock/stockHelper.service';
 import { AiToolService } from 'src/ai-tool/ai-tool.service';
 import { SlackPbController } from './slacksPb.controller';
 import { SirvService } from './sirv.service';
+import { MessagesService } from 'src/slack/messages.service';
 
 @Module({
   controllers: [WebhooksController,SlackPbController],
-  providers: [WebhooksService, StockService,StockHelperService,AiToolService,SirvService],
+  providers: [WebhooksService, StockService,StockHelperService,AiToolService,SirvService, MessagesService
+  ],
   imports:[JwtModule.register({})]
 })
 export class WebhooksModule {}
