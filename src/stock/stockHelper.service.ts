@@ -37,6 +37,7 @@ export class StockHelperService {
   slackTokenKey = 'SLACK_BOT_TOKEN';
   skipPostDiscord = false;
   railwayBoolen = true;
+  PostWebSlack = true; // set to false if want to skip post to website and then set it back
   slackPosted = []
   setSlackToken(tokenKey: string) {
     this.slackTokenKey = tokenKey;
@@ -49,6 +50,10 @@ export class StockHelperService {
     CR_4H_HT:'wSYme1JvO7soz4tPSfhl',
     CRYPTO_WATCH:'X6PeO7uviblIVISnIsZy',
     CRYPTO_ALL :'OIM5pM75CnURO8c39ypE',
+    RSI20AL: 'yJrYiYfE8WiZxSbgKQNP',
+    RSI30AL: 'r6S8Yp0OlPt0Jx6nibao',
+    RSI15AL: 'oCx6ZZ64G9nHhR9wV5O4',
+    RSI25AL: 'iB8whwqtnpeTVWeICXNH',
     '4HOUR_SELL_FX':'gFZsI8iIssKTzl2hWMHS',
     '4HOUR_BUY_FX':'HBuFs7hqHxoYhvvNQH1K',
     '1HOUR_SELL_FX':'r22jz5FSDK9arDGbDHkV',

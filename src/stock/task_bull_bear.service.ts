@@ -177,7 +177,7 @@ export class TasksBullBearService {
               this.stockHelperService.bullbearUqiue+textDetail,
             );
             const discodedata = await this.webhooksService.sendDiscord(
-              `${textDetail}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+              `${textDetail}-${timeframe}-${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
               `${ticker}-ON-${timeframe}-${textDetail}`,
               lastData,
               'WATCHLIST', 
@@ -195,7 +195,7 @@ export class TasksBullBearService {
           //   );
           //   this.aboveList.push(ticker)
           //   await this.webhooksService.sendDiscord(
-          //     `${textDetail}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+          //     `${textDetail}-${timeframe}-${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
           //     `${ticker}-ON-${timeframe}-${textDetail}`,
           //     lastData,
           //     StochRSICross?B_Channel:HT_Channel, 
@@ -211,7 +211,7 @@ export class TasksBullBearService {
               this.stockHelperService.bullbearUqiue+'blMa200MACDPMA50cR',
             );
             await this.webhooksService.sendDiscord(
-              `${'blMa200MACDPMA50cR'}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+              `${'blMa200MACDPMA50cR'}-${timeframe}-${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
               `${ticker}-ON-${timeframe}-${'blMa200MACDPMA50cR'}`,
               lastData,
               'US_15M_HT', 
@@ -227,7 +227,7 @@ export class TasksBullBearService {
           //     this.stockHelperService.bullbearUqiue+'MA9crosMA20',
           //   );
           //   await this.webhooksService.sendDiscord(
-          //     `${'MA9crosMA20'}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+          //     `${'MA9crosMA20'}-${timeframe}-${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
           //     `${ticker}-ON-${timeframe}-${'MA9crosMA20'}`,
           //     lastData,
           //     'US_15M_HT', 
@@ -243,7 +243,7 @@ export class TasksBullBearService {
               this.stockHelperService.bullbearUqiue+'macdCrossAB',
             );
             await this.webhooksService.sendDiscord(
-              `${'macdCrossAB'}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+              `${'macdCrossAB'}-${timeframe}-${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
               `${ticker}-ON-${timeframe}-${'macdCrossAB'}`,
               lastData,
               'US_30M_HT', 
