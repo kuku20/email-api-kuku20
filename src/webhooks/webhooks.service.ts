@@ -230,9 +230,10 @@ export class WebhooksService implements OnModuleInit{
     //   });
     // }
     const ProductImageUrl = file ? null: `https://stockmarkets000.web.app/capture-target/${webhookCl}/${ticker.toUpperCase()}`;
-    if(ProductImageUrl && !webhookCl.includes('ERORR_CALL')){
+    if(ProductImageUrl && !webhookCl.includes('ERORR_CALL') && this.stockHelperService.PostWebSlack){
       const channelWeb = this.stockHelperService.DC_SL_MT[webhookCl] || '1yHUrbPtNS0yygBxsezD'
-      const discordmsg =webhookCl+'\n'+message+  `\n <https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}|Discord-o6l-msg>|| <${ProductImageUrl}|prodUrl>`
+      // webhookCl+'\n'+
+      const discordmsg = message+  `\n <https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}|Discord-o6l-msg>|| <${ProductImageUrl}|prodUrl>`
       
       await this.messagesService.sendMessage("workspace-1",channelWeb, "bot-1", ticker,discordmsg)
     }
@@ -751,7 +752,7 @@ export class WebhooksService implements OnModuleInit{
     );
     if (Over200NUpBuy) {
       await this.sendDiscord(
-        `BUY Over200NUpBuy-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `BUY Over200NUpBuy-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
         B_Channel,
@@ -765,7 +766,7 @@ export class WebhooksService implements OnModuleInit{
     );
     if (macdCrossAB_BL0) {
       await this.sendDiscord(
-        `BUY macdCrossAB_BL0-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `BUY macdCrossAB_BL0-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
         B_Channel,
@@ -781,7 +782,7 @@ export class WebhooksService implements OnModuleInit{
     if (priceAbMA200BUY) {
       // add to uplist and delete out downlist
       await this.sendDiscord(
-        `BUY priceAbMA200BUY-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `BUY priceAbMA200BUY-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
         B_Channel,
@@ -796,7 +797,7 @@ export class WebhooksService implements OnModuleInit{
     );
     if (priceBlMA200SELL) {
       await this.sendDiscord(
-        `SELLCRLLLL priceBlMA200SELL-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `SELLCRLLLL priceBlMA200SELL-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
         HT_Channel,
@@ -811,7 +812,7 @@ export class WebhooksService implements OnModuleInit{
     );
     if (macdCrossAB) {
       await this.sendDiscord(
-        `BUY macdCrossAB-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `BUY macdCrossAB-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
         HT_Channel,
@@ -825,7 +826,7 @@ export class WebhooksService implements OnModuleInit{
     );
     if (earlyBuyInRSI) {
       await this.sendDiscord(
-        `BUY earlyBuyInRSI-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `BUY earlyBuyInRSI-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
         HT_Channel,
@@ -839,7 +840,7 @@ export class WebhooksService implements OnModuleInit{
     );
     if (macdCrossBL) {
       await this.sendDiscord(
-        `SELLCRLLLL macdCrossBL-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `SELLCRLLLL macdCrossBL-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
         HT_Channel,
@@ -853,7 +854,7 @@ export class WebhooksService implements OnModuleInit{
     );
     if (earlySellInRSI) {
       await this.sendDiscord(
-        `SELLCRLLLL earlySellInRSI-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `SELLCRLLLL earlySellInRSI-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
         HT_Channel,
@@ -868,7 +869,7 @@ export class WebhooksService implements OnModuleInit{
     );
     if (Under200NDownSell) {
       await this.sendDiscord(
-        `SELLCRLLLL Under200NDownSell-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `SELLCRLLLL Under200NDownSell-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
         HT_Channel,
@@ -879,7 +880,7 @@ export class WebhooksService implements OnModuleInit{
 
     if (timeframe === '4h' || timeframe === '1day') {
       await this.sendDiscord(
-        `JUST WATCH_ME-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `JUST WATCH_ME-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
         HT_Channel,
@@ -905,7 +906,7 @@ export class WebhooksService implements OnModuleInit{
       );
     if (BlMA200_MA20_MA50_MA100_BUY) {
       await this.sendDiscord(
-        `BUY BlMA200_MA20_MA50_MA100_BUY-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `BUY BlMA200_MA20_MA50_MA100_BUY-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
         B_Channel,
@@ -920,7 +921,7 @@ export class WebhooksService implements OnModuleInit{
       );
     if (ABMA200_macdCrossAB_BUY) {
       await this.sendDiscord(
-        `BUY ABMA200_macdCrossAB_BUY-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `BUY ABMA200_macdCrossAB_BUY-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
         B_Channel,
@@ -936,7 +937,7 @@ export class WebhooksService implements OnModuleInit{
       );
     if (BlMA200_MA20_MA50_MA100_SELL) {
       await this.sendDiscord(
-        `SELLLLLL BlMA200_MA20_MA50_MA100_SELL-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `SELLLLLL BlMA200_MA20_MA50_MA100_SELL-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
         HT_Channel,
@@ -952,7 +953,7 @@ export class WebhooksService implements OnModuleInit{
       );
     if (ABMA200_macdCrossBL_SELL) {
       await this.sendDiscord(
-        `SELLLLLL ABMA200_macdCrossBL_SELL-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `SELLLLLL ABMA200_macdCrossBL_SELL-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
         HT_Channel,
@@ -977,7 +978,7 @@ export class WebhooksService implements OnModuleInit{
     );
     if (macdCrossAB_BL0) {
       await this.sendDiscord(
-        `BUY macdCrossAB_BL0-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `BUY macdCrossAB_BL0-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
         B_Channel,
@@ -991,7 +992,7 @@ export class WebhooksService implements OnModuleInit{
     );
     if (macdCrossAB) {
       await this.sendDiscord(
-        `BUY macdCrossAB-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `BUY macdCrossAB-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
         HT_Channel,
@@ -1016,7 +1017,7 @@ export class WebhooksService implements OnModuleInit{
     );
     if (macdCrossAB_BL0) {
       await this.sendDiscord(
-        `BUY macdCrossAB_BL0-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `BUY macdCrossAB_BL0-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
         B_Channel,
@@ -1030,7 +1031,7 @@ export class WebhooksService implements OnModuleInit{
     );
     if (earlySellInRSI) {
       await this.sendDiscord(
-        `BUY macdCrossAB-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `BUY macdCrossAB-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
         HT_Channel,
@@ -1057,7 +1058,7 @@ export class WebhooksService implements OnModuleInit{
     );
     if (RSI_28) {
       await this.sendDiscord(
-        `BUY-BlMA200 RSI_28-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `BUY-BlMA200 RSI_28-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
         B_Channel,
@@ -1071,7 +1072,7 @@ export class WebhooksService implements OnModuleInit{
     );
     if (BlMA200_MA50_BUY) {
       await this.sendDiscord(
-        `BUY-BlMA200_MA50_BUY-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `BUY-BlMA200_MA50_BUY-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
         B_Channel,
@@ -1086,7 +1087,7 @@ export class WebhooksService implements OnModuleInit{
     );
     if (Over200NUpBuy) {
       await this.sendDiscord(
-        `BUY-Over200NUpBuy-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `BUY-Over200NUpBuy-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
         B_Channel,
@@ -1101,7 +1102,7 @@ export class WebhooksService implements OnModuleInit{
     );
     if (priceAbMA200BUY) {
       await this.sendDiscord(
-        `BUY-priceAbMA200BUY-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `BUY-priceAbMA200BUY-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
         B_Channel,
@@ -1116,7 +1117,7 @@ export class WebhooksService implements OnModuleInit{
     );
     if (macdCrossAB_BL0) {
       await this.sendDiscord(
-        `BUY-macdCrossAB_BL0-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `BUY-macdCrossAB_BL0-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
         B_Channel,
@@ -1144,7 +1145,7 @@ export class WebhooksService implements OnModuleInit{
       );
       if (Over200NUpBuy) {
         await this.sendDiscord(
-          `BUY-Over200NUpBuy-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+          `BUY-Over200NUpBuy-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
           `${ticker}-ON-${timeframe}`,
           lastdata,
           B_Channel,
@@ -1158,7 +1159,7 @@ export class WebhooksService implements OnModuleInit{
       );
       if (priceAbMA200BUY) {
         await this.sendDiscord(
-          `BUY-priceAbMA200BUY-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+          `BUY-priceAbMA200BUY-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
           `${ticker}-ON-${timeframe}`,
           lastdata,
           B_Channel,
@@ -1172,7 +1173,7 @@ export class WebhooksService implements OnModuleInit{
       );
       if (macdCrossAB) {
         await this.sendDiscord(
-          `BUY-macdCrossAB-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+          `BUY-macdCrossAB-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
           `${ticker}-ON-${timeframe}`,
           lastdata,
           B_Channel,
@@ -1188,7 +1189,7 @@ export class WebhooksService implements OnModuleInit{
       );
       if (RSI_28) {
         await this.sendDiscord(
-          `BUY-BlMA200 RSI_28-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+          `BUY-BlMA200 RSI_28-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
           `${ticker}-ON-${timeframe}`,
           lastdata,
           HT_Channel,
@@ -1202,7 +1203,7 @@ export class WebhooksService implements OnModuleInit{
       );
       if (BlMA200_MA50_BUY) {
         await this.sendDiscord(
-          `BUY-BlMA200_MA50_BUY-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+          `BUY-BlMA200_MA50_BUY-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
           `${ticker}-ON-${timeframe}`,
           lastdata,
           HT_Channel,
@@ -1331,7 +1332,7 @@ export class WebhooksService implements OnModuleInit{
     );
     if (StochRSICross.crossUp) {
       await this.sendDiscord(
-        `BUY-StochRSICrossUP-${timeframe}(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `BUY-StochRSICrossUP-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastdata,
         B_Channel,
@@ -1364,7 +1365,7 @@ export class WebhooksService implements OnModuleInit{
         await this.sendDiscord(
           `${
             sp500
-          }SBUY--aboveAll-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+          }SBUY--aboveAll-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
           `${ticker}-ON-${timeframe}-aboveAll-${lastdata?.close}`,
           lastdata,
           'BUY_EARLY_DAY',
@@ -1452,7 +1453,7 @@ export class WebhooksService implements OnModuleInit{
       await this.sendDiscord(
         `${
           sp500
-        }SBUY-macdCrAB-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        }SBUY-macdCrAB--${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
         `${ticker}-ON-${timeframe}-macdCrAB`,
         lastdata,
         DataSymbols.watchlist.includes(ticker)?'WATCHLIST':'US_30M_BUY',
@@ -1621,7 +1622,7 @@ export class WebhooksService implements OnModuleInit{
       if(aboveMA50Second && aboveMA50Third && bellowMA50Fourth){
         if(timeframe === '1day'){
           await this.sendDiscord(
-            `${sp500}SBUY-PriceCrMA50-3day -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+            `${sp500}SBUY-PriceCrMA50-3day-${timeframe}-${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
             `${ticker}-ON-${timeframe}-CrMA50-${lastData?.close}`,
             lastData,
             'US_15M_HT',
@@ -1646,7 +1647,7 @@ export class WebhooksService implements OnModuleInit{
             'PriceCrMA50_3C',
           );
           await this.sendDiscord(
-            `${sp500}BUY-PriceCrMA50_3C_${aboveOrBellow}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+            `${sp500}BUY-PriceCrMA50_3C_${aboveOrBellow}-${timeframe}-${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
             `${ticker}-ON-${timeframe}`,
             lastData,
             discordChannel,
@@ -1677,7 +1678,7 @@ export class WebhooksService implements OnModuleInit{
           this.listsymbolBEarly = [];
         }
         await this.sendDiscord(
-          `${sp500}SBUY-PriceCrMA50 -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+          `${sp500}SBUY-PriceCrMA50-${timeframe}-${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
           `${ticker}-ON-${timeframe}-CrMA50-${lastData?.close}`,
           lastData,
           timeframe === '1day' ? '200AB_LESS_05' : '200AB_LESS_1',
@@ -1735,7 +1736,7 @@ export class WebhooksService implements OnModuleInit{
       // await this.FireBaseApi("put", `stockRSILAUP/macdCross_AB/All/${timeframe}/${ticker}.json`, {lastData: lastData})
       await this.FireBaseApi("put", `stockRSILAUP/macdCross_AB/DyDay/${timeframe}/${lastDataOnTime}/${ticker}.json`, {lastData: lastData})
       await this.sendDiscord(
-        `BUYY-macdCross_AB-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+        `BUYY-macdCross_AB-${timeframe}-${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastData,
         DataSymbols.watchlist.includes(ticker)?'WATCHLIST':timeframeKey,
@@ -1752,7 +1753,7 @@ export class WebhooksService implements OnModuleInit{
     }
     if (stockRSILAUP && macdCross.BL && this.stockHelperService.HoldingList.includes(ticker)) {
       await this.sendDiscord(
-        `SELL-macdCross_AB-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+        `SELL-macdCross_AB-${timeframe}-${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
         `${ticker}-ON-${timeframe}`,
         lastData,
         'MA_AB_50_100',
@@ -1816,7 +1817,7 @@ export class WebhooksService implements OnModuleInit{
     );
     if (MACDPositive && PriceCrMA50) {
       await this.sendDiscord(
-        `SBUY-BuyOnly_MACDPositive-PriceCrMA50 -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+        `SBUY-BuyOnly_MACDPositive-PriceCrMA50-${timeframe}-${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
         `${ticker}-ON-${timeframe}-CrMA50-${lastData?.close}`,
         lastData,
         timeframe === '1day' ? B_Channel : HT_Channel,
@@ -1832,7 +1833,7 @@ export class WebhooksService implements OnModuleInit{
     // ].filter(Boolean).length;
     // if (aboveMA50Count >= 2 && MACDPositive) {
     //   await this.sendDiscord(
-    //     `SBUY-Continue-buy-keep-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+    //     `SBUY-Continue-buy-keep-${timeframe}-${lastdata?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
     //     `${ticker}-ON-${timeframe}-${lastData?.close}`,
     //     lastData,
     //     timeframe === '1day' ? B_Channel : HT_Channel,
@@ -1842,7 +1843,7 @@ export class WebhooksService implements OnModuleInit{
     // } else
     if (MACDNegative && PriceCrMA50bl) {
       await this.sendDiscord(
-        `SSELL-PriceCrMA50bl -${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+        `SSELL-PriceCrMA50bl-${timeframe}-${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
         `${ticker}-ON-${timeframe}-${lastData?.close}`,
         lastData,
         timeframe === '1day' ? HT_Channel : B_Channel,

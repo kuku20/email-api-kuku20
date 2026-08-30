@@ -44,6 +44,7 @@ export class TaskQQQ_SPYService {
       return;
     }
     try {
+      this.stockHelperService.PostWebSlack = false
       await this.CHECKBULL_BEAR_processTickers(
         tickers,
         timeframe,
@@ -52,7 +53,9 @@ export class TaskQQQ_SPYService {
     } catch (error) {
       console.error('timeframe failed:', error);
       throw error;
-    } 
+    } finally{
+      this.stockHelperService.PostWebSlack = true
+    }
   }
   private async CHECKBULL_BEAR_processTickers(
     tickers: string[],

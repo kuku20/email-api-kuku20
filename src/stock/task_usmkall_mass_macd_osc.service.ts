@@ -145,7 +145,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
           if(signal && signal.RSI15up){
             await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSI15AL/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
             await this.webhooksService.sendDiscord(
-              `${sp500}SBUY-RSI15AL-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+              `${sp500}SBUY-RSI15AL-${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
               `${ticker}-ON-${timeframe}`,
               lastData,
               'RSI15AL',
@@ -161,7 +161,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
           }else if(signal && signal.RSI20up){
             await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSIALERT/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
             await this.webhooksService.sendDiscord(
-              `${sp500}SBUY-RSI20AL-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+              `${sp500}SBUY-RSI20AL-${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
               `${ticker}-ON-${timeframe}`,
               lastData,
               'RSIALERT',
@@ -177,7 +177,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
           }else if(signal && signal.RSI25up){
             await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSI25AL/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
             await this.webhooksService.sendDiscord(
-              `${ sp500}SBUY-RSI25AL-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+              `${ sp500}SBUY-RSI25AL-${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
               `${ticker}-ON-${timeframe}`,
               lastData,
               'RSI25AL',
@@ -193,7 +193,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
           }else if(signal && signal.RSI30up){
             await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSI30AL/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
             await this.webhooksService.sendDiscord(
-              `${sp500}SBUY-RSI30AL-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+              `${sp500}SBUY-RSI30AL-${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
               `${ticker}-ON-${timeframe}`,
               lastData,
               'RSI30AL',
@@ -628,7 +628,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
             if(signal && signal.RSI15up){
               await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSI15AL/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
               await this.webhooksService.sendDiscord(
-                `${sp500}SBUY-RSI15AL-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+                `${sp500}SBUY-RSI15AL-${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
                 `${ticker}-ON-${timeframe}`,
                 lastData,
                 'RSI15AL',
@@ -644,7 +644,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
             }else if(signal && signal.RSI20up){
               await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSIALERT/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
               await this.webhooksService.sendDiscord(
-                `${sp500}SBUY-RSI20AL-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+                `${sp500}SBUY-RSI20AL-${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
                 `${ticker}-ON-${timeframe}`,
                 lastData,
                 'RSIALERT',
@@ -660,7 +660,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
             }else if(signal && signal.RSI25up){
               await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSI25AL/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
               await this.webhooksService.sendDiscord(
-                `${ sp500}SBUY-RSI25AL-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+                `${ sp500}SBUY-RSI25AL-${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
                 `${ticker}-ON-${timeframe}`,
                 lastData,
                 'RSI25AL',
@@ -676,7 +676,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
             }else if(signal && signal.RSI30up){
               await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSI30AL/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
               await this.webhooksService.sendDiscord(
-                `${sp500}SBUY-RSI30AL-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+                `${sp500}SBUY-RSI30AL-${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
                 `${ticker}-ON-${timeframe}`,
                 lastData,
                 'RSI30AL',
@@ -928,7 +928,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
             if(signal && signal.RSI15up){
               await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSI15AL/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
               await this.webhooksService.sendDiscord(
-                `${sp500}SBUY-RSI15AL-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+                `${sp500}SBUY-RSI15AL-${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
                 `${ticker}-ON-${timeframe}`,
                 lastData,
                 'RSI15AL',
@@ -944,7 +944,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
             }else if(signal && signal.RSI20up){
               await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSIALERT/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
               await this.webhooksService.sendDiscord(
-                `${sp500}SBUY-RSI20AL-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+                `${sp500}SBUY-RSI20AL-${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
                 `${ticker}-ON-${timeframe}`,
                 lastData,
                 'RSIALERT',
@@ -960,7 +960,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
             }else if(signal && signal.RSI25up){
               await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSI25AL/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
               await this.webhooksService.sendDiscord(
-                `${ sp500}SBUY-RSI25AL-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+                `${ sp500}SBUY-RSI25AL--${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
                 `${ticker}-ON-${timeframe}`,
                 lastData,
                 'RSI25AL',
@@ -976,7 +976,7 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
             }else if(signal && signal.RSI30up){
               await this.webhooksService.FireBaseApi("put", `stock-related/RSI/RSI30AL/${timeframe}/${this.today}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
               await this.webhooksService.sendDiscord(
-                `${sp500}SBUY-RSI30AL-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+                `${sp500}SBUY-RSI30AL--${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
                 `${ticker}-ON-${timeframe}`,
                 lastData,
                 'RSI30AL',
