@@ -54,7 +54,7 @@ export class StockHelperService {
     RSI30AL: 'r6S8Yp0OlPt0Jx6nibao',
     RSI15AL: 'oCx6ZZ64G9nHhR9wV5O4',
     RSI25AL: 'iB8whwqtnpeTVWeICXNH',
-    CR_15_HT: 'xi8ak9jKjfqBu0VAv0f2',
+    CR_5M_HT: 'xi8ak9jKjfqBu0VAv0f2',
     CR_30M_BUY: 'Uy9wEQx85aRGa10t8Y1F',
     CRYPTO_EARLY_15MIN: 'TIzwHKvp5RELkw1jE1dr',
     CR_30MIN_HT: 'NDyGsENq6IWNST4TPR8o',
