@@ -148,7 +148,7 @@ export class TaskCryptoService {
     }
   }
   //@Cron(CronExpression.EVERY_5_MINUTES)
-  // @Cron('*/15 * * * *') // every 15 minutes
+  @Cron('*/15 * * * *') // every 15 minutes
   async handle5pCrypto() {
     const tickers = [
       'BTCUSD',
@@ -182,7 +182,7 @@ export class TaskCryptoService {
     );
   }
 
-  // @Cron(CronExpression.EVERY_30_MINUTES)
+  @Cron(CronExpression.EVERY_30_MINUTES)
   async handle30pCrypto() {
     // await this.webhooksService.sendDiscord(
     //   'WAKEUPCALL:30min',
