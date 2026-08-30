@@ -74,6 +74,7 @@ import { TasksGainsLosersService } from './stock/task_gains_losrs.service';
 import { SirvService } from './webhooks/sirv.service';
 import { PowerService } from './stock/z.power.service';
 import { getTaskProviders } from './task.providers';
+import { MessagesService } from './slack/messages.service';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -174,6 +175,7 @@ import { getTaskProviders } from './task.providers';
     AiToolService,
     StockService,
     SirvService,
+    MessagesService,
     
     ...getTaskProviders(new ConfigService()),
 //     Tasks_US_WEEKLY,

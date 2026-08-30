@@ -1,0 +1,9 @@
+curl -X POST http://localhost:3010/messages \
+  -H "Content-Type: application/json" \
+  -d '{
+    "workspaceId": "workspace-1",
+    "channelId": "1yHUrbPtNS0yygBxsezD",
+    "userId": "bot-1",
+    "userName": "NestJS Bot",
+    "text": "Hello from NestJS!"
+  }'
