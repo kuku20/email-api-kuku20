@@ -64,7 +64,9 @@ export class StockHelperService {
     '1HOUR_BUY_FX':'RE5MquLYgVbukvbpCMcC',
     '30MIN_BUY_FX':'pjzbRkYk6sv2RDhxTMT1',
     '30MIN_SELL_FX':'gUzLIjZaWpqS0zHWNLDI',
-    'US_ALL':'OHc1tQiX2zM1MYjBQbhi',
+    US_ALL: 'OHc1tQiX2zM1MYjBQbhi',
+    US_30M_BUY: 'ih7okxmRDPHVDh6O1plb',
+    US_EARLY_15MIN: 'HI02Lg85RK0gVt2sCTu5',
   }
   AI_SL = {
     "AI_BUY": "C0BT0KZJFRV",

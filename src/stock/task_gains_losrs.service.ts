@@ -27,7 +27,7 @@ export class TasksGainsLosersService {
     if (!this.stockHelperService.shouldRunTradingLogicUS(`5min`, this.logger)) {
       return;
     }
-
+    this.stockHelperService.PostWebSlack = false
     this.sendORnot = [];
 
     const gainersClass = await this.LocalPLWR.newFMP_NewEndPoint('gainers');
@@ -107,6 +107,7 @@ export class TasksGainsLosersService {
       this.webhooksService,
       100,
     );
+    this.stockHelperService.PostWebSlack = true
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
