@@ -73,6 +73,18 @@ export class TaskQQQ_SPYService {
         try {
           let data = await this.LocalPLWR.TwReveseNOAPI(ticker, timeframe);
           const lastData = data[data.length - 1];
+          const isWithinRange = this.webhooksService.checktimeMinutesEST(
+            ticker,
+            lastData?.date,
+            10,
+          );
+          const getLastTimePost = this.webhooksService.getTsBySymbol(ticker,this.stockHelperService.lastPosted)
+          const match = getLastTimePost?.ts ===  lastData?.date
+          if (!isWithinRange || match) {
+            await this.webhooksService.sendSlackNotification(`* <https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day|${ticker}> |${lastData.close}|${lastData?.date}* || ${getLastTimePost?.ts}`,this.stockHelperService.Z_US_SL_.OR4);
+            await this.stockHelperService.sleep(200);
+            return 0
+          }
           const channel = ticker==='QQQ'? this.stockHelperService.BULL_BEAR_SL_.QQQ : this.stockHelperService.BULL_BEAR_SL_.SPY
           const text = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(ticker,timeframe,data)
           await this.webhooksService.sendSlackNotificationVN(
