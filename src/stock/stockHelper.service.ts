@@ -50,7 +50,7 @@ export class StockHelperService {
     CR_4H_HT:'wSYme1JvO7soz4tPSfhl',
     CRYPTO_WATCH:'X6PeO7uviblIVISnIsZy',
     CRYPTO_ALL :'OIM5pM75CnURO8c39ypE',
-    RSI20AL: 'yJrYiYfE8WiZxSbgKQNP',
+    RSIALERT: 'yJrYiYfE8WiZxSbgKQNP',
     RSI30AL: 'r6S8Yp0OlPt0Jx6nibao',
     RSI15AL: 'oCx6ZZ64G9nHhR9wV5O4',
     RSI25AL: 'iB8whwqtnpeTVWeICXNH',
@@ -63,7 +63,8 @@ export class StockHelperService {
     '1HOUR_SELL_FX':'r22jz5FSDK9arDGbDHkV',
     '1HOUR_BUY_FX':'RE5MquLYgVbukvbpCMcC',
     '30MIN_BUY_FX':'pjzbRkYk6sv2RDhxTMT1',
-    '30MIN_SELL_FX':'gUzLIjZaWpqS0zHWNLDI'
+    '30MIN_SELL_FX':'gUzLIjZaWpqS0zHWNLDI',
+    'US_ALL':'OHc1tQiX2zM1MYjBQbhi',
   }
   AI_SL = {
     "AI_BUY": "C0BT0KZJFRV",
