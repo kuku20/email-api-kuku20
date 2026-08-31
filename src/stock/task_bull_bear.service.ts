@@ -458,7 +458,7 @@ export class TasksBullBearService {
             if(true){
 
               const discodedata = await this.webhooksService.sendDiscord(
-                FullText,
+                '*BIG_🟡🟡_VOL*'+FullText,
                 `${ticker}-ON-${timeframe}-${'BIG_🟡🟡_VOL'}`,
                 data_5min[data_5min.length-1],
                 DataSymbols.watchlist.includes(ticker)?'US_EARLY_15MIN': 'US_15M_HT',
@@ -598,7 +598,7 @@ export class TasksBullBearService {
                   // sent with good to buy check macd 0.1<0.6
                                   // send to watchlist
                   const discodedata = await this.webhooksService.sendDiscord(
-                    FullText,
+                    '*5_allgreen_30BOrAb*'+FullText,
                     `${ticker}-ON-${timeframe}-${'5_allgreen_30BOrAb'}`,
                     data_5min[data_5min.length-1],
                     'US_30M_BUY', 
@@ -634,7 +634,7 @@ export class TasksBullBearService {
                   // buy earlly if 
                   if(MACDP && closeCrosMA50){
                     const discodedata = await this.webhooksService.sendDiscord(
-                      FullText,
+                      '*5_allgreen_15_red_ab50*'+FullText,
                       `${ticker}-ON-${timeframe}-${'5_allgreen_15_red_ab50'}`,
                       data_5min[data_5min.length-1],
                       'USSTOCK_WATCH', 
@@ -658,7 +658,7 @@ export class TasksBullBearService {
                   // await this.webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
                   } else if(MACDP && closeCrosMA200){
                       const discodedata = await this.webhooksService.sendDiscord(
-                        FullText,
+                        '*5_allgreen_15_red_ab200*'+FullText,
                         `${ticker}-ON-${timeframe}-${'5_allgreen_15_red_ab200'}`,
                         data_5min[data_5min.length-1],
                         'USSTOCK_WATCH', 
@@ -688,7 +688,7 @@ export class TasksBullBearService {
                 // buy earlly if 
                 if(MACDP && closeCrosMA200){
                   const discodedata = await this.webhooksService.sendDiscord(
-                    FullText,
+                    '*5_allgreen_ab200_30_red*'+FullText,
                     `${ticker}-ON-${timeframe}-${'5_allgreen_ab200_30_red'}`,
                     data_5min[data_5min.length-1],
                     'USSTOCK_WATCH', 
@@ -712,7 +712,7 @@ export class TasksBullBearService {
                   // await this.webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
                 } else if(MACDP ){
                   const discodedata = await this.webhooksService.sendDiscord(
-                    FullText,
+                    '*5_allgreen_30_red*'+FullText,
                     `${ticker}-ON-${timeframe}-${'5_allgreen_30_red'}`,
                     data_5min[data_5min.length-1],
                     'USSTOCK_WATCH', 
@@ -739,7 +739,7 @@ export class TasksBullBearService {
               }
             } else if(text_15min.includes('macdCr_N')){
               const discodedata = await this.webhooksService.sendDiscord(
-                FullText,
+                '*15_macdCr_N*'+FullText,
                 `${ticker}-ON-${timeframe}-${'15_macdCr_N'}`,
                 data_5min[data_5min.length-1],
                 'US_30M_HT', 
@@ -770,7 +770,7 @@ export class TasksBullBearService {
               const closeCrosMA200 = last5min.close > last5min.MA200 && data_5min[data_5min.length-2].close < data_5min[data_5min.length-2].MA200
               if(MACDP && closeCrosMA200){
                 const discodedata = await this.webhooksService.sendDiscord(
-                    FullText,
+                    '*5_allgreen_MA200*'+FullText,
                     `${ticker}-ON-${timeframe}-${'5_allgreen_MA200'}`,
                     data_5min[data_5min.length-1],
                     'USSTOCK_WATCH', 
@@ -794,7 +794,7 @@ export class TasksBullBearService {
                   // await this.webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
                 } else  if(MACDP ){
                   const discodedata = await this.webhooksService.sendDiscord(
-                    FullText,
+                    '*5_allgreen_MACDP*'+FullText,
                     `${ticker}-ON-${timeframe}-${'5_allgreen_MACDP'}`,
                     data_5min[data_5min.length-1],
                     'USSTOCK_WATCH', 
