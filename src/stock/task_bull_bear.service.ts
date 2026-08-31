@@ -371,6 +371,7 @@ export class TasksBullBearService {
     tickers: string[],
     delay = 2,
   ) {
+    this.stockHelperService.ALL_IN_ONE = true
     const limit = pLimit(4); // Limit the concurrency to 8 at a time
 
     const washselllists =[...(await this.LocalPLWR.loadWashSellList()) ||
@@ -562,7 +563,7 @@ export class TasksBullBearService {
                 if(!text_15min.includes('🔴')&& !text_5min.includes('🔴')){
                   const allGreen = FullText.includes('🔴')?'5_15_allgreen':'ALLGREEN_BE_CAREFULL_FORST'
                   const discodedata = await this.webhooksService.sendDiscord(
-                    FullText,
+                    allGreen+'\n'+FullText,
                     `${ticker}-ON-${timeframe}-${allGreen}`,
                     data_5min[data_5min.length-1],
                     'US_ALL', 
@@ -845,7 +846,7 @@ export class TasksBullBearService {
                 FullText += `${text_15min}\n`;
                 if(!text_15min.includes('🟢')){
                   const discodedata = await this.webhooksService.sendDiscord(
-                    FullText,
+                    displaytext+'\n'+FullText,
                     `${ticker}-ON-${timeframe}-${displaytext}`,
                     data_5min[data_5min.length-1],
                     'MA_AB_50_100', 
@@ -888,6 +889,7 @@ export class TasksBullBearService {
 
     // Wait for all ticker promises to complete concurrently (with concurrency limit)
     await Promise.all(tickerPromises);
+    this.stockHelperService.ALL_IN_ONE = false
   }
 
   async postSLTest(webhooks =[ 'C0B77K2AG12','C0B6BFBKJ4X'],timewait = 1000) {

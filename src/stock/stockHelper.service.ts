@@ -38,6 +38,7 @@ export class StockHelperService {
   skipPostDiscord = false;
   railwayBoolen = true;
   PostWebSlack = true; // set to false if want to skip post to website and then set it back
+  ALL_IN_ONE = false; // set to false if want to skip post to website and then set it back
   slackPosted = []
   setSlackToken(tokenKey: string) {
     this.slackTokenKey = tokenKey;
@@ -67,6 +68,7 @@ export class StockHelperService {
     US_ALL: 'OHc1tQiX2zM1MYjBQbhi',
     US_30M_BUY: 'ih7okxmRDPHVDh6O1plb',
     US_EARLY_15MIN: 'HI02Lg85RK0gVt2sCTu5',
+    ALL_IN_ONE: 'vPbVpdIoDIRjNl9j5Iu7',
   }
   AI_SL = {
     "AI_BUY": "C0BT0KZJFRV",
