@@ -269,6 +269,11 @@ export class StockService {
       // return this.getTickerDailyChart_FMP(ticker,dateStart,dateEnd)
       range = '1month'
     }
+    const isForexT = ['EURUSD', 'GBPUSD'].includes(ticker);
+    if(isForexT){
+      console.log(ticker, range)
+      return await this.tiingo(ticker, range);
+    }
     return  this.twelvedata(ticker, range);
     // const today = new Date().toISOString().replace(/T.*$/, '');
     // const checkToday = await this.stockHelperService.calculateDaysBetween(today, dateEnd)
@@ -1080,6 +1085,118 @@ async putToFBDynamic(endpoint:string, data: any,) {
       return newData.slice(-400); //
     }
     // return null;
+  }
+
+
+  async tiingo(ticker: string, timefame: string, apikey?:string) {
+    const daytestBF = 0;
+    let dayStart, range;
+    const number = parseInt(timefame);
+    if (timefame.includes('d')) {
+      dayStart = this.stockHelperService.getDateNDaysAgo(500 + daytestBF);
+      range = `${number}day`
+    } else if (timefame.includes('h')) {
+      if(number===1){
+        dayStart = this.stockHelperService.getDateNDaysAgo(22 + daytestBF);
+      }else if(number ===4){
+        dayStart = this.stockHelperService.getDateNDaysAgo(80 + daytestBF);
+      } else{
+        dayStart = this.stockHelperService.getDateNDaysAgo(90 + daytestBF);
+      }
+        range = `${number}hour`
+    } else if (timefame.includes('m')) {
+      if(number===1){
+        dayStart = this.stockHelperService.getDateNDaysAgo(2 + daytestBF);
+      }else if(number === 5){
+        dayStart = this.stockHelperService.getDateNDaysAgo(5 + daytestBF);
+      } else if(number === 15){
+        dayStart = this.stockHelperService.getDateNDaysAgo(6 + daytestBF);
+      } else {
+        dayStart = this.stockHelperService.getDateNDaysAgo(12 + daytestBF);
+      }
+          range = `${number}min`
+    } 
+    else{
+      return null
+    }
+    console.log(range, dayStart)
+    let responsesArray, urls
+    const baseUrl= `https://api.tiingo.com/tiingo/fx/${ticker}/prices?startDate=${dayStart}&resampleFreq=${range}&token=`
+    console.log(baseUrl)
+    if(apikey == undefined){
+      responsesArray = await this.tryCatcht_Alltiingo(baseUrl);
+    }else{
+      urls = `${baseUrl}${apikey}`;
+      console.log(urls)
+      responsesArray = await this.tryCatcht_tiingo(urls);
+    }
+    // return responsesArray
+    const response = plainToInstance(
+      DTO.ChartOutTiingo,
+      responsesArray, {
+        excludeExtraneousValues: true,
+      }
+    ) as any;
+    // return response
+    const result = await this.stockHelperService.returnNewData(response);
+
+    const reversedData = [...result].sort(
+      (a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+    return  reversedData.slice(-300);
+  }
+
+  async tryCatcht_tiingo(BASE_URL: string) {
+    try {
+      const response = await axios.get(BASE_URL);
+      return response.data
+    } catch (error: any) {
+        throw new Error(':tiingo: All API keys failed');
+    }
+  }
+  // keysTiingo = ['83365fbbd86bf38b68cb49d8d71fea5aa7118d6e'];
+  
+  keysTiingo = this.configService.get<any>('TIINGO_STOCK_API_KEY').split(',');
+  repeatTiingo = 0
+  indexTiingo = this.getRandomNumber(this.keysTiingo.length-1)
+  nextKeyTiingo(keys) {
+    const key = keys[this.indexTiingo];
+    this.repeatTiingo++;
+    if (this.repeatTiingo === 1) {
+      console.log(this.indexTiingo)
+      this.repeatTiingo = 0;
+      this.indexTiingo = (this.indexTiingo + 1) % keys.length; // loop back to start
+    }
+    return key;
+  }
+  async tryCatcht_Alltiingo(BASE_URL: string, maxRetries = this.keysTiingo.length) {
+    let attempt = 0;
+    while (attempt < maxRetries) {
+      const nextKey = this.nextKeyTiingo(this.keysTiingo);
+      const url = `${BASE_URL}${nextKey}`;
+      console.log(`:TII:Trying key: ${nextKey.slice(0, 4)}...`);
+  
+      try {
+        const response = await axios.get(url);
+        // const dir = './logs';
+        // if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+        // const successPath = `${dir}/successPath_tickers.txt`;
+        // fs.appendFileSync(successPath, `| :PO: | ${url}  |\n`, 'utf8');
+        return response.data; // success!
+      } catch (error: any) {
+        attempt++;
+        console.error(`:PO:Error with key ${nextKey.slice(0, 4)}...:`, error?.response);
+        // const dir = './logs';
+        // if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+
+        // const successPath = `${dir}/error_tickers.txt`;
+        // fs.appendFileSync(successPath, `| :PO: | ${url}  |\n`, 'utf8');
+        // Only retry if we haven't exhausted all keys
+        if (attempt >= maxRetries) {
+          throw new Error(':TII: All API keys failed');
+        }
+      }
+    }
   }
 }
 

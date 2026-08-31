@@ -847,20 +847,39 @@ export class LocalPLWR {
 
   async tiingo(ticker: string, timefame: string, apikey?:string) {
     const daytestBF = 0;
-    let dayStart;
-
-    if (timefame.includes('day')) {
+    let dayStart, range;
+    const number = parseInt(timefame);
+    if (timefame.includes('d')) {
       dayStart = this.stockHelperService.getDateNDaysAgo(500 + daytestBF);
-    } else if (timefame.includes('hour')) {
-      dayStart = this.stockHelperService.getDateNDaysAgo(20 + daytestBF);
-    } else if (timefame.includes('min')) {
-      dayStart = this.stockHelperService.getDateNDaysAgo(3 + daytestBF);
+      range = `${number}day`
+    } else if (timefame.includes('h')) {
+      if(number===1){
+        dayStart = this.stockHelperService.getDateNDaysAgo(22 + daytestBF);
+      }else if(number ===4){
+        dayStart = this.stockHelperService.getDateNDaysAgo(80 + daytestBF);
+      } else{
+        dayStart = this.stockHelperService.getDateNDaysAgo(90 + daytestBF);
+      }
+        range = `${number}hour`
+    } else if (timefame.includes('m')) {
+      if(number===1){
+        dayStart = this.stockHelperService.getDateNDaysAgo(2 + daytestBF);
+      }else if(number === 5){
+        dayStart = this.stockHelperService.getDateNDaysAgo(5 + daytestBF);
+      } else if(number === 15){
+        dayStart = this.stockHelperService.getDateNDaysAgo(6 + daytestBF);
+      } else {
+        dayStart = this.stockHelperService.getDateNDaysAgo(12 + daytestBF);
+      }
+          range = `${number}min`
     } 
     else{
       return null
     }
+    console.log(range, dayStart)
     let responsesArray, urls
-    const baseUrl= `https://api.tiingo.com/tiingo/fx/${ticker}/prices?startDate=${dayStart}&resampleFreq=${timefame}&token=`
+    const baseUrl= `https://api.tiingo.com/tiingo/fx/${ticker}/prices?startDate=${dayStart}&resampleFreq=${range}&token=`
+    console.log(baseUrl)
     if(apikey == undefined){
       responsesArray = await this.tryCatcht_Alltiingo(baseUrl);
     }else{
@@ -877,9 +896,11 @@ export class LocalPLWR {
     ) as any;
     // return response
     const result = await this.stockHelperService.returnNewData(response);
-    const reversedData = [...result].reverse(); // clone + reverse
-    // return reversedData; // success!
-    return  reversedData.slice(0, 300);;
+
+    const reversedData = [...result].sort(
+      (a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+    return  reversedData.slice(-300);
   }
 
   async tryCatcht_tiingo(BASE_URL: string) {

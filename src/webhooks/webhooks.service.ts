@@ -231,14 +231,14 @@ export class WebhooksService implements OnModuleInit{
     // }
     const ProductImageUrl = file ? null: `https://stockmarkets000.web.app/capture-target/${webhookCl}/${ticker.toUpperCase()}`;
     if(ProductImageUrl && !webhookCl.includes('ERORR_CALL') && !botdt.includes('RSIENDBOT') && this.stockHelperService.PostWebSlack){
-      const channelWeb = this.stockHelperService.DC_SL_MT[webhookCl] || '1yHUrbPtNS0yygBxsezD'
+      const channelWeb =this.stockHelperService.ALL_IN_ONE ? this.stockHelperService.DC_SL_MT.ALL_IN_ONE: this.stockHelperService.DC_SL_MT[webhookCl] || '1yHUrbPtNS0yygBxsezD'
       // webhookCl+'\n'+
       const discordmsg =webhookCl+'\n'+ message+  `\n <https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}|Discord-o6l-msg>|| <${ProductImageUrl}|prodUrl>`
       
       await this.messagesService.sendMessage("workspace-1",channelWeb, "bot-1", ticker,discordmsg)
     }
     // else if(!webhookCl.includes('ERORR_CALL') && !botdt.includes('RSIENDBOT') && this.stockHelperService.PostWebSlack){
-    //   const channelWeb = this.stockHelperService.DC_SL_MT[webhookCl] || '1yHUrbPtNS0yygBxsezD'
+    //   const channelWeb =this.stockHelperService.ALL_IN_ONE ? this.stockHelperService.DC_SL_MT.ALL_IN_ONE: this.stockHelperService.DC_SL_MT[webhookCl] || '1yHUrbPtNS0yygBxsezD'
     //   const imageUlr = sentMessage?.embeds?.[0]?.image?.url || (sentMessage?.attachments??sentMessage?.attachments?.first()?.url);
     //   const discordmsg =webhookCl+'\n'+ message+  `\n <https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}|Discord-o6l-msg>|| <${imageUlr}|discordImage>`
     //   await this.messagesService.sendMessage("workspace-1",channelWeb, "bot-1", ticker,discordmsg)

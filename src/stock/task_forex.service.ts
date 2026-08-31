@@ -33,12 +33,11 @@ export class TasksForexService {
     for (const ticker of tickers) {
       try {
         let data = await this.LocalPLWR.tiingo(ticker, timeframe, apikey);
-        const lastData = data[0];
-        const secondLastData = data[1];
         // const lastData = data[data.length - 1];
         // const secondLastData = data[data.length - 2];
+        // console.log(lastData)
         await this.webhooksService.runCrOn_MA50(
-          data.reverse(),
+          data,
           ticker,
           timeframe,
           buyChannel,
@@ -69,7 +68,7 @@ export class TasksForexService {
     }
   }
 // @Cron('*/15 * * * *') // every 15 minutes
-  async handle15minForex() {
+  async handle15minForex(time_wait = 3) {
     const tickers = ['EURUSD', 'GBPUSD'];
     // const tickers = ['EURUSD'];
     await this.processTickers1hour(
@@ -78,11 +77,11 @@ export class TasksForexService {
       '54c43c0fc7b27681254eeac1d7138d6b5477cf10',
       '15MIN_BUY_FX',
       '15MIN_SELL_FX',
-      3,
+      time_wait,
     );
   }
   @Cron(CronExpression.EVERY_30_MINUTES)
-  async handle30minForex() {
+  async handle30minForex(time_wait = 3) {
     const tickers = ['EURUSD', 'GBPUSD'];
     // const tickers = ['EURUSD'];
     await this.processTickers1hour(
@@ -91,11 +90,11 @@ export class TasksForexService {
       '5f7e0b2da2b5c849dfd5a3dc7938b82c02a7c6f4',
       '30MIN_BUY_FX',
       '30MIN_SELL_FX',
-      3,
+      time_wait,
     );
   }
   @Cron('0 * * * *') // every 1 hour
-  async handle1hourForex() {
+  async handle1hourForex(time_wait = 5) {
     const tickers = ['EURUSD', 'GBPUSD'];
     // const tickers = ['EURUSD'];
     await this.processTickers1hour(
@@ -104,11 +103,11 @@ export class TasksForexService {
       '5f7e0b2da2b5c849dfd5a3dc7938b82c02a7c6f4',
       '1HOUR_BUY_FX',
       '1HOUR_SELL_FX',
-      3,
+      time_wait,
     );
   }
   @Cron(CronExpression.EVERY_4_HOURS)
-  async handle4hourForex(timehold = 3) {
+  async handle4hourForex(time_wait = 5) {
     const tickers = ['EURUSD', 'GBPUSD'];
     // const tickers = ['EURUSD'];
     await this.processTickers1hour(
@@ -117,7 +116,7 @@ export class TasksForexService {
       '5f7e0b2da2b5c849dfd5a3dc7938b82c02a7c6f4',
       '4HOUR_BUY_FX',
       '4HOUR_SELL_FX',
-      timehold,
+      time_wait,
     );
   }
 
