@@ -886,26 +886,71 @@ export class LocalPLWR {
       console.log(urls)
       responsesArray = await this.tryCatcht_tiingo(urls);
     }
-    // return responsesArray
-    console.log('========== ORIGINAL DATA==========');
+    console.log('========== ORIGINAL DATA ==========');
     console.log('FIRST:', responsesArray[0]);
     console.log('LAST:', responsesArray[responsesArray.length - 1]);
+    console.log(
+      'LAST 5 DATES:',
+      responsesArray.slice(-5).map((x: any) => x.date)
+    );
     console.log('chartData length:', responsesArray.length);
-    console.log('========== ORIGINAL DATA==========');
+    console.log('===================================');
     
     const response = plainToInstance(
       DTO.ChartOutTiingo,
-      responsesArray, {
+      responsesArray,
+      {
         excludeExtraneousValues: true,
       }
     ) as any;
-    // return response
-
-    const result = await this.stockHelperService.returnNewData(response);
-
-    const reversedData = [...result].sort(
-      (a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    
+    console.log('========== AFTER DTO ==========');
+    console.log('FIRST:', response[0]);
+    console.log('LAST:', response[response.length - 1]);
+    console.log(
+      'LAST 5 DATES:',
+      response.slice(-5).map((x: any) => x.date)
     );
+    console.log('================================');
+    
+    const result = await this.stockHelperService.returnNewData(response);
+    
+    console.log('========== AFTER returnNewData ==========');
+    console.log('FIRST:', result[0]);
+    console.log('LAST:', result[result.length - 1]);
+    console.log(
+      'LAST 5 DATES:',
+      result.slice(-5).map((x: any) => x.date)
+    );
+    console.log('==========================================');
+    
+    const reversedData = [...result].sort(
+      (a: any, b: any) =>
+        new Date(a.date).getTime() -
+        new Date(b.date).getTime()
+    );
+    
+    console.log('========== AFTER SORT ==========');
+    console.log('FIRST:', reversedData[0]);
+    console.log('LAST:', reversedData[reversedData.length - 1]);
+    console.log(
+      'LAST 5 DATES:',
+      reversedData.slice(-5).map((x: any) => x.date)
+    );
+    console.log('================================');
+    
+    const finalData = reversedData.slice(-300);
+    
+    console.log('========== FINAL DATA ==========');
+    console.log('FIRST:', finalData[0]);
+    console.log('LAST:', finalData[finalData.length - 1]);
+    console.log(
+      'LAST 5 DATES:',
+      finalData.slice(-5).map((x: any) => x.date)
+    );
+    console.log('================================');
+    
+    return finalData;
     return  reversedData.slice(-300);
   }
 
