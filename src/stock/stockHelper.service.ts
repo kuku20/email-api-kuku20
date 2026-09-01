@@ -627,16 +627,14 @@ async calculateOSC(
 
     return `${year}-${month}-${day}`;
   }
-  formatDate(date: Date): string {
-    return date.toLocaleDateString('en-CA', {
-      timeZone: 'America/Chicago',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    });
+  formatDate(date: any) {
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
   }
   
-  getDateNDaysAgo(n: number): string {
+  getDateNDaysAgo_UNC(n: number): string {
     const parts = new Intl.DateTimeFormat('en-US', {
       timeZone: 'America/Chicago',
       year: 'numeric',
@@ -660,6 +658,13 @@ async calculateOSC(
       String(date.getUTCDate()).padStart(2, '0'),
     ].join('-');
   }
+
+  getDateNDaysAgo(n: number) {
+    const now = new Date(); // current date and time
+    now.setDate(now.getDate() - n); // subtract n days
+    return this.formatDate(now);
+  }
+
   formatSymbol(symbol: string) {
     const match = symbol.match(/^([A-Z]+?)(USD|USDT|BTC|ETH|EUR|JPY)$/);
     return match ? `${match[1]}/${match[2]}` : symbol;

@@ -438,6 +438,7 @@ export class TaskCryptoService {
   }
 
   async onModuleInit() {
+    await this.handle4hourCrypto2()
     this.webhooksService.sendDiscord(
       `Run On deploy:**TaskCryptoService**`,
       `RSIENDBOT TaskCryptoService`,

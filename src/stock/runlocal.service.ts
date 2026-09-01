@@ -850,26 +850,26 @@ export class LocalPLWR {
     let dayStart, range;
     const number = parseInt(timefame);
     if (timefame.includes('d')) {
-      dayStart = this.stockHelperService.getDateNDaysAgo(500 + daytestBF);
+      dayStart = this.stockHelperService.getDateNDaysAgo_UNC(500 + daytestBF);
       range = `${number}day`
     } else if (timefame.includes('h')) {
       if(number===1){
-        dayStart = this.stockHelperService.getDateNDaysAgo(22 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(22 + daytestBF);
       }else if(number ===4){
-        dayStart = this.stockHelperService.getDateNDaysAgo(80 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(80 + daytestBF);
       } else{
-        dayStart = this.stockHelperService.getDateNDaysAgo(90 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(90 + daytestBF);
       }
         range = `${number}hour`
     } else if (timefame.includes('m')) {
       if(number===1){
-        dayStart = this.stockHelperService.getDateNDaysAgo(2 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(2 + daytestBF);
       }else if(number === 5){
-        dayStart = this.stockHelperService.getDateNDaysAgo(5 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(5 + daytestBF);
       } else if(number === 15){
-        dayStart = this.stockHelperService.getDateNDaysAgo(6 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(6 + daytestBF);
       } else {
-        dayStart = this.stockHelperService.getDateNDaysAgo(12 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(12 + daytestBF);
       }
           range = `${number}min`
     } 
@@ -886,15 +886,6 @@ export class LocalPLWR {
       console.log(urls)
       responsesArray = await this.tryCatcht_tiingo(urls);
     }
-    console.log('========== ORIGINAL DATA ==========');
-    console.log('FIRST:', responsesArray[0]);
-    console.log('LAST:', responsesArray[responsesArray.length - 1]);
-    console.log(
-      'LAST 5 DATES:',
-      responsesArray.slice(-5).map((x: any) => x.date)
-    );
-    console.log('chartData length:', responsesArray.length);
-    console.log('===================================');
     
     const response = plainToInstance(
       DTO.ChartOutTiingo,
@@ -904,25 +895,7 @@ export class LocalPLWR {
       }
     ) as any;
     
-    console.log('========== AFTER DTO ==========');
-    console.log('FIRST:', response[0]);
-    console.log('LAST:', response[response.length - 1]);
-    console.log(
-      'LAST 5 DATES:',
-      response.slice(-5).map((x: any) => x.date)
-    );
-    console.log('================================');
-    
     const result = await this.stockHelperService.returnNewData(response);
-    
-    console.log('========== AFTER returnNewData ==========');
-    console.log('FIRST:', result[0]);
-    console.log('LAST:', result[result.length - 1]);
-    console.log(
-      'LAST 5 DATES:',
-      result.slice(-5).map((x: any) => x.date)
-    );
-    console.log('==========================================');
     
     const reversedData = [...result].sort(
       (a: any, b: any) =>
@@ -930,25 +903,7 @@ export class LocalPLWR {
         new Date(b.date).getTime()
     );
     
-    console.log('========== AFTER SORT ==========');
-    console.log('FIRST:', reversedData[0]);
-    console.log('LAST:', reversedData[reversedData.length - 1]);
-    console.log(
-      'LAST 5 DATES:',
-      reversedData.slice(-5).map((x: any) => x.date)
-    );
-    console.log('================================');
-    
     const finalData = reversedData.slice(-300);
-    
-    console.log('========== FINAL DATA ==========');
-    console.log('FIRST:', finalData[0]);
-    console.log('LAST:', finalData[finalData.length - 1]);
-    console.log(
-      'LAST 5 DATES:',
-      finalData.slice(-5).map((x: any) => x.date)
-    );
-    console.log('================================');
     
     return finalData;
     return  reversedData.slice(-300);
