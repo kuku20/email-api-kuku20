@@ -230,17 +230,15 @@ export class WebhooksService implements OnModuleInit{
     //   });
     // }
     const ProductImageUrl = file ? null: `https://stockmarkets000.web.app/capture-target/${webhookCl}/${ticker.toUpperCase()}`;
+    const channelWeb =this.stockHelperService.ALL_IN_ONE ? this.stockHelperService.DC_SL_MT.ALL_IN_ONE: this.stockHelperService.DC_SL_MT[webhookCl] || '1yHUrbPtNS0yygBxsezD'
     if(ProductImageUrl && !webhookCl.includes('ERORR_CALL') && !botdt.includes('RSIENDBOT') && this.stockHelperService.PostWebSlack){
-      const channelWeb =this.stockHelperService.ALL_IN_ONE ? this.stockHelperService.DC_SL_MT.ALL_IN_ONE: this.stockHelperService.DC_SL_MT[webhookCl] || '1yHUrbPtNS0yygBxsezD'
       // webhookCl+'\n'+
-      const discordmsg =webhookCl+'\n'+ message+  `\n <https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}|Discord-o6l-msg>|| <${ProductImageUrl}|prodUrl>`
-      
+      const discordmsg =`${webhookCl}\n *${message}*\n <https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}|Discord-o6l-msg>|| <${ProductImageUrl}|prodUrl> || <http://localhost:4200/price-log/${ticker}?daysRange=${timeframeScore}|local-target> || <https://stockmarkets000.web.app/price-log/${ticker}?daysRange=${timeframeScore}|prod-target>`
       await this.messagesService.sendMessage("workspace-1",channelWeb, "bot-1", ticker,discordmsg)
     }
     // else if(!webhookCl.includes('ERORR_CALL') && !botdt.includes('RSIENDBOT') && this.stockHelperService.PostWebSlack){
-    //   const channelWeb =this.stockHelperService.ALL_IN_ONE ? this.stockHelperService.DC_SL_MT.ALL_IN_ONE: this.stockHelperService.DC_SL_MT[webhookCl] || '1yHUrbPtNS0yygBxsezD'
     //   const imageUlr = sentMessage?.embeds?.[0]?.image?.url || (sentMessage?.attachments??sentMessage?.attachments?.first()?.url);
-    //   const discordmsg =webhookCl+'\n'+ message+  `\n <https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}|Discord-o6l-msg>|| <${imageUlr}|discordImage>`
+    //   const discordmsg =webhookCl+'\n'+ message+  `\n <https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}|Discord-o6l-msg>|| <${imageUlr}|discordImage>  || <http://localhost:4200/price-log/${ticker}?daysRange=${timeframeScore}|${ticker}-local-target> || <https://stockmarkets000.web.app/price-log/${ticker}?daysRange=${timeframeScore}|${ticker}-prod-target>`
     //   await this.messagesService.sendMessage("workspace-1",channelWeb, "bot-1", ticker,discordmsg)
     // }
     return { msg: 'post to discord success', ...sentMessage, ProductImageUrl};
@@ -1857,6 +1855,14 @@ export class WebhooksService implements OnModuleInit{
       );
       return;
     }
+    await this.sendDiscord(
+      `SBUY-BuyOnly_MACDPositive-PriceCrMA50-${timeframe}-${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+      `${ticker}-ON-${timeframe}-CrMA50-${lastData?.close}`,
+      lastData,
+      timeframe === '1day' ? B_Channel : HT_Channel,
+      data,
+    );
+    return;
   }
 
   async sendSlackNotificationURL(

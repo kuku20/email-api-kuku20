@@ -121,6 +121,7 @@ export class TasksForexService {
   }
 
   async onModuleInit() {
+    await this.handle1hourForex(0)
     this.webhooksService.sendDiscord(
       `Run On deploy: **TasksForexService**`,
       `RSIENDBOT ON TasksForexService`,
