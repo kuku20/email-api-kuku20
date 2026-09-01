@@ -627,17 +627,38 @@ async calculateOSC(
 
     return `${year}-${month}-${day}`;
   }
-  formatDate(date: any) {
-    const yyyy = date.getFullYear();
-    const mm = String(date.getMonth() + 1).padStart(2, '0');
-    const dd = String(date.getDate()).padStart(2, '0');
-    return `${yyyy}-${mm}-${dd}`;
+  formatDate(date: Date): string {
+    return date.toLocaleDateString('en-CA', {
+      timeZone: 'America/Chicago',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    });
   }
-
-  getDateNDaysAgo(n: number) {
-    const now = new Date(); // current date and time
-    now.setDate(now.getDate() - n); // subtract n days
-    return this.formatDate(now);
+  
+  getDateNDaysAgo(n: number): string {
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Chicago',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).formatToParts(new Date());
+  
+    const year = Number(parts.find(p => p.type === 'year')?.value);
+    const month = Number(parts.find(p => p.type === 'month')?.value);
+    const day = Number(parts.find(p => p.type === 'day')?.value);
+  
+    // Use UTC only as a calendar-arithmetic container.
+    // This avoids Railway's server timezone affecting the result.
+    const date = new Date(Date.UTC(year, month - 1, day));
+  
+    date.setUTCDate(date.getUTCDate() - n);
+  
+    return [
+      date.getUTCFullYear(),
+      String(date.getUTCMonth() + 1).padStart(2, '0'),
+      String(date.getUTCDate()).padStart(2, '0'),
+    ].join('-');
   }
   formatSymbol(symbol: string) {
     const match = symbol.match(/^([A-Z]+?)(USD|USDT|BTC|ETH|EUR|JPY)$/);
