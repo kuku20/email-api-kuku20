@@ -485,22 +485,23 @@ export class LocalPLWR {
     while (attempt < maxRetries) {
       const nextKey = this.nextKey(this.keys);
       const url = `${BASE_URL}${nextKey}`;
-      console.log(`:12:Trying Key: 12: ${nextKey.slice(0, 4)}...`);
+      console.log(url)
+      console.log(`:12:Trying Key: localService: ${nextKey.slice(0, 4)}...`);
   
       try {
         const response = await axios.get(url);
-        if (response.data?.code === 404 || response.data?.code === 400) {
+        if (response.data?.code === 404 || response.data?.code === 400|| response.data?.code === 502|| response.data?.code === 500|| response.data?.code === 520) {
           console.warn(':12: Received 404 code in response, breaking...');
           return null; 
         }
-        if (response.data?.status === 'error') {
+        if (response.data.status === 'error') {
           throw new Error(':12:API returned error status: 12');
         }
         return response.data; // success!
       } catch (error: any) {
         attempt++;
               // Detect 404 from Axios response
-        if (error.response?.status === 404 || error.response?.status === 400) {
+        if (error.response?.status === 404 || error.response?.status === 400 || error.response?.status === 502|| error.response?.status === 500|| error.response?.status === 520) {
           console.warn(':12: Received HTTP 404 from TwelveData, breaking...');
           return null; 
         }
