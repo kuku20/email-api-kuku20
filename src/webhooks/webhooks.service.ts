@@ -414,8 +414,12 @@ export class WebhooksService implements OnModuleInit{
     if (!chartData || chartData.length === 0) {
       return null;
     }
-    const slicedData =
-      chartData && chartData.length > 0 ? chartData.slice(-200) : [];
+    const slicedData = [...chartData]
+    .sort(
+      (a: any, b: any) =>
+        new Date(a.date).getTime() - new Date(b.date).getTime()
+    )
+    .slice(-200);
     const ticker = tickerasall.split('-')[0];
     if (ticker.includes('.VN')) {
       return null; // skip if ticker contains a dot
