@@ -879,7 +879,6 @@ export class LocalPLWR {
     console.log(range, dayStart)
     let responsesArray, urls
     const baseUrl= `https://api.tiingo.com/tiingo/fx/${ticker}/prices?startDate=${dayStart}&resampleFreq=${range}&token=`
-    console.log(baseUrl)
     if(apikey == undefined){
       responsesArray = await this.tryCatcht_Alltiingo(baseUrl);
     }else{
@@ -888,6 +887,12 @@ export class LocalPLWR {
       responsesArray = await this.tryCatcht_tiingo(urls);
     }
     // return responsesArray
+    console.log('========== ORIGINAL DATA==========');
+    console.log('FIRST:', responsesArray[0]);
+    console.log('LAST:', responsesArray[responsesArray.length - 1]);
+    console.log('chartData length:', responsesArray.length);
+    console.log('========== ORIGINAL DATA==========');
+    
     const response = plainToInstance(
       DTO.ChartOutTiingo,
       responsesArray, {
@@ -895,6 +900,7 @@ export class LocalPLWR {
       }
     ) as any;
     // return response
+
     const result = await this.stockHelperService.returnNewData(response);
 
     const reversedData = [...result].sort(

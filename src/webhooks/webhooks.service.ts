@@ -436,7 +436,7 @@ export class WebhooksService implements OnModuleInit{
     console.log('slicedData length:', slicedData.length);
     console.log('FIRST:', slicedData[0]);
     console.log('LAST:', slicedData[slicedData.length - 1]);
-    console.log('DATES:', slicedData.map((x: any) => x.date));
+    // console.log('DATES:', slicedData.map((x: any) => x.date));
     console.log('===================================');
     await this.FireBaseApi('put', `stock-data/${pathSym}.json`, slicedData);
     return null;
