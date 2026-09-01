@@ -14,7 +14,7 @@ export class TasksForexService {
     private readonly webhooksService: WebhooksService,
   ) {}
   private readonly logger = new Logger(TasksForexService.name);
-
+  tickers = ['EURUSD', 'GBPUSD'];
   private async processTickers1hour(
     tickers: string[],
     timeframe: string,
@@ -68,9 +68,7 @@ export class TasksForexService {
     }
   }
 // @Cron('*/15 * * * *') // every 15 minutes
-  async handle15minForex(time_wait = 3) {
-    const tickers = ['EURUSD', 'GBPUSD'];
-    // const tickers = ['EURUSD'];
+  async handle15minForex(time_wait = 3,tickers = this.tickers) {
     await this.processTickers1hour(
       tickers,
       '15min',
@@ -81,9 +79,7 @@ export class TasksForexService {
     );
   }
   @Cron(CronExpression.EVERY_30_MINUTES)
-  async handle30minForex(time_wait = 3) {
-    const tickers = ['EURUSD', 'GBPUSD'];
-    // const tickers = ['EURUSD'];
+  async handle30minForex(time_wait = 3,tickers = this.tickers) {
     await this.processTickers1hour(
       tickers,
       '30min',
@@ -94,9 +90,7 @@ export class TasksForexService {
     );
   }
   @Cron('0 * * * *') // every 1 hour
-  async handle1hourForex(time_wait = 5) {
-    const tickers = ['EURUSD', 'GBPUSD'];
-    // const tickers = ['EURUSD'];
+  async handle1hourForex(time_wait = 5,tickers = this.tickers) {
     await this.processTickers1hour(
       tickers,
       '1hour',
@@ -107,9 +101,7 @@ export class TasksForexService {
     );
   }
   @Cron(CronExpression.EVERY_4_HOURS)
-  async handle4hourForex(time_wait = 5) {
-    const tickers = ['EURUSD', 'GBPUSD'];
-    // const tickers = ['EURUSD'];
+  async handle4hourForex(time_wait = 5,tickers = this.tickers){
     await this.processTickers1hour(
       tickers,
       '4hour',
@@ -121,7 +113,7 @@ export class TasksForexService {
   }
 
   async onModuleInit() {
-    await this.handle1hourForex(0)
+    await this.handle1hourForex(0,['EURUSD'])
     this.webhooksService.sendDiscord(
       `Run On deploy: **TasksForexService**`,
       `RSIENDBOT ON TasksForexService`,
