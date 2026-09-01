@@ -426,34 +426,8 @@ export class WebhooksService implements OnModuleInit{
     }
     const timeframe = tickerasall.split('-')[1];
     const pathSym = `${channel}/${ticker}`.toUpperCase();
-    console.log('========== FIREBASE SAVE ==========');
-    console.log('tickerasall:', tickerasall);
-    console.log('channel:', channel);
-    console.log('ticker:', ticker);
-    console.log('timeframe:', timeframe);
-    console.log('pathSym:', pathSym);
-    console.log('chartData length:', chartData.length);
-    console.log('slicedData length:', slicedData.length);
-    console.log('FIRST:', slicedData[0]);
-    console.log('LAST:', slicedData[slicedData.length - 1]);
-    // console.log('DATES:', slicedData.map((x: any) => x.date));
-    console.log('===================================');
-    await this.FireBaseApi('put', `stock-data/${pathSym}.json`, slicedData);
-    return null;
     if (this.configService.get('NODE_ENV') === 'production' && this.stockHelperService.railwayBoolen) {
       // // turn off on local
-      console.log('========== FIREBASE SAVE ==========');
-      console.log('tickerasall:', tickerasall);
-      console.log('channel:', channel);
-      console.log('ticker:', ticker);
-      console.log('timeframe:', timeframe);
-      console.log('pathSym:', pathSym);
-      console.log('chartData length:', chartData.length);
-      console.log('slicedData length:', slicedData.length);
-      console.log('FIRST:', slicedData[0]);
-      console.log('LAST:', slicedData[slicedData.length - 1]);
-      console.log('DATES:', slicedData.map((x: any) => x.date));
-      console.log('===================================');
       await this.FireBaseApi('put', `stock-data/${pathSym}.json`, slicedData);
       return null;
     }
