@@ -129,8 +129,8 @@ console.log(
 );
     await this.handle1hourForex(0,['EURUSD'])
     this.webhooksService.sendDiscord(
-      `Run On deploy: **TasksForexService**`,
-      `RSIENDBOT ON TasksForexService`+datecoreect,
+      `Run On deploy: **TasksForexService**`+datecoreect,
+      `RSIENDBOT ON TasksForexService`,
       'Nono',
       'ERORR_CALL',
     );
