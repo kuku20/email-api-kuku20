@@ -888,38 +888,40 @@ async putToFBDynamic(endpoint:string, data: any,) {
       return key;
     }
   
-  async tryCatchtwelvedata(BASE_URL: string, maxRetries = this.keys.length) {
-    let attempt = 0;
-    while (attempt < maxRetries) {
-      const nextKey = this.nextKey(this.keys);
-      const url = `${BASE_URL}${nextKey}`;
-      console.log(`:12:Trying Key: 12: ${nextKey.slice(0, 4)}...`);
-  
-      try {
-        const response = await axios.get(url);
-        if (response.data?.code === 404 || response.data?.code === 400) {
-          console.warn(':12: Received 404 code in response, breaking...');
-          return null; 
-        }
-        if (response.data.status === 'error') {
-          throw new Error(':12:API returned error status: 12');
-        }
-        return response.data; // success!
-      } catch (error: any) {
-        attempt++;
-              // Detect 404 from Axios response
-        if (error.response?.status === 404 || error.response?.status === 400) {
-          console.warn(':12: Received HTTP 404 from TwelveData, breaking...');
-          return null; 
-        }
-        console.error(`:12:Error with key ${nextKey.slice(0, 4)}...:`, error?.message || error);
-        if (attempt >= maxRetries) {
-          throw new Error(':12:All API keys failed: 12');
+    async tryCatchtwelvedata(BASE_URL: string, maxRetries = this.keys.length) {
+      let attempt = 0;
+      while (attempt < maxRetries) {
+        const nextKey = this.nextKey(this.keys);
+        const url = `${BASE_URL}${nextKey}`;
+        console.log(url)
+        console.log(`:12:Trying Key: stockservice: ${nextKey.slice(0, 4)}...`);
+    
+        try {
+          const response = await axios.get(url);
+          if (response.data?.code === 404 || response.data?.code === 400|| response.data?.code === 502|| response.data?.code === 500|| response.data?.code === 520) {
+            console.warn(':12: Received 404 code in response, breaking...');
+            return null; 
+          }
+          if (response.data.status === 'error') {
+            throw new Error(':12:API returned error status: 12');
+          }
+          return response.data; // success!
+        } catch (error: any) {
+          attempt++;
+                // Detect 404 from Axios response
+          if (error.response?.status === 404 || error.response?.status === 400 || error.response?.status === 502|| error.response?.status === 500|| error.response?.status === 520) {
+            console.warn(':12: Received HTTP 404 from TwelveData, breaking...');
+            return null; 
+          }
+          console.error(`:12:Error with key ${nextKey.slice(0, 4)}...:`, error?.message , error);
+          // throw new Error(':12:API returned error status: 12',);
+          if (attempt >= maxRetries) {
+            throw new Error(':12:All API keys failed: 12');
+          }
         }
       }
+      // If none of the API keys work, throw an error
     }
-    // If none of the API keys work, throw an error
-  }
 
 
   // keysPo =['7bn8ZZK_pmpnvxRrAJ2tBzQc73g20NnX','c3wb6rjDqh_k6odbauYqyfgoL32258Uk'];
@@ -1093,36 +1095,34 @@ async putToFBDynamic(endpoint:string, data: any,) {
     let dayStart, range;
     const number = parseInt(timefame);
     if (timefame.includes('d')) {
-      dayStart = this.stockHelperService.getDateNDaysAgo(500 + daytestBF);
+      dayStart = this.stockHelperService.getDateNDaysAgo_UNC(500 + daytestBF);
       range = `${number}day`
     } else if (timefame.includes('h')) {
       if(number===1){
-        dayStart = this.stockHelperService.getDateNDaysAgo(22 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(22 + daytestBF);
       }else if(number ===4){
-        dayStart = this.stockHelperService.getDateNDaysAgo(80 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(80 + daytestBF);
       } else{
-        dayStart = this.stockHelperService.getDateNDaysAgo(90 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(90 + daytestBF);
       }
         range = `${number}hour`
     } else if (timefame.includes('m')) {
       if(number===1){
-        dayStart = this.stockHelperService.getDateNDaysAgo(2 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(2 + daytestBF);
       }else if(number === 5){
-        dayStart = this.stockHelperService.getDateNDaysAgo(5 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(5 + daytestBF);
       } else if(number === 15){
-        dayStart = this.stockHelperService.getDateNDaysAgo(6 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(6 + daytestBF);
       } else {
-        dayStart = this.stockHelperService.getDateNDaysAgo(12 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(12 + daytestBF);
       }
           range = `${number}min`
     } 
     else{
       return null
     }
-    console.log(range, dayStart)
     let responsesArray, urls
     const baseUrl= `https://api.tiingo.com/tiingo/fx/${ticker}/prices?startDate=${dayStart}&resampleFreq=${range}&token=`
-    console.log(baseUrl)
     if(apikey == undefined){
       responsesArray = await this.tryCatcht_Alltiingo(baseUrl);
     }else{
@@ -1130,20 +1130,26 @@ async putToFBDynamic(endpoint:string, data: any,) {
       console.log(urls)
       responsesArray = await this.tryCatcht_tiingo(urls);
     }
-    // return responsesArray
+    
     const response = plainToInstance(
       DTO.ChartOutTiingo,
-      responsesArray, {
+      responsesArray,
+      {
         excludeExtraneousValues: true,
       }
     ) as any;
-    // return response
+    
     const result = await this.stockHelperService.returnNewData(response);
-
+    
     const reversedData = [...result].sort(
-      (a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime()
+      (a: any, b: any) =>
+        new Date(a.date).getTime() -
+        new Date(b.date).getTime()
     );
-    return  reversedData.slice(-300);
+    
+    const finalData = reversedData.slice(-300);
+    
+    return finalData;
   }
 
   async tryCatcht_tiingo(BASE_URL: string) {
