@@ -876,7 +876,6 @@ export class LocalPLWR {
     else{
       return null
     }
-    console.log(range, dayStart)
     let responsesArray, urls
     const baseUrl= `https://api.tiingo.com/tiingo/fx/${ticker}/prices?startDate=${dayStart}&resampleFreq=${range}&token=`
     if(apikey == undefined){
@@ -906,7 +905,6 @@ export class LocalPLWR {
     const finalData = reversedData.slice(-300);
     
     return finalData;
-    return  reversedData.slice(-300);
   }
 
   async tryCatcht_tiingo(BASE_URL: string) {

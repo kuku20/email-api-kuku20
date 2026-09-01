@@ -1093,36 +1093,34 @@ async putToFBDynamic(endpoint:string, data: any,) {
     let dayStart, range;
     const number = parseInt(timefame);
     if (timefame.includes('d')) {
-      dayStart = this.stockHelperService.getDateNDaysAgo(500 + daytestBF);
+      dayStart = this.stockHelperService.getDateNDaysAgo_UNC(500 + daytestBF);
       range = `${number}day`
     } else if (timefame.includes('h')) {
       if(number===1){
-        dayStart = this.stockHelperService.getDateNDaysAgo(22 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(22 + daytestBF);
       }else if(number ===4){
-        dayStart = this.stockHelperService.getDateNDaysAgo(80 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(80 + daytestBF);
       } else{
-        dayStart = this.stockHelperService.getDateNDaysAgo(90 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(90 + daytestBF);
       }
         range = `${number}hour`
     } else if (timefame.includes('m')) {
       if(number===1){
-        dayStart = this.stockHelperService.getDateNDaysAgo(2 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(2 + daytestBF);
       }else if(number === 5){
-        dayStart = this.stockHelperService.getDateNDaysAgo(5 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(5 + daytestBF);
       } else if(number === 15){
-        dayStart = this.stockHelperService.getDateNDaysAgo(6 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(6 + daytestBF);
       } else {
-        dayStart = this.stockHelperService.getDateNDaysAgo(12 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(12 + daytestBF);
       }
           range = `${number}min`
     } 
     else{
       return null
     }
-    console.log(range, dayStart)
     let responsesArray, urls
     const baseUrl= `https://api.tiingo.com/tiingo/fx/${ticker}/prices?startDate=${dayStart}&resampleFreq=${range}&token=`
-    console.log(baseUrl)
     if(apikey == undefined){
       responsesArray = await this.tryCatcht_Alltiingo(baseUrl);
     }else{
@@ -1130,20 +1128,26 @@ async putToFBDynamic(endpoint:string, data: any,) {
       console.log(urls)
       responsesArray = await this.tryCatcht_tiingo(urls);
     }
-    // return responsesArray
+    
     const response = plainToInstance(
       DTO.ChartOutTiingo,
-      responsesArray, {
+      responsesArray,
+      {
         excludeExtraneousValues: true,
       }
     ) as any;
-    // return response
+    
     const result = await this.stockHelperService.returnNewData(response);
-
+    
     const reversedData = [...result].sort(
-      (a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime()
+      (a: any, b: any) =>
+        new Date(a.date).getTime() -
+        new Date(b.date).getTime()
     );
-    return  reversedData.slice(-300);
+    
+    const finalData = reversedData.slice(-300);
+    
+    return finalData;
   }
 
   async tryCatcht_tiingo(BASE_URL: string) {
