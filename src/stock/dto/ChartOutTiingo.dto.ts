@@ -24,34 +24,21 @@ export class ChartOutTiingo {
 
     const date = new Date(value);
 
-    return date
-      .toLocaleString('en-CA', {
-        timeZone: TIME_ZONE,
-        hour12: false,
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-      })
-      .replace(',', '');
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: TIME_ZONE,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hourCycle: 'h23',
+    }).formatToParts(date);
+
+    const get = (type: string) =>
+      parts.find(part => part.type === type)?.value ?? '';
+
+    return `${get('year')}-${get('month')}-${get('day')} ${get('hour')}:${get('minute')}:${get('second')}`;
   })
   date: string;
 }
-
-
-// (EST/EDT)
-// @Transform(({ value }) => {
-//   if (!value) return null;
-
-//   // Parse the date and convert to Eastern Time
-//   const date = new Date(value);
-//   return date
-//     .toLocaleString('en-CA', {
-//       hour12: false,
-//       timeZone: 'America/New_York', // forces EST/EDT
-//     })
-//     .replace(',', '');
-// })
-// date: string;

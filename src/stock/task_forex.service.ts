@@ -113,10 +113,24 @@ export class TasksForexService {
   }
 
   async onModuleInit() {
+    const date = new Date('2026-09-01T04:00:00.000Z');
+ const datecoreect =   new Intl.DateTimeFormat('en-US', {
+  timeZone: 'America/Chicago',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit',
+  hourCycle: 'h23',
+}).formatToParts(date)
+console.log(
+  datecoreect
+);
     await this.handle1hourForex(0,['EURUSD'])
     this.webhooksService.sendDiscord(
       `Run On deploy: **TasksForexService**`,
-      `RSIENDBOT ON TasksForexService`,
+      `RSIENDBOT ON TasksForexService`+datecoreect,
       'Nono',
       'ERORR_CALL',
     );
