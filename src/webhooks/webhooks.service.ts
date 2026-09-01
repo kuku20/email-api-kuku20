@@ -1884,14 +1884,14 @@ export class WebhooksService implements OnModuleInit{
       );
       return;
     }
-    await this.sendDiscord(
-      `SBUY-BuyOnly_MACDPositive-PriceCrMA50-${timeframe}-${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-      `${ticker}-ON-${timeframe}-CrMA50-${lastData?.close}`,
-      lastData,
-      timeframe === '1day' ? B_Channel : HT_Channel,
-      data,
-    );
-    return;
+    // await this.sendDiscord(
+    //   `SBUY-BuyOnly_MACDPositive-PriceCrMA50-${timeframe}-${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+    //   `${ticker}-ON-${timeframe}-CrMA50-${lastData?.close}`,
+    //   lastData,
+    //   timeframe === '1day' ? B_Channel : HT_Channel,
+    //   data,
+    // );
+    // return;
   }
 
   async sendSlackNotificationURL(
