@@ -72,7 +72,7 @@ export class TasksForexService {
     await this.processTickers1hour(
       tickers,
       '15min',
-      '54c43c0fc7b27681254eeac1d7138d6b5477cf10',
+      '5f7e0b2da2b5c849dfd5a3dc7938b82c02a7c6f4',
       '15MIN_BUY_FX',
       '15MIN_SELL_FX',
       time_wait,
