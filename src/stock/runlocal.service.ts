@@ -1192,4 +1192,215 @@ export class LocalPLWR {
     
     return finalData;
   }
+
+  async tiingo_CRYPTO(ticker: string, timefame: string, apikey?:string) {
+    const daytestBF = 0;
+    let dayStart, range;
+    const currentDate = this.stockHelperService.getDateNDaysAgo_UNC(-1)
+    const number = parseInt(timefame);
+    if (timefame.includes('d')) {
+      dayStart = this.stockHelperService.getDateNDaysAgo_UNC(500 + daytestBF);
+      range = `${number}day`
+    } else if (timefame.includes('h')) {
+      if(number===1){
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(90 + daytestBF);
+      }else if(number ===4){
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(400 + daytestBF);
+      } else{
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(500 + daytestBF);
+      }
+        range = `${number}hour`
+    } else if (timefame.includes('m')) {
+      if(number===1){
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(2 + daytestBF);
+      }else if(number === 5){
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(10 + daytestBF);
+      } else if(number === 15){
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(25 + daytestBF);
+      } else {
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(50 + daytestBF);
+      }
+          range = `${number}min`
+    } 
+    else{
+      return null
+    }
+    let responsesArray, urls
+    
+    const baseUrl=`https://api.tiingo.com/tiingo/crypto/prices?tickers=${ticker.toLowerCase()}&startDate=${dayStart}&endDate=${currentDate}&resampleFreq=${range}&token=`
+    console.log(baseUrl)
+    if(apikey == undefined){
+      responsesArray = await this.tryCatcht_Alltiingo(baseUrl);
+    }else{
+      urls = `${baseUrl}${apikey}`;
+      console.log(urls)
+      responsesArray = await this.tryCatcht_tiingo(urls);
+    }
+    const dataOnly = responsesArray[0]?.priceData || [];
+    const response = plainToInstance(
+      DTO.ChartOutTiingo,
+      dataOnly,
+      {
+        excludeExtraneousValues: true,
+      }
+    ) as any;
+    
+    const result = await this.stockHelperService.returnNewData(response);
+    
+    const reversedData = [...result].sort(
+      (a: any, b: any) =>
+        new Date(a.date).getTime() -
+        new Date(b.date).getTime()
+    );
+    
+    const finalData = reversedData.slice(-300);
+    
+    return finalData;
+  }
+
+  /**
+   * 
+  {
+ "ethusd": [...],
+ "btcusd": [...]
+  }
+   */
+  async tiingo_CRYPTO_M_TICKER_STR(
+    tickers: string,
+    timefame: string,
+    apikey?: string,
+  ) {
+    const daytestBF = 0;
+  
+    let dayStart: string;
+    let range: string;
+  
+    const currentDate =
+      this.stockHelperService.getDateNDaysAgo_UNC(-1);
+  
+    const number = parseInt(timefame, 10);
+  
+    if (timefame.includes('d')) {
+      dayStart =
+        this.stockHelperService.getDateNDaysAgo_UNC(500 + daytestBF);
+      range = `${number}day`;
+  
+    } else if (timefame.includes('h')) {
+  
+      if (number === 1) {
+        dayStart =
+          this.stockHelperService.getDateNDaysAgo_UNC(90 + daytestBF);
+      } else if (number === 4) {
+        dayStart =
+          this.stockHelperService.getDateNDaysAgo_UNC(400 + daytestBF);
+      } else {
+        dayStart =
+          this.stockHelperService.getDateNDaysAgo_UNC(500 + daytestBF);
+      }
+  
+      range = `${number}hour`;
+  
+    } else if (timefame.includes('m')) {
+  
+      if (number === 1) {
+        dayStart =
+          this.stockHelperService.getDateNDaysAgo_UNC(2 + daytestBF);
+      } else if (number === 5) {
+        dayStart =
+          this.stockHelperService.getDateNDaysAgo_UNC(10 + daytestBF);
+      } else if (number === 15) {
+        dayStart =
+          this.stockHelperService.getDateNDaysAgo_UNC(25 + daytestBF);
+      } else {
+        dayStart =
+          this.stockHelperService.getDateNDaysAgo_UNC(50 + daytestBF);
+      }
+  
+      range = `${number}min`;
+  
+    } else {
+      return null;
+    }
+  
+    // Normalize input
+    const tickerList = tickers
+      .split(',')
+      .map((x) => x.trim().toLowerCase())
+      .filter(Boolean);
+  
+    const tickerString = tickerList.join(',');
+  
+    const baseUrl =
+      `https://api.tiingo.com/tiingo/crypto/prices` +
+      `?tickers=${tickerString}` +
+      `&startDate=${dayStart}` +
+      `&endDate=${currentDate}` +
+      `&resampleFreq=${range}` +
+      `&token=`;
+  
+    console.log('REQUEST:', tickerString);
+  
+    let responsesArray: any;
+  
+    if (apikey === undefined) {
+      responsesArray =
+        await this.tryCatcht_Alltiingo(baseUrl);
+    } else {
+      responsesArray =
+        await this.tryCatcht_tiingo(`${baseUrl}${apikey}`);
+    }
+    // Make sure we have an array
+    if (!Array.isArray(responsesArray)) {
+      console.log('NOT ARRAY:', responsesArray);
+      return {};
+    }
+  
+    const output: Record<string, any[]> = {};
+  
+    for (const ticker of tickerList) {
+  
+      // Find THIS ticker in Tiingo response
+      const tickerResponse = responsesArray.find(
+        (item: any) =>
+          item?.ticker?.toLowerCase() === ticker,
+      );
+  
+      // No data for ticker
+      if (!tickerResponse?.priceData) {
+        output[ticker] = [];
+        continue;
+      }
+  
+      // Convert data
+      const response = plainToInstance(
+        DTO.ChartOutTiingo,
+        tickerResponse.priceData,
+        {
+          excludeExtraneousValues: true,
+        },
+      ) as any;
+  
+      // Process data
+      const result =
+        await this.stockHelperService.returnNewData(response);
+  
+      // Sort
+      const sorted = [...result].sort(
+        (a: any, b: any) =>
+          new Date(a.date).getTime() -
+          new Date(b.date).getTime(),
+      );
+  
+      // Latest 300
+      output[ticker] = sorted.slice(-300);
+    }
+    return output;
+  }
+
+  getTickerData(
+    data: Record<string, any[]>,
+    ticker: string,
+  ): any[] {
+    return data[ticker.toLowerCase()] ?? [];
+  }
 }

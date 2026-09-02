@@ -212,7 +212,7 @@ export class TaskCryptoService {
 
     this.logger.log(`Running ${timeframe} for CRYPTOs...`, tickers);
 
-    await this.processTickers1hour(
+    await this.processTickers1hour_tiingoAPI(
       tickers,
       timeframe,
       apiKey,
@@ -225,7 +225,7 @@ export class TaskCryptoService {
   @Cron('*/15 * * * *') // every 15 minutes
   async handle5pCrypto(time_wait = 2, tickers = this.tickers_group1) {
     this.logger.log('Running scheduled every 15min for CRYPTOs...');
-    await this.processTickers15m(
+    await this.processTickers15m_tiingoAPI(
       tickers,
       '15min',
       'all',
@@ -342,11 +342,137 @@ export class TaskCryptoService {
   }
 
   async onModuleInit() {
+    // await this.handle5pCrypto(0)
     this.webhooksService.sendDiscord(
       `Run On deploy:**TaskCryptoService**`,
       `RSIENDBOT TaskCryptoService`,
       'Nono',
       'ERORR_CALL',
     );
+  }
+
+  private async processTickers1hour_tiingoAPI(
+    tickers: string[],
+    timeframe: string,
+    apikey: string,
+    B_Channel,
+    HT_Channel,
+    delay = 5,
+  ) {
+    const tickersString = tickers.join(',');
+    let result = await this.LocalPLWR.tiingo_CRYPTO_M_TICKER_STR(tickersString, timeframe,'5f7e0b2da2b5c849dfd5a3dc7938b82c02a7c6f4');;
+    const date = new Date();
+    const washselllists =
+      (await this.LocalPLWR.loadWashSellList()) ||
+      this.LocalPLWR.getWashSellList();
+    // Delay 2 minutes before processing
+    await new Promise((resolve) => setTimeout(resolve, delay * 60 * 1000));
+
+    for (const ticker of tickers) {
+      if (washselllists.includes(ticker)) {
+        console.log(`⏭️ Skipping ${ticker} — in wash sell list`);
+        continue; // ✅ Skip this ticker and move on
+      }
+      try {
+        let data  = this.LocalPLWR.getTickerData(result, ticker.toLowerCase());
+        const lastData = data[data.length - 1];
+        const secondLastData = data[data.length - 2];
+        await this.webhooksService.compareAndSend1hour(
+          data,
+          lastData,
+          secondLastData,
+          ticker,
+          timeframe,
+          B_Channel,
+          HT_Channel,
+        );
+        // const isWithinRange = this.webhooksService.checktimeMinutesCST(
+        //   ticker,
+        //   lastData?.date,
+        //   13,
+        // );
+        // if (isWithinRange) {
+        //   await this.webhooksService.runCrOn_MA50(
+        //     data,
+        //     ticker,
+        //     timeframe,
+        //     HT_Channel,
+        //     B_Channel,
+        //   );
+        // }
+        this.logger.log(`${ticker} processed successfully.`);
+      } catch (error) {
+        this.webhooksService.sendDiscord(
+          `ERROR ON API AT: ${timeframe} On ${date}: ${JSON.stringify(error)}`,
+          `RSIENDBOT ${ticker} at ${timeframe}`,
+          'Nono',
+          'ERORR_CALL',
+        );
+        this.logger.error(`Error processing ${ticker}: ${error.message}`);
+      }
+    }
+  }
+
+  private async processTickers15m_tiingoAPI(
+    tickers: string[],
+    timeframe: string,
+    apikey: string,
+    B_Channel,
+    HT_Channel,
+    delay = 5,
+  ) {
+    const tickersString = tickers.join(',');
+    let result = await this.LocalPLWR.tiingo_CRYPTO_M_TICKER_STR(tickersString, timeframe,'5f7e0b2da2b5c849dfd5a3dc7938b82c02a7c6f4');;
+    const date = new Date();
+    const washselllists =
+      (await this.LocalPLWR.loadWashSellList()) ||
+      this.LocalPLWR.getWashSellList();
+    // Delay 2 minutes before processing
+    await new Promise((resolve) => setTimeout(resolve, delay * 60 * 1000));
+
+    for (const ticker of tickers) {
+      if (washselllists.includes(ticker)) {
+        console.log(`⏭️ Skipping ${ticker} — in wash sell list`);
+        continue; // ✅ Skip this ticker and move on
+      }
+      try {
+        let data  = this.LocalPLWR.getTickerData(result, ticker.toLowerCase());
+
+        const lastData = data[data.length - 1];
+        const secondLastData = data[data.length - 2];
+
+        const isWithinRange = this.webhooksService.checktimeMinutesCST(
+          ticker,
+          lastData?.date,
+          13,
+        );
+        if (isWithinRange) {
+          const BuyOnly_StochRSICrossAB200 =
+            await this.stockHelperService.BuyOnly_StochRSICrossAB200(
+              lastData,
+              secondLastData,
+            );
+          if (BuyOnly_StochRSICrossAB200.PriceCrMA200) {
+            await this.webhooksService.sendDiscord(
+              `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA200 -${timeframe}-${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+              `${ticker}-ON-${timeframe}-${lastData?.close}`,
+              lastData,
+              HT_Channel,
+              data,
+            );
+            return;
+          }
+        }
+        this.logger.log(`${ticker} processed successfully.`);
+      } catch (error) {
+        this.webhooksService.sendDiscord(
+          `ERROR ON API AT: ${timeframe} On ${date}: ${JSON.stringify(error)}`,
+          `RSIENDBOT ${ticker} at ${timeframe}`,
+          'Nono',
+          'ERORR_CALL',
+        );
+        this.logger.error(`Error processing ${ticker}: ${error.message}`);
+      }
+    }
   }
 }
