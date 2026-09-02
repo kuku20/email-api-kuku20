@@ -1100,25 +1100,26 @@ async putToFBDynamic(endpoint:string, data: any,) {
     } else if (timefame.includes('h')) {
       if(number===1){
         dayStart = this.stockHelperService.getDateNDaysAgo_UNC(22 + daytestBF);
-      }else if(number ===4){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(80 + daytestBF);
+      } else if(number ===2){
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(42 + daytestBF);
+      } else if(number ===4){
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(83 + daytestBF);
       } else{
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(90 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(166 + daytestBF);
       }
         range = `${number}hour`
     } else if (timefame.includes('m')) {
       if(number===1){
         dayStart = this.stockHelperService.getDateNDaysAgo_UNC(2 + daytestBF);
       }else if(number === 5){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(5 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(3 + daytestBF);
       } else if(number === 15){
         dayStart = this.stockHelperService.getDateNDaysAgo_UNC(6 + daytestBF);
       } else {
         dayStart = this.stockHelperService.getDateNDaysAgo_UNC(12 + daytestBF);
       }
-          range = `${number}min`
-    } 
-    else{
+        range = `${number}min`
+    } else {
       return null
     }
     let responsesArray, urls
