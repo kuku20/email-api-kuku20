@@ -1275,27 +1275,32 @@ async putToFBDynamic(endpoint:string, data: any,) {
       range = `${number}day`
     } else if (timefame.includes('h')) {
       if(number===1){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(90 + daytestBF);
-      }else if(number ===4){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(400 + daytestBF);
-      } else{
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(500 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(21 + daytestBF);
+      } else if(number ===2){
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(42 + daytestBF);
+      } else if(number ===4){
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(83 + daytestBF);
+      }else{
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(166 + daytestBF);
       }
         range = `${number}hour`
     } else if (timefame.includes('m')) {
       if(number===1){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(2 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(1 + daytestBF);
       }else if(number === 5){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(10 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(2 + daytestBF);
       } else if(number === 15){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(25 + daytestBF);
-      } else {
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(50 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(5 + daytestBF);
+      } else if(number === 30){
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(10 + daytestBF);
+      } else if(number === 45){
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(15 + daytestBF);
+      } else{
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(18 + daytestBF);
       }
-          range = `${number}min`
-    } 
-    else{
-      return null
+        range = `${number}min`
+    } else {
+        return null
     }
     let responsesArray, urls
     
