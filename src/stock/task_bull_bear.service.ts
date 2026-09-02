@@ -983,7 +983,7 @@ export class TasksBullBearService {
               timeframe,
               data_5min
           );
-          FullText += `${text_5min}\n`;
+          FullText += `*tiingo_US* ${text_5min}\n`;
           if(text_5min.includes('CrAbMA50')){
             let nextText = 'PREPARE_TO_BUY_50:'
             if(text_5min.includes('CrAbMA50CrAbMA120CrAbMA200')){
@@ -1119,7 +1119,7 @@ export class TasksBullBearService {
                   );
                 }  
               return
-              } else {
+          } else {
             console.log('stop at 5', FullText)
             return
           }
