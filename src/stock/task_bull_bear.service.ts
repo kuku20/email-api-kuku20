@@ -983,7 +983,7 @@ export class TasksBullBearService {
               timeframe,
               data_5min
           );
-          FullText += `*tiingo_US* ${text_5min}\n`;
+          FullText += `*tiingo_US*\n ${text_5min}\n`;
           if(text_5min.includes('CrAbMA50')){
             let nextText = 'PREPARE_TO_BUY_50:'
             if(text_5min.includes('CrAbMA50CrAbMA120CrAbMA200')){
@@ -1139,6 +1139,6 @@ export class TasksBullBearService {
 
     // Wait for all ticker promises to complete concurrently (with concurrency limit)
     await Promise.all(tickerPromises);
-    this.stockHelperService.ALL_IN_ONE = false
+    // this.stockHelperService.ALL_IN_ONE = false
   }
 }
