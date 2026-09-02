@@ -744,6 +744,24 @@ export class WebhooksService implements OnModuleInit{
     }
   }
 
+  checktimeMinutesCST(ticker: string, date, time: number) {
+    const isWithinRange = Timer.checkIfWithin5MinutesCST(date, time);
+    if (isWithinRange) {
+      console.log(ticker, `✅ Within ±${time} minutes of EST time`,isWithinRange);
+      // check one
+      return true;
+    } else {
+      console.log(ticker, `❌ Outside  ±${time} minutes of EST time: `, isWithinRange,date);
+      // await this.sendDiscord(
+      //   `ERROR \n url: http://localhost:4200/price-log/${ticker}?daysRange=30`,
+      //   `RSIENDBOT ${ticker} at ${date}`,
+      //   'Nono',
+      //   'ERORR_CALL',
+      // );
+      return false;
+    }
+  }
+
   async compareAndSend1hour(
     data,
     lastdata,
