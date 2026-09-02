@@ -1137,27 +1137,24 @@ export class LocalPLWR {
     const daytestBF = 0;
     let dayStart, range;
     const number = parseInt(timefame);
-    if (timefame.includes('d')) {
-      dayStart = this.stockHelperService.getDateNDaysAgo_UNC(500 + daytestBF);
-      range = `${number}day`
-    } else if (timefame.includes('h')) {
+     if (timefame.includes('h')) {
       if(number===1){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(22 + daytestBF);
-      }else if(number ===4){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(80 + daytestBF);
-      } else{
         dayStart = this.stockHelperService.getDateNDaysAgo_UNC(90 + daytestBF);
+      }else if(number ===4){
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(400 + daytestBF);
+      } else{
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(500 + daytestBF);
       }
         range = `${number}hour`
     } else if (timefame.includes('m')) {
       if(number===1){
         dayStart = this.stockHelperService.getDateNDaysAgo_UNC(2 + daytestBF);
       }else if(number === 5){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(5 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(10 + daytestBF);
       } else if(number === 15){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(6 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(25 + daytestBF);
       } else {
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(12 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(50 + daytestBF);
       }
           range = `${number}min`
     } 
@@ -1166,6 +1163,7 @@ export class LocalPLWR {
     }
     let responsesArray, urls
     const baseUrl=`https://api.tiingo.com/tiingo/equity/intraday/${ticker.toLowerCase()}/prices?startDate=${dayStart}&resampleFreq=${range}&columns=open,high,low,close,volume&token=`
+    console.log(baseUrl)
     if(apikey == undefined){
       responsesArray = await this.tryCatcht_Alltiingo(baseUrl);
     }else{
