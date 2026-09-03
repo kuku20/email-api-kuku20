@@ -456,19 +456,12 @@ export class TasksBullBearService {
             );
             FullText += `${text_15min}\n`;
             if(true){
-
               const discodedata = await this.webhooksService.sendDiscord(
                 '*BIG_🟡🟡_VOL*'+FullText,
                 `${ticker}-ON-${timeframe}-${'BIG_🟡🟡_VOL'}`,
                 data_5min[data_5min.length-1],
                 DataSymbols.watchlist.includes(ticker)?'US_EARLY_15MIN': 'US_15M_HT',
                 data_5min,
-              );
-              const fileBuffer = await this.webhooksService.captureChart(
-                data_15min,
-                ticker,
-                DataSymbols.watchlist.includes(ticker)?'US_EARLY_15MIN': 'US_15M_HT',
-                text_15min,
               );
               const imageUlr = discodedata?.embeds?.[0]?.image?.url || (discodedata?.attachments??discodedata?.attachments?.first()?.url);
               if(discodedata && discodedata?.channel_id){
@@ -483,11 +476,17 @@ export class TasksBullBearService {
                   `*BIG_🟡🟡_VOL*`+`\n${FullText} \n`,
                   imageUlr
                 );
+                const fileBuffer15m = await this.webhooksService.captureChart(
+                  data_15min,
+                  ticker,
+                  DataSymbols.watchlist.includes(ticker)?'US_EARLY_15MIN': 'US_15M_HT',
+                  text_15min,
+                );
                 const replyData = await this.webhooksService.replyToMessage(
                   discodedata.channel_id,
                   discodedata.id,
                   text_15min,
-                  fileBuffer
+                  fileBuffer15m
                 );
                 const replyImage = replyData.imageUrl;
                 if(replyImage){
