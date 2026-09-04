@@ -1287,17 +1287,17 @@ export class LocalPLWR {
     const number = parseInt(timefame, 10);
   
     if (timefame.includes('d')) {
-      dayStart = this.stockHelperService.getDateNDaysAgo_UNC(500 + daytestBF);
+      dayStart = this.stockHelperService.getDateNDaysAgo_UNC(350 + daytestBF);
       range = `${number}day`
     } else if (timefame.includes('h')) {
       if(number===1){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(21 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(14 + daytestBF);
       } else if(number ===2){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(42 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(29 + daytestBF);
       } else if(number ===4){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(83 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(59 + daytestBF);
       }else{
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(166 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(100 + daytestBF);
       }
         range = `${number}hour`
     } else if (timefame.includes('m')) {
@@ -1306,13 +1306,13 @@ export class LocalPLWR {
       }else if(number === 5){
         dayStart = this.stockHelperService.getDateNDaysAgo_UNC(2 + daytestBF);
       } else if(number === 15){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(5 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(4 + daytestBF);
       } else if(number === 30){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(10 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(8 + daytestBF);
       } else if(number === 45){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(15 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(11 + daytestBF);
       } else{
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(18 + daytestBF);
+        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(15 + daytestBF);
       }
         range = `${number}min`
     } else {
