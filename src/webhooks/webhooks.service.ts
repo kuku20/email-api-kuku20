@@ -3175,6 +3175,7 @@ async deleteAllMessages_SLack(channel: string) {
       imageBuffer: Buffer | Uint8Array,
       filename = 'chart.png',
       initialComment?: string,
+      threadTs?: string, // 👈 parent message ts
     ) {
       try {
         const buffer = Buffer.from(imageBuffer);
@@ -3217,7 +3218,7 @@ async deleteAllMessages_SLack(channel: string) {
         } = uploadData;
     
         // ---------------------------------------------------------
-        // 2. Upload the actual image bytes
+        // 2. Upload actual image bytes
         // ---------------------------------------------------------
         const uploadResponse = await axios.post(
           upload_url,
@@ -3231,8 +3232,11 @@ async deleteAllMessages_SLack(channel: string) {
             maxBodyLength: Infinity,
           },
         );
-    
-        if (uploadResponse.status < 200 || uploadResponse.status >= 300) {
+
+        if (
+          uploadResponse.status < 200 ||
+          uploadResponse.status >= 300
+        ) {
           console.error(
             'Slack file bytes upload failed:',
             uploadResponse.status,
@@ -3246,9 +3250,9 @@ async deleteAllMessages_SLack(channel: string) {
         }
     
         // ---------------------------------------------------------
-        // 3. Complete the upload and share to channel
+        // 3. Complete upload
         // ---------------------------------------------------------
-        const completeBody: Record<string, any> = {
+        const completeBody: Record<string, string> = {
           files: JSON.stringify([
             {
               id: file_id,
@@ -3261,7 +3265,12 @@ async deleteAllMessages_SLack(channel: string) {
         if (initialComment) {
           completeBody.initial_comment = initialComment;
         }
-    
+
+        // 👇 This makes the uploaded file a thread reply
+        if (threadTs) {
+          completeBody.thread_ts = threadTs;
+        }
+
         const completeResponse = await axios.post(
           'https://slack.com/api/files.completeUploadExternal',
           new URLSearchParams(completeBody),
@@ -3272,20 +3281,24 @@ async deleteAllMessages_SLack(channel: string) {
             },
           },
         );
-        // return completeResponse
+
         const completeData = completeResponse.data;
-      
+
         if (!completeData.ok) {
           console.error(
             'Slack completeUploadExternal error:',
             completeData,
           );
-    
+
           return completeData;
         }
-    
-        console.log('Slack image uploaded successfully:',);
-    
+
+        console.log(
+          threadTs
+            ? `Slack image uploaded as thread reply: ${threadTs}`
+            : 'Slack image uploaded successfully',
+        );
+
         return completeData;
     
       } catch (error: any) {
@@ -3316,62 +3329,84 @@ async deleteAllMessages_SLack(channel: string) {
       
       if(fileBuffer){
         const imgads = Buffer.from(fileBuffer);
-        const postTo  = await this.postSlackImage(channel, imgads, `${ticker}.png`, message, );
-        const discordmsg = message+  `\n <${this.sH_Service.imageHostUrl}/slack/slack-image/${postTo.files?.[0].id}|slackImage>  || <${this.sH_Service.local4200}/price-log/${ticker}?daysRange=5|${ticker}-local-target> || <${this.sH_Service.stockMk000}/price-log/${ticker}?daysRange=5|${ticker}-prod-target>`
-        await this.messagesService.sendMessage("workspace-1",this.sH_Service.DC_SL_MT.ALL_IN_ONE, "bot-1", ticker,discordmsg)
-        const messageTs = await this.getSlackMessageTs(channel,postTo.files?.[0].id,);
-        const tsNCh = this.getTsBySymbol(ticker, this.sH_Service.watchlistSl_tss) || this.getTsBySymbol(ticker, this.sH_Service.holdingSl_tss);
-        if (tsNCh) {
-          const signalThread = this.sH_Service.getSlackMessageLink(
-            tsNCh.channel,
-            tsNCh.ts
-          );
-          // reply to self msg
-          await this.reply_SLack(channel, messageTs, signalThread);
-          const blockre =  [
-            {
-              type: 'section',
-              text: {
-                type: 'mrkdwn',
-                text: message ,
-              },
-            },
-            {
-              type: "section",
-              block_id: ticker,
-              text: {
-                type: "mrkdwn",
-                text: "Select a interval"
-              },
-              accessory: {
-                type: "external_select",
-                placeholder: {
-                  type: "plain_text",
-                  text: "Search timeframe"
+        // slack part
+        try {
+          const postTo  = await this.postSlackImage(channel, fileBuffer, `${ticker}.png`, message, );
+          const discordmsg = message+  `\n <${this.sH_Service.imageHostUrl}/slack/slack-image/${postTo.files?.[0].id}|slackImage>  || <${this.sH_Service.local4200}/price-log/${ticker}?daysRange=5|${ticker}-local-target> || <${this.sH_Service.stockMk000}/price-log/${ticker}?daysRange=5|${ticker}-prod-target>`
+          
+          await this.messagesService.sendMessage("workspace-1", this.sH_Service.DC_SL_MT.ALL_IN_ONE, "bot-1", ticker, discordmsg)
+          
+          const messageTs = await this.getSlackMessageTs(channel,postTo.files?.[0].id,);
+          const tsNCh = this.getTsBySymbol(ticker, this.sH_Service.watchlistSl_tss) || this.getTsBySymbol(ticker, this.sH_Service.holdingSl_tss);
+          if (tsNCh) {
+            const signalThread = this.sH_Service.getSlackMessageLink(
+              tsNCh.channel,
+              tsNCh.ts
+            );
+            // reply to self msg
+            await this.reply_SLack(channel, messageTs, signalThread);
+            const blockre =  [
+              {
+                type: 'section',
+                text: {
+                  type: 'mrkdwn',
+                  text: message ,
                 },
-                action_id: "timeframe_interval",
-                min_query_length: 1
+              },
+              {
+                type: "section",
+                block_id: ticker,
+                text: {
+                  type: "mrkdwn",
+                  text: "Select a interval"
+                },
+                accessory: {
+                  type: "external_select",
+                  placeholder: {
+                    type: "plain_text",
+                    text: "Search timeframe"
+                  },
+                  action_id: "timeframe_interval",
+                  min_query_length: 1
+                }
               }
-            }
-          ]
-          // replay to btn-watch ts
-          await this.reply_SLack(tsNCh.channel, tsNCh.ts, message +`<${postTo?.files[0]?.permalink}|image>`,blockre);
-        } else{
-          const blockre = this.getSlBlock(ticker,'accessory_full_watchlist',ticker)
-          await this.reply_SLack(channel,messageTs,'withBlock',blockre)
-          // await this.post2SlackBtnFn(slChannel,symbols[0],timeframe)
+            ]
+            // replay to btn-watch ts
+            await this.reply_SLack(tsNCh.channel, tsNCh.ts, message +`<${postTo?.files[0]?.permalink}|image>`,blockre);
+          } else {
+            const blockre = this.getSlBlock(ticker,'accessory_full_watchlist',ticker)
+            await this.reply_SLack(channel,messageTs,'withBlock',blockre)
+            // await this.post2SlackBtnFn(slChannel,symbols[0],timeframe)
+          }
+          return {
+            channel,
+            ts:messageTs,
+            ...postTo.files?.[0]
+          }
+        } catch (error) {
+          console.log("********:Post To Discord")
+          try {
+            return await this.sendDiscordNotification(
+              message,
+              `${'BUYSELL'} ${ticker}`,
+              JSON.stringify( data[data.length-1],),
+              fileBuffer,
+            );
+          } catch (error) {
+            console.log("********:Post To sirvService")
+            const postTo = await this.sirvService.uploadImage(fileBuffer)
+            const imageNtext = message+  `\n  <${postTo.url}|sirvImage>  || <${this.sH_Service.local4200}/price-log/${ticker}?daysRange=5|${ticker}-local-target> || <${this.sH_Service.stockMk000}/price-log/${ticker}?daysRange=5|${ticker}-prod-target>`
+            await this.messagesService.sendMessage("workspace-1",this.sH_Service.DC_SL_MT.ALL_IN_ONE, "bot-1", ticker,imageNtext)
+          }
         }
-        return {
-          channel,
-          ts:messageTs,
-          ...postTo.files?.[0]
-        }
-      }else{
+
+      } else {
         const pathSym = `${channel}/${ticker}`.toUpperCase();
         const msgN_imageWEB = `${message}\n<${this.sH_Service.stockMk000}/capture-target/${pathSym}|prodUrl>`
+        
         await this.messagesService.sendMessage("workspace-1",this.sH_Service.DC_SL_MT.ALL_IN_ONE, "bot-1", ticker,msgN_imageWEB)
         const postToCSLRE = await this.sendSlackNotificationVN(
-          '5min',
+          timeframe,
           [ticker],
           data[data.length-1],
           channel,
@@ -3454,5 +3489,9 @@ async deleteAllMessages_SLack(channel: string) {
         Authorization: `Bearer ${slackToken}`,
         'Content-Type': 'application/json; charset=utf-8',
       };
+    }
+
+    async Post2MySlack(messgage,ticker,channelN=this.sH_Service.DC_SL_MT.ALL_IN_ONE,){
+      return await this.messagesService.sendMessage("workspace-1", channelN, "bot-1", ticker, messgage)
     }
 }
