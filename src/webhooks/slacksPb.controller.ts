@@ -1,10 +1,12 @@
-import { Controller, Post, Body,Headers} from '@nestjs/common';
+import { Controller, Post, Body,Headers,  Param,Get,
+  UseGuards,
+  Res,} from '@nestjs/common';
 import { Request, Response } from 'express';
 import { WebhooksService } from './webhooks.service';
 import { StockService } from 'src/stock/stock.service';
 import { StockHelperService } from 'src/stock/stockHelper.service';
 import { SirvService } from './sirv.service';
-
+import axios from 'axios';
 @Controller('slack')
 export class SlackPbController {
   constructor(
@@ -349,5 +351,77 @@ export class SlackPbController {
   } async catch (error) {
     // Send error notification and log the error
     await this.webhooksService.sendSlackNotification(`ERORR_CALL`, this.sH_Service.Z_US_SL_.OR4)
+  }
+
+  @Get('slack-image/:fileId')
+  async getSlackImage(
+    @Param('fileId') fileId: string,
+    @Res() res: Response,
+  ) {
+    try {
+      // 1. Get Slack file information
+      const { data } = await axios.get(
+        'https://slack.com/api/files.info',
+        {
+          params: {
+            file: fileId,
+          },
+          headers: {
+            Authorization: this.webhooksService.headers_4Sl_AI_WH.Authorization,
+          },
+        },
+      );
+  
+      if (!data.ok || !data.file) {
+        return res.status(404).json({
+          error: data.error || 'Slack file not found',
+        });
+      }
+  
+      const file = data.file;
+  
+      // 2. Download image from Slack
+      const imageResponse = await axios.get(
+        file.url_private_download || file.url_private,
+        {
+          headers: {
+            Authorization: this.webhooksService.headers_4Sl_AI_WH.Authorization,
+          },
+          responseType: 'stream',
+        },
+      );
+  
+      // 3. Return image directly to browser
+      res.setHeader(
+        'Content-Type',
+        file.mimetype || 'image/png',
+      );
+  
+      res.setHeader(
+        'Content-Length',
+        imageResponse.headers['content-length'] || file.size,
+      );
+  
+      res.setHeader(
+        'Cache-Control',
+        'public, max-age=3600',
+      );
+  
+      imageResponse.data.pipe(res);
+  
+    } catch (error: any) {
+      console.error(
+        'Slack image proxy error:',
+        error?.response?.data || error,
+      );
+  
+      if (!res.headersSent) {
+        return res.status(500).json({
+          error: 'Unable to load Slack image',
+        });
+      }
+  
+      res.end();
+    }
   }
 }

@@ -2211,7 +2211,7 @@ export class WebhooksService implements OnModuleInit{
       const { data } = await axios.post(
         'https://slack.com/api/chat.postMessage',
         withOrnotBlock,
-        { headers: this.aiToolService.headers },
+        { headers: this.headers_4Sl_AI_WH },
       );
 
       if (!data.ok) {
@@ -2237,7 +2237,7 @@ export class WebhooksService implements OnModuleInit{
       const { data } = await axios.post(
         'https://slack.com/api/chat.postMessage',
         { channel, ...blockOrNot },
-        { headers: this.aiToolService.headers },
+        { headers: this.headers_4Sl_AI_WH },
       );
 
       if (!data.ok) {
@@ -2288,7 +2288,7 @@ async getAllMessages_SLack(channel: string): Promise<string[]> {
           limit: 100,
         },
         {
-          headers: this.aiToolService.headers,
+          headers: this.headers_4Sl_AI_WH,
         },
       );
 
@@ -2311,7 +2311,7 @@ async getAllMessages_SLack(channel: string): Promise<string[]> {
             const { data: replyData } = await axios.get(
               'https://slack.com/api/conversations.replies',
               {
-                headers: this.aiToolService.headers,
+                headers: this.headers_4Sl_AI_WH,
                 params: {
                   channel,
                   ts: msg.ts,
@@ -2382,7 +2382,7 @@ async deleteMessage_SLack(
           ts,
         },
         {
-          headers: this.aiToolService.headers,
+          headers: this.headers_4Sl_AI_WH,
         },
       );
 
@@ -2491,7 +2491,7 @@ async deleteAllMessages_SLack(channel: string) {
           name: reaction,
         },
         {
-          headers: this.aiToolService.headers,
+          headers: this.headers_4Sl_AI_WH,
         },
       );
   
@@ -2536,7 +2536,7 @@ async deleteAllMessages_SLack(channel: string) {
           blocks: blockIn
         },
         {
-          headers: this.aiToolService.headers,
+          headers: this.headers_4Sl_AI_WH,
         },
       );
   
@@ -2625,7 +2625,7 @@ async deleteAllMessages_SLack(channel: string) {
           ],
         },
         {
-          headers: this.aiToolService.headers,
+          headers: this.headers_4Sl_AI_WH,
         },
       );
   
@@ -2901,7 +2901,7 @@ async deleteAllMessages_SLack(channel: string) {
           blocks: blockEl,
         },
         {
-          headers: this.aiToolService.headers,
+          headers: this.headers_4Sl_AI_WH,
         },
       );
   
@@ -2980,7 +2980,7 @@ async deleteAllMessages_SLack(channel: string) {
     const { data: replyData } = await axios.get(
       'https://slack.com/api/conversations.replies',
       {
-        headers: this.aiToolService.headers,
+        headers: this.headers_4Sl_AI_WH,
         params: {
           channel,
           ts: ts,
@@ -3012,7 +3012,7 @@ async deleteAllMessages_SLack(channel: string) {
           limit: 100,
         },
         {
-          headers: this.aiToolService.headers,
+          headers: this.headers_4Sl_AI_WH,
         },
       );
       if (!data.ok) {
@@ -3180,7 +3180,7 @@ async deleteAllMessages_SLack(channel: string) {
         const buffer = Buffer.from(imageBuffer);
     
         const headers = {
-          Authorization: this.aiToolService.headers.Authorization,
+          Authorization: this.headers_4Sl_AI_WH.Authorization,
         };
     
         // ---------------------------------------------------------
@@ -3317,7 +3317,7 @@ async deleteAllMessages_SLack(channel: string) {
       if(fileBuffer){
         const imgads = Buffer.from(fileBuffer);
         const postTo  = await this.postSlackImage(channel, imgads, `${ticker}.png`, message, );
-        const discordmsg = message+  `\n <${this.sH_Service.imageHostUrl}/ai-tool/slack-image/${postTo.files?.[0].id}|slackImage>  || <${this.sH_Service.local4200}/price-log/${ticker}?daysRange=5|${ticker}-local-target> || <${this.sH_Service.stockMk000}/price-log/${ticker}?daysRange=5|${ticker}-prod-target>`
+        const discordmsg = message+  `\n <${this.sH_Service.imageHostUrl}/slack/slack-image/${postTo.files?.[0].id}|slackImage>  || <${this.sH_Service.local4200}/price-log/${ticker}?daysRange=5|${ticker}-local-target> || <${this.sH_Service.stockMk000}/price-log/${ticker}?daysRange=5|${ticker}-prod-target>`
         await this.messagesService.sendMessage("workspace-1",this.sH_Service.DC_SL_MT.ALL_IN_ONE, "bot-1", ticker,discordmsg)
         const messageTs = await this.getSlackMessageTs(channel,postTo.files?.[0].id,);
         const tsNCh = this.getTsBySymbol(ticker, this.sH_Service.watchlistSl_tss) || this.getTsBySymbol(ticker, this.sH_Service.holdingSl_tss);
@@ -3387,7 +3387,7 @@ async deleteAllMessages_SLack(channel: string) {
       fileId: string,
     ): Promise<string | undefined> {
       const headers = {
-        Authorization: this.aiToolService.headers.Authorization,
+        Authorization: this.headers_4Sl_AI_WH.Authorization,
       };
     
       const MAX_ATTEMPTS = 10;
@@ -3446,5 +3446,13 @@ async deleteAllMessages_SLack(channel: string) {
         }
       }
       return undefined;
+    }
+
+    public get headers_4Sl_AI_WH() {
+      const slackToken = this.configService.get<string>(this.sH_Service.slackTokenKey);
+      return {
+        Authorization: `Bearer ${slackToken}`,
+        'Content-Type': 'application/json; charset=utf-8',
+      };
     }
 }

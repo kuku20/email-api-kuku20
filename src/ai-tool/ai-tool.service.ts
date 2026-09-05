@@ -328,7 +328,7 @@ export class AiToolService {
       const { data } = await axios.post(
         'https://slack.com/api/chat.postMessage',
         { channel, text },
-        { headers: this.headers },
+        { headers: this.headers_4Sl_AI },
       );
 
       if (!data.ok) {
@@ -345,7 +345,7 @@ export class AiToolService {
     }
   }
 
-  public get headers() {
+  public get headers_4Sl_AI() {
     const slackToken = this.configService.get<string>(this.sH_Service.slackTokenKey);
     return {
       Authorization: `Bearer ${slackToken}`,
@@ -412,7 +412,7 @@ export class AiToolService {
           ],
         },
         {
-          headers: this.headers,
+          headers: this.headers_4Sl_AI,
         },
       );
   
