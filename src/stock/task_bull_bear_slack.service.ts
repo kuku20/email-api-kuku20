@@ -103,7 +103,7 @@ export class TasksBullBearSlackOnLyService {
           const match = getLastTimePost?.ts ===  last5min?.date
           if (!isWithinRange || match) {
             await this.webhooksService.sendSlackNotification(`*T*wReveseNOAPI** <https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day|${ticker}> |${last5min.close}|${last5min?.date}* || ${getLastTimePost?.ts}`,this.sH_Service.Z_US_SL_.OR4);
-            await this.sH_Service.sleep(200);
+            await this.sH_Service.sleep(500);
             return this.CHECKBULL_5_Tiiingo([ticker],0);
           }
           const text_5min = await this.sH_Service.CHECKBULL_BEAR_ReTurnText(
@@ -116,23 +116,7 @@ export class TasksBullBearSlackOnLyService {
           const closeCrosMA200 = last5min.close > last5min.MA200 && data_5min[data_5min.length-2].close < data_5min[data_5min.length-2].MA200
 
           FullText += `${text_5min}\n`;
-          if(text_5min.includes('CrAbMA50')){
-            let nextText = 'PREPARE_TO_BUY_50:'
-            if(text_5min.includes('CrAbMA50CrAbMA120CrAbMA200')){
-              nextText = 'BUY_MORE_MORE_200:'
-            } else if(text_5min.includes('CrAbMA50CrAbMA120')){
-              nextText = 'BUY_MORE_120:'
-            }  
-            const postToCSLRE  = await this.webhooksService.getImageN_PSlack( 
-              data_5min,
-              ticker,
-              DataSymbols.watchlist.includes(ticker)?this.sH_Service.INTRA_30M_SL_.MACDCR_100:this.sH_Service.INTRA_30M_SL_.MACDCR_200,
-              `*${nextText}*`+`\n${FullText} \n`,
-              '5min',
-             );
-            // const blockre = this.webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
-            // await this.webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
-          } else if(text_5min.includes('BIG_🟡🟡_VOL') && text_5min.includes('bar_🟢_green')){
+          if(text_5min.includes('BIG_🟡🟡_VOL') && text_5min.includes('bar_🟢_green')){
             // && text_5min.includes('AB🟢🟢BUYY🟢🟢')
             const data_15min = await this.LocalPLWR.TwReveseNOAPI(ticker, '15min');
             const text_15min = await this.sH_Service.CHECKBULL_BEAR_ReTurnText(
@@ -142,7 +126,7 @@ export class TasksBullBearSlackOnLyService {
             );
             FullText += `\n${text_15min}\n`;
             if(true){
-              const FTextWInDicator = 'BIG_🟡🟡_VOL\n'+FullText
+              const FTextWInDicator = '*BIG_🟡🟡_VOL*\n'+FullText
               const channelBig_V = DataSymbols.watchlist.includes(ticker) ?this.sH_Service.INTRA_30M_SL_.MACDCR_50:this.sH_Service.INTRA_30M_SL_.MACDCR_BL
               const fileBuffer5m = await this.webhooksService.captureChart(
                 data_5min,
@@ -263,6 +247,22 @@ export class TasksBullBearSlackOnLyService {
               // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
               // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'withBlock',blockre)
             }
+          } else if(text_5min.includes('CrAbMA50')){
+            let nextText = 'PREPARE_TO_BUY_50:'
+            if(text_5min.includes('CrAbMA50CrAbMA120CrAbMA200')){
+              nextText = 'BUY_MORE_MORE_200:'
+            } else if(text_5min.includes('CrAbMA50CrAbMA120')){
+              nextText = 'BUY_MORE_120:'
+            }  
+            const postToCSLRE  = await this.webhooksService.getImageN_PSlack( 
+              data_5min,
+              ticker,
+              DataSymbols.watchlist.includes(ticker)?this.sH_Service.INTRA_30M_SL_.MACDCR_100:this.sH_Service.INTRA_30M_SL_.MACDCR_200,
+              `*${nextText}*`+`\n${FullText} \n`,
+              '5min',
+             );
+            // const blockre = this.webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
+            // await this.webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
           } else if(text_5min.includes('macdCr_N')){
             const postToCSLRE  = await this.webhooksService.getImageN_PSlack( 
               data_5min,
@@ -539,7 +539,7 @@ export class TasksBullBearSlackOnLyService {
           const match = getLastTimePost?.ts ===  last5min?.date
           if (!isWithinRange || match) {
             await this.webhooksService.sendSlackNotification(`**tiingo_US* <https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day|${ticker}> |${last5min.close}|${last5min?.date}* || ${getLastTimePost?.ts}`,this.sH_Service.Z_US_SL_.OR4);
-            await this.sH_Service.sleep(200);
+            await this.sH_Service.sleep(500);
             return 0
           }
           const text_5min = await this.sH_Service.CHECKBULL_BEAR_ReTurnText(
@@ -548,23 +548,7 @@ export class TasksBullBearSlackOnLyService {
               data_5min
           );
           FullText += `*tiingo_US*\n ${text_5min}\n`;
-          if(text_5min.includes('CrAbMA50')){
-            let nextText = 'PREPARE_TO_BUY_50:'
-            if(text_5min.includes('CrAbMA50CrAbMA120CrAbMA200')){
-              nextText = 'BUY_MORE_MORE_200:'
-            } else if(text_5min.includes('CrAbMA50CrAbMA120')){
-              nextText = 'BUY_MORE_120:'
-            }  
-            const postToCSLRE  = await this.webhooksService.getImageN_PSlack( 
-              data_5min,
-              ticker,
-              DataSymbols.watchlist.includes(ticker)?this.sH_Service.INTRA_30M_SL_.MACDCR_100:this.sH_Service.INTRA_30M_SL_.MACDCR_200,
-              `*${nextText}*`+`\n${FullText} \n`,
-              '5min',
-             );
-            // const blockre = this.webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
-            // await this.webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
-          } else if(text_5min.includes('BIG_🟡🟡_VOL') && text_5min.includes('bar_🟢_green')){
+          if(text_5min.includes('BIG_🟡🟡_VOL') && text_5min.includes('bar_🟢_green')){
             if(true){
               const postToCSLRE  = await this.webhooksService.getImageN_PSlack( 
                 data_5min,
@@ -591,6 +575,22 @@ export class TasksBullBearSlackOnLyService {
               // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
               // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'withBlock',blockre)
             }
+          } else if(text_5min.includes('CrAbMA50')){
+            let nextText = 'PREPARE_TO_BUY_50:'
+            if(text_5min.includes('CrAbMA50CrAbMA120CrAbMA200')){
+              nextText = 'BUY_MORE_MORE_200:'
+            } else if(text_5min.includes('CrAbMA50CrAbMA120')){
+              nextText = 'BUY_MORE_120:'
+            }  
+            const postToCSLRE  = await this.webhooksService.getImageN_PSlack( 
+              data_5min,
+              ticker,
+              DataSymbols.watchlist.includes(ticker)?this.sH_Service.INTRA_30M_SL_.MACDCR_100:this.sH_Service.INTRA_30M_SL_.MACDCR_200,
+              `*${nextText}*`+`\n${FullText} \n`,
+              '5min',
+             );
+            // const blockre = this.webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
+            // await this.webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
           } else if(text_5min.includes('macdCr_N')){
             const postToCSLRE  = await this.webhooksService.getImageN_PSlack( 
               data_5min,
