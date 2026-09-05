@@ -363,9 +363,9 @@ export class TasksUS_ALL_MK_MASS_Service {
   }
   async runAllOn4h(stocklist = DataSymbols.allabove500million) {
     await this.webhooksService.deleteFirebase('NextRound/4hour','stockRSILAUP');
-    const tslaDc = `<https://discord.com/channels/1306113720979689523/1380037316143349922|4HOUR_RUN_LOOK_TSLA_DC>`
-    const smciDc = `<https://discord.com/channels/1306113720979689523/1348653615992143924|4HOUR_RUN_LOOK_SMCI_DC>`
-    const macd4huorDc = `<https://discord.com/channels/1306113720979689523/1436948457247080589|4HOUR_RUN_LOOK_MACDCRAB_DC>`
+    const tslaDc = `<${this.sH_Service.DiscordMsg}/1380037316143349922|4HOUR_RUN_LOOK_TSLA_DC>`
+    const smciDc = `<${this.sH_Service.DiscordMsg}/1348653615992143924|4HOUR_RUN_LOOK_SMCI_DC>`
+    const macd4huorDc = `<${this.sH_Service.DiscordMsg}/1436948457247080589|4HOUR_RUN_LOOK_MACDCRAB_DC>`
     const message_tsla = `${tslaDc}${'='.repeat(32)}`;
     const message_smci = `${smciDc}${'='.repeat(32)}`;
     this.webhooksService.sendSlackNotification('START_'+message_tsla, this.sH_Service.Z_US_SL_['4h_3C_AB']);

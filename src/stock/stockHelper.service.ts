@@ -42,6 +42,7 @@ export class StockHelperService {
   imageHostUrl = 'https://nestjs-api.koyeb.app'; // Slack images are served through our API; other images use their original URL.
   local4200 = 'http://localhost:4200'
   stockMk000 = 'https://stockmarkets000.web.app'
+  DiscordMsg=`https://discord\.com/channels/1306113720979689523`
   slackPosted = []
   setSlackToken(tokenKey: string) {
     this.slackTokenKey = tokenKey;

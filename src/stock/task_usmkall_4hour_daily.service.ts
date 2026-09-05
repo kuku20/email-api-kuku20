@@ -126,9 +126,9 @@ export class TasksUS_ALL_MK_4HOUR_Service {
     }
     // await this.webhooksService.deleteFirebase('NextRound/4hour','stockRSILAUP');
 
-    const tslaDc = `<https://discord.com/channels/1306113720979689523/1380037316143349922|4HOUR_RUN_LOOK_TSLA_DC> ${'='.repeat(32)}`
-    const smciDc = `<https://discord.com/channels/1306113720979689523/1348653615992143924|4HOUR_RUN_LOOK_SMCI_DC>${'='.repeat(32)}`
-    const macd4huorDc = `<https://discord.com/channels/1306113720979689523/1436948457247080589|4HOUR_RUN_LOOK_MACDCRAB_DC> ${'='.repeat(32)}`
+    const tslaDc = `<${this.sH_Service.DiscordMsg}/1380037316143349922|4HOUR_RUN_LOOK_TSLA_DC> ${'='.repeat(32)}`
+    const smciDc = `<${this.sH_Service.DiscordMsg}/1348653615992143924|4HOUR_RUN_LOOK_SMCI_DC>${'='.repeat(32)}`
+    const macd4huorDc = `<${this.sH_Service.DiscordMsg}/1436948457247080589|4HOUR_RUN_LOOK_MACDCRAB_DC> ${'='.repeat(32)}`
     this.webhooksService.sendSlackNotification('START_'+tslaDc, this.sH_Service.Z_US_SL_['4h_3C_AB']);
     this.webhooksService.sendSlackNotification('START_'+smciDc, this.sH_Service.Z_US_SL_['4h_3C_BL']);
     this.webhooksService.sendSlackNotification('START_'+macd4huorDc, this.sH_Service.US_4H_.MACDCR_BL);
@@ -174,7 +174,7 @@ export class TasksUS_ALL_MK_4HOUR_Service {
     const sl2hourCr = `**[LOOK_2H_SL](https://trading-udt8353.slack.com/archives/C0AV988SHDJ)**`
     await this.webhooksService.SendDcChannels(['MA_AB_20_50'],this.logger,`START_2HOUR_${sl2hourCr}`);
     
-    const dcMA_AB_20_50 = `<https://discord.com/channels/1306113720979689523/1436948534346911904|2HOUR> ${'='.repeat(32)}`
+    const dcMA_AB_20_50 = `<${this.sH_Service.DiscordMsg}/1436948534346911904|2HOUR> ${'='.repeat(32)}`
     this.webhooksService.sendSlackNotification('START_'+dcMA_AB_20_50, this.sH_Service.Z_US_SL_['2h_CROSS']);
 
     await  this.runOnly2h(this.sH_Service.NextRound_2hourALL)

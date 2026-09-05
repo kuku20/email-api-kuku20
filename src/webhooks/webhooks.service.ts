@@ -211,7 +211,7 @@ export class WebhooksService implements OnModuleInit{
     const WEBHOOKS_CNA = this.WEBHOOKS_CN[webhookCl] || this.WEBHOOKS_CN.Other;
     await this.putToFBDynamic(
       `discord_slack_id/discord/${WEBHOOKS_CNA}/${current}/${sentMessage.id}.json`,
-      `https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}`,
+      `${this.sH_Service.DiscordMsg}/${sentMessage?.channel_id}/${sentMessage?.id}`,
     );
     // if (
     //   this.rsiChannels.some((channel) => WEBHOOKS_CNA.includes(channel)) &&
@@ -225,7 +225,7 @@ export class WebhooksService implements OnModuleInit{
     //   );
     //   // store data of the date of sym that sent to discord
     //   await this.RsiToDatabase('RSI-DATE-DATA', ticker + `/${current}`, {
-    //     msglik: `https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}`,
+    //     msglik: `${this.sH_Service.DiscordMsg}/${sentMessage?.channel_id}/${sentMessage?.id}`,
     //     ...options,
     //   });
     // }
@@ -233,14 +233,14 @@ export class WebhooksService implements OnModuleInit{
     const channelWeb =this.sH_Service.ALL_IN_ONE ? this.sH_Service.DC_SL_MT.ALL_IN_ONE: this.sH_Service.DC_SL_MT[webhookCl] || '1yHUrbPtNS0yygBxsezD'
     if(ProductImageUrl && !webhookCl.includes('ERORR_CALL') && !botdt.includes('RSIENDBOT') && this.sH_Service.PostWebSlack){
       // webhookCl+'\n'+
-      const discordmsg =`${webhookCl}\n *${message}*\n <https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}|Discord-o6l-msg>|| <${ProductImageUrl}|prodUrl>`
+      const discordmsg =`${webhookCl}\n *${message}*\n <${this.sH_Service.DiscordMsg}/${sentMessage?.channel_id}/${sentMessage?.id}|Discord-o6l-msg>|| <${ProductImageUrl}|prodUrl>`
       await this.Post2MySlack(discordmsg, ticker,channelWeb)
     }
-    // else if(!webhookCl.includes('ERORR_CALL') && !botdt.includes('RSIENDBOT') && this.sH_Service.PostWebSlack){
-    //   const imageUlr = sentMessage?.embeds?.[0]?.image?.url || (sentMessage?.attachments??sentMessage?.attachments?.first()?.url);
-    //   const discordmsg =webhookCl+'\n'+ message+  `\n <https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}|Discord-o6l-msg>|| <${imageUlr}|discordImage>  || <${this.sH_Service.local4200}/price-log/${ticker}?daysRange=${timeframeScore}|${ticker}-local-target> || <${this.sH_Service.stockMk000}/price-log/${ticker}?daysRange=${timeframeScore}|${ticker}-prod-target>`
-    //   await this.Post2MySlack(discordmsg, ticker,channelWeb)
-    // }
+    else if(!webhookCl.includes('ERORR_CALL') && !botdt.includes('RSIENDBOT') && this.sH_Service.PostWebSlack){
+      const imageUlr = sentMessage?.embeds?.[0]?.image?.url || (sentMessage?.attachments??sentMessage?.attachments?.first()?.url);
+      const discordmsg =webhookCl+'\n'+ message+  `\n <${this.sH_Service.DiscordMsg}/${sentMessage?.channel_id}/${sentMessage?.id}|Discord-o6l-msg>|| <${imageUlr}|discordImage> `
+      await this.Post2MySlack(discordmsg, ticker,channelWeb)
+    }
     return { msg: 'post to discord success', ...sentMessage, ProductImageUrl};
   }
 
@@ -628,7 +628,7 @@ export class WebhooksService implements OnModuleInit{
     const WEBHOOKS_CNA = this.WEBHOOKS_CN[webhookCl] || this.WEBHOOKS_CN.Other;
     await this.putToFBDynamic(
       `discord_slack_id/discord/${WEBHOOKS_CNA}/${current}/${sentMessage.id}.json`,
-      `https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}`,
+      `${this.sH_Service.DiscordMsg}/${sentMessage?.channel_id}/${sentMessage?.id}`,
     );
 
     return { msg: 'post to discord success', ...sentMessage };
@@ -1560,7 +1560,7 @@ export class WebhooksService implements OnModuleInit{
   const WEBHOOKS_CNA = this.WEBHOOKS_CN[webhookCl] || this.WEBHOOKS_CN.Other;
   await this.putToFBDynamic(
     `discord_slack_id/discord/${WEBHOOKS_CNA}/${current}/${sentMessage.id}.json`,
-    `https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}`,
+    `${this.sH_Service.DiscordMsg}/${sentMessage?.channel_id}/${sentMessage?.id}`,
   );
 
   return { msg: 'post to discord success', ...sentMessage };
