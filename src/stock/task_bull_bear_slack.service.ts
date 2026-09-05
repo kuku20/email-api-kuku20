@@ -28,8 +28,8 @@ export class TasksBullBearSlackOnLyService {
     const todayMostGains = await this.LocalPLWR.FireBaseApi('get',`${this.sH_Service.todayUpGains}.json`,'')
     const moreSymbols2 = Object.keys(todayMostGains)
     console.log('todayMostGains',moreSymbols2)
-    this.sH_Service.bullbearDaily = this.sH_Service.bullbearUqiue
-    await this.CHECKBULL_5_15_30_1h(['ORCL'],0)
+    // this.sH_Service.bullbearDaily = this.sH_Service.bullbearUqiue
+    // await this.CHECKBULL_5_15_30_1h(['ORCL','UNH','SOXX'],0)
     //  await this.CHECKBULL_BEAR_OTHER_5MIN(0)
   }
 
@@ -40,7 +40,7 @@ export class TasksBullBearSlackOnLyService {
   }
 
   async CHECKBULL_BEAR_OTHER(delay=2,symbols= DataSymbols.watchlist){
-    if (this.sH_Service.shouldRunTradingLogicUS('5min',this.logger)) {
+    if (!this.sH_Service.shouldRunTradingLogicUS('5min',this.logger)) {
       return;
     }
     this.sH_Service.bullbearDaily = this.sH_Service.bullbearUqiue
@@ -101,11 +101,11 @@ export class TasksBullBearSlackOnLyService {
           );
           const getLastTimePost = this.webhooksService.getTsBySymbol(ticker,this.sH_Service.lastPosted)
           const match = getLastTimePost?.ts ===  last5min?.date
-          // if (!isWithinRange || match) {
-          //   await this.webhooksService.sendSlackNotification(`*T*wReveseNOAPI** <https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day|${ticker}> |${last5min.close}|${last5min?.date}* || ${getLastTimePost?.ts}`,this.sH_Service.Z_US_SL_.OR4);
-          //   await this.sH_Service.sleep(200);
-          //   return this.CHECKBULL_5_Tiiingo([ticker],0);
-          // }
+          if (!isWithinRange || match) {
+            await this.webhooksService.sendSlackNotification(`*T*wReveseNOAPI** <https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day|${ticker}> |${last5min.close}|${last5min?.date}* || ${getLastTimePost?.ts}`,this.sH_Service.Z_US_SL_.OR4);
+            await this.sH_Service.sleep(200);
+            return this.CHECKBULL_5_Tiiingo([ticker],0);
+          }
           const text_5min = await this.sH_Service.CHECKBULL_BEAR_ReTurnText(
               ticker,
               timeframe,
@@ -140,8 +140,9 @@ export class TasksBullBearSlackOnLyService {
               '15min',
               data_15min
             );
-            FullText += `${text_15min}\n`;
+            FullText += `\n${text_15min}\n`;
             if(true){
+              const FTextWInDicator = 'BIG_🟡🟡_VOL\n'+FullText
               const channelBig_V = DataSymbols.watchlist.includes(ticker) ?this.sH_Service.INTRA_30M_SL_.MACDCR_50:this.sH_Service.INTRA_30M_SL_.MACDCR_BL
               const fileBuffer5m = await this.webhooksService.captureChart(
                 data_5min,
@@ -155,7 +156,7 @@ export class TasksBullBearSlackOnLyService {
                   type: 'section',
                   text: {
                     type: 'mrkdwn',
-                    text: text_5min ,
+                    text: FTextWInDicator ,
                   },
                 },
                 {
@@ -181,7 +182,7 @@ export class TasksBullBearSlackOnLyService {
                   channelBig_V,
                   fileBuffer5m,
                   `${ticker}-5min.png`,
-                  text_5min,
+                  FTextWInDicator,
                 );
                 const messageTs = await this.webhooksService.getSlackMessageTs(channelBig_V,postTo5m.files?.[0].id,);
                 if (tsNCh) {
@@ -192,12 +193,11 @@ export class TasksBullBearSlackOnLyService {
                   // reply to self msg
                   await this.webhooksService.reply_SLack(channelBig_V, messageTs, signalThread);
                   // replay to btn-watch ts
-                  await this.webhooksService.reply_SLack(tsNCh.channel, tsNCh.ts, text_5min +`<${postTo5m?.files[0]?.permalink}|image>`,blockreW);
+                  await this.webhooksService.reply_SLack(tsNCh.channel, tsNCh.ts, FTextWInDicator +`<${postTo5m?.files[0]?.permalink}|image>`,blockreW);
                 } else {
                   const blockre = this.webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
                   await this.webhooksService.reply_SLack(channelBig_V,messageTs,'withBlock',blockre)
                 }
-                this.sH_Service.railwayBoolen = true
                 const fileBuffer15m = await this.webhooksService.captureChart(
                   data_15min,
                   ticker,
@@ -215,12 +215,12 @@ export class TasksBullBearSlackOnLyService {
                   if(tsNCh){
                     await this.webhooksService.reply_SLack(tsNCh.channel, tsNCh.ts, text_15min +`<${postTo15m?.files[0]?.permalink}|image>`);  
                   } 
-                  const msgMySl = FullText+  `\n <${this.sH_Service.imageHostUrl}/slack/slack-image/${postTo5m.files?.[0].id}|5m-slackImage>  || <${this.sH_Service.imageHostUrl}/slack/slack-image/${postTo15m.files?.[0].id}|15m-slackImage>  || <${this.sH_Service.local4200}/price-log/${ticker}?daysRange=5|${ticker}-local-target> || <${this.sH_Service.stockMk000}/price-log/${ticker}?daysRange=5|${ticker}-prod-target>`
+                  const msgMySl = FTextWInDicator+  `\n <${this.sH_Service.imageHostUrl}/slack/slack-image/${postTo5m.files?.[0].id}|5m-slackImage>  || <${this.sH_Service.imageHostUrl}/slack/slack-image/${postTo15m.files?.[0].id}|15m-slackImage>  `
                   await this.webhooksService.Post2MySlack(msgMySl, ticker)
                 } else {
                   const pathSym = `${channelBig_V}-15MIN/${ticker}`.toUpperCase();
                   const imageWEB = `|| <${this.sH_Service.stockMk000}/capture-target/${pathSym}|prodUrl>`
-                  const msgMySl = FullText+  `\n <${this.sH_Service.imageHostUrl}/slack/slack-image/${postTo5m.files?.[0].id}|5m-slackImage>  ${imageWEB}|| <${this.sH_Service.local4200}/price-log/${ticker}?daysRange=5|${ticker}-local-target> || <${this.sH_Service.stockMk000}/price-log/${ticker}?daysRange=5|${ticker}-prod-target>`
+                  const msgMySl = FTextWInDicator+  `\n <${this.sH_Service.imageHostUrl}/slack/slack-image/${postTo5m.files?.[0].id}|5m-slackImage>  ${imageWEB}`
                   await this.webhooksService.Post2MySlack(msgMySl, ticker)
 
                   if (tsNCh) {
@@ -233,7 +233,7 @@ export class TasksBullBearSlackOnLyService {
                 }
               } else { // test only and no need 15 to run
                 const pathSym = `${channelBig_V}-5MIN/${ticker}`.toUpperCase();
-                const msgN_imageWEB = `${text_5min}\n<${this.sH_Service.stockMk000}/capture-target/${pathSym}|prodUrl>`
+                const msgN_imageWEB = `${FTextWInDicator}\n<${this.sH_Service.stockMk000}/capture-target/${pathSym}|prodUrl>`
                 await this.webhooksService.Post2MySlack(msgN_imageWEB, ticker)
                 const postToCSLRE = await this.webhooksService.sendSlackNotificationVN(
                   timeframe,
@@ -242,25 +242,12 @@ export class TasksBullBearSlackOnLyService {
                   channelBig_V,
                   msgN_imageWEB,
                 );
-                if (tsNCh) {
-                  const signalThread = this.sH_Service.getSlackMessageLink(
-                    tsNCh.channel,
-                    tsNCh.ts
-                  );
-                  // reply to self msg
-                  await this.webhooksService.reply_SLack(channelBig_V, postToCSLRE.postToCSLRE.ts, signalThread);
-                  // replay to btn-watch ts
-                  await this.webhooksService.reply_SLack(tsNCh.channel, tsNCh.ts, text_5min,blockreW);
-                } else {
-                  const blockre = this.webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
-                  await this.webhooksService.reply_SLack(channelBig_V,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
-                }
               }
               // const postToCSLRE  = await this.webhooksService.getImageN_PSlack( 
               //   data_5min,
               //   ticker,
               //   DataSymbols.watchlist.includes(ticker)?this.sH_Service.INTRA_30M_SL_.MACDCR_50:this.sH_Service.INTRA_30M_SL_.MACDCR_BL,
-              //   `*${`BIG_🟡🟡_VOL`}*`+`\n${FullText} \n`,
+              //   `*${`BIG_🟡🟡_VOL`}*`+`\n${FTextWInDicator} \n`,
               //   '5min',
               //  );
 
