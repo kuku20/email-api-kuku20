@@ -39,6 +39,7 @@ export class StockHelperService {
   railwayBoolen = true;
   PostWebSlack = true; // set to false if want to skip post to website and then set it back
   ALL_IN_ONE = false; // set to false if want to skip post to website and then set it back
+  imageHostUrl = 'http://localhost:3000'; // Slack images are served through our API; other images use their original URL.
   slackPosted = []
   setSlackToken(tokenKey: string) {
     this.slackTokenKey = tokenKey;

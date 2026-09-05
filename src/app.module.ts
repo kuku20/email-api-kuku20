@@ -75,6 +75,7 @@ import { SirvService } from './webhooks/sirv.service';
 import { PowerService } from './stock/z.power.service';
 import { getTaskProviders } from './task.providers';
 import { MessagesService } from './slack/messages.service';
+import { TasksBullBearSlackOnLyService } from './stock/task_bull_bear_slack.service';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -199,6 +200,7 @@ import { MessagesService } from './slack/messages.service';
     // TasksBullBearGain_CalService,
     // TasksBullBearService,
     // TasksGainsLosersService,
+    // TasksBullBearSlackOnLyService,
     // PowerService
   ],
 })

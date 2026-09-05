@@ -3168,4 +3168,283 @@ async deleteAllMessages_SLack(channel: string) {
       }
     }
   }
+    /*
+   */
+    async postSlackImage(
+      channel: string,
+      imageBuffer: Buffer | Uint8Array,
+      filename = 'chart.png',
+      initialComment?: string,
+    ) {
+      try {
+        const buffer = Buffer.from(imageBuffer);
+    
+        const headers = {
+          Authorization: this.aiToolService.headers.Authorization,
+        };
+    
+        // ---------------------------------------------------------
+        // 1. Ask Slack for an upload URL
+        // ---------------------------------------------------------
+        const uploadUrlResponse = await axios.post(
+          'https://slack.com/api/files.getUploadURLExternal',
+          new URLSearchParams({
+            filename,
+            length: String(buffer.length),
+          }),
+          {
+            headers: {
+              ...headers,
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+          },
+        );
+    
+        const uploadData = uploadUrlResponse.data;
+    
+        if (!uploadData.ok) {
+          console.error(
+            'Slack getUploadURLExternal error:',
+            uploadData,
+          );
+    
+          return uploadData;
+        }
+    
+        const {
+          upload_url,
+          file_id,
+        } = uploadData;
+    
+        // ---------------------------------------------------------
+        // 2. Upload the actual image bytes
+        // ---------------------------------------------------------
+        const uploadResponse = await axios.post(
+          upload_url,
+          buffer,
+          {
+            headers: {
+              'Content-Type': 'image/png',
+              'Content-Length': buffer.length,
+            },
+            maxContentLength: Infinity,
+            maxBodyLength: Infinity,
+          },
+        );
+    
+        if (uploadResponse.status < 200 || uploadResponse.status >= 300) {
+          console.error(
+            'Slack file bytes upload failed:',
+            uploadResponse.status,
+            uploadResponse.data,
+          );
+    
+          return {
+            ok: false,
+            error: 'file_upload_failed',
+          };
+        }
+    
+        // ---------------------------------------------------------
+        // 3. Complete the upload and share to channel
+        // ---------------------------------------------------------
+        const completeBody: Record<string, any> = {
+          files: JSON.stringify([
+            {
+              id: file_id,
+              title: filename,
+            },
+          ]),
+          channel_id: channel,
+        };
+    
+        if (initialComment) {
+          completeBody.initial_comment = initialComment;
+        }
+    
+        const completeResponse = await axios.post(
+          'https://slack.com/api/files.completeUploadExternal',
+          new URLSearchParams(completeBody),
+          {
+            headers: {
+              ...headers,
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+          },
+        );
+        // return completeResponse
+        const completeData = completeResponse.data;
+      
+        if (!completeData.ok) {
+          console.error(
+            'Slack completeUploadExternal error:',
+            completeData,
+          );
+    
+          return completeData;
+        }
+    
+        console.log('Slack image uploaded successfully:',);
+    
+        return completeData;
+    
+      } catch (error: any) {
+        console.error(
+          'Slack image upload exception:',
+          error?.response?.data || error,
+        );
+    
+        throw error;
+      }
+    }  
+
+
+
+    async getImageN_PSlack( 
+      data,
+      ticker,
+      channel,
+      message,
+      timeframe
+    ){
+      const fileBuffer = await this.captureChart(
+        data,
+        ticker,
+        channel,
+        message,
+      );
+      
+      if(fileBuffer){
+        const imgads = Buffer.from(fileBuffer);
+        const postTo  = await this.postSlackImage(channel, imgads, `${ticker}.png`, message, );
+        const discordmsg = message+  `\n <${this.stockHelperService.imageHostUrl}/ai-tool/slack-image/${postTo.files?.[0].id}|slackImage>  || <http://localhost:4200/price-log/${ticker}?daysRange=5|${ticker}-local-target> || <https://stockmarkets000.web.app/price-log/${ticker}?daysRange=5|${ticker}-prod-target>`
+        await this.messagesService.sendMessage("workspace-1",this.stockHelperService.DC_SL_MT.ALL_IN_ONE, "bot-1", ticker,discordmsg)
+        const messageTs = await this.getSlackMessageTs(channel,postTo.files?.[0].id,);
+        const tsNCh = this.getTsBySymbol(ticker, this.stockHelperService.watchlistSl_tss) || this.getTsBySymbol(ticker, this.stockHelperService.holdingSl_tss);
+        if (tsNCh) {
+          const signalThread = this.stockHelperService.getSlackMessageLink(
+            tsNCh.channel,
+            tsNCh.ts
+          );
+          // reply to self msg
+          await this.reply_SLack(channel, messageTs, signalThread);
+          const blockre =  [
+            {
+              type: 'section',
+              text: {
+                type: 'mrkdwn',
+                text: message ,
+              },
+            },
+            {
+              type: "section",
+              block_id: ticker,
+              text: {
+                type: "mrkdwn",
+                text: "Select a interval"
+              },
+              accessory: {
+                type: "external_select",
+                placeholder: {
+                  type: "plain_text",
+                  text: "Search timeframe"
+                },
+                action_id: "timeframe_interval",
+                min_query_length: 1
+              }
+            }
+          ]
+          // replay to btn-watch ts
+          await this.reply_SLack(tsNCh.channel, tsNCh.ts, message +`<${postTo?.files[0]?.permalink}|image>`,blockre);
+        } else{
+          const blockre = this.getSlBlock(ticker,'accessory_full_watchlist',ticker)
+          await this.reply_SLack(channel,messageTs,'withBlock',blockre)
+          // await this.post2SlackBtnFn(slChannel,symbols[0],timeframe)
+        }
+        return {
+          channel,
+          ts:messageTs,
+          ...postTo.files?.[0]
+        }
+      }else{
+        const pathSym = `${channel}/${ticker}`.toUpperCase();
+        const msgN_imageWEB = `${message}\n<https://stockmarkets000.web.app/capture-target/${pathSym}|prodUrl>`
+        await this.messagesService.sendMessage("workspace-1",this.stockHelperService.DC_SL_MT.ALL_IN_ONE, "bot-1", ticker,msgN_imageWEB)
+        const postToCSLRE = await this.sendSlackNotificationVN(
+          '5min',
+          [ticker],
+          data[data.length-1],
+          channel,
+          msgN_imageWEB,
+        );
+        return postToCSLRE.postToCSLRE
+        // post link as fail get image get dataImage link
+      }
+    }
+
+    async getSlackMessageTs(
+      channel: string,
+      fileId: string,
+    ): Promise<string | undefined> {
+      const headers = {
+        Authorization: this.aiToolService.headers.Authorization,
+      };
+    
+      const MAX_ATTEMPTS = 10;
+      const RETRY_DELAY_MS = 500;
+    
+      for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+        try {
+          const historyResponse = await axios.get(
+            'https://slack.com/api/conversations.history',
+            {
+              params: {
+                channel,
+                limit: 100,
+              },
+              headers,
+            },
+          );
+    
+          const historyData = historyResponse.data;
+    
+          if (!historyData.ok) {
+            console.error(
+              'Slack conversations.history error:',
+              historyData,
+            );
+    
+            return undefined;
+          }
+    
+          const messages = historyData.messages || [];
+    
+          const message = messages.find(
+            (message: any) =>
+              message.files?.some(
+                (file: any) => file.id === fileId,
+              ),
+          );
+    
+          if (message?.ts) {
+            return message.ts;
+          }
+    
+          // Slack may need a moment before the message
+          // appears in conversations.history.
+          if (attempt < MAX_ATTEMPTS) {
+            await new Promise((resolve) =>
+              setTimeout(resolve, RETRY_DELAY_MS),
+            );
+          }
+        } catch (error: any) {
+          console.error(
+            'Error getting Slack message ts:',
+            error?.response?.data || error,
+          );
+          return undefined;
+        }
+      }
+      return undefined;
+    }
 }
