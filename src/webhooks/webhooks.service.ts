@@ -3120,7 +3120,7 @@ async deleteAllMessages_SLack(channel: string) {
     return trimdata;
   }
 
-  async replyToMessage(
+  async reply2_DC_Message(
     channelId: string,
     messageId: string,
     content: string,

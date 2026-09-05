@@ -76,6 +76,8 @@ import { PowerService } from './stock/z.power.service';
 import { getTaskProviders } from './task.providers';
 import { MessagesService } from './slack/messages.service';
 import { TasksBullBearSlackOnLyService } from './stock/task_bull_bear_slack.service';
+import { Stratery_2Service } from './stock/strategy/strategy2.service';
+import { Sty_Slack_OnLy_Service } from './stock/strategy/strategy3_sl_only.service';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -170,6 +172,8 @@ import { TasksBullBearSlackOnLyService } from './stock/task_bull_bear_slack.serv
   providers: [
     AppService,
     StockHelperService,
+    Stratery_2Service,
+    Sty_Slack_OnLy_Service,
     WebhooksService,
     LocalPLWR,
     AlphavantageService,
