@@ -85,7 +85,7 @@ export class TasksBullBearService {
     // this.webhooksService.deleteSLChannel(Object.values(this.sH_Service.Z_US_SL_))
     // this.sH_Service.bullbearDaily = this.sH_Service.bullbearUqiue
     // await this.CHECKBULL_BEAR_OTHER_5MIN(1,);
-    // await this.CHECKBULL_5_15_30_1h(['SPCX'],0)
+    // await this.CHECKBULL_5_15_30_1h(['SMCI'],0)
     // await this.webhooksService.deleteSLChannel(Object.values(this.sH_Service.INTRA_30M_SL_))
   }
 
@@ -402,11 +402,11 @@ export class TasksBullBearService {
           );
           const getLastTimePost = this.webhooksService.getTsBySymbol(ticker,this.sH_Service.lastPosted)
           const match = getLastTimePost?.ts ===  last5min?.date
-          // if (!isWithinRange || match) {
-          //   await this.webhooksService.sendSlackNotification(`*T*wReveseNOAPI** <https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day|${ticker}> |${last5min.close}|${last5min?.date}* || ${getLastTimePost?.ts}`,this.sH_Service.Z_US_SL_.OR4);
-          //   await this.sH_Service.sleep(500);
-          //   return this.CHECKBULL_5_Tiiingo([ticker],0);
-          // }
+          if (!isWithinRange || match) {
+            await this.webhooksService.sendSlackNotification(`*T*wReveseNOAPI** <https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day|${ticker}> |${last5min.close}|${last5min?.date}* || ${getLastTimePost?.ts}`,this.sH_Service.Z_US_SL_.OR4);
+            await this.sH_Service.sleep(500);
+            return this.CHECKBULL_5_Tiiingo([ticker],0);
+          }
           const text_5min = await this.sH_Service.CHECKBULL_BEAR_ReTurnText(
               ticker,
               timeframe,
