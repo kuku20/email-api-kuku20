@@ -16,14 +16,14 @@ export class TestOndata_service {
   constructor(
     private readonly configService: ConfigService,
     private readonly webhooksService: WebhooksService,
-    private readonly stockHelperService: StockHelperService,
+    private readonly sH_Service: StockHelperService,
     private readonly LocalPLWR: LocalPLWR,
   ) {}
   private readonly logger = new Logger(TestOndata_service.name);
   daytestBF = 0;
-  dayend = this.stockHelperService.getDateNDaysAgo(-1 + this.daytestBF);
+  dayend = this.sH_Service.getDateNDaysAgo(-1 + this.daytestBF);
   dayago = 0
-  rundayaogo = this.stockHelperService.getDateNDaysAgo(this.dayago);
+  rundayaogo = this.sH_Service.getDateNDaysAgo(this.dayago);
   endpointFolder = 'stock-price-check';
   //2h 2026_03_26_15_30_00 , 2026_04_16_15_30_00,2026_04_17_15_30_00,2026_04_23_15_30_00
   // 4h 2026_03_25_13_30_00 2026_04_17_13_30_00,2026_02_18_15_30_00
@@ -32,21 +32,21 @@ export class TestOndata_service {
   timeframe = '4hour';
   async onModuleInit() {
     // This runs ONCE when the app starts
-    // const symbols =  await this.LocalPLWR.getArrSymbolFFire('${this.stockHelperService.aboveMA50api}/alldata/4hour') as string[];
+    // const symbols =  await this.LocalPLWR.getArrSymbolFFire('${this.sH_Service.aboveMA50api}/alldata/4hour') as string[];
     // await this.runAllWatchLists30(symbols);
-    // this.stockHelperService.aboveMA50api= this.rundayaogo
+    // this.sH_Service.aboveMA50api= this.rundayaogo
     // await this.runAllWatchLists30();
-    // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.stockHelperService.aboveMA50api}/threeday/${this.timeframe}.json`,'')
-    // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.stockHelperService.aboveMA50api}/alldata/${this.timeframe}.json`,'')
-    // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.stockHelperService.aboveMA50api}/all3count/${this.timeframe}.json`,'')
-    // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.stockHelperService.aboveMA50api}/all3count-early/${this.timeframe}.json`,'')
-    // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.stockHelperService.aboveMA50api}/MACDDivergence/${this.timeframe}.json`,'')
-    // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.stockHelperService.aboveMA50api}/fourday/${this.timeframe}.json`,'')
-    // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.stockHelperService.aboveMA50api}/threeday/${this.timeframe}.json`,'')
-    // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.stockHelperService.aboveMA50api}/twoday/${this.timeframe}.json`,'')
-    // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.stockHelperService.aboveMA50api}/oneday/${this.timeframe}.json`,'')
-    // const SLACK_WEBHOOKS_US50  =await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.stockHelperService.aboveMA50api}/threeday/${this.timeframe}.json`,'')
-    // const SLACK_WEBHOOKS_US50  =await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/${this.stockHelperService.aboveMA50api}-aboveMA200/${this.timeframe}.json`,'')
+    // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.sH_Service.aboveMA50api}/threeday/${this.timeframe}.json`,'')
+    // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.sH_Service.aboveMA50api}/alldata/${this.timeframe}.json`,'')
+    // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.sH_Service.aboveMA50api}/all3count/${this.timeframe}.json`,'')
+    // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.sH_Service.aboveMA50api}/all3count-early/${this.timeframe}.json`,'')
+    // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.sH_Service.aboveMA50api}/MACDDivergence/${this.timeframe}.json`,'')
+    // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.sH_Service.aboveMA50api}/fourday/${this.timeframe}.json`,'')
+    // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.sH_Service.aboveMA50api}/threeday/${this.timeframe}.json`,'')
+    // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.sH_Service.aboveMA50api}/twoday/${this.timeframe}.json`,'')
+    // const SLACK_WEBHOOKS_US50  = await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.sH_Service.aboveMA50api}/oneday/${this.timeframe}.json`,'')
+    // const SLACK_WEBHOOKS_US50  =await this.LocalPLWR.FireBaseApi('get',`stock-related/${this.sH_Service.aboveMA50api}/threeday/${this.timeframe}.json`,'')
+    // const SLACK_WEBHOOKS_US50  =await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/${this.sH_Service.aboveMA50api}-aboveMA200/${this.timeframe}.json`,'')
     // const data = await this.LocalPLWR.FireBaseApi('get','stock-related/post-wash-sell.json','')
     const SLACK_WEBHOOKS_US50 = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/DyDay/${this.timeframe}/${this.endpointDate}.json`,'')
 
@@ -54,7 +54,7 @@ export class TestOndata_service {
     console.log(tickers.length);
     // // console.log(tickers.length);
     // this.comparePrice(0, SLACK_WEBHOOKS_US50);
-    // this.stockHelperService.writeAbove2BillionToFile(tickers,'alldata-4hour-3-${this.stockHelperService.aboveMA50api}');
+    // this.sH_Service.writeAbove2BillionToFile(tickers,'alldata-4hour-3-${this.sH_Service.aboveMA50api}');
     // this.comparePrice(9, SLACK_WEBHOOKS_US50); 
     // this.comparePrice(8, SLACK_WEBHOOKS_US50);
     // this.comparePrice(7, SLACK_WEBHOOKS_US50);
@@ -147,16 +147,16 @@ export class TestOndata_service {
           console.log(`Data for ${ticker}: ${lastData.date}(${lastData.close})` );
           // Process the data
           const signal =
-            await this.stockHelperService.BuyOnly_StochRSICrossAB200(
+            await this.sH_Service.BuyOnly_StochRSICrossAB200(
               lastData,
               secondLastData,
             );
           if (!signal) return;
 
           const webhookMap = [
-            { condition: signal.PriceCrMA50 && signal.ContinueUp, hook: this.stockHelperService.INTRA_30M_SL_.MACDCR_50 },
-            { condition: signal.PriceCrMA100 && signal.ContinueUp, hook: this.stockHelperService.INTRA_30M_SL_.MACDCR_100 },
-            { condition: signal.PriceCrMA200 && signal.ContinueUp, hook: this.stockHelperService.INTRA_30M_SL_.MACDCR_200 },
+            { condition: signal.PriceCrMA50 && signal.ContinueUp, hook: this.sH_Service.INTRA_30M_SL_.MACDCR_50 },
+            { condition: signal.PriceCrMA100 && signal.ContinueUp, hook: this.sH_Service.INTRA_30M_SL_.MACDCR_100 },
+            { condition: signal.PriceCrMA200 && signal.ContinueUp, hook: this.sH_Service.INTRA_30M_SL_.MACDCR_200 },
           ];
 
           const matched = webhookMap.find((w) => w.condition);
@@ -269,7 +269,7 @@ export class TestOndata_service {
           } else {
             data = await this.LocalPLWR.get12for(ticker, timeframe, apikey);
           }
-          const testDateqq = this.stockHelperService.TurnDateToDashFormat(this.endpointDate)
+          const testDateqq = this.sH_Service.TurnDateToDashFormat(this.endpointDate)
           const getIndexByDate = (data, testDateqq) => {
             return data.findIndex(item => item.date === testDateqq);
           };
@@ -295,7 +295,7 @@ export class TestOndata_service {
           // console.log(`Data for ${ticker}: ${lastData.date}(${lastData.close}) V||S setClose:${tickerData.date}(${tickerData.close})` );
           const linedetail = `volume(${tickerData.volume}) MA200(${tickerData.MA200}), MA100: ${tickerData.MA100}, MA50: ${tickerData.MA50} close: ${tickerData.close} vs ${lastestPrice} MACDDivergence: ${tickerData?.MACDDivergence} RSI: ${tickerData?.RSI} MACDLine: ${tickerData?.MACDLine}`;
           
-          const urlcheck = `http://localhost:4200/price-log/${ticker}?daysRange=120`
+          const urlcheck = `${this.sH_Service.local4200}/price-log/${ticker}?daysRange=120`
 
           const mkaboveOrBellow2 = DataSymbols.above2billion.includes(ticker) ? '💰-' : '';
           const sp500 = DataSymbols.stock_500_symbols.includes(ticker) ? '(🇺🇸)-' : ''

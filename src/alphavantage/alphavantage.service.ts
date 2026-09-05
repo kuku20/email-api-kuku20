@@ -25,7 +25,7 @@ export class AlphavantageService {
         // // return responsesArray.results?.values
         const responsed = plainToClass(DTO.ChartOutPolygonDto, response.data.results?.values);
         return responsed;
-        // const result = await this.stockHelperService.returnNewData(response);
+        // const result = await this.sH_Service.returnNewData(response);
     
         // return result;
       } catch (error) {

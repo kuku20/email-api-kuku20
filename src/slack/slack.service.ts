@@ -12,7 +12,7 @@ import { WebhooksService } from 'src/webhooks/webhooks.service';
 /*
   go to https://api.slack.com/apps/ to create a new app and get the bot token, then add it to your .env file as SLACK_BOT_TOKEN.
   Only update the xoxb token in .env file, and it will auto-create channels on startup if needed. 
-  update the SLID in stockHelperService with the new channel IDs after they are created.
+  update the SLID in sH_Service with the new channel IDs after they are created.
   
 */
 
@@ -24,11 +24,11 @@ export class SlackService implements OnModuleInit {
   constructor(
     private readonly webhooksService: WebhooksService,
     private readonly configService: ConfigService,
-    private readonly stockHelperService: StockHelperService,
+    private readonly sH_Service: StockHelperService,
   ) {
-    // this.stockHelperService.setSlackToken('SLACK_USER_TRADING_TOKEN');
-    // this.stockHelperService.setSlackToken('SLACK_BOT_TOKEN_WEEKLY');
-    const slackToken = this.configService.get<string>(this.stockHelperService.slackTokenKey);
+    // this.sH_Service.setSlackToken('SLACK_USER_TRADING_TOKEN');
+    // this.sH_Service.setSlackToken('SLACK_BOT_TOKEN_WEEKLY');
+    const slackToken = this.configService.get<string>(this.sH_Service.slackTokenKey);
 
     if (!slackToken) {
       throw new Error('SLACK_BOT_TOKEN is not configured');
@@ -45,19 +45,19 @@ export class SlackService implements OnModuleInit {
     // let botUserId = 'U0BSWKPP4MU'
     // botUserId = this.getBotOrUserId('SLACK_BOT_TOKEN')
     //  console.log(botUserId)
-    // await this.createDailyChannels('AI_SL',this.stockHelperService.AI_SL,botUserId);
-    // await this.createDailyChannels('BULL_BEAR_SL_',this.stockHelperService.BULL_BEAR_SL_,botUserId);
-    // await this.createDailyChannels('INTRA_30M_SL_',this.stockHelperService.INTRA_30M_SL_,botUserId);
-    // await this.createDailyChannels('BTN_SL',this.stockHelperService.BTN_SL,botUserId);
-    // await this.createDailyChannels('US_4H_',this.stockHelperService.US_4H_,botUserId);
-    // await this.createDailyChannels('US_DAILY_',this.stockHelperService.US_DAILY_,botUserId);
-    // await this.createDailyChannels('VN_SL_',this.stockHelperService.VN_SL_,botUserId);
-    // await this.createDailyChannels('Z_US_SL_',this.stockHelperService.Z_US_SL_,botUserId);
+    // await this.createDailyChannels('AI_SL',this.sH_Service.AI_SL,botUserId);
+    // await this.createDailyChannels('BULL_BEAR_SL_',this.sH_Service.BULL_BEAR_SL_,botUserId);
+    // await this.createDailyChannels('INTRA_30M_SL_',this.sH_Service.INTRA_30M_SL_,botUserId);
+    // await this.createDailyChannels('BTN_SL',this.sH_Service.BTN_SL,botUserId);
+    // await this.createDailyChannels('US_4H_',this.sH_Service.US_4H_,botUserId);
+    // await this.createDailyChannels('US_DAILY_',this.sH_Service.US_DAILY_,botUserId);
+    // await this.createDailyChannels('VN_SL_',this.sH_Service.VN_SL_,botUserId);
+    // await this.createDailyChannels('Z_US_SL_',this.sH_Service.Z_US_SL_,botUserId);
 
-    // this.stockHelperService.setSlackToken('SLACK_BOT_TOKEN_WEEKLY');
-    // await this.createDailyChannels(this.stockHelperService.US_WK_); SLACK_BOT_TOKEN_WEEKLY
-    // this.stockHelperService.setSlackToken('SLACK_USER_TRADING_TOKEN')
-    // await this.createDailyChannels(this.stockHelperService.US_WK_); 
+    // this.sH_Service.setSlackToken('SLACK_BOT_TOKEN_WEEKLY');
+    // await this.createDailyChannels(this.sH_Service.US_WK_); SLACK_BOT_TOKEN_WEEKLY
+    // this.sH_Service.setSlackToken('SLACK_USER_TRADING_TOKEN')
+    // await this.createDailyChannels(this.sH_Service.US_WK_); 
 
     // await this.dailyCleanup()
     // await this.postDeleteBtn()
@@ -176,14 +176,14 @@ export class SlackService implements OnModuleInit {
   }
   async postDeleteBtn() {
     const channels = [
-      ...Object.values(this.stockHelperService.US_DAILY_), 
-      ...Object.values(this.stockHelperService.US_4H_), 
-      ...Object.values(this.stockHelperService.VN_SL_), 
-      ...Object.values(this.stockHelperService.Z_US_SL_), 
-      ...Object.values(this.stockHelperService.AI_SL), 
-      ...Object.values(this.stockHelperService.INTRA_30M_SL_), 
-      ...Object.values(this.stockHelperService.BULL_BEAR_SL_), 
-      ...Object.values(this.stockHelperService.BTN_SL)
+      ...Object.values(this.sH_Service.US_DAILY_), 
+      ...Object.values(this.sH_Service.US_4H_), 
+      ...Object.values(this.sH_Service.VN_SL_), 
+      ...Object.values(this.sH_Service.Z_US_SL_), 
+      ...Object.values(this.sH_Service.AI_SL), 
+      ...Object.values(this.sH_Service.INTRA_30M_SL_), 
+      ...Object.values(this.sH_Service.BULL_BEAR_SL_), 
+      ...Object.values(this.sH_Service.BTN_SL)
     ];
     await channels.forEach(async channel=>{
         await this.webhooksService.fePostToHold2(
@@ -195,17 +195,17 @@ export class SlackService implements OnModuleInit {
     })
   }
   async dailyCleanup() {    
-    await this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.US_DAILY_))
-    await this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.US_4H_))
-    await this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.VN_SL_))
-    await this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.Z_US_SL_))
-    await this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.AI_SL))
-    await this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.BTN_SL))
-    await this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.INTRA_30M_SL_))
-    await this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.BULL_BEAR_SL_))
+    await this.webhooksService.deleteSLChannel(Object.values(this.sH_Service.US_DAILY_))
+    await this.webhooksService.deleteSLChannel(Object.values(this.sH_Service.US_4H_))
+    await this.webhooksService.deleteSLChannel(Object.values(this.sH_Service.VN_SL_))
+    await this.webhooksService.deleteSLChannel(Object.values(this.sH_Service.Z_US_SL_))
+    await this.webhooksService.deleteSLChannel(Object.values(this.sH_Service.AI_SL))
+    await this.webhooksService.deleteSLChannel(Object.values(this.sH_Service.BTN_SL))
+    await this.webhooksService.deleteSLChannel(Object.values(this.sH_Service.INTRA_30M_SL_))
+    await this.webhooksService.deleteSLChannel(Object.values(this.sH_Service.BULL_BEAR_SL_))
   }
   async getBotOrUserId(token='SLACK_BOT_TOKEN'){
-    this.stockHelperService.slackTokenKey = token;
+    this.sH_Service.slackTokenKey = token;
     const auth = await this.client.auth.test();
     console.log(auth.user_id); // Bot's user ID
     return auth.user_id;

@@ -40,7 +40,7 @@ export class WebhooksService implements OnModuleInit{
   private rsiChannels: string[];
   constructor(
     private readonly configService: ConfigService,
-    private readonly stockHelperService: StockHelperService,
+    private readonly sH_Service: StockHelperService,
     private readonly aiToolService: AiToolService,
     private readonly sirvService: SirvService,
     private readonly stockService: StockService,
@@ -64,7 +64,7 @@ export class WebhooksService implements OnModuleInit{
 
   async sendSlackNotification(message: string, other = '1day') {
     const BASE_URL =
-      other === '1day' ? this.stockHelperService.Z_US_SL_.OR : other === '4hour' ? this.stockHelperService.Z_US_SL_.OR4 :other;
+      other === '1day' ? this.sH_Service.Z_US_SL_.OR : other === '4hour' ? this.sH_Service.Z_US_SL_.OR4 :other;
     const nexMsg = `================================${message.replace(
       /\*\*/g,
       '*',
@@ -114,17 +114,17 @@ export class WebhooksService implements OnModuleInit{
     const botdt = botname.split(' ').slice(1).join(' ');
     const color = message?.includes('SELL') ? 0xff0000 : 0x00ff00; // Red for SELL, Green otherwise
     /**
-    **[sMk000-1m](https://stockmarkets000.web.app//price-log/${ticker})** 
-     | **[sMk000-5m](https://stockmarkets000.web.app//price-log/${ticker}?daysRange=5)** 
-    | **[sMk000-15m](https://stockmarkets000.web.app//price-log/${ticker}?daysRange=15)** 
-    | **[sMk000-30m](https://stockmarkets000.web.app//price-log/${ticker}?daysRange=30)** \n
+    **[sMk000-1m](${this.sH_Service.stockMk000}//price-log/${ticker})** 
+     | **[sMk000-5m](${this.sH_Service.stockMk000}//price-log/${ticker}?daysRange=5)** 
+    | **[sMk000-15m](${this.sH_Service.stockMk000}//price-log/${ticker}?daysRange=15)** 
+    | **[sMk000-30m](${this.sH_Service.stockMk000}//price-log/${ticker}?daysRange=30)** \n
      | **[stock-chart-abc.web.app](https://stock-chart-abc.web.app/?stockTicker=${ticker})** 
      */
-    // const origin = `**[4200-on1m](https://stockmarkets000.web.app/price-log/${ticker})** | **[4200-5m](https://stockmarkets000.web.app/price-log/${ticker}?daysRange=5)** | **[4200-15m](https://stockmarkets000.web.app/price-log/${ticker}?daysRange=15)** \n **[3001-PO-day](https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day)** | **[3001-FM-day](https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[3001-fm-1m](https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1min)** | **[3001-fm-5m](https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=5min)** | **[3001-fm-15m](https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=15min)** \n **[PB-view](https://stock-chart-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`;
-    // const origin = `**[4200-on1m](https://stockmarkets000.web.app/price-log/${ticker})** | **[4200-5m](https://stockmarkets000.web.app/price-log/${ticker}?daysRange=5)** | **[4200-15m](https://stockmarkets000.web.app/price-log/${ticker}?daysRange=15)** \n **[3001-PO-day](https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day)** | \n **[PB-view](https://stock-chart-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`;
-    // const origin = `**[4200-on1m](http://localhost:4200/price-log/${ticker})** | **[4200-5m](http://localhost:4200/price-log/${ticker}?daysRange=5)** | **[4200-15m](http://localhost:4200/price-log/${ticker}?daysRange=15)** \n **[3001-PO-day](http://localhost:3001/?stockTicker=${ticker}&endpoint=po&timeframe=1day)** | **[3001-FM-day](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[3001-fm-1m](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=1min)** | **[3001-fm-5m](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=5min)** | **[3001-fm-15m](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=15min)** \n **[PB-view](https://stock-chart-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`;
+    // const origin = `**[4200-on1m](${this.sH_Service.stockMk000}/price-log/${ticker})** | **[4200-5m](${this.sH_Service.stockMk000}/price-log/${ticker}?daysRange=5)** | **[4200-15m](${this.sH_Service.stockMk000}/price-log/${ticker}?daysRange=15)** \n **[3001-PO-day](https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day)** | **[3001-FM-day](https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[3001-fm-1m](https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1min)** | **[3001-fm-5m](https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=5min)** | **[3001-fm-15m](https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=15min)** \n **[PB-view](https://stock-chart-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`;
+    // const origin = `**[4200-on1m](${this.sH_Service.stockMk000}/price-log/${ticker})** | **[4200-5m](${this.sH_Service.stockMk000}/price-log/${ticker}?daysRange=5)** | **[4200-15m](${this.sH_Service.stockMk000}/price-log/${ticker}?daysRange=15)** \n **[3001-PO-day](https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day)** | \n **[PB-view](https://stock-chart-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`;
+    // const origin = `**[4200-on1m](${this.sH_Service.local4200}/price-log/${ticker})** | **[4200-5m](${this.sH_Service.local4200}/price-log/${ticker}?daysRange=5)** | **[4200-15m](${this.sH_Service.local4200}/price-log/${ticker}?daysRange=15)** \n **[3001-PO-day](http://localhost:3001/?stockTicker=${ticker}&endpoint=po&timeframe=1day)** | **[3001-FM-day](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[3001-fm-1m](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=1min)** | **[3001-fm-5m](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=5min)** | **[3001-fm-15m](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=15min)** \n **[PB-view](https://stock-chart-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day)** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`;
     const timeframeScore = timeframeScoreMap[timeframe] || 500;
-    const origin = `**[4200-daily](http://localhost:4200/price-log/${ticker}?daysRange=${timeframeScore})** | **[prd-daily](https://stockmarkets000.web.app/price-log/${ticker}?daysRange=${timeframeScore})** \n **[3001-fm-day](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=${timeframe})** | **[prod-fm-day](https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=${timeframe})**  \n **[PB-view](https://stock-chart-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=${timeframe})** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`;
+    const origin = `**[4200-daily](${this.sH_Service.local4200}/price-log/${ticker}?daysRange=${timeframeScore})** | **[prd-daily](${this.sH_Service.stockMk000}/price-log/${ticker}?daysRange=${timeframeScore})** \n **[3001-fm-day](http://localhost:3001/?stockTicker=${ticker}&endpoint=fm&timeframe=${timeframe})** | **[prod-fm-day](https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=${timeframe})**  \n **[PB-view](https://stock-chart-abc.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=${timeframe})** | **[TradingView](https://www.tradingview.com/chart/?symbol=${ticker})**`;
 
     let gptres;
     if (extra) {
@@ -136,7 +136,7 @@ export class WebhooksService implements OnModuleInit{
 
     // if (!file && !message?.includes('SELLCR')) {
       if (!file) {
-      setmess = `${setmess} | **[C.MISS.4200](http://localhost:4200/capture-target/${webhookCl}/${ticker})** | **[C.MISS.PROD](https://stockmarkets000.web.app/capture-target/${webhookCl}/${ticker})**`;
+      setmess = `${setmess} | **[C.MISS.4200](${this.sH_Service.local4200}/capture-target/${webhookCl}/${ticker})** | **[C.MISS.PROD](${this.sH_Service.stockMk000}/capture-target/${webhookCl}/${ticker})**`;
     }
     if (botdt.includes('RSIENDBOT')) {
       const SERVER_LOCATION = process.env.SERVER_LOCATION || process.env.PORT ||'unknow';
@@ -177,7 +177,7 @@ export class WebhooksService implements OnModuleInit{
         .setColor(color)
         .addFields({ name: botdt, value: setmess, inline: false })
         .addFields(...this.createEmbedFields(lastDataJson, selectedFields));
-      // .addFields({ name: 'URL', value: `https://stockmarkets000.web.app/price-prediction/${ticker}`, inline: true });
+      // .addFields({ name: 'URL', value: `${this.sH_Service.stockMk000}/price-prediction/${ticker}`, inline: true });
       options = {
         username: botdt,
         avatarURL: selectedAvatar,
@@ -229,16 +229,16 @@ export class WebhooksService implements OnModuleInit{
     //     ...options,
     //   });
     // }
-    const ProductImageUrl = file ? null: `https://stockmarkets000.web.app/capture-target/${webhookCl}/${ticker.toUpperCase()}`;
-    const channelWeb =this.stockHelperService.ALL_IN_ONE ? this.stockHelperService.DC_SL_MT.ALL_IN_ONE: this.stockHelperService.DC_SL_MT[webhookCl] || '1yHUrbPtNS0yygBxsezD'
-    if(ProductImageUrl && !webhookCl.includes('ERORR_CALL') && !botdt.includes('RSIENDBOT') && this.stockHelperService.PostWebSlack){
+    const ProductImageUrl = file ? null: `${this.sH_Service.stockMk000}/capture-target/${webhookCl}/${ticker.toUpperCase()}`;
+    const channelWeb =this.sH_Service.ALL_IN_ONE ? this.sH_Service.DC_SL_MT.ALL_IN_ONE: this.sH_Service.DC_SL_MT[webhookCl] || '1yHUrbPtNS0yygBxsezD'
+    if(ProductImageUrl && !webhookCl.includes('ERORR_CALL') && !botdt.includes('RSIENDBOT') && this.sH_Service.PostWebSlack){
       // webhookCl+'\n'+
-      const discordmsg =`${webhookCl}\n *${message}*\n <https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}|Discord-o6l-msg>|| <${ProductImageUrl}|prodUrl> || <http://localhost:4200/price-log/${ticker}?daysRange=${timeframeScore}|local-target> || <https://stockmarkets000.web.app/price-log/${ticker}?daysRange=${timeframeScore}|prod-target>`
+      const discordmsg =`${webhookCl}\n *${message}*\n <https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}|Discord-o6l-msg>|| <${ProductImageUrl}|prodUrl> || <${this.sH_Service.local4200}/price-log/${ticker}?daysRange=${timeframeScore}|local-target> || <${this.sH_Service.stockMk000}/price-log/${ticker}?daysRange=${timeframeScore}|prod-target>`
       await this.messagesService.sendMessage("workspace-1",channelWeb, "bot-1", ticker,discordmsg)
     }
-    // else if(!webhookCl.includes('ERORR_CALL') && !botdt.includes('RSIENDBOT') && this.stockHelperService.PostWebSlack){
+    // else if(!webhookCl.includes('ERORR_CALL') && !botdt.includes('RSIENDBOT') && this.sH_Service.PostWebSlack){
     //   const imageUlr = sentMessage?.embeds?.[0]?.image?.url || (sentMessage?.attachments??sentMessage?.attachments?.first()?.url);
-    //   const discordmsg =webhookCl+'\n'+ message+  `\n <https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}|Discord-o6l-msg>|| <${imageUlr}|discordImage>  || <http://localhost:4200/price-log/${ticker}?daysRange=${timeframeScore}|${ticker}-local-target> || <https://stockmarkets000.web.app/price-log/${ticker}?daysRange=${timeframeScore}|${ticker}-prod-target>`
+    //   const discordmsg =webhookCl+'\n'+ message+  `\n <https://discord.com/channels/1306113720979689523/${sentMessage?.channel_id}/${sentMessage?.id}|Discord-o6l-msg>|| <${imageUlr}|discordImage>  || <${this.sH_Service.local4200}/price-log/${ticker}?daysRange=${timeframeScore}|${ticker}-local-target> || <${this.sH_Service.stockMk000}/price-log/${ticker}?daysRange=${timeframeScore}|${ticker}-prod-target>`
     //   await this.messagesService.sendMessage("workspace-1",channelWeb, "bot-1", ticker,discordmsg)
     // }
     return { msg: 'post to discord success', ...sentMessage, ProductImageUrl};
@@ -426,7 +426,7 @@ export class WebhooksService implements OnModuleInit{
     }
     const timeframe = tickerasall.split('-')[1];
     const pathSym = `${channel}/${ticker}`.toUpperCase();
-    if (this.configService.get('NODE_ENV') === 'production' && this.stockHelperService.railwayBoolen) {
+    if (this.configService.get('NODE_ENV') === 'production' && this.sH_Service.railwayBoolen) {
       // // turn off on local
       await this.FireBaseApi('put', `stock-data/${pathSym}.json`, slicedData);
       return null;
@@ -542,7 +542,7 @@ export class WebhooksService implements OnModuleInit{
         slicedData,
       );
       // load the webpage again next time
-      const url = `https://stockmarkets000.web.app/capture-target/${path}`;
+      const url = `${this.sH_Service.stockMk000}/capture-target/${path}`;
       // Load the website and render for 5 seconds
       await this.loadWebsiteFor5Seconds(url);
       console.log('Storing chart data for later viewing at:', url);
@@ -676,16 +676,16 @@ export class WebhooksService implements OnModuleInit{
       text: ticker_on_timeframe.split('-')[0],
       ts: lastdata.date
     }
-    const index = this.stockHelperService.lastPosted.findIndex(
+    const index = this.sH_Service.lastPosted.findIndex(
       x => x.text === lastSymbolPosted.text
     );
     if (index >= 0) {
-      this.stockHelperService.lastPosted[index] = lastSymbolPosted;
+      this.sH_Service.lastPosted[index] = lastSymbolPosted;
     } else {
-      this.stockHelperService.lastPosted.push(lastSymbolPosted);
+      this.sH_Service.lastPosted.push(lastSymbolPosted);
     }
 
-    if(this.stockHelperService.skipPostDiscord){
+    if(this.sH_Service.skipPostDiscord){
       const fileBuffer = await this.captureChart(
         data,
         ticker_on_timeframe,
@@ -735,7 +735,7 @@ export class WebhooksService implements OnModuleInit{
     } else {
       console.log(ticker, `❌ Outside  ±${time} minutes of EST time: `, isWithinRange,date);
       // await this.sendDiscord(
-      //   `ERROR \n url: http://localhost:4200/price-log/${ticker}?daysRange=30`,
+      //   `ERROR \n url: ${this.sH_Service.local4200}/price-log/${ticker}?daysRange=30`,
       //   `RSIENDBOT ${ticker} at ${date}`,
       //   'Nono',
       //   'ERORR_CALL',
@@ -753,7 +753,7 @@ export class WebhooksService implements OnModuleInit{
     } else {
       console.log(ticker, `❌ Outside  ±${time} minutes of EST time: `, isWithinRange,date);
       // await this.sendDiscord(
-      //   `ERROR \n url: http://localhost:4200/price-log/${ticker}?daysRange=30`,
+      //   `ERROR \n url: ${this.sH_Service.local4200}/price-log/${ticker}?daysRange=30`,
       //   `RSIENDBOT ${ticker} at ${date}`,
       //   'Nono',
       //   'ERORR_CALL',
@@ -771,7 +771,7 @@ export class WebhooksService implements OnModuleInit{
     B_Channel,
     HT_Channel,
   ) {
-    const Over200NUpBuy = await this.stockHelperService.Over200NUpBuy(
+    const Over200NUpBuy = await this.sH_Service.Over200NUpBuy(
       lastdata,
       Secondlastdata,
     );
@@ -785,7 +785,7 @@ export class WebhooksService implements OnModuleInit{
       );
       return;
     }
-    const macdCrossAB_BL0 = await this.stockHelperService.macdCrossAB_BL0(
+    const macdCrossAB_BL0 = await this.sH_Service.macdCrossAB_BL0(
       lastdata,
       Secondlastdata,
     );
@@ -800,7 +800,7 @@ export class WebhooksService implements OnModuleInit{
       return;
     }
 
-    const priceAbMA200BUY = await this.stockHelperService.priceAbMA200BUY(
+    const priceAbMA200BUY = await this.sH_Service.priceAbMA200BUY(
       lastdata,
       Secondlastdata,
     );
@@ -816,7 +816,7 @@ export class WebhooksService implements OnModuleInit{
       return;
     }
 
-    const priceBlMA200SELL = await this.stockHelperService.priceBlMA200SELL(
+    const priceBlMA200SELL = await this.sH_Service.priceBlMA200SELL(
       lastdata,
       Secondlastdata,
     );
@@ -831,7 +831,7 @@ export class WebhooksService implements OnModuleInit{
       return;
     }
 
-    const macdCrossAB = await this.stockHelperService.macdCrossAB(
+    const macdCrossAB = await this.sH_Service.macdCrossAB(
       lastdata,
       Secondlastdata,
     );
@@ -845,7 +845,7 @@ export class WebhooksService implements OnModuleInit{
       );
       return;
     }
-    const earlyBuyInRSI = await this.stockHelperService.earlyBuyInRSI(
+    const earlyBuyInRSI = await this.sH_Service.earlyBuyInRSI(
       lastdata,
       Secondlastdata,
     );
@@ -859,7 +859,7 @@ export class WebhooksService implements OnModuleInit{
       );
       return;
     }
-    const macdCrossBL = await this.stockHelperService.macdCrossBL(
+    const macdCrossBL = await this.sH_Service.macdCrossBL(
       lastdata,
       Secondlastdata,
     );
@@ -873,7 +873,7 @@ export class WebhooksService implements OnModuleInit{
       );
       return;
     }
-    const earlySellInRSI = await this.stockHelperService.earlySellInRSI(
+    const earlySellInRSI = await this.sH_Service.earlySellInRSI(
       lastdata,
       Secondlastdata,
     );
@@ -888,7 +888,7 @@ export class WebhooksService implements OnModuleInit{
       return;
     }
 
-    const Under200NDownSell = await this.stockHelperService.Under200NDownSell(
+    const Under200NDownSell = await this.sH_Service.Under200NDownSell(
       lastdata,
       Secondlastdata,
     );
@@ -925,7 +925,7 @@ export class WebhooksService implements OnModuleInit{
     HT_Channel,
   ) {
     const BlMA200_MA20_MA50_MA100_BUY =
-      await this.stockHelperService.BlMA200_MA20_MA50_MA100_BUY(
+      await this.sH_Service.BlMA200_MA20_MA50_MA100_BUY(
         lastdata,
         Secondlastdata,
       );
@@ -940,7 +940,7 @@ export class WebhooksService implements OnModuleInit{
       return;
     }
     const ABMA200_macdCrossAB_BUY =
-      await this.stockHelperService.ABMA200_macdCrossAB_BUY(
+      await this.sH_Service.ABMA200_macdCrossAB_BUY(
         lastdata,
         Secondlastdata,
       );
@@ -956,7 +956,7 @@ export class WebhooksService implements OnModuleInit{
     }
 
     const BlMA200_MA20_MA50_MA100_SELL =
-      await this.stockHelperService.BlMA200_MA20_MA50_MA100_SELL(
+      await this.sH_Service.BlMA200_MA20_MA50_MA100_SELL(
         lastdata,
         Secondlastdata,
       );
@@ -972,7 +972,7 @@ export class WebhooksService implements OnModuleInit{
     }
 
     const ABMA200_macdCrossBL_SELL =
-      await this.stockHelperService.ABMA200_macdCrossBL_SELL(
+      await this.sH_Service.ABMA200_macdCrossBL_SELL(
         lastdata,
         Secondlastdata,
       );
@@ -997,7 +997,7 @@ export class WebhooksService implements OnModuleInit{
     B_Channel,
     HT_Channel,
   ) {
-    const macdCrossAB_BL0 = await this.stockHelperService.macdCrossAB_BL0(
+    const macdCrossAB_BL0 = await this.sH_Service.macdCrossAB_BL0(
       lastdata,
       Secondlastdata,
     );
@@ -1011,7 +1011,7 @@ export class WebhooksService implements OnModuleInit{
       );
       return;
     }
-    const macdCrossAB = await this.stockHelperService.macdCrossAB(
+    const macdCrossAB = await this.sH_Service.macdCrossAB(
       lastdata,
       Secondlastdata,
     );
@@ -1036,7 +1036,7 @@ export class WebhooksService implements OnModuleInit{
     B_Channel,
     HT_Channel,
   ) {
-    const macdCrossAB_BL0 = await this.stockHelperService.macdCrossAB_BL0(
+    const macdCrossAB_BL0 = await this.sH_Service.macdCrossAB_BL0(
       lastdata,
       Secondlastdata,
     );
@@ -1050,7 +1050,7 @@ export class WebhooksService implements OnModuleInit{
       );
       return;
     }
-    const earlySellInRSI = await this.stockHelperService.earlySellInRSI(
+    const earlySellInRSI = await this.sH_Service.earlySellInRSI(
       lastdata,
       Secondlastdata,
     );
@@ -1077,7 +1077,7 @@ export class WebhooksService implements OnModuleInit{
   ) {
     const lastAb200 = lastdata.MA200 > lastdata.close;
     if (lastAb200) return;
-    const RSI_28 = await this.stockHelperService.RSI_28(
+    const RSI_28 = await this.sH_Service.RSI_28(
       lastdata,
       Secondlastdata,
     );
@@ -1091,7 +1091,7 @@ export class WebhooksService implements OnModuleInit{
       );
       return;
     }
-    const BlMA200_MA50_BUY = await this.stockHelperService.BlMA200_MA50_BUY(
+    const BlMA200_MA50_BUY = await this.sH_Service.BlMA200_MA50_BUY(
       lastdata,
       Secondlastdata,
     );
@@ -1106,7 +1106,7 @@ export class WebhooksService implements OnModuleInit{
       return;
     }
 
-    const Over200NUpBuy = await this.stockHelperService.Over200NUpBuy(
+    const Over200NUpBuy = await this.sH_Service.Over200NUpBuy(
       lastdata,
       Secondlastdata,
     );
@@ -1121,7 +1121,7 @@ export class WebhooksService implements OnModuleInit{
       return;
     }
 
-    const priceAbMA200BUY = await this.stockHelperService.priceAbMA200BUY(
+    const priceAbMA200BUY = await this.sH_Service.priceAbMA200BUY(
       lastdata,
       Secondlastdata,
     );
@@ -1136,7 +1136,7 @@ export class WebhooksService implements OnModuleInit{
       return;
     }
 
-    const macdCrossAB_BL0 = await this.stockHelperService.priceAbMA200BUY(
+    const macdCrossAB_BL0 = await this.sH_Service.priceAbMA200BUY(
       lastdata,
       Secondlastdata,
     );
@@ -1164,7 +1164,7 @@ export class WebhooksService implements OnModuleInit{
     const lastpriceToMA200 = lastdata.MA200 < lastdata.close;
     if (lastpriceToMA200) {
       // price above MA200 buy
-      const Over200NUpBuy = await this.stockHelperService.Over200NUpBuy(
+      const Over200NUpBuy = await this.sH_Service.Over200NUpBuy(
         lastdata,
         Secondlastdata,
       );
@@ -1178,7 +1178,7 @@ export class WebhooksService implements OnModuleInit{
         );
         return;
       }
-      const priceAbMA200BUY = await this.stockHelperService.priceAbMA200BUY(
+      const priceAbMA200BUY = await this.sH_Service.priceAbMA200BUY(
         lastdata,
         Secondlastdata,
       );
@@ -1192,7 +1192,7 @@ export class WebhooksService implements OnModuleInit{
         );
         return;
       }
-      const macdCrossAB = await this.stockHelperService.macdCrossAB(
+      const macdCrossAB = await this.sH_Service.macdCrossAB(
         lastdata,
         Secondlastdata,
       );
@@ -1208,7 +1208,7 @@ export class WebhooksService implements OnModuleInit{
       }
     } else {
       // price below MA200 HT channel
-      const RSI_28 = await this.stockHelperService.RSI_28(
+      const RSI_28 = await this.sH_Service.RSI_28(
         lastdata,
         Secondlastdata,
       );
@@ -1222,7 +1222,7 @@ export class WebhooksService implements OnModuleInit{
         );
         return;
       }
-      const BlMA200_MA50_BUY = await this.stockHelperService.BlMA200_MA50_BUY(
+      const BlMA200_MA50_BUY = await this.sH_Service.BlMA200_MA50_BUY(
         lastdata,
         Secondlastdata,
       );
@@ -1258,7 +1258,7 @@ export class WebhooksService implements OnModuleInit{
     B_Channel,
     HT_Channel,
   ) {
-    const StochRSIBuy_HOLD = await this.stockHelperService.StochRSIBuy_HOLD(
+    const StochRSIBuy_HOLD = await this.sH_Service.StochRSIBuy_HOLD(
       lastdata,
       Secondlastdata,
     );
@@ -1279,7 +1279,7 @@ export class WebhooksService implements OnModuleInit{
 
       fs.appendFileSync(
         successPathtxt,
-        ` | https://stockmarkets000.web.app/price-log/${ticker}?daysRange=500 |\n`,
+        ` | ${this.sH_Service.stockMk000}/price-log/${ticker}?daysRange=500 |\n`,
         'utf8',
       );
       fs.appendFileSync(
@@ -1305,7 +1305,7 @@ export class WebhooksService implements OnModuleInit{
       const successPathfeature = `${dir}/upside-AB80.feature`;
       fs.appendFileSync(
         successPathtxt,
-        ` | https://stockmarkets000.web.app/price-log/${ticker}?daysRange=500 |\n`,
+        ` | ${this.sH_Service.stockMk000}/price-log/${ticker}?daysRange=500 |\n`,
         'utf8',
       );
       fs.appendFileSync(
@@ -1330,7 +1330,7 @@ export class WebhooksService implements OnModuleInit{
     const successPathfeature = `${dir}/down-Fails.feature`;
     fs.appendFileSync(
       successPathtxt,
-      ` | https://stockmarkets000.web.app/price-log/${ticker}?daysRange=500 |\n`,
+      ` | ${this.sH_Service.stockMk000}/price-log/${ticker}?daysRange=500 |\n`,
       'utf8',
     );
     fs.appendFileSync(
@@ -1351,7 +1351,7 @@ export class WebhooksService implements OnModuleInit{
     B_Channel,
     HT_Channel,
   ) {
-    const StochRSICross = await this.stockHelperService.StochRSICross(
+    const StochRSICross = await this.sH_Service.StochRSICross(
       lastdata,
       Secondlastdata,
     );
@@ -1400,7 +1400,7 @@ export class WebhooksService implements OnModuleInit{
           timeframe,
           [ticker],
           lastdata,
-          this.stockHelperService.Z_US_SL_['2h_CROSS'],
+          this.sH_Service.Z_US_SL_['2h_CROSS'],
           sp500+'aboveAll',
         );
       }
@@ -1415,14 +1415,14 @@ export class WebhooksService implements OnModuleInit{
     HT_Channel,
   ) {
     const BuyOnly_StochRSICrossAB200 =
-      await this.stockHelperService.BuyOnly_StochRSICrossAB200(
+      await this.sH_Service.BuyOnly_StochRSICrossAB200(
         lastdata,
         Secondlastdata,
       );
     const MACDPositive = lastdata.divergence > 0;
     const sp5001 = DataSymbols.stock_500_symbols.includes(ticker) ? '(SP500)-' : ''
-    const in3candles = this.stockHelperService.ab50_bl200_3Candles.includes(ticker)?'(3C_4H_BL200)-':this.stockHelperService.ab50_ab200_3Candles.includes(ticker)?'(3C_4H_AB200)-':'';
-    const allIn4hBl200 = this.stockHelperService.above50andBelow200.includes(ticker)?'(4H_BL200)-':'';
+    const in3candles = this.sH_Service.ab50_bl200_3Candles.includes(ticker)?'(3C_4H_BL200)-':this.sH_Service.ab50_ab200_3Candles.includes(ticker)?'(3C_4H_AB200)-':'';
+    const allIn4hBl200 = this.sH_Service.above50andBelow200.includes(ticker)?'(4H_BL200)-':'';
     const sp500 = sp5001 + in3candles + allIn4hBl200;
     // if(!timeframe.includes('m') && BuyOnly_StochRSICrossAB200.PriceCrMA50) {
     // if (
@@ -1436,7 +1436,7 @@ export class WebhooksService implements OnModuleInit{
     //     }SBUY--PriceCrMA50-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
     //     `${ticker}-ON-${timeframe}-CrMA50-${lastdata?.close}`,
     //     lastdata,
-    //     DataSymbols.watchlist.includes(ticker)?'WATCHLIST': this.stockHelperService.ab50_3Candles_ALL.includes(ticker)?'US_EARLY_15MIN': HT_Channel,
+    //     DataSymbols.watchlist.includes(ticker)?'WATCHLIST': this.sH_Service.ab50_3Candles_ALL.includes(ticker)?'US_EARLY_15MIN': HT_Channel,
     //     data,
     //   );
     //   return BuyOnly_StochRSICrossAB200;
@@ -1452,7 +1452,7 @@ export class WebhooksService implements OnModuleInit{
     //     }(SBUY--PriceCrMA100-MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
     //     `${ticker}-ON-${timeframe}-CrMA100-${lastdata?.close}`,
     //     lastdata,
-    //     DataSymbols.watchlist.includes(ticker)?'WATCHLIST':this.stockHelperService.ab50_3Candles_ALL.includes(ticker)?'US_EARLY_15MIN':B_Channel,
+    //     DataSymbols.watchlist.includes(ticker)?'WATCHLIST':this.sH_Service.ab50_3Candles_ALL.includes(ticker)?'US_EARLY_15MIN':B_Channel,
     //     data,
     //   );
     //   return BuyOnly_StochRSICrossAB200;
@@ -1468,7 +1468,7 @@ export class WebhooksService implements OnModuleInit{
     //     }SBUY-PriceCrMA200-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
     //     `${ticker}-ON-${timeframe}`,
     //     lastdata,
-    //     DataSymbols.watchlist.includes(ticker)?'WATCHLIST':this.stockHelperService.ab50_3Candles_ALL.includes(ticker)?'US_EARLY_15MIN':'US_30M_HT',
+    //     DataSymbols.watchlist.includes(ticker)?'WATCHLIST':this.sH_Service.ab50_3Candles_ALL.includes(ticker)?'US_EARLY_15MIN':'US_30M_HT',
     //     data,
     //   );
     //   return BuyOnly_StochRSICrossAB200;
@@ -1597,12 +1597,12 @@ export class WebhooksService implements OnModuleInit{
     const belowMA50Fifth = fifthLastData.close < fifthLastData.MA100;
 
     const blowMA200 = lastData.close < lastData.MA200;
-    // const basePath = this.stockHelperService.aboveMA50api
+    // const basePath = this.sH_Service.aboveMA50api
     const basePath = blowMA200
-    ? this.stockHelperService.aboveMA50api
-    : `${this.stockHelperService.aboveMA50api}-aboveMA200`;
+    ? this.sH_Service.aboveMA50api
+    : `${this.sH_Service.aboveMA50api}-aboveMA200`;
 
-    const PriceCrMA50 = await this.stockHelperService.priceAbMABUY(
+    const PriceCrMA50 = await this.sH_Service.priceAbMABUY(
       lastData,
       secondLastData,
       'MA50',
@@ -1638,7 +1638,7 @@ export class WebhooksService implements OnModuleInit{
             timeframe,
             [ticker],
             lastData,
-            this.stockHelperService.Z_US_SL_.J2DAY,
+            this.sH_Service.Z_US_SL_.J2DAY,
             'ABOVE_50_2C',
           );
         }
@@ -1657,12 +1657,12 @@ export class WebhooksService implements OnModuleInit{
             timeframe,
             [ticker],
             lastData,
-            this.stockHelperService.Z_US_SL_.J3DAY,
+            this.sH_Service.Z_US_SL_.J3DAY,
             'PriceCrMA50_3C',
           );
         }else if(timeframe.includes('4hour')){
           const aboveOrBellow = lastData?.MA200 < lastData?.close ?'above':'bellow';
-          const slackWebhook = lastData?.MA200 < lastData?.close ? this.stockHelperService.Z_US_SL_['4h_3C_AB'] : this.stockHelperService.Z_US_SL_['4h_3C_BL'];
+          const slackWebhook = lastData?.MA200 < lastData?.close ? this.sH_Service.Z_US_SL_['4h_3C_AB'] : this.sH_Service.Z_US_SL_['4h_3C_BL'];
           const discordChannel = lastData?.MA200 < lastData?.close ? 'TSLA' : 'SMCI';
           await this.sendSlackNotificationVN(
             timeframe,
@@ -1713,9 +1713,9 @@ export class WebhooksService implements OnModuleInit{
       this.listsymbolB = [...(this.listsymbolB ?? []), ticker];
       await this.FireBaseApi("put", `stock-related/${basePath}/all3count/${timeframe}/${ticker}.json`, {lastData: lastData, secondLastData: secondLastData})
       if (timeframe === '1day') {
-        (this.stockHelperService.ListMA50On1day ??= []).push(ticker);
+        (this.sH_Service.ListMA50On1day ??= []).push(ticker);
       } else if (timeframe.includes('4h')) {
-        (this.stockHelperService.ListMA50On4hour ??= []).push(ticker);
+        (this.sH_Service.ListMA50On4hour ??= []).push(ticker);
       }
       if (this.listsymbolB.length > this.maxListLength) {
         await this.sendDiscordNotification(
@@ -1746,16 +1746,16 @@ export class WebhooksService implements OnModuleInit{
     const lastData = data[data.length - getdataAt];
     const secondLastData = data[data.length - getdataAt-1];
     const stockRSILAUP = lastData.StochRSI_K - lastData.StochRSI_D > 0;
-    const macdCross = await this.stockHelperService.macdCross(
+    const macdCross = await this.sH_Service.macdCross(
       lastData,
       secondLastData,
     );
     const blowMA200 = lastData.close < lastData.MA200;
     const  downtrend = lastData.divergence < 0 
-    const basePath = blowMA200 ? this.stockHelperService.aboveMA50api : `${this.stockHelperService.aboveMA50api}-aboveMA200`;
+    const basePath = blowMA200 ? this.sH_Service.aboveMA50api : `${this.sH_Service.aboveMA50api}-aboveMA200`;
     const timeframeKey = timeframe === '1day' ? 'MA_AB_5_20' :timeframe === '4hour'  ? 'MA_AB_5_200' : timeframe === '2hour' ? 'MA_AB_20_50' : 'MA_AB_100_200';
-    const sltimeframeKey = timeframe === '1day' ? this.stockHelperService.US_DAILY_.MACDCR_BL :timeframe === '4hour'  ? this.stockHelperService.US_4H_.MACDCR_BL : this.stockHelperService.Z_US_SL_['2h_CROSS'];
-    const lastDataOnTime = await this.stockHelperService.TurnDateToUnderFM(lastData.date);
+    const sltimeframeKey = timeframe === '1day' ? this.sH_Service.US_DAILY_.MACDCR_BL :timeframe === '4hour'  ? this.sH_Service.US_4H_.MACDCR_BL : this.sH_Service.Z_US_SL_['2h_CROSS'];
+    const lastDataOnTime = await this.sH_Service.TurnDateToUnderFM(lastData.date);
     if (stockRSILAUP && macdCross.AB) {
       await this.FireBaseApi("put", `stockRSILAUP/macdCross_AB/${basePath}/${timeframe}/${ticker}.json`, {lastData: lastData})
       // await this.FireBaseApi("put", `stockRSILAUP/macdCross_AB/All/${timeframe}/${ticker}.json`, {lastData: lastData})
@@ -1771,12 +1771,12 @@ export class WebhooksService implements OnModuleInit{
         timeframe,
         [ticker],
         lastData,
-        DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL_.WATCH:sltimeframeKey,
+        DataSymbols.watchlist.includes(ticker)?this.sH_Service.INTRA_30M_SL_.WATCH:sltimeframeKey,
         'macdCross_AB'
       );
       return;
     }
-    if (stockRSILAUP && macdCross.BL && this.stockHelperService.HoldingList.includes(ticker)) {
+    if (stockRSILAUP && macdCross.BL && this.sH_Service.HoldingList.includes(ticker)) {
       await this.sendDiscord(
         `SELL-macdCross_AB-${timeframe}-${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
         `${ticker}-ON-${timeframe}`,
@@ -1788,7 +1788,7 @@ export class WebhooksService implements OnModuleInit{
         timeframe,
         [ticker],
         lastData,
-        DataSymbols.watchlist.includes(ticker)?this.stockHelperService.Z_US_SL_.HOLDING:sltimeframeKey,
+        DataSymbols.watchlist.includes(ticker)?this.sH_Service.Z_US_SL_.HOLDING:sltimeframeKey,
         'macdCross_AB'
       );
       return;
@@ -1830,12 +1830,12 @@ export class WebhooksService implements OnModuleInit{
     const aboveMA50Second = secondLastData.close > secondLastData.MA50;
     const aboveMA50Third = thirdLastData.close > thirdLastData.MA50;
     const aboveMA50Fourth = fourthLastData.close > fourthLastData.MA50;
-    const PriceCrMA50 = await this.stockHelperService.priceAbMABUY(
+    const PriceCrMA50 = await this.sH_Service.priceAbMABUY(
       lastData,
       secondLastData,
       'MA50',
     );
-    const PriceCrMA50bl = await this.stockHelperService.priceAbMABUY(
+    const PriceCrMA50bl = await this.sH_Service.priceAbMABUY(
       secondLastData,
       lastData,
       'MA50',
@@ -1893,10 +1893,10 @@ export class WebhooksService implements OnModuleInit{
     other = '1day',
   ) {
     const BASE_URL =
-      other === '1day'? this.stockHelperService.Z_US_SL_.OR : this.stockHelperService.Z_US_SL_.OR4;
+      other === '1day'? this.sH_Service.Z_US_SL_.OR : this.sH_Service.Z_US_SL_.OR4;
     let hourIn4 = '';
-    if(this.stockHelperService.above50andBelow200 && this.stockHelperService.above50andBelow200.length > 0){
-      hourIn4 = this.stockHelperService.above50andBelow200.includes(symbols[0]) ? '4️⃣ *BL200* 🟢🟢' : '';
+    if(this.sH_Service.above50andBelow200 && this.sH_Service.above50andBelow200.length > 0){
+      hourIn4 = this.sH_Service.above50andBelow200.includes(symbols[0]) ? '4️⃣ *BL200* 🟢🟢' : '';
     }
     const aboveOrBellow =
     lastData?.MA200 < lastData?.close
@@ -1909,7 +1909,7 @@ export class WebhooksService implements OnModuleInit{
       .map(
         (s) =>
           `• *${s}* → ${display}` +
-          ` <http://localhost:4200/price-log/${s}?daysRange=5|5m> | <http://localhost:4200/price-log/${s}?daysRange=15|15m> | <http://localhost:4200/price-log/${s}?daysRange=30|30m> | <http://localhost:4200/price-log/${s}?daysRange=60|1hour> | <http://localhost:4200/price-log/${s}?daysRange=240|4hour> | <http://localhost:4200/price-log/${s}?daysRange=500|daily> ||=|| <https://stockmarkets000.web.app/price-log/${s}?daysRange=500|PROD-DAILY> | ${timeframe}`,
+          ` <${this.sH_Service.local4200}/price-log/${s}?daysRange=5|5m> | <${this.sH_Service.local4200}/price-log/${s}?daysRange=15|15m> | <${this.sH_Service.local4200}/price-log/${s}?daysRange=30|30m> | <${this.sH_Service.local4200}/price-log/${s}?daysRange=60|1hour> | <${this.sH_Service.local4200}/price-log/${s}?daysRange=240|4hour> | <${this.sH_Service.local4200}/price-log/${s}?daysRange=500|daily> ||=|| <${this.sH_Service.stockMk000}/price-log/${s}?daysRange=500|PROD-DAILY> | ${timeframe}`,
       )
       .join('\n');
 
@@ -1933,7 +1933,7 @@ export class WebhooksService implements OnModuleInit{
     msg :string,
     imgUrl?: any,
   ) {
-    this.stockHelperService.slackPosted.push(slChannel)
+    this.sH_Service.slackPosted.push(slChannel)
     const isFullDataArray = Array.isArray(fullData);
     let lastData = isFullDataArray? fullData[fullData.length - 1]: fullData;
     const BASE_URL = slChannel;
@@ -1952,22 +1952,22 @@ export class WebhooksService implements OnModuleInit{
       });
     }
     let bullbearxx = bullxx + bearxx;
-    if(this.stockHelperService.above50andBelow200 && this.stockHelperService.above50andBelow200.length > 0){
-      hourIn4 = this.stockHelperService.above50andBelow200.includes(symbols[0]) ? '4️⃣ *BL200* 🟢' : '';
-      in3candles = this.stockHelperService.ab50_bl200_3Candles.includes(symbols[0])?'(3C_4H_BL200)-':this.stockHelperService.ab50_ab200_3Candles.includes(symbols[0])?'(3C_4H_AB200)-':'';
+    if(this.sH_Service.above50andBelow200 && this.sH_Service.above50andBelow200.length > 0){
+      hourIn4 = this.sH_Service.above50andBelow200.includes(symbols[0]) ? '4️⃣ *BL200* 🟢' : '';
+      in3candles = this.sH_Service.ab50_bl200_3Candles.includes(symbols[0])?'(3C_4H_BL200)-':this.sH_Service.ab50_ab200_3Candles.includes(symbols[0])?'(3C_4H_AB200)-':'';
     }
     const aboveOrBellow = lastData?.MA200 < lastData?.close
       ? '🟢 *ABOVE*'
       : '🔴 *BELOW*';
     const mkaboveOrBellow2 = DataSymbols.above2billion.includes(symbols[0]) ? '💰-' : '';
     const sp500 = DataSymbols.stock_500_symbols.includes(symbols[0]) ? '(🇺🇸)-' : ''
-    const HoldingList = this.stockHelperService.HoldingList.includes(symbols[0])?'💼':''
+    const HoldingList = this.sH_Service.HoldingList.includes(symbols[0])?'💼':''
     const last = in3candles + hourIn4;
 
     const timeframeScore = timeframeScoreMap[timeframe] || 500;
     const StopNTarget = await this.StopNTarget(lastData)
     const addMsg = msg? `*msg:* ${msg} | ` :""
-    const buysellTarget = slChannel !==this.stockHelperService.Z_US_SL_.HOLDING? `\n\t\t${addMsg} *TARGET:* ${StopNTarget?.target}  | \t |  *STOP LOSS:* ${StopNTarget?.stop}`:'BETTER SELL'
+    const buysellTarget = slChannel !==this.sH_Service.Z_US_SL_.HOLDING? `\n\t\t${addMsg} *TARGET:* ${StopNTarget?.target}  | \t |  *STOP LOSS:* ${StopNTarget?.stop}`:'BETTER SELL'
 
     const display = `${sp500}${mkaboveOrBellow2}${HoldingList}${hourIn4}${last} *${lastData?.close}* (${aboveOrBellow}-${lastData?.MA200?.toFixed(2)})|(MA50-${lastData?.MA50?.toFixed(2)})| ${lastData?.date} |`
 
@@ -1975,7 +1975,7 @@ export class WebhooksService implements OnModuleInit{
       .map(
         (s) =>
           `• *${s}* → ${display}` +
-          `  < <http://localhost:4200/price-log/${s}?daysRange=${timeframeScore}|local> | <https://stockmarkets000.web.app/price-log/${s}?daysRange=${timeframeScore}|production> | <https://www.tradingview.com/chart/mWoCISmu/?symbol=${s}|tradingview> |  <https://new-site-pwa.web.app/?stockTicker=${s}&endpoint=fm&timeframe=${timeframe}|OtherLink> | ${timeframe}`+
+          `  < <${this.sH_Service.local4200}/price-log/${s}?daysRange=${timeframeScore}|local> | <${this.sH_Service.stockMk000}/price-log/${s}?daysRange=${timeframeScore}|production> | <https://www.tradingview.com/chart/mWoCISmu/?symbol=${s}|tradingview> |  <https://new-site-pwa.web.app/?stockTicker=${s}&endpoint=fm&timeframe=${timeframe}|OtherLink> | ${timeframe}`+
           `${buysellTarget} +${bullbearxx}`,
       )
       .join('\n');
@@ -2026,12 +2026,12 @@ export class WebhooksService implements OnModuleInit{
       if(!postToCSLRE || !postToCSLRE.ts || !postToCSLRE.channel){
         console.log('---SL-ERR---', postToCSLRE.error);
         throw new Error('Failed to post to Slack');
-      } else if((msg.includes(this.stockHelperService.bullbearUqiue)||this.stockHelperService.bullbearDaily.includes(this.stockHelperService.bullbearUqiue))){
+      } else if((msg.includes(this.sH_Service.bullbearUqiue)||this.sH_Service.bullbearDaily.includes(this.sH_Service.bullbearUqiue))){
         const tsNCh =
-            this.getTsBySymbol(symbols[0], this.stockHelperService.watchlistSl_tss) ||
-            this.getTsBySymbol(symbols[0], this.stockHelperService.holdingSl_tss);
+            this.getTsBySymbol(symbols[0], this.sH_Service.watchlistSl_tss) ||
+            this.getTsBySymbol(symbols[0], this.sH_Service.holdingSl_tss);
           if (tsNCh) {
-            const signalThread = this.stockHelperService.getSlackMessageLink(
+            const signalThread = this.sH_Service.getSlackMessageLink(
               tsNCh.channel,
               tsNCh.ts
             );
@@ -2108,14 +2108,14 @@ export class WebhooksService implements OnModuleInit{
       if(timeframe === '1day' && isFullDataArray){
         await this.GeminiRecomendation(postToCSLRE, timeframe, symbols, fullData);
       } else if(timeframe === '1week' && isFullDataArray){
-        await this.GeminiRecomendation(postToCSLRE, timeframe, symbols, fullData, this.stockHelperService.US_WK_);
+        await this.GeminiRecomendation(postToCSLRE, timeframe, symbols, fullData, this.sH_Service.US_WK_);
       }
       return { msg: 'post to Slack success', postToCSLRE: postToCSLRE };
     } catch (error) {
       return { msg: 'post to Slack fails:', error };
     }
   }
-  async GetGeminiReNPosted(timeframe:string,symbol:string, fullData, aiSlackCl = this.stockHelperService.AI_SL){
+  async GetGeminiReNPosted(timeframe:string,symbol:string, fullData, aiSlackCl = this.sH_Service.AI_SL){
     // get ai call 
     const aiMesAsk = await this.autoRunReQS(symbol,fullData,timeframe)
     let getResFromGemini = '';
@@ -2142,9 +2142,9 @@ export class WebhooksService implements OnModuleInit{
     return {RecommendThreadLink,getResFromGemini}
   }
 
-  async GeminiRecomendation(postToCSLRE, timeframe , symbols, fullData, aiSlackCl = this.stockHelperService.AI_SL ) {
+  async GeminiRecomendation(postToCSLRE, timeframe , symbols, fullData, aiSlackCl = this.sH_Service.AI_SL ) {
 
-    const signalThread = this.stockHelperService.getSlackMessageLink(postToCSLRE.channel, postToCSLRE.ts);
+    const signalThread = this.sH_Service.getSlackMessageLink(postToCSLRE.channel, postToCSLRE.ts);
     // get ai call 
     const {RecommendThreadLink, getResFromGemini} = await this.GetGeminiReNPosted(timeframe, symbols[0], fullData, aiSlackCl);
 
@@ -2559,7 +2559,7 @@ async deleteAllMessages_SLack(channel: string) {
     channel: string,
     symbol,timeframe='1day'
   ) {
-    const url =  ` <http://localhost:4200/price-log/${symbol}?daysRange=500|local> | <https://stockmarkets000.web.app/price-log/${symbol}?daysRange=500|production> | <https://www.tradingview.com/chart/mWoCISmu/?symbol=${symbol}|tradingview> |  <https://new-site-pwa.web.app/?stockTicker=${symbol}&endpoint=fm&timeframe=1day |OtherLink> `
+    const url =  ` <${this.sH_Service.local4200}/price-log/${symbol}?daysRange=500|local> | <${this.sH_Service.stockMk000}/price-log/${symbol}?daysRange=500|production> | <https://www.tradingview.com/chart/mWoCISmu/?symbol=${symbol}|tradingview> |  <https://new-site-pwa.web.app/?stockTicker=${symbol}&endpoint=fm&timeframe=1day |OtherLink> `
     const elementsort = timeframe==='1day'? [
       {
         type: 'button',
@@ -2633,7 +2633,7 @@ async deleteAllMessages_SLack(channel: string) {
         console.error('Slack post error', channel, data);
         return null;
       }
-      return this.stockHelperService.getSlackMessageLink(
+      return this.sH_Service.getSlackMessageLink(
         data.channel,
         data.ts,
       );
@@ -2909,7 +2909,7 @@ async deleteAllMessages_SLack(channel: string) {
         console.error('Slack post error', channel, data);
         return null;
       }
-      return this.stockHelperService.getSlackMessageLink(
+      return this.sH_Service.getSlackMessageLink(
         data.channel,
         data.ts,
       );
@@ -2919,10 +2919,10 @@ async deleteAllMessages_SLack(channel: string) {
     }
   }
   async fePostToHold(symbol){
-    await this.post2SlackBtnFn(this.stockHelperService.BTN_SL.HOLDING,symbol)
+    await this.post2SlackBtnFn(this.sH_Service.BTN_SL.HOLDING,symbol)
   }
-  async fePostToHold2(symbol,price,option,slackC=this.stockHelperService.BTN_SL.HOLDING){
-    const textDs =  `*${symbol}* ${price?`| ckInAt:*${price}`:''}* | <http://localhost:4200/price-log/${symbol}?daysRange=500|local> | <https://stockmarkets000.web.app/price-log/${symbol}?daysRange=500|production> | <https://www.tradingview.com/chart/mWoCISmu/?symbol=${symbol}|tradingview> |  <https://new-site-pwa.web.app/?stockTicker=${symbol}&endpoint=fm&timeframe=1day |OtherLink> `
+  async fePostToHold2(symbol,price,option,slackC=this.sH_Service.BTN_SL.HOLDING){
+    const textDs =  `*${symbol}* ${price?`| ckInAt:*${price}`:''}* | <${this.sH_Service.local4200}/price-log/${symbol}?daysRange=500|local> | <${this.sH_Service.stockMk000}/price-log/${symbol}?daysRange=500|production> | <https://www.tradingview.com/chart/mWoCISmu/?symbol=${symbol}|tradingview> |  <https://new-site-pwa.web.app/?stockTicker=${symbol}&endpoint=fm&timeframe=1day |OtherLink> `
     
     const elementOraccessory = this.slElementOptions(symbol,option)
     const blockEl =option.includes('accessory') ?[
@@ -3053,8 +3053,8 @@ async deleteAllMessages_SLack(channel: string) {
   }
   
   async onModuleInit() {
-    this.stockHelperService.watchlistSl_tss = await this.getAllMsgCheck(this.stockHelperService.BTN_SL.WATCH)
-    this.stockHelperService.holdingSl_tss = await this.getAllMsgCheck(this.stockHelperService.BTN_SL.HOLDING)
+    this.sH_Service.watchlistSl_tss = await this.getAllMsgCheck(this.sH_Service.BTN_SL.WATCH)
+    this.sH_Service.holdingSl_tss = await this.getAllMsgCheck(this.sH_Service.BTN_SL.HOLDING)
     await this.discordBot.login(
       this.configService.get<string>('DISCORD_BOT_TOKEN'),
     );
@@ -3116,7 +3116,7 @@ async deleteAllMessages_SLack(channel: string) {
 
   async getMsgSendFromLLm(aiMesAsk){
     const res = await this.aiToolService.getResFromGemini(aiMesAsk);
-    const trimdata = this.stockHelperService.markdownToSlack(res)
+    const trimdata = this.sH_Service.markdownToSlack(res)
     return trimdata;
   }
 
@@ -3126,7 +3126,7 @@ async deleteAllMessages_SLack(channel: string) {
     content: string,
     imageBuffer?:any
   ) {
-    if(this.stockHelperService.skipPostDiscord){
+    if(this.sH_Service.skipPostDiscord){
       return { msg: 'Skipping Discord post due to skipPostDiscord flag' };
     }
     const channel = await this.discordBot.channels.fetch(channelId);
@@ -3317,12 +3317,12 @@ async deleteAllMessages_SLack(channel: string) {
       if(fileBuffer){
         const imgads = Buffer.from(fileBuffer);
         const postTo  = await this.postSlackImage(channel, imgads, `${ticker}.png`, message, );
-        const discordmsg = message+  `\n <${this.stockHelperService.imageHostUrl}/ai-tool/slack-image/${postTo.files?.[0].id}|slackImage>  || <http://localhost:4200/price-log/${ticker}?daysRange=5|${ticker}-local-target> || <https://stockmarkets000.web.app/price-log/${ticker}?daysRange=5|${ticker}-prod-target>`
-        await this.messagesService.sendMessage("workspace-1",this.stockHelperService.DC_SL_MT.ALL_IN_ONE, "bot-1", ticker,discordmsg)
+        const discordmsg = message+  `\n <${this.sH_Service.imageHostUrl}/ai-tool/slack-image/${postTo.files?.[0].id}|slackImage>  || <${this.sH_Service.local4200}/price-log/${ticker}?daysRange=5|${ticker}-local-target> || <${this.sH_Service.stockMk000}/price-log/${ticker}?daysRange=5|${ticker}-prod-target>`
+        await this.messagesService.sendMessage("workspace-1",this.sH_Service.DC_SL_MT.ALL_IN_ONE, "bot-1", ticker,discordmsg)
         const messageTs = await this.getSlackMessageTs(channel,postTo.files?.[0].id,);
-        const tsNCh = this.getTsBySymbol(ticker, this.stockHelperService.watchlistSl_tss) || this.getTsBySymbol(ticker, this.stockHelperService.holdingSl_tss);
+        const tsNCh = this.getTsBySymbol(ticker, this.sH_Service.watchlistSl_tss) || this.getTsBySymbol(ticker, this.sH_Service.holdingSl_tss);
         if (tsNCh) {
-          const signalThread = this.stockHelperService.getSlackMessageLink(
+          const signalThread = this.sH_Service.getSlackMessageLink(
             tsNCh.channel,
             tsNCh.ts
           );
@@ -3368,8 +3368,8 @@ async deleteAllMessages_SLack(channel: string) {
         }
       }else{
         const pathSym = `${channel}/${ticker}`.toUpperCase();
-        const msgN_imageWEB = `${message}\n<https://stockmarkets000.web.app/capture-target/${pathSym}|prodUrl>`
-        await this.messagesService.sendMessage("workspace-1",this.stockHelperService.DC_SL_MT.ALL_IN_ONE, "bot-1", ticker,msgN_imageWEB)
+        const msgN_imageWEB = `${message}\n<${this.sH_Service.stockMk000}/capture-target/${pathSym}|prodUrl>`
+        await this.messagesService.sendMessage("workspace-1",this.sH_Service.DC_SL_MT.ALL_IN_ONE, "bot-1", ticker,msgN_imageWEB)
         const postToCSLRE = await this.sendSlackNotificationVN(
           '5min',
           [ticker],

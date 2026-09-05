@@ -14,7 +14,7 @@ import * as dbrs from './database.api';
 export class LocalPLWR {
   constructor(
     private readonly configService: ConfigService,
-    private readonly stockHelperService: StockHelperService,
+    private readonly sH_Service: StockHelperService,
     private readonly alphavantageService: AlphavantageService,
     @InjectRepository(DataHistory1d)
     private dataHistory1dRepo: Repository<DataHistory1d>,
@@ -50,28 +50,28 @@ export class LocalPLWR {
   async getTickerFullChart_POLYGON(ticker: string, timefame: string) {
     let range, timespan;
     const daytestBF = 0;
-    const dayend = this.stockHelperService.getDateNDaysAgo(-1 + daytestBF);
+    const dayend = this.sH_Service.getDateNDaysAgo(-1 + daytestBF);
     let dayStart;
 
     if (timefame.includes('day')) {
       timespan = 'day';
       range = timefame.match(/\d+/)[0];
-      dayStart = this.stockHelperService.getDateNDaysAgo(700 + daytestBF);
+      dayStart = this.sH_Service.getDateNDaysAgo(700 + daytestBF);
     } else if (timefame.includes('hour')) {
       timespan = 'hour';
-      dayStart = this.stockHelperService.getDateNDaysAgo(700 + daytestBF);
+      dayStart = this.sH_Service.getDateNDaysAgo(700 + daytestBF);
       range = timefame.match(/\d+/)[0];
     } else if (timefame.includes('min')) {
       timespan = 'minute';
-      dayStart = this.stockHelperService.getDateNDaysAgo(35 + daytestBF);
+      dayStart = this.sH_Service.getDateNDaysAgo(35 + daytestBF);
       range = timefame.match(/\d+/)[0];
     } else if (timefame.includes('week')) {
       timespan = 'week';
-      dayStart = this.stockHelperService.getDateNDaysAgo(720 + daytestBF);
+      dayStart = this.sH_Service.getDateNDaysAgo(720 + daytestBF);
       range = 1;
     } else if (timefame.includes('month')) {
       timespan = 'month';
-      dayStart = this.stockHelperService.getDateNDaysAgo(720 + daytestBF);
+      dayStart = this.sH_Service.getDateNDaysAgo(720 + daytestBF);
       range = 1;
     } else{
       return null
@@ -98,35 +98,35 @@ export class LocalPLWR {
     ) as any;
     // return  response.slice(0, 300);
     const reverseData = response.reverse()
-    const result = await this.stockHelperService.returnNewData(reverseData);
+    const result = await this.sH_Service.returnNewData(reverseData);
     // return  result.slice(0, 300);
     return result;
   }
   async getTickerFullChart_POLYGON2(ticker: string, timefame: string, daytestinput = 0) {
     let range, timespan;
     const daytestBF = daytestinput;
-    const dayend = this.stockHelperService.getDateNDaysAgo(-1 + daytestBF);
+    const dayend = this.sH_Service.getDateNDaysAgo(-1 + daytestBF);
     let dayStart;
 
     if (timefame.includes('day')) {
       timespan = 'day';
       range = timefame.match(/\d+/)[0];
-      dayStart = this.stockHelperService.getDateNDaysAgo(700 + daytestBF);
+      dayStart = this.sH_Service.getDateNDaysAgo(700 + daytestBF);
     } else if (timefame.includes('hour')) {
       timespan = 'hour';
-      dayStart = this.stockHelperService.getDateNDaysAgo(700 + daytestBF);
+      dayStart = this.sH_Service.getDateNDaysAgo(700 + daytestBF);
       range = timefame.match(/\d+/)[0];
     } else if (timefame.includes('min')) {
       timespan = 'minute';
-      dayStart = this.stockHelperService.getDateNDaysAgo(35 + daytestBF);
+      dayStart = this.sH_Service.getDateNDaysAgo(35 + daytestBF);
       range = timefame.match(/\d+/)[0];
     } else if (timefame.includes('week')) {
       timespan = 'week';
-      dayStart = this.stockHelperService.getDateNDaysAgo(720 + daytestBF);
+      dayStart = this.sH_Service.getDateNDaysAgo(720 + daytestBF);
       range = 1;
     } else if (timefame.includes('month')) {
       timespan = 'month';
-      dayStart = this.stockHelperService.getDateNDaysAgo(720 + daytestBF);
+      dayStart = this.sH_Service.getDateNDaysAgo(720 + daytestBF);
       range = 1;
     } else{
       return null
@@ -153,9 +153,9 @@ export class LocalPLWR {
       }
     ) as any
      const reversedData = [...response].reverse();
-    const newData = await this.stockHelperService.returnNewData(reversedData);
+    const newData = await this.sH_Service.returnNewData(reversedData);
     return newData.slice(-400); //
-    // const result = await this.stockHelperService.returnNewData(response);
+    // const result = await this.sH_Service.returnNewData(response);
     // return  result.slice(0, 300);
     return response;
   }
@@ -168,30 +168,30 @@ export class LocalPLWR {
   async getTickerFullChart_FMP(ticker: string, timefame: string) {
     return this.twelvedata(ticker, timefame);
     const daytestBF = 0;
-    const dayend = this.stockHelperService.getDateNDaysAgo(-1 + daytestBF);
+    const dayend = this.sH_Service.getDateNDaysAgo(-1 + daytestBF);
     let dayStart;
     if (timefame.includes('4hour')) {
-      dayStart = this.stockHelperService.getDateNDaysAgo(120 + daytestBF);
+      dayStart = this.sH_Service.getDateNDaysAgo(120 + daytestBF);
     } else if (timefame.includes('1hour')) {
-      dayStart = this.stockHelperService.getDateNDaysAgo(55 + daytestBF);
+      dayStart = this.sH_Service.getDateNDaysAgo(55 + daytestBF);
     } else if (timefame.includes('15min')) {
-      dayStart = this.stockHelperService.getDateNDaysAgo(20 + daytestBF);
+      dayStart = this.sH_Service.getDateNDaysAgo(20 + daytestBF);
     } else if (timefame.includes('5min')) {
-      dayStart = this.stockHelperService.getDateNDaysAgo(7 + daytestBF);
+      dayStart = this.sH_Service.getDateNDaysAgo(7 + daytestBF);
     } else if (timefame.includes('1min')) {
-      dayStart = this.stockHelperService.getDateNDaysAgo(7 + daytestBF);
+      dayStart = this.sH_Service.getDateNDaysAgo(7 + daytestBF);
     }
 
     let BASE_URL = `https://financialmodelingprep.com/api/v3/historical-chart/${timefame}/${ticker}?from=${dayStart}&to=${dayend}&apikey=`;
     if (timefame.includes('day')) {
-      dayStart = this.stockHelperService.getDateNDaysAgo(365 + daytestBF);
+      dayStart = this.sH_Service.getDateNDaysAgo(365 + daytestBF);
       return this.getTickerDailyChart_FMP(ticker, dayStart, dayend);
     }
     if (timefame.includes('week') || timefame.includes('month')) {
       return this.alphavantageService.weekORmonthly(ticker, timefame);
     }
     const today = new Date().toISOString().replace(/T.*$/, '');
-    const checkToday = await this.stockHelperService.calculateDaysBetween(
+    const checkToday = await this.sH_Service.calculateDaysBetween(
       today,
       dayend,
     );
@@ -201,7 +201,7 @@ export class LocalPLWR {
       response.unshift(rtp);
     }
     return response;
-    const result = await this.stockHelperService.returnNewData(response);
+    const result = await this.sH_Service.returnNewData(response);
     return result;
   }
 
@@ -214,7 +214,7 @@ export class LocalPLWR {
     const response = await this.tryCatchF(BASE_URL, 'FMP_STOCK_API_KEY');
     const data = plainToClass(DTO.ChartOutFMPDto, response?.historical);
     return data;
-    // const result = this.stockHelperService.returnNewData(data);
+    // const result = this.sH_Service.returnNewData(data);
     // return result;
   }
 
@@ -389,7 +389,7 @@ export class LocalPLWR {
   }
   async getfullTopost(ticker: string, dateStart: string, dateEnd: string) {
     const timespan = '1min';
-    const dateRanges = await this.stockHelperService.getDateRanges(
+    const dateRanges = await this.sH_Service.getDateRanges(
       dateStart,
       dateEnd,
       2,
@@ -410,16 +410,16 @@ export class LocalPLWR {
       .map((result: any) => result?.value) // Extract the results array
       .flat(); // Flatten the array of arrays into a single array
 
-    // // const result = await this.stockHelperService.returnNewData(allResults)
+    // // const result = await this.sH_Service.returnNewData(allResults)
     // this.postToFirebase(ticker,allResults,timespan, dateStart+'-to-'+dateEnd,).then(data=>{
     //   // console.log(data)
     // })
     // const data = await this.getFromFB(ticker,timespan,dateStart+'-to-'+dateEnd,)
     return allResults;
-    const allResults2 = await this.stockHelperService.returnNewData(allResults);
+    const allResults2 = await this.sH_Service.returnNewData(allResults);
 
-    // const newdata = await this.stockHelperService.transformData(allResults2)
-    // const allResults = await this.stockHelperService.returnNewData(data.data)
+    // const newdata = await this.sH_Service.transformData(allResults2)
+    // const allResults = await this.sH_Service.returnNewData(data.data)
     // console.log(data.data)
     // await this.postToFirebase(ticker,newdata,timespan+'-modifire', dateStart+'-to-'+dateEnd,).then(data=>{
     //   // console.log(data)
@@ -437,9 +437,9 @@ export class LocalPLWR {
     }
     if(ticker.includes('USD')){
       // return with 
-      // ticker = this.stockHelperService.getmatch1only(ticker)
+      // ticker = this.sH_Service.getmatch1only(ticker)
       // return this.getCoinHistory(ticker, '5m')
-      ticker = this.stockHelperService.formatSymbol(ticker)
+      ticker = this.sH_Service.formatSymbol(ticker)
     }
     let BASE_URL = `https://api.twelvedata.com/time_series?symbol=${ticker}&interval=${tem}&outputsize=600&dp=2&apikey=`;
     const response = await this.tryCatchtwelvedata(BASE_URL);
@@ -455,7 +455,7 @@ export class LocalPLWR {
       }
       const newdata = Array.isArray(responseRe) ? [...responseRe] : [responseRe];
       const reverseData = newdata.reverse();
-      const result = await this.stockHelperService.returnNewData(reverseData)
+      const result = await this.sH_Service.returnNewData(reverseData)
       return result;
     }
     return null;
@@ -629,7 +629,7 @@ export class LocalPLWR {
         excludeExtraneousValues: true,
       })
         // 2️⃣ Process data with your helper
-      const newData = await this.stockHelperService.returnNewData(dataOut);
+      const newData = await this.sH_Service.returnNewData(dataOut);
         //         // 3️⃣ Get the last two data points
       const returndata = newData.reverse();
                 // const lastData = newData[0];
@@ -651,7 +651,7 @@ export class LocalPLWR {
   ) {
     try {
       if(ticker.includes('USD')){
-        ticker = this.stockHelperService.formatSymbol(ticker)
+        ticker = this.sH_Service.formatSymbol(ticker)
       }
       let BASE_URL = `https://api.twelvedata.com/time_series?symbol=${ticker}&interval=${timefame}&outputsize=600&dp=2&apikey=${apikey}`;
       const response = await axios.get(BASE_URL);
@@ -674,7 +674,7 @@ export class LocalPLWR {
             excludeExtraneousValues: true,
           })
         }
-        const newData = await this.stockHelperService.returnNewData(dataOut);
+        const newData = await this.sH_Service.returnNewData(dataOut);
         return newData;
       }
     } catch (error) {
@@ -692,9 +692,9 @@ export class LocalPLWR {
       tem = '1month';
     }
     if(ticker.includes('USD')){
-      // ticker = this.stockHelperService.getmatch1only(ticker)
+      // ticker = this.sH_Service.getmatch1only(ticker)
       // return this.getCoinHistory(ticker, '5m')
-      ticker = this.stockHelperService.formatSymbol(ticker)
+      ticker = this.sH_Service.formatSymbol(ticker)
     }
     let BASE_URL = `https://api.twelvedata.com/time_series?symbol=${ticker}&interval=${tem}&outputsize=600&dp=2&apikey=`;
     console.log(BASE_URL)
@@ -713,8 +713,8 @@ export class LocalPLWR {
           excludeExtraneousValues: true,
         })
       }
-      const newData = await this.stockHelperService.returnNewData(dataOut);
-      this.stockHelperService.apitwelveCount++
+      const newData = await this.sH_Service.returnNewData(dataOut);
+      this.sH_Service.apitwelveCount++
       return newData.slice(-400); //
     }
     // return null;
@@ -726,14 +726,14 @@ export class LocalPLWR {
 
   async FMP_EOD_FULL(ticker: string) {
     const daytestBF = 0;
-    const dayend = this.stockHelperService.getDateNDaysAgo(-1 + daytestBF);
+    const dayend = this.sH_Service.getDateNDaysAgo(-1 + daytestBF);
     console.log(ticker)
-    const dayStart = this.stockHelperService.getDateNDaysAgo(700 + daytestBF);
+    const dayStart = this.sH_Service.getDateNDaysAgo(700 + daytestBF);
     let BASE_URL = `https://financialmodelingprep.com/stable/historical-price-eod/full?symbol=${ticker}&from=${dayStart}&to=${dayend}&apikey=`;
 
     const response = await this.tryCatchF(BASE_URL, 'FMP_STOCK_API_KEY',ticker);
     return response;
-    const result = await this.stockHelperService.returnNewData(response);
+    const result = await this.sH_Service.returnNewData(response);
     return result;
   }
 
@@ -851,28 +851,28 @@ export class LocalPLWR {
     let dayStart, range;
     const number = parseInt(timefame);
     if (timefame.includes('d')) {
-      dayStart = this.stockHelperService.getDateNDaysAgo_UNC(500 + daytestBF);
+      dayStart = this.sH_Service.getDateNDaysAgo_UNC(500 + daytestBF);
       range = `${number}day`
     } else if (timefame.includes('h')) {
       if(number===1){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(22 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(22 + daytestBF);
       } else if(number ===2){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(42 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(42 + daytestBF);
       } else if(number ===4){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(83 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(83 + daytestBF);
       } else{
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(166 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(166 + daytestBF);
       }
         range = `${number}hour`
     } else if (timefame.includes('m')) {
       if(number===1){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(2 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(2 + daytestBF);
       }else if(number === 5){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(3 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(3 + daytestBF);
       } else if(number === 15){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(6 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(6 + daytestBF);
       } else {
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(12 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(12 + daytestBF);
       }
         range = `${number}min`
     } else {
@@ -896,7 +896,7 @@ export class LocalPLWR {
       }
     ) as any;
     
-    const result = await this.stockHelperService.returnNewData(response);
+    const result = await this.sH_Service.returnNewData(response);
     
     const reversedData = [...result].sort(
       (a: any, b: any) =>
@@ -1014,7 +1014,7 @@ export class LocalPLWR {
       `stock-data/${path}.json`,
       responsesArray,
     );
-    const result = await this.stockHelperService.returnNewData(responsesArray)
+    const result = await this.sH_Service.returnNewData(responsesArray)
     const maxlength = result.length-1
     return  result.slice(maxlength-100, maxlength);
   }
@@ -1025,7 +1025,7 @@ export class LocalPLWR {
       'get',
       `stock-data/${path}.json`,''
     );
-    const result = await this.stockHelperService.returnNewData(data)
+    const result = await this.sH_Service.returnNewData(data)
     const maxlength = result.length-1
     return  result.slice(maxlength-100, maxlength);
   }
@@ -1076,9 +1076,9 @@ export class LocalPLWR {
 
   async getholdingList_W_other(stocklist = []){
     const holdingObj = await this.FireBaseApi('get',`stock-related/holding.json`,'')
-    this.stockHelperService.HoldingList = Object.keys(holdingObj);
-    console.log(`✅ Loaded stock-related/holding: has ${this.stockHelperService.HoldingList.length} symbols`);
-    const combine = [...stocklist,...this.stockHelperService.HoldingList]
+    this.sH_Service.HoldingList = Object.keys(holdingObj);
+    console.log(`✅ Loaded stock-related/holding: has ${this.sH_Service.HoldingList.length} symbols`);
+    const combine = [...stocklist,...this.sH_Service.HoldingList]
     return Array.from(new Set(combine));
   }
 
@@ -1093,8 +1093,8 @@ export class LocalPLWR {
     }
     if(date){
       const daytestBF = date||0;
-      const dayend = this.stockHelperService.getDateNDaysAgo(-30 + daytestBF);
-      let dayStart = this.stockHelperService.getDateNDaysAgo(1 + daytestBF);;
+      const dayend = this.sH_Service.getDateNDaysAgo(-30 + daytestBF);
+      let dayStart = this.sH_Service.getDateNDaysAgo(1 + daytestBF);;
       dateex = `from=${dayStart}&to=${dayend}&`
     }
     const BASE_URL = `https://financialmodelingprep.com/stable/${apiendpoint}?${dateex}apikey=`
@@ -1104,8 +1104,8 @@ export class LocalPLWR {
 
   async earningsCal_FINNHUB(start?: string, end?: string) {
     const daytestBF = 0;
-    const dayend = this.stockHelperService.getDateNDaysAgo(-15 + daytestBF);
-    let dayStart = this.stockHelperService.getDateNDaysAgo(2 + daytestBF);;
+    const dayend = this.sH_Service.getDateNDaysAgo(-15 + daytestBF);
+    let dayStart = this.sH_Service.getDateNDaysAgo(2 + daytestBF);;
     const BASE_URL = `https://finnhub.io/api/v1/calendar/earnings?from=${dayStart}&to=${dayend}&token=`;
     const response = await this.tryCatchF(BASE_URL, 'FINNHUB_STOCK_API_KEY');
     return response.earningsCalendar;
@@ -1140,22 +1140,22 @@ export class LocalPLWR {
     const number = parseInt(timefame);
      if (timefame.includes('h')) {
       if(number===1){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(90 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(90 + daytestBF);
       }else if(number ===4){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(400 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(400 + daytestBF);
       } else{
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(500 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(500 + daytestBF);
       }
         range = `${number}hour`
     } else if (timefame.includes('m')) {
       if(number===1){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(2 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(2 + daytestBF);
       }else if(number === 5){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(10 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(10 + daytestBF);
       } else if(number === 15){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(25 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(25 + daytestBF);
       } else {
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(50 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(50 + daytestBF);
       }
           range = `${number}min`
     } 
@@ -1181,7 +1181,7 @@ export class LocalPLWR {
       }
     ) as any;
     
-    const result = await this.stockHelperService.returnNewData(response);
+    const result = await this.sH_Service.returnNewData(response);
     
     const reversedData = [...result].sort(
       (a: any, b: any) =>
@@ -1197,35 +1197,35 @@ export class LocalPLWR {
   async tiingo_CRYPTO(ticker: string, timefame: string, apikey?:string) {
     const daytestBF = 0;
     let dayStart, range;
-    const currentDate = this.stockHelperService.getDateNDaysAgo_UNC(-1)
+    const currentDate = this.sH_Service.getDateNDaysAgo_UNC(-1)
     const number = parseInt(timefame);
     if (timefame.includes('d')) {
-      dayStart = this.stockHelperService.getDateNDaysAgo_UNC(500 + daytestBF);
+      dayStart = this.sH_Service.getDateNDaysAgo_UNC(500 + daytestBF);
       range = `${number}day`
     } else if (timefame.includes('h')) {
       if(number===1){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(21 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(21 + daytestBF);
       } else if(number ===2){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(42 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(42 + daytestBF);
       } else if(number ===4){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(83 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(83 + daytestBF);
       }else{
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(166 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(166 + daytestBF);
       }
         range = `${number}hour`
     } else if (timefame.includes('m')) {
       if(number===1){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(1 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(1 + daytestBF);
       }else if(number === 5){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(2 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(2 + daytestBF);
       } else if(number === 15){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(5 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(5 + daytestBF);
       } else if(number === 30){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(10 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(10 + daytestBF);
       } else if(number === 45){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(15 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(15 + daytestBF);
       } else{
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(18 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(18 + daytestBF);
       }
         range = `${number}min`
     } else {
@@ -1251,7 +1251,7 @@ export class LocalPLWR {
       }
     ) as any;
     
-    const result = await this.stockHelperService.returnNewData(response);
+    const result = await this.sH_Service.returnNewData(response);
     
     const reversedData = [...result].sort(
       (a: any, b: any) =>
@@ -1282,37 +1282,37 @@ export class LocalPLWR {
     let range: string;
   
     const currentDate =
-      this.stockHelperService.getDateNDaysAgo_UNC(-1);
+      this.sH_Service.getDateNDaysAgo_UNC(-1);
   
     const number = parseInt(timefame, 10);
   
     if (timefame.includes('d')) {
-      dayStart = this.stockHelperService.getDateNDaysAgo_UNC(350 + daytestBF);
+      dayStart = this.sH_Service.getDateNDaysAgo_UNC(350 + daytestBF);
       range = `${number}day`
     } else if (timefame.includes('h')) {
       if(number===1){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(14 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(14 + daytestBF);
       } else if(number ===2){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(29 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(29 + daytestBF);
       } else if(number ===4){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(59 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(59 + daytestBF);
       }else{
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(100 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(100 + daytestBF);
       }
         range = `${number}hour`
     } else if (timefame.includes('m')) {
       if(number===1){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(1 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(1 + daytestBF);
       }else if(number === 5){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(2 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(2 + daytestBF);
       } else if(number === 15){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(4 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(4 + daytestBF);
       } else if(number === 30){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(8 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(8 + daytestBF);
       } else if(number === 45){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(11 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(11 + daytestBF);
       } else{
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(15 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(15 + daytestBF);
       }
         range = `${number}min`
     } else {
@@ -1379,7 +1379,7 @@ export class LocalPLWR {
   
       // Process data
       const result =
-        await this.stockHelperService.returnNewData(response);
+        await this.sH_Service.returnNewData(response);
   
       // Sort
       const sorted = [...result].sort(

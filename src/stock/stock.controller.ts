@@ -229,7 +229,7 @@ export class StockController {
       }else{
         data = await this.stockService.getTickerFullChart_POLYGON(query.stockTicker, query.start, query.end );
       }
-      // const result = await this.stockHelperService.returnNewData(data)
+      // const result = await this.sH_Service.returnNewData(data)
       return data;
     } catch (error) {
       // Handle errors here

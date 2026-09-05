@@ -9,7 +9,7 @@ import { WebhooksService } from 'src/webhooks/webhooks.service';
 @Injectable()
 export class TaskCryptoService {
   constructor(
-    private readonly stockHelperService: StockHelperService,
+    private readonly sH_Service: StockHelperService,
     private readonly webhooksService: WebhooksService,
     private readonly LocalPLWR: LocalPLWR,
   ) {}
@@ -120,7 +120,7 @@ export class TaskCryptoService {
         );
         if (isWithinRange) {
           const BuyOnly_StochRSICrossAB200 =
-            await this.stockHelperService.BuyOnly_StochRSICrossAB200(
+            await this.sH_Service.BuyOnly_StochRSICrossAB200(
               lastData,
               secondLastData,
             );
@@ -448,7 +448,7 @@ export class TaskCryptoService {
         );
         if (isWithinRange) {
           const BuyOnly_StochRSICrossAB200 =
-            await this.stockHelperService.BuyOnly_StochRSICrossAB200(
+            await this.sH_Service.BuyOnly_StochRSICrossAB200(
               lastData,
               secondLastData,
             );

@@ -10,7 +10,7 @@ export class SlackPbController {
   constructor(
     private readonly webhooksService: WebhooksService, 
     private readonly stockService: StockService,
-    private readonly stockHelperService: StockHelperService,
+    private readonly sH_Service: StockHelperService,
     private readonly sirvService: SirvService,
   ) {}
 
@@ -35,7 +35,7 @@ export class SlackPbController {
       await this.webhooksService.Update_Slack(payload.channel.id,payload.message.ts, `*${ticker}*  Check Me Out !!!!`)
       // update the btn and reply with more options 
       // 1 create blockoptions
-      const fulloption = payload.channel.id ===this.stockHelperService.BTN_SL.HOLDING?'full_holding':'accessory_full_watchlist'
+      const fulloption = payload.channel.id ===this.sH_Service.BTN_SL.HOLDING?'full_holding':'accessory_full_watchlist'
       const blockre = this.webhooksService.getSlBlock(ticker,fulloption,orgMsgText)
       // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
       await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'withBlock',blockre)
@@ -177,7 +177,7 @@ export class SlackPbController {
     //   this.processApply(postToCSLRE)
     // }else{
     //   this.processApply(postToCSLRE)
-    //   const textCheck =timeframe_acID==='delete_replys'? ` <http://localhost:4200/price-log/${ticker}?daysRange=500|local> | <https://stockmarkets000.web.app/price-log/${ticker}?daysRange=500|production> | <https://www.tradingview.com/chart/mWoCISmu/?ticker=${ticker}|tradingview> |  <https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day |OtherLink>`
+    //   const textCheck =timeframe_acID==='delete_replys'? ` <${this.sH_Service.local4200}/price-log/${ticker}?daysRange=500|local> | <${this.sH_Service.stockMk000}/price-log/${ticker}?daysRange=500|production> | <https://www.tradingview.com/chart/mWoCISmu/?ticker=${ticker}|tradingview> |  <https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=fm&timeframe=1day |OtherLink>`
     //                                         : ''
     //   await this.webhooksService.Update_Slack(payload.channel.id,payload.message.ts,"Updated ✅"+ticker+textCheck)
     // }
@@ -264,13 +264,13 @@ export class SlackPbController {
       // Prepare ticker promises with concurrency limit
       let data = await this.stockService.TwReveseNOAPI(ticker, timeframe);
       if (!Array.isArray(data) || data.length < 2) {
-        await this.stockHelperService.sendBatchNotification('START',`${true?'TwReveseNOAPI':'POLYGON2'}-`+`<https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day|${ticker}>`,[this.stockHelperService.Z_US_SL_.OR4],this.webhooksService,500);
+        await this.sH_Service.sendBatchNotification('START',`${true?'TwReveseNOAPI':'POLYGON2'}-`+`<https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day|${ticker}>`,[this.sH_Service.Z_US_SL_.OR4],this.webhooksService,500);
         return;
       }
 
-      let getText = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(ticker,timeframe,data)
+      let getText = await this.sH_Service.CHECKBULL_BEAR_ReTurnText(ticker,timeframe,data)
       const updateMe = await this.webhooksService.reply_SLack(postToCSLRE.channel, postToCSLRE.ts, `======${getText}=*CLICK_CALL*======`)
-      this.stockHelperService.railwayBoolen = false
+      this.sH_Service.railwayBoolen = false
       const fileBuffer = await this.webhooksService.captureChart(
         data,
         ticker,
@@ -329,7 +329,7 @@ export class SlackPbController {
         ];
         // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'',blocks)
         await this.webhooksService.Update_Slack(postToCSLRE.channel,updateMe.ts,'updateWithimage',blocks)
-        this.stockHelperService.railwayBoolen = true
+        this.sH_Service.railwayBoolen = true
       } else {
         await this.webhooksService.Update_Slack(postToCSLRE.channel,updateMe.ts,`======${getText}=*NO IMAGE*======`)
       }
@@ -348,6 +348,6 @@ export class SlackPbController {
 
   } async catch (error) {
     // Send error notification and log the error
-    await this.webhooksService.sendSlackNotification(`ERORR_CALL`, this.stockHelperService.Z_US_SL_.OR4)
+    await this.webhooksService.sendSlackNotification(`ERORR_CALL`, this.sH_Service.Z_US_SL_.OR4)
   }
 }

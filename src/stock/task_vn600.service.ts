@@ -15,7 +15,7 @@ export class TasksVNMKService {
   constructor(
     private readonly configService: ConfigService,
     private readonly webhooksService: WebhooksService,
-    private readonly stockHelperService: StockHelperService,
+    private readonly sH_Service: StockHelperService,
     private readonly LocalPLWR: LocalPLWR,
   ) {}
   private readonly logger = new Logger(TasksVNMKService.name);
@@ -43,22 +43,22 @@ export class TasksVNMKService {
           // Process the data
           const symbol = `${ticker}.VN`;
 
-          const signal = await this.stockHelperService.BuyOnly_StochRSICrossAB200(
+          const signal = await this.sH_Service.BuyOnly_StochRSICrossAB200(
             lastData,
             secondLastData,
           );
 
           if (!signal) return;
           const stockRSILAUP = lastData.StochRSI_K - lastData.StochRSI_D > 0;
-          const macdCross = await this.stockHelperService.macdCross(
+          const macdCross = await this.sH_Service.macdCross(
             lastData,
             secondLastData,
           );
           const webhookMap = [
-            { condition: signal.PriceCrMA50 && signal.ContinueUp, hook: this.stockHelperService.VN_SL_.MACDCR_50 },
-            { condition: signal.PriceCrMA100 && signal.ContinueUp, hook: this.stockHelperService.VN_SL_.MACDCR_100 },
-            { condition: signal.PriceCrMA200 && signal.ContinueUp, hook: this.stockHelperService.VN_SL_.MACDCR_200 },
-            { condition: stockRSILAUP && macdCross.AB, hook: this.stockHelperService.VN_SL_.MACDCR_BL },
+            { condition: signal.PriceCrMA50 && signal.ContinueUp, hook: this.sH_Service.VN_SL_.MACDCR_50 },
+            { condition: signal.PriceCrMA100 && signal.ContinueUp, hook: this.sH_Service.VN_SL_.MACDCR_100 },
+            { condition: signal.PriceCrMA200 && signal.ContinueUp, hook: this.sH_Service.VN_SL_.MACDCR_200 },
+            { condition: stockRSILAUP && macdCross.AB, hook: this.sH_Service.VN_SL_.MACDCR_BL },
           ];
 
           const matched = webhookMap.find(({ condition }) => condition);
@@ -94,10 +94,10 @@ export class TasksVNMKService {
   @Cron('0 16 * * 1-5', { timeZone: 'America/New_York' })
   async runAllWatchLists() {
 
-    const webhooks = [...Object.values(this.stockHelperService.VN_SL_)];
+    const webhooks = [...Object.values(this.sH_Service.VN_SL_)];
 
     try {
-      await this.stockHelperService.sendBatchNotification('START', `daily`,webhooks,this.webhooksService,1000,);
+      await this.sH_Service.sendBatchNotification('START', `daily`,webhooks,this.webhooksService,1000,);
 
       await this.processTickers(
         VN_Stock_symbols,
@@ -108,7 +108,7 @@ export class TasksVNMKService {
       console.error('VN processTickers failed:', error);
       throw error;
     } finally {
-      await this.stockHelperService.sendBatchNotification('END', `daily`,webhooks,this.webhooksService,1000,);
+      await this.sH_Service.sendBatchNotification('END', `daily`,webhooks,this.webhooksService,1000,);
     }
   }
 }

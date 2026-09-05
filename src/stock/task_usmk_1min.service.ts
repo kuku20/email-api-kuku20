@@ -14,7 +14,7 @@ export class TasksUSMK_1MIN_Service {
   constructor(
     private readonly configService: ConfigService,
         private readonly webhooksService: WebhooksService,
-    private readonly stockHelperService: StockHelperService,
+    private readonly sH_Service: StockHelperService,
     private readonly LocalPLWR: LocalPLWR,
   ) {}
   private readonly logger = new Logger(TasksUSMK_1MIN_Service.name);
@@ -33,7 +33,7 @@ export class TasksUSMK_1MIN_Service {
       this.logger.log(`Don't have symbol ${timeframe} check (${now} ET)`);
       return;
     }
-    if (!this.stockHelperService.isMarketOpen()) {
+    if (!this.sH_Service.isMarketOpen()) {
       this.logger.log(
         `🕒 Market closed — skipping ${timeframe} check (${now} ET)`,
       );
@@ -118,7 +118,7 @@ export class TasksUSMK_1MIN_Service {
       ticker,
       channel,
     )
-    // const Under200NDownSell = await this.stockHelperService.Under200NDownSell(
+    // const Under200NDownSell = await this.sH_Service.Under200NDownSell(
     //   lastdata,
     //   Secondlastdata,
     // );
@@ -132,7 +132,7 @@ export class TasksUSMK_1MIN_Service {
     //   );
     //   return;
     // }
-    // const AbMA200BUY_MACDCR = await this.stockHelperService.AbMA200BUY_MACDCR(
+    // const AbMA200BUY_MACDCR = await this.sH_Service.AbMA200BUY_MACDCR(
     //   lastdata,
     //   Secondlastdata,
     // );
@@ -147,7 +147,7 @@ export class TasksUSMK_1MIN_Service {
     //   return;
     // }
 
-    // const Over200NUpBuy = await this.stockHelperService.Over200NUpBuy(
+    // const Over200NUpBuy = await this.sH_Service.Over200NUpBuy(
     //   lastdata,
     //   Secondlastdata,
     // );
@@ -162,7 +162,7 @@ export class TasksUSMK_1MIN_Service {
     //   return;
     // }
 
-    // const macdCrossAB_BL0 = await this.stockHelperService.macdCrossAB_BL0(
+    // const macdCrossAB_BL0 = await this.sH_Service.macdCrossAB_BL0(
     //   lastdata,
     //   Secondlastdata,
     // );
@@ -176,7 +176,7 @@ export class TasksUSMK_1MIN_Service {
     //   );
     //   return;
     // }
-    // const priceAbMA200BUY = await this.stockHelperService.priceAbMA200BUY(
+    // const priceAbMA200BUY = await this.sH_Service.priceAbMA200BUY(
     //   lastdata,
     //   Secondlastdata,
     // );
@@ -190,7 +190,7 @@ export class TasksUSMK_1MIN_Service {
     //   );
     //   return;
     // }
-    // const priceBlMA200SELL = await this.stockHelperService.priceBlMA200SELL(
+    // const priceBlMA200SELL = await this.sH_Service.priceBlMA200SELL(
     //   lastdata,
     //   Secondlastdata,
     // );

@@ -15,7 +15,7 @@ export class AiToolService {
   constructor(
     private readonly configService: ConfigService,
     private stockService: StockService,
-    private stockHelperService: StockHelperService,
+    private sH_Service: StockHelperService,
   ) {}
   async postGemini(newMsg: string,data?: any) {
     try {
@@ -84,7 +84,7 @@ export class AiToolService {
       return JSON.stringify(error.message);
     }
   }
-  async GeminiPostedThread(symbol:string,message: string, msgRes: string, slackChannel = this.stockHelperService.AI_SL) {
+  async GeminiPostedThread(symbol:string,message: string, msgRes: string, slackChannel = this.sH_Service.AI_SL) {
     const line = '================================ ';
     const performanceNRecommendatioASK = message
       .toLowerCase()
@@ -95,8 +95,8 @@ export class AiToolService {
       : textL.includes(':hold')? 'hold'
       : 'sell';
     const nexMsg = `${msgRes.replace(/\*\*/g, '*')}`;
-    // const nexMsg = this.stockHelperService.markdownToSlack(msgRes)
-    const locallink = `<http://localhost:4200/price-log/${symbol}?daysRange=500|${symbol}>`;
+    // const nexMsg = this.sH_Service.markdownToSlack(msgRes)
+    const locallink = `<${this.sH_Service.local4200}/price-log/${symbol}?daysRange=500|${symbol}>`;
 
     const datacodeOPENAI = encodeURIComponent(message.length > 1800 ? message.slice(0, 7000) + '...' : message);
     const datacodeCLAUDE = encodeURIComponent(message.length > 1800 ? message.slice(0, 8500) + '...' : message);
@@ -232,7 +232,7 @@ export class AiToolService {
         end,
       );
       if (data.length === 0) return { res: 'NO DATA' };
-      data = await this.stockHelperService.returnNewData(data);
+      data = await this.sH_Service.returnNewData(data);
     } else {
       data = await this.stockService.getTickerFullChart_FMP(
         stockTicker,
@@ -240,7 +240,7 @@ export class AiToolService {
         end,
       );
       if (data.length === 0) return { res: 'NO DATA' };
-      data = await this.stockHelperService.returnNewData(data);
+      data = await this.sH_Service.returnNewData(data);
     }
 
     const datatoString = {
@@ -338,7 +338,7 @@ export class AiToolService {
       // data.channel C0B6RH4466S
       // data.ts  1780072407.351509
       // data.message.text
-      return this.stockHelperService.getSlackMessageLink(data.channel, data.ts);
+      return this.sH_Service.getSlackMessageLink(data.channel, data.ts);
     } catch (error) {
       console.error('Slack post exception', error);
       throw error;
@@ -346,7 +346,7 @@ export class AiToolService {
   }
 
   public get headers() {
-    const slackToken = this.configService.get<string>(this.stockHelperService.slackTokenKey);
+    const slackToken = this.configService.get<string>(this.sH_Service.slackTokenKey);
     return {
       Authorization: `Bearer ${slackToken}`,
       'Content-Type': 'application/json; charset=utf-8',
@@ -421,7 +421,7 @@ export class AiToolService {
         return null;
       }
   
-      return this.stockHelperService.getSlackMessageLink(
+      return this.sH_Service.getSlackMessageLink(
         data.channel,
         data.ts,
       );

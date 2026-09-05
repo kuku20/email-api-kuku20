@@ -13,13 +13,13 @@ export class Tasks_US_WEEKLY {
   constructor(
     private readonly configService: ConfigService,
     private readonly webhooksService: WebhooksService,
-    private readonly stockHelperService: StockHelperService,
+    private readonly sH_Service: StockHelperService,
     private readonly LocalPLWR: LocalPLWR,
   ) {}
   private readonly logger = new Logger(Tasks_US_WEEKLY.name);
-  today = this.stockHelperService.getDateNDaysAgo(0);
+  today = this.sH_Service.getDateNDaysAgo(0);
   dayago = 0// end of toi 4
-  rundayaogo = this.stockHelperService.getDateNDaysAgo(this.dayago);
+  rundayaogo = this.sH_Service.getDateNDaysAgo(this.dayago);
   async onModuleInit() {
     // const timeframe = '1week/2026-06-01'
     // const geminibuy  = await this.LocalPLWR.FireBaseApi('get',`stock-gemini-buy/${timeframe}.json`,'')
@@ -43,8 +43,8 @@ export class Tasks_US_WEEKLY {
   }
 
   async dailyCleanup() {    
-    this.stockHelperService.setSlackToken('SLACK_BOT_TOKEN_WEEKLY');
-    await this.webhooksService.deleteSLChannel(Object.values(this.stockHelperService.US_WK_))
+    this.sH_Service.setSlackToken('SLACK_BOT_TOKEN_WEEKLY');
+    await this.webhooksService.deleteSLChannel(Object.values(this.sH_Service.US_WK_))
     console.log("done")
   }
 
@@ -53,15 +53,15 @@ export class Tasks_US_WEEKLY {
     timeZone: 'America/Los_Angeles',
   })
   async cronRunWeekly(stocklist = DataSymbols.above5billion) {
-    this.stockHelperService.setSlackToken('SLACK_BOT_TOKEN_WEEKLY');
+    this.sH_Service.setSlackToken('SLACK_BOT_TOKEN_WEEKLY');
     const combine = [...stocklist, ...DataSymbols.watchlist]
     const uniqueCombine = Array.from(new Set(combine));
 
-    const webhooks = [...Object.values(this.stockHelperService.US_WK_)]
+    const webhooks = [...Object.values(this.sH_Service.US_WK_)]
 
-    await this.stockHelperService.sendBatchNotification('START','1week',webhooks,this.webhooksService,1000,);
+    await this.sH_Service.sendBatchNotification('START','1week',webhooks,this.webhooksService,1000,);
     await this.runWeekly(uniqueCombine);
-    await this.stockHelperService.sendBatchNotification('END','1week',webhooks,this.webhooksService,1000,);
+    await this.sH_Service.sendBatchNotification('END','1week',webhooks,this.webhooksService,1000,);
 
   }
   async runWeekly(stocklist) {
@@ -116,7 +116,7 @@ export class Tasks_US_WEEKLY {
           let  data = await this.LocalPLWR.TwReveseNOAPI(ticker, timeframe);
 
           if (!Array.isArray(data) || data.length < 2) {
-            await this.stockHelperService.sendBatchNotification('START',`${true?'TwReveseNOAPI':'POLYGON2'}-`+`<https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day|${ticker}>`,[this.stockHelperService.Z_US_SL_.OR4],this.webhooksService,500);
+            await this.sH_Service.sendBatchNotification('START',`${true?'TwReveseNOAPI':'POLYGON2'}-`+`<https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day|${ticker}>`,[this.sH_Service.Z_US_SL_.OR4],this.webhooksService,500);
             this.logger.warn(`⚠️ No valid data for ${ticker} (${timeframe})`);
             return;
           }
@@ -129,12 +129,12 @@ export class Tasks_US_WEEKLY {
           const OscConditionS = secondLastData.OSC > secondLastData.OSCSignal
           const OscCrossAb = OscConditionL && !OscConditionS
           const OscCrossBL = !OscConditionL && OscConditionS
-          const macdCross = await this.stockHelperService.macdCross(
+          const macdCross = await this.sH_Service.macdCross(
             lastData,
             secondLastData,
           );
           const signal =
-            await this.stockHelperService.BuyOnly_StochRSICrossAB200(
+            await this.sH_Service.BuyOnly_StochRSICrossAB200(
               lastData,
               secondLastData,
             );
@@ -160,27 +160,27 @@ export class Tasks_US_WEEKLY {
           const webhookMap = [
             {
               condition:(macdCross.AB || OscCrossAb) &&  priceAbMA200,
-              hook: `${OscCrossAb?this.stockHelperService.US_WK_.OSC_200: this.stockHelperService.US_WK_.MACDCR_200}`,
+              hook: `${OscCrossAb?this.sH_Service.US_WK_.OSC_200: this.sH_Service.US_WK_.MACDCR_200}`,
               msg:`*${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''}* - PriceCrMA200 ${MACDVALUEPOS}`
             },
             {
               condition:(macdCross.AB || OscCrossAb) &&  priceAbMA100 ,
-              hook: `${OscCrossAb?this.stockHelperService.US_WK_.OSC_100: this.stockHelperService.US_WK_.MACDCR_100}`,
+              hook: `${OscCrossAb?this.sH_Service.US_WK_.OSC_100: this.sH_Service.US_WK_.MACDCR_100}`,
               msg:`*${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''}* - PriceCrMA100 ${MACDVALUEPOS}`
             },
             {
               condition:(macdCross.AB || OscCrossAb) && priceAbMA50 ,
-              hook: `${OscCrossAb?this.stockHelperService.US_WK_.OSC_50: this.stockHelperService.US_WK_.MACDCR_50}`,
+              hook: `${OscCrossAb?this.sH_Service.US_WK_.OSC_50: this.sH_Service.US_WK_.MACDCR_50}`,
               msg:`*${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''}* - PriceCrMA50 ${MACDVALUEPOS}`
             },
             {
               condition: (macdCross.AB || OscCrossAb) && priceBlAl,
-              hook: `${OscCrossAb?this.stockHelperService.US_WK_.OSC_BL: this.stockHelperService.US_WK_.MACDCR_BL}`,
+              hook: `${OscCrossAb?this.sH_Service.US_WK_.OSC_BL: this.sH_Service.US_WK_.MACDCR_BL}`,
               msg:`*${macdCross.AB_BL0?'macdCross_AB_BL0':macdCross.AB?'macdCross_AB':''}${OscCrossAb?'OscCrossAb :'+lastData.OSC:''}* - PriceBlMA50_100_200 ${MACDVALUEPOS}`
             },
             {
               condition: stochRSICros,
-              hook: this.stockHelperService.US_WK_.STOCHRSI,
+              hook: this.sH_Service.US_WK_.STOCHRSI,
               msg:`*stochRSICros* --${priceAbMA200?'PriceCrMA200': priceAbMA100?'priceAbMA100': priceAbMA50?'priceAbMA50':'PriceBlAl'} -${MACDVALUEPOS}`
             },
           ];
@@ -192,7 +192,7 @@ export class Tasks_US_WEEKLY {
               timeframe,
               [ticker],
               data,
-              DataSymbols.watchlist.includes(ticker)? this.stockHelperService.US_WK_.WATCH :matched.hook,
+              DataSymbols.watchlist.includes(ticker)? this.sH_Service.US_WK_.WATCH :matched.hook,
               matched.msg,
             );
           }

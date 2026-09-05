@@ -8,7 +8,7 @@ import { FMPRType, FhRequestType, PolygonRType } from './dto/sourceData';
 import { StockHelperService } from './stockHelper.service';
 @Injectable()
 export class StockService {
-  constructor(private readonly configService: ConfigService, private readonly stockHelperService: StockHelperService) {}
+  constructor(private readonly configService: ConfigService, private readonly sH_Service: StockHelperService) {}
 
   async search_POLYGON(query: string, start?: string, end?: string) {
     const graphqlEndpoint = `https://api.massive.com/v2/aggs/ticker/AAPL/range/1/day/2023-10-02/2023-10-11?apiKey=GpBhGaI12ENRIUVkDMvDY5spqQR0ptOj`;
@@ -41,19 +41,19 @@ export class StockService {
     let range, timespan
     const today = new Date()
     const formattedDate = today.toISOString().split('T')[0];
-    const last2Year = await this.stockHelperService.calculateDaysBetween(dateStart, formattedDate)
+    const last2Year = await this.sH_Service.calculateDaysBetween(dateStart, formattedDate)
     if(last2Year>=731)
       return [{
         "error":"Over 2 years"
       }]
-    const daylength = await this.stockHelperService.calculateDaysBetween(dateStart, dateEnd)
+    const daylength = await this.sH_Service.calculateDaysBetween(dateStart, dateEnd)
     if(daylength<0){
       throw new NotAcceptableException("Start day should before end day");
     }
     if(daylength<3){
       range = '1'
       timespan = 'minute'
-      dateStart = this.stockHelperService.getDateNDaysAgo(3)
+      dateStart = this.sH_Service.getDateNDaysAgo(3)
     }else if(daylength>=3 && daylength < 9){
       range = '5'
       timespan = 'minute'
@@ -73,7 +73,7 @@ export class StockService {
       range = '1'
       timespan = 'day'
     }
-    const dateRanges = await this.stockHelperService.getDateRanges(dateStart, dateEnd, 85);
+    const dateRanges = await this.sH_Service.getDateRanges(dateStart, dateEnd, 85);
     const urls = dateRanges.map(({ start, end }) => {
       return `https://api.massive.com/v2/aggs/ticker/${ticker}/range/${range}/${timespan}/${start}/${end}?adjusted=true&sort=desc&limit=1000&apiKey=`;
     });
@@ -98,7 +98,7 @@ export class StockService {
     );
     // console.log(BASE_URL, allResults.length)
     return response
-    const result = await this.stockHelperService.returnNewData(response)
+    const result = await this.sH_Service.returnNewData(response)
 
     return result;
   }
@@ -231,11 +231,11 @@ export class StockService {
     dateEnd: string,
   ) {
     let range
-    const daylength = await this.stockHelperService.calculateDaysBetween(dateStart, dateEnd)
-    const abbreviatedDay = await this.stockHelperService.getAbbreviatedDay(dateEnd);
+    const daylength = await this.sH_Service.calculateDaysBetween(dateStart, dateEnd)
+    const abbreviatedDay = await this.sH_Service.getAbbreviatedDay(dateEnd);
     if(daylength<=2){
       // if(abbreviatedDay==='Sun' && !ticker.includes('USD')){
-      //   let dateStart3 = await this.stockHelperService.getDateThreeDaysAgo(dateEnd)
+      //   let dateStart3 = await this.sH_Service.getDateThreeDaysAgo(dateEnd)
       //   return await this.getfullTopost(ticker,dateStart3, dateEnd)
       // }
       range = '1min'
@@ -276,14 +276,14 @@ export class StockService {
     }
     return  this.twelvedata(ticker, range);
     // const today = new Date().toISOString().replace(/T.*$/, '');
-    // const checkToday = await this.stockHelperService.calculateDaysBetween(today, dateEnd)
+    // const checkToday = await this.sH_Service.calculateDaysBetween(today, dateEnd)
     // const rtp = await this.RTP_FINNHUB_FOR_CHART(ticker)
     // const response = await this.tryCatchF(BASE_URL, 'FMP_STOCK_API_KEY');
     // if(checkToday==0 && !ticker.includes('USD')){
     //   response.unshift(rtp);
     // }
     // return response;
-    // const result = await this.stockHelperService.returnNewData(response)
+    // const result = await this.sH_Service.returnNewData(response)
     // return result;
   }
 
@@ -296,7 +296,7 @@ export class StockService {
     const response = await this.tryCatchF(BASE_URL, 'FMP_STOCK_API_KEY');
     const data = plainToClass(DTO.ChartOutFMPDto, response?.historical)
     return data;
-    // const result = this.stockHelperService.returnNewData(data)
+    // const result = this.sH_Service.returnNewData(data)
     // return result;
   }
 
@@ -707,7 +707,7 @@ export class StockService {
     dateEnd: string,
   ){
     const timespan = '1min'
-    const dateRanges = await this.stockHelperService.getDateRanges(dateStart, dateEnd, 2);
+    const dateRanges = await this.sH_Service.getDateRanges(dateStart, dateEnd, 2);
     const urls = dateRanges.map(({ start, end }) => {
       return `https://financialmodelingprep.com/api/v3/historical-chart/${timespan}/${ticker}?from=${start}&to=${end}&apikey=`;
     });
@@ -724,16 +724,16 @@ export class StockService {
     .map((result:any) => result?.value) // Extract the results array
     .flat(); // Flatten the array of arrays into a single array
 
-    // // const result = await this.stockHelperService.returnNewData(allResults)
+    // // const result = await this.sH_Service.returnNewData(allResults)
     // this.postToFirebase(ticker,allResults,timespan, dateStart+'-to-'+dateEnd,).then(data=>{
     //   // console.log(data)
     // })
     // const data = await this.getFromFB(ticker,timespan,dateStart+'-to-'+dateEnd,)
     return allResults
-    const allResults2 = await this.stockHelperService.returnNewData(allResults)
+    const allResults2 = await this.sH_Service.returnNewData(allResults)
 
-    // const newdata = await this.stockHelperService.transformData(allResults2)
-    // const allResults = await this.stockHelperService.returnNewData(data.data)
+    // const newdata = await this.sH_Service.transformData(allResults2)
+    // const allResults = await this.sH_Service.returnNewData(data.data)
     // console.log(data.data)
     // await this.postToFirebase(ticker,newdata,timespan+'-modifire', dateStart+'-to-'+dateEnd,).then(data=>{
     //   // console.log(data)
@@ -845,9 +845,9 @@ async putToFBDynamic(endpoint:string, data: any,) {
       }
       if(ticker.includes('USD')){
         // return with 
-        // ticker = this.stockHelperService.getmatch1only(ticker)
+        // ticker = this.sH_Service.getmatch1only(ticker)
         // return this.getCoinHistory(ticker, '5m')
-        ticker = this.stockHelperService.formatSymbol(ticker)
+        ticker = this.sH_Service.formatSymbol(ticker)
       }
       let BASE_URL = `https://api.twelvedata.com/time_series?symbol=${ticker}&interval=${tem}&outputsize=600&dp=2&apikey=`;
       const response = await this.tryCatchtwelvedata(BASE_URL);
@@ -863,7 +863,7 @@ async putToFBDynamic(endpoint:string, data: any,) {
         }
         const newdata = Array.isArray(responseRe) ? [...responseRe] : [responseRe];
         const reverseData = newdata.reverse();
-        const result = await this.stockHelperService.returnNewData(reverseData)
+        const result = await this.sH_Service.returnNewData(reverseData)
         return result;
       }
       return null;
@@ -1039,7 +1039,7 @@ async putToFBDynamic(endpoint:string, data: any,) {
         excludeExtraneousValues: true,
       })
         // 2️⃣ Process data with your helper
-      const newData = await this.stockHelperService.returnNewData(dataOut);
+      const newData = await this.sH_Service.returnNewData(dataOut);
         //         // 3️⃣ Get the last two data points
       const returndata = newData.reverse();
 
@@ -1062,9 +1062,9 @@ async putToFBDynamic(endpoint:string, data: any,) {
       tem = '1month';
     }
     if(ticker.includes('USD')){
-      // ticker = this.stockHelperService.getmatch1only(ticker)
+      // ticker = this.sH_Service.getmatch1only(ticker)
       // return this.getCoinHistory(ticker, '5m')
-      ticker = this.stockHelperService.formatSymbol(ticker)
+      ticker = this.sH_Service.formatSymbol(ticker)
     }
     let BASE_URL = `https://api.twelvedata.com/time_series?symbol=${ticker}&interval=${tem}&outputsize=600&dp=2&apikey=`;
     console.log(BASE_URL)
@@ -1083,7 +1083,7 @@ async putToFBDynamic(endpoint:string, data: any,) {
           excludeExtraneousValues: true,
         })
       }
-      const newData = await this.stockHelperService.returnNewData(dataOut);
+      const newData = await this.sH_Service.returnNewData(dataOut);
       return newData.slice(-400); //
     }
     // return null;
@@ -1095,28 +1095,28 @@ async putToFBDynamic(endpoint:string, data: any,) {
     let dayStart, range;
     const number = parseInt(timefame);
     if (timefame.includes('d')) {
-      dayStart = this.stockHelperService.getDateNDaysAgo_UNC(500 + daytestBF);
+      dayStart = this.sH_Service.getDateNDaysAgo_UNC(500 + daytestBF);
       range = `${number}day`
     } else if (timefame.includes('h')) {
       if(number===1){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(22 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(22 + daytestBF);
       } else if(number ===2){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(42 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(42 + daytestBF);
       } else if(number ===4){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(83 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(83 + daytestBF);
       } else{
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(166 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(166 + daytestBF);
       }
         range = `${number}hour`
     } else if (timefame.includes('m')) {
       if(number===1){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(2 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(2 + daytestBF);
       }else if(number === 5){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(3 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(3 + daytestBF);
       } else if(number === 15){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(6 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(6 + daytestBF);
       } else {
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(12 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(12 + daytestBF);
       }
         range = `${number}min`
     } else {
@@ -1140,7 +1140,7 @@ async putToFBDynamic(endpoint:string, data: any,) {
       }
     ) as any;
     
-    const result = await this.stockHelperService.returnNewData(response);
+    const result = await this.sH_Service.returnNewData(response);
     
     const reversedData = [...result].sort(
       (a: any, b: any) =>
@@ -1212,22 +1212,22 @@ async putToFBDynamic(endpoint:string, data: any,) {
     const number = parseInt(timefame);
      if (timefame.includes('h')) {
       if(number===1){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(90 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(90 + daytestBF);
       }else if(number ===4){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(400 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(400 + daytestBF);
       } else{
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(500 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(500 + daytestBF);
       }
         range = `${number}hour`
     } else if (timefame.includes('m')) {
       if(number===1){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(2 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(2 + daytestBF);
       }else if(number === 5){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(10 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(10 + daytestBF);
       } else if(number === 15){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(25 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(25 + daytestBF);
       } else {
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(50 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(50 + daytestBF);
       }
           range = `${number}min`
     } 
@@ -1253,7 +1253,7 @@ async putToFBDynamic(endpoint:string, data: any,) {
       }
     ) as any;
     
-    const result = await this.stockHelperService.returnNewData(response);
+    const result = await this.sH_Service.returnNewData(response);
     
     const reversedData = [...result].sort(
       (a: any, b: any) =>
@@ -1269,35 +1269,35 @@ async putToFBDynamic(endpoint:string, data: any,) {
   async tiingo_CRYPTO(ticker: string, timefame: string, apikey?:string) {
     const daytestBF = 0;
     let dayStart, range;
-    const currentDate = this.stockHelperService.getDateNDaysAgo_UNC(-1)
+    const currentDate = this.sH_Service.getDateNDaysAgo_UNC(-1)
     const number = parseInt(timefame);
     if (timefame.includes('d')) {
-      dayStart = this.stockHelperService.getDateNDaysAgo_UNC(500 + daytestBF);
+      dayStart = this.sH_Service.getDateNDaysAgo_UNC(500 + daytestBF);
       range = `${number}day`
     } else if (timefame.includes('h')) {
       if(number===1){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(21 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(21 + daytestBF);
       } else if(number ===2){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(42 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(42 + daytestBF);
       } else if(number ===4){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(83 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(83 + daytestBF);
       }else{
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(166 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(166 + daytestBF);
       }
         range = `${number}hour`
     } else if (timefame.includes('m')) {
       if(number===1){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(1 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(1 + daytestBF);
       }else if(number === 5){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(2 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(2 + daytestBF);
       } else if(number === 15){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(5 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(5 + daytestBF);
       } else if(number === 30){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(10 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(10 + daytestBF);
       } else if(number === 45){
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(15 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(15 + daytestBF);
       } else{
-        dayStart = this.stockHelperService.getDateNDaysAgo_UNC(18 + daytestBF);
+        dayStart = this.sH_Service.getDateNDaysAgo_UNC(18 + daytestBF);
       }
         range = `${number}min`
     } else {
@@ -1323,7 +1323,7 @@ async putToFBDynamic(endpoint:string, data: any,) {
       }
     ) as any;
     
-    const result = await this.stockHelperService.returnNewData(response);
+    const result = await this.sH_Service.returnNewData(response);
     
     const reversedData = [...result].sort(
       (a: any, b: any) =>

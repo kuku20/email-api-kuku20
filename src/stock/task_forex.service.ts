@@ -9,7 +9,7 @@ import { WebhooksService } from 'src/webhooks/webhooks.service';
 @Injectable()
 export class TasksForexService {
   constructor(
-    private readonly stockHelperService: StockHelperService,
+    private readonly sH_Service: StockHelperService,
     private readonly LocalPLWR: LocalPLWR,
     private readonly webhooksService: WebhooksService,
   ) {}
@@ -23,7 +23,7 @@ export class TasksForexService {
     sellChannel,
     delay = 5,
   ) {
-    if (!this.stockHelperService.isForexMarketOpen()) {
+    if (!this.sH_Service.isForexMarketOpen()) {
       this.logger.log(`🕒 Forex market is CLOSED`);
       return;
     }

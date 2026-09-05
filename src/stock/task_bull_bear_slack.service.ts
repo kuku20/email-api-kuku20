@@ -11,7 +11,7 @@ export class TasksBullBearSlackOnLyService {
   allkeys = 'all'; // test
   constructor(
     private readonly webhooksService: WebhooksService,
-    private readonly stockHelperService: StockHelperService,
+    private readonly sH_Service: StockHelperService,
     private readonly LocalPLWR: LocalPLWR,
   ) {}
   private readonly logger = new Logger(TasksBullBearSlackOnLyService.name);
@@ -25,31 +25,31 @@ export class TasksBullBearSlackOnLyService {
     const addToDailyRun = await this.LocalPLWR.FireBaseApi('get',`stock-related/addToDailyRun.json`,'')
     const moreSymbols = Object.keys(addToDailyRun)
     console.log('moreSymbols',moreSymbols)
-    const todayMostGains = await this.LocalPLWR.FireBaseApi('get',`${this.stockHelperService.todayUpGains}.json`,'')
+    const todayMostGains = await this.LocalPLWR.FireBaseApi('get',`${this.sH_Service.todayUpGains}.json`,'')
     const moreSymbols2 = Object.keys(todayMostGains)
     console.log('todayMostGains',moreSymbols2)
-    this.stockHelperService.bullbearDaily = this.stockHelperService.bullbearUqiue
+    this.sH_Service.bullbearDaily = this.sH_Service.bullbearUqiue
     await this.CHECKBULL_5_15_30_1h(['ORCL'],0)
     //  await this.CHECKBULL_BEAR_OTHER_5MIN(0)
   }
 
   @Cron('*/5 9-16 * * 1-5', { timeZone: 'America/New_York' }) // washlist
   async CHECKBULL_BEAR_OTHER_5MIN(delay = 2) {
-    await this.stockHelperService.sendBatchNotification('START','checking',[this.stockHelperService.Z_US_SL_.OR],this.webhooksService,100,);
+    await this.sH_Service.sendBatchNotification('START','checking',[this.sH_Service.Z_US_SL_.OR],this.webhooksService,100,);
     await this.CHECKBULL_BEAR_OTHER(delay);
   }
 
   async CHECKBULL_BEAR_OTHER(delay=2,symbols= DataSymbols.watchlist){
-    if (this.stockHelperService.shouldRunTradingLogicUS('5min',this.logger)) {
+    if (this.sH_Service.shouldRunTradingLogicUS('5min',this.logger)) {
       return;
     }
-    this.stockHelperService.bullbearDaily = this.stockHelperService.bullbearUqiue
-    this.stockHelperService.slackPosted = []
-    this.stockHelperService.apitwelveCount = 0
+    this.sH_Service.bullbearDaily = this.sH_Service.bullbearUqiue
+    this.sH_Service.slackPosted = []
+    this.sH_Service.apitwelveCount = 0
     try {
       const addToDailyRun = await this.LocalPLWR.FireBaseApi('get',`stock-related/addToDailyRun.json`,'')
       const moreSymbols = Object.keys(addToDailyRun)
-      const todayMostGains = await this.LocalPLWR.FireBaseApi('get',`${this.stockHelperService.todayUpGains}.json`,'')
+      const todayMostGains = await this.LocalPLWR.FireBaseApi('get',`${this.sH_Service.todayUpGains}.json`,'')
       const moreSymbols2 = Object.keys(todayMostGains)
 
       const uniqueCombine =  Array.from(new Set([...moreSymbols, ...symbols]))
@@ -58,11 +58,11 @@ export class TasksBullBearSlackOnLyService {
       console.error('timeframe failed:', error);
       throw error;
     } finally{
-      console.log(this.stockHelperService.apitwelveCount)
-      // const webhooks = Object.values(this.stockHelperService.INTRA_30M_SL_)
-      const webhooks = Array.from(new Set([...this.stockHelperService.slackPosted]))
-      await this.stockHelperService.sendBatchNotification('START','dailyrunon5min',webhooks,this.webhooksService,300,);
-      this.stockHelperService.bullbearDaily = 'setto0'
+      console.log(this.sH_Service.apitwelveCount)
+      // const webhooks = Object.values(this.sH_Service.INTRA_30M_SL_)
+      const webhooks = Array.from(new Set([...this.sH_Service.slackPosted]))
+      await this.sH_Service.sendBatchNotification('START','dailyrunon5min',webhooks,this.webhooksService,300,);
+      this.sH_Service.bullbearDaily = 'setto0'
     }
   }
 
@@ -70,7 +70,7 @@ export class TasksBullBearSlackOnLyService {
     tickers: string[],
     delay = 2,
   ) {
-    this.stockHelperService.ALL_IN_ONE = true
+    this.sH_Service.ALL_IN_ONE = true
     const limit = pLimit(4); // Limit the concurrency to 8 at a time
 
     const washselllists =[...(await this.LocalPLWR.loadWashSellList()) ||
@@ -99,14 +99,14 @@ export class TasksBullBearSlackOnLyService {
             last5min?.date,
             10,
           );
-          const getLastTimePost = this.webhooksService.getTsBySymbol(ticker,this.stockHelperService.lastPosted)
+          const getLastTimePost = this.webhooksService.getTsBySymbol(ticker,this.sH_Service.lastPosted)
           const match = getLastTimePost?.ts ===  last5min?.date
           // if (!isWithinRange || match) {
-          //   await this.webhooksService.sendSlackNotification(`*T*wReveseNOAPI** <https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day|${ticker}> |${last5min.close}|${last5min?.date}* || ${getLastTimePost?.ts}`,this.stockHelperService.Z_US_SL_.OR4);
-          //   await this.stockHelperService.sleep(200);
+          //   await this.webhooksService.sendSlackNotification(`*T*wReveseNOAPI** <https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day|${ticker}> |${last5min.close}|${last5min?.date}* || ${getLastTimePost?.ts}`,this.sH_Service.Z_US_SL_.OR4);
+          //   await this.sH_Service.sleep(200);
           //   return this.CHECKBULL_5_Tiiingo([ticker],0);
           // }
-          const text_5min = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
+          const text_5min = await this.sH_Service.CHECKBULL_BEAR_ReTurnText(
               ticker,
               timeframe,
               data_5min
@@ -126,7 +126,7 @@ export class TasksBullBearSlackOnLyService {
             const postToCSLRE  = await this.webhooksService.getImageN_PSlack( 
               data_5min,
               ticker,
-              DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL_.MACDCR_100:this.stockHelperService.INTRA_30M_SL_.MACDCR_200,
+              DataSymbols.watchlist.includes(ticker)?this.sH_Service.INTRA_30M_SL_.MACDCR_100:this.sH_Service.INTRA_30M_SL_.MACDCR_200,
               `*${nextText}*`+`\n${FullText} \n`,
               '5min',
              );
@@ -135,7 +135,7 @@ export class TasksBullBearSlackOnLyService {
           } else if(text_5min.includes('BIG_🟡🟡_VOL') && text_5min.includes('bar_🟢_green')){
             // && text_5min.includes('AB🟢🟢BUYY🟢🟢')
             const data_15min = await this.LocalPLWR.TwReveseNOAPI(ticker, '15min');
-            const text_15min = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
+            const text_15min = await this.sH_Service.CHECKBULL_BEAR_ReTurnText(
               ticker,
               '15min',
               data_15min
@@ -145,7 +145,7 @@ export class TasksBullBearSlackOnLyService {
               const postToCSLRE  = await this.webhooksService.getImageN_PSlack( 
                 data_5min,
                 ticker,
-                DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL_.MACDCR_50:this.stockHelperService.INTRA_30M_SL_.MACDCR_BL,
+                DataSymbols.watchlist.includes(ticker)?this.sH_Service.INTRA_30M_SL_.MACDCR_50:this.sH_Service.INTRA_30M_SL_.MACDCR_BL,
                 `*${`BIG_🟡🟡_VOL`}*`+`\n${FullText} \n`,
                 '5min',
                );
@@ -171,7 +171,7 @@ export class TasksBullBearSlackOnLyService {
             const postToCSLRE  = await this.webhooksService.getImageN_PSlack( 
               data_5min,
               ticker,
-              this.stockHelperService.INTRA_30M_SL_.MACDCR_BL,
+              this.sH_Service.INTRA_30M_SL_.MACDCR_BL,
               `*macdCr_N_be_prepare*`+`\n${FullText} \n`,
               '5min',
              );
@@ -179,7 +179,7 @@ export class TasksBullBearSlackOnLyService {
           // } else if(text_5min.includes(checktext)){
             // send can buy: check macd call the 
             const data_15min = await this.LocalPLWR.TwReveseNOAPI(ticker, '15min');
-            const text_15min = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
+            const text_15min = await this.sH_Service.CHECKBULL_BEAR_ReTurnText(
               ticker,
               '15min',
               data_15min
@@ -189,7 +189,7 @@ export class TasksBullBearSlackOnLyService {
             if(inWt){
             // sent with good to buy check macd 0.1<0.6
               const data_30min = await this.LocalPLWR.TwReveseNOAPI(ticker, '30min');
-              const text_30min = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
+              const text_30min = await this.sH_Service.CHECKBULL_BEAR_ReTurnText(
                 ticker,
                 '30min',
                 data_30min
@@ -198,7 +198,7 @@ export class TasksBullBearSlackOnLyService {
               if(text_30min.includes('BUYY🟢🟢')|| text_30min.includes('AB🟢🟢')){
                 // sent with good to buy check macd 0.1<0.6
                 const data_1hour = await this.LocalPLWR.TwReveseNOAPI(ticker, '1hour');
-                const text_1hour = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
+                const text_1hour = await this.sH_Service.CHECKBULL_BEAR_ReTurnText(
                   ticker,
                   '1hour',
                   data_1hour
@@ -210,7 +210,7 @@ export class TasksBullBearSlackOnLyService {
                   const postToCSLRE  = await this.webhooksService.getImageN_PSlack( 
                     data_5min,
                     ticker,
-                    this.stockHelperService.INTRA_30M_SL_.ALLGREEN,
+                    this.sH_Service.INTRA_30M_SL_.ALLGREEN,
                     `*${allGreen}*`+`\n${FullText} \n`,
                     '5min',
                    );
@@ -233,7 +233,7 @@ export class TasksBullBearSlackOnLyService {
                     const postToCSLRE  = await this.webhooksService.getImageN_PSlack( 
                       data_5min,
                       ticker,
-                      this.stockHelperService.INTRA_30M_SL_.WATCH,
+                      this.sH_Service.INTRA_30M_SL_.WATCH,
                       `*5_allgreen_30BOrAb*`+`\n${FullText} \n`,
                       '5min',
                     );
@@ -256,7 +256,7 @@ export class TasksBullBearSlackOnLyService {
                     const postToCSLRE  = await this.webhooksService.getImageN_PSlack( 
                       data_5min,
                       ticker,
-                      this.stockHelperService.INTRA_30M_SL_.EARLY_CHECK,
+                      this.sH_Service.INTRA_30M_SL_.EARLY_CHECK,
                       `*5_allgreen_15_red_ab50*`+`\n${FullText} \n`,
                       '5min',
                     );
@@ -268,7 +268,7 @@ export class TasksBullBearSlackOnLyService {
                       const postToCSLRE  = await this.webhooksService.getImageN_PSlack( 
                         data_5min,
                         ticker,
-                        this.stockHelperService.INTRA_30M_SL_.EARLY_CHECK,
+                        this.sH_Service.INTRA_30M_SL_.EARLY_CHECK,
                         `*5_allgreen_15_red_ab200*`+`\n${FullText} \n`,
                         '5min',
                       );
@@ -285,7 +285,7 @@ export class TasksBullBearSlackOnLyService {
                   const postToCSLRE  = await this.webhooksService.getImageN_PSlack( 
                     data_5min,
                     ticker,
-                    this.stockHelperService.INTRA_30M_SL_.EARLY_CHECK,
+                    this.sH_Service.INTRA_30M_SL_.EARLY_CHECK,
                     `*5_allgreen_ab200_30_red*`+`\n${FullText} \n`,
                     '5min',
                   );
@@ -296,7 +296,7 @@ export class TasksBullBearSlackOnLyService {
                   const postToCSLRE  = await this.webhooksService.getImageN_PSlack( 
                     data_5min,
                     ticker,
-                    this.stockHelperService.INTRA_30M_SL_.EARLY_CHECK,
+                    this.sH_Service.INTRA_30M_SL_.EARLY_CHECK,
                     `*5_allgreen_30_red*`+`\n${FullText} \n`,
                     '5min',
                   );
@@ -310,7 +310,7 @@ export class TasksBullBearSlackOnLyService {
               const postToCSLRE  = await this.webhooksService.getImageN_PSlack( 
                 data_5min,
                 ticker,
-                this.stockHelperService.INTRA_30M_SL_.MACDCR_BL_OT,
+                this.sH_Service.INTRA_30M_SL_.MACDCR_BL_OT,
                 `*15_macdCr_N*`+`\n${FullText} \n`,
                 '5min',
               );
@@ -328,7 +328,7 @@ export class TasksBullBearSlackOnLyService {
                   const postToCSLRE  = await this.webhooksService.getImageN_PSlack( 
                     data_5min,
                     ticker,
-                    this.stockHelperService.INTRA_30M_SL_.EARLY_CHECK,
+                    this.sH_Service.INTRA_30M_SL_.EARLY_CHECK,
                     `*5_allgreen_MA200*`+`\n${FullText} \n`,
                     '5min',
                   );
@@ -339,7 +339,7 @@ export class TasksBullBearSlackOnLyService {
                   const postToCSLRE  = await this.webhooksService.getImageN_PSlack( 
                     data_5min,
                     ticker,
-                    this.stockHelperService.INTRA_30M_SL_.EARLY_CHECK,
+                    this.sH_Service.INTRA_30M_SL_.EARLY_CHECK,
                   `*5_allgreen_MACDP*`+`\n${FullText} \n`,
                     '5min',
                   );
@@ -351,7 +351,7 @@ export class TasksBullBearSlackOnLyService {
             }
           } else if(!text_5min.includes('🟢')){
             const data_1hour = await this.LocalPLWR.TwReveseNOAPI(ticker, '1hour');
-            const text_1hour = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
+            const text_1hour = await this.sH_Service.CHECKBULL_BEAR_ReTurnText(
               ticker,
               '1hour',
               data_1hour
@@ -359,7 +359,7 @@ export class TasksBullBearSlackOnLyService {
             FullText += `${text_1hour}\n`;
             if(!text_1hour.includes('🟢')){
               const data_30min = await this.LocalPLWR.TwReveseNOAPI(ticker, '30min');
-              const text_30min = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
+              const text_30min = await this.sH_Service.CHECKBULL_BEAR_ReTurnText(
                 ticker,
                 '30min',
                 data_30min
@@ -368,7 +368,7 @@ export class TasksBullBearSlackOnLyService {
               let displaytext = '5_15_all_red'
               if(!text_30min.includes('🟢')){
                 const data_15min = await this.LocalPLWR.TwReveseNOAPI(ticker, '15min');
-                const text_15min = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
+                const text_15min = await this.sH_Service.CHECKBULL_BEAR_ReTurnText(
                   ticker,
                   '15min',
                   data_15min
@@ -378,7 +378,7 @@ export class TasksBullBearSlackOnLyService {
                   const postToCSLRE  = await this.webhooksService.getImageN_PSlack( 
                     data_5min,
                     ticker,
-                    this.stockHelperService.INTRA_30M_SL_.D_DOWN,
+                    this.sH_Service.INTRA_30M_SL_.D_DOWN,
                     `*${displaytext}*`+`\n${FullText} \n`,
                     '5min',
                   );
@@ -393,7 +393,7 @@ export class TasksBullBearSlackOnLyService {
         } catch (error) {
           // Send error notification and log the error
           await this.webhooksService.sendDiscord(
-            `ERROR ${error.message} \n url: http://localhost:4200/price-log/${ticker}?daysRange=500`,
+            `ERROR ${error.message} \n url: ${this.sH_Service.local4200}/price-log/${ticker}?daysRange=500`,
             `RSIENDBOT ${ticker} at fullList`,
             'Nono',
             'ERORR_CALL',
@@ -406,14 +406,14 @@ export class TasksBullBearSlackOnLyService {
 
     // Wait for all ticker promises to complete concurrently (with concurrency limit)
     await Promise.all(tickerPromises);
-    // this.stockHelperService.ALL_IN_ONE = false
+    // this.sH_Service.ALL_IN_ONE = false
   }
 
   async CHECKBULL_5_Tiiingo(
     tickers: string[],
     delay = 2,
   ) {
-    this.stockHelperService.ALL_IN_ONE = true
+    this.sH_Service.ALL_IN_ONE = true
     const limit = pLimit(4); // Limit the concurrency to 8 at a time
 
     const washselllists =[...(await this.LocalPLWR.loadWashSellList()) ||
@@ -439,14 +439,14 @@ export class TasksBullBearSlackOnLyService {
             last5min?.date,
             10,
           );
-          const getLastTimePost = this.webhooksService.getTsBySymbol(ticker,this.stockHelperService.lastPosted)
+          const getLastTimePost = this.webhooksService.getTsBySymbol(ticker,this.sH_Service.lastPosted)
           const match = getLastTimePost?.ts ===  last5min?.date
           if (!isWithinRange || match) {
-            await this.webhooksService.sendSlackNotification(`**tiingo_US* <https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day|${ticker}> |${last5min.close}|${last5min?.date}* || ${getLastTimePost?.ts}`,this.stockHelperService.Z_US_SL_.OR4);
-            await this.stockHelperService.sleep(200);
+            await this.webhooksService.sendSlackNotification(`**tiingo_US* <https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day|${ticker}> |${last5min.close}|${last5min?.date}* || ${getLastTimePost?.ts}`,this.sH_Service.Z_US_SL_.OR4);
+            await this.sH_Service.sleep(200);
             return 0
           }
-          const text_5min = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
+          const text_5min = await this.sH_Service.CHECKBULL_BEAR_ReTurnText(
               ticker,
               timeframe,
               data_5min
@@ -475,7 +475,7 @@ export class TasksBullBearSlackOnLyService {
               '5min',
               [ticker],
               data_5min[data_5min.length-1],
-              DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL_.MACDCR_100:this.stockHelperService.INTRA_30M_SL_.MACDCR_200,
+              DataSymbols.watchlist.includes(ticker)?this.sH_Service.INTRA_30M_SL_.MACDCR_100:this.sH_Service.INTRA_30M_SL_.MACDCR_200,
               `*${nextText}*`+`\n${FullText} \n`,
               imageUlr
             );
@@ -497,7 +497,7 @@ export class TasksBullBearSlackOnLyService {
                   '5min',
                   [ticker],
                   data_5min[data_5min.length-1],
-                  DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL_.MACDCR_50:this.stockHelperService.INTRA_30M_SL_.MACDCR_BL,
+                  DataSymbols.watchlist.includes(ticker)?this.sH_Service.INTRA_30M_SL_.MACDCR_50:this.sH_Service.INTRA_30M_SL_.MACDCR_BL,
                   `*BIG_🟡🟡_VOL*`+`\n${FullText} \n`,
                   imageUlr
                 );
@@ -506,7 +506,7 @@ export class TasksBullBearSlackOnLyService {
                   '5min',
                   [ticker],
                   data_5min[data_5min.length-1],
-                  DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL_.MACDCR_50:this.stockHelperService.INTRA_30M_SL_.MACDCR_BL,
+                  DataSymbols.watchlist.includes(ticker)?this.sH_Service.INTRA_30M_SL_.MACDCR_50:this.sH_Service.INTRA_30M_SL_.MACDCR_BL,
                   `*BIG_🟡🟡_VOL*`+`\n${FullText} \n`,
                   imageUlr
                 );
@@ -529,7 +529,7 @@ export class TasksBullBearSlackOnLyService {
               '5min',
               [ticker],
               data_5min[data_5min.length-1],
-              this.stockHelperService.INTRA_30M_SL_.MACDCR_BL,
+              this.sH_Service.INTRA_30M_SL_.MACDCR_BL,
               `*macdCr_N_be_prepare*`+`\n${FullText} \n`,
               imageUlr
             );
@@ -557,7 +557,7 @@ export class TasksBullBearSlackOnLyService {
                     '5min',
                     [ticker],
                     data_5min[data_5min.length-1],
-                    this.stockHelperService.INTRA_30M_SL_.EARLY_CHECK,
+                    this.sH_Service.INTRA_30M_SL_.EARLY_CHECK,
                     `*5_allgreen_MA200*`+`\n${FullText} \n`,
                     imageUlr
                   );
@@ -581,7 +581,7 @@ export class TasksBullBearSlackOnLyService {
                     '5min',
                     [ticker],
                     data_5min[data_5min.length-1],
-                    this.stockHelperService.INTRA_30M_SL_.EARLY_CHECK,
+                    this.sH_Service.INTRA_30M_SL_.EARLY_CHECK,
                   `*5_allgreen_MACDP*`+`\n${FullText} \n`,
                   imageUlr
                   );
@@ -594,7 +594,7 @@ export class TasksBullBearSlackOnLyService {
         } catch (error) {
           // Send error notification and log the error
           await this.webhooksService.sendDiscord(
-            `ERROR ${error.message} \n url: http://localhost:4200/price-log/${ticker}?daysRange=500`,
+            `ERROR ${error.message} \n url: ${this.sH_Service.local4200}/price-log/${ticker}?daysRange=500`,
             `RSIENDBOT ${ticker} at fullList`,
             'Nono',
             'ERORR_CALL',
@@ -607,6 +607,6 @@ export class TasksBullBearSlackOnLyService {
 
     // Wait for all ticker promises to complete concurrently (with concurrency limit)
     await Promise.all(tickerPromises);
-    // this.stockHelperService.ALL_IN_ONE = false
+    // this.sH_Service.ALL_IN_ONE = false
   }
 }
