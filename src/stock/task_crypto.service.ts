@@ -47,30 +47,40 @@ export class TaskCryptoService {
 
         const lastData = data[data.length - 1];
         const secondLastData = data[data.length - 2];
-
-        await this.webhooksService.compareAndSend1hour(
-          data,
-          lastData,
-          secondLastData,
+        const isWithinRange = this.webhooksService.checktimeMinutesEST(
           ticker,
-          timeframe,
-          B_Channel,
-          HT_Channel,
+          lastData?.date,
+          13,
         );
-        // const isWithinRange = this.webhooksService.checktimeMinutesEST(
-        //   ticker,
-        //   lastData?.date,
-        //   13,
-        // );
-        // if (isWithinRange) {
-        //   await this.webhooksService.runCrOn_MA50(
-        //     data,
-        //     ticker,
-        //     timeframe,
-        //     HT_Channel,
-        //     B_Channel,
-        //   );
-        // }
+        if (isWithinRange) {
+          // await this.webhooksService.runCrOn_MA50(
+          //   data,
+          //   ticker,
+          //   timeframe,
+          //   HT_Channel,
+          //   B_Channel,
+          // );
+          const checks1 = await this.stratery_2Service.secondCheck(ticker,data,timeframe,this.webhooksService,
+            [ B_Channel,
+              HT_Channel,
+              B_Channel,
+              HT_Channel,],
+            [],
+            true,
+            'TwReveseNOAPI'
+          )
+          if(!checks1){
+            await this.webhooksService.compareAndSend1hour(
+              data,
+              lastData,
+              secondLastData,
+              ticker,
+              timeframe,
+              B_Channel,
+              HT_Channel,
+            );
+          }
+        }
         this.logger.log(`${ticker} processed successfully.`);
       } catch (error) {
         this.webhooksService.sendDiscord(
@@ -128,13 +138,23 @@ export class TaskCryptoService {
             );
           if (BuyOnly_StochRSICrossAB200.PriceCrMA200) {
             await this.webhooksService.sendDiscord(
-              `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA200 -${timeframe}-${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+              `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA200-TwReveseNOAPI-${timeframe}-${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
               `${ticker}-ON-${timeframe}-${lastData?.close}`,
               lastData,
               HT_Channel,
               data,
             );
             return;
+          } else{
+            await this.stratery_2Service.secondCheck(ticker,data,timeframe,this.webhooksService,
+              [ B_Channel,
+                HT_Channel,
+                B_Channel,
+                HT_Channel,],
+              [],
+              true,
+              `TwReveseNOAPI`
+            )
           }
         }
         this.logger.log(`${ticker} processed successfully.`);
@@ -379,13 +399,26 @@ export class TaskCryptoService {
         let data  = this.LocalPLWR.getTickerData(result, ticker.toLowerCase());
         const lastData = data[data.length - 1];
         const secondLastData = data[data.length - 2];
+        const isWithinRange = this.webhooksService.checktimeMinutesCST(
+          ticker,
+          lastData?.date,
+          28,
+        );
+        if (isWithinRange) {
+          // await this.webhooksService.runCrOn_MA50(
+          //   data,
+          //   ticker,
+          //   timeframe,
+          //   HT_Channel,
+          //   B_Channel,
+          // );
         const checks1 = await this.stratery_2Service.secondCheck(ticker,data,timeframe,this.webhooksService,
           [ B_Channel,
             HT_Channel,
             B_Channel,
             HT_Channel,],
           [],
-          true
+          true,'tiingo'
         )
         if(!checks1){
           await this.webhooksService.compareAndSend1hour(
@@ -398,20 +431,9 @@ export class TaskCryptoService {
             HT_Channel,
           );
         }
-        // const isWithinRange = this.webhooksService.checktimeMinutesCST(
-        //   ticker,
-        //   lastData?.date,
-        //   13,
-        // );
-        // if (isWithinRange) {
-        //   await this.webhooksService.runCrOn_MA50(
-        //     data,
-        //     ticker,
-        //     timeframe,
-        //     HT_Channel,
-        //     B_Channel,
-        //   );
-        // }
+        } else{
+          await this.processTickers1hour([ticker], timeframe, apikey,B_Channel, HT_Channel, 0)
+        }
         this.logger.log(`${ticker} processed successfully.`);
       } catch (error) {
         this.webhooksService.sendDiscord(
@@ -456,9 +478,9 @@ export class TaskCryptoService {
         const isWithinRange = this.webhooksService.checktimeMinutesCST(
           ticker,
           lastData?.date,
-          20,
+          13,
         );
-        if (true) {
+        if (isWithinRange) {
           const BuyOnly_StochRSICrossAB200 =
             await this.sH_Service.BuyOnly_StochRSICrossAB200(
               lastData,
@@ -466,7 +488,7 @@ export class TaskCryptoService {
             );
           if (BuyOnly_StochRSICrossAB200.PriceCrMA200) {
             await this.webhooksService.sendDiscord(
-              `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA200-isWithinRange:${isWithinRange}-${timeframe}-${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+              `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA200-tiingoAPI-${timeframe}-${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
               `${ticker}-ON-${timeframe}-${lastData?.close}`,
               lastData,
               HT_Channel,
@@ -481,9 +503,11 @@ export class TaskCryptoService {
                 HT_Channel,],
               [],
               true,
-              `-isWithinRange:${isWithinRange}`
+              `tiingoAPI`
             )
           }
+        } else{
+           await this.processTickers15m([ticker],timeframe,apikey,B_Channel,HT_Channel,0)
         }
         this.logger.log(`${ticker} processed successfully.`);
       } catch (error) {
