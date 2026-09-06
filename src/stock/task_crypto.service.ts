@@ -5,6 +5,7 @@ import axios from 'axios';
 import { StockHelperService } from './stockHelper.service';
 import { LocalPLWR } from './runlocal.service';
 import { WebhooksService } from 'src/webhooks/webhooks.service';
+import { Stratery_2Service } from './strategy/strategy2.service';
 
 @Injectable()
 export class TaskCryptoService {
@@ -12,6 +13,7 @@ export class TaskCryptoService {
     private readonly sH_Service: StockHelperService,
     private readonly webhooksService: WebhooksService,
     private readonly LocalPLWR: LocalPLWR,
+    private readonly stratery_2Service: Stratery_2Service,
   ) {}
   private readonly logger = new Logger(TaskCryptoService.name);
 
@@ -377,15 +379,25 @@ export class TaskCryptoService {
         let data  = this.LocalPLWR.getTickerData(result, ticker.toLowerCase());
         const lastData = data[data.length - 1];
         const secondLastData = data[data.length - 2];
-        await this.webhooksService.compareAndSend1hour(
-          data,
-          lastData,
-          secondLastData,
-          ticker,
-          timeframe,
-          B_Channel,
-          HT_Channel,
-        );
+        const checks1 = await this.stratery_2Service.secondCheck(ticker,data,timeframe,this.webhooksService,
+          [ B_Channel,
+            HT_Channel,
+            B_Channel,
+            HT_Channel,],
+          [],
+          true
+        )
+        if(!checks1){
+          await this.webhooksService.compareAndSend1hour(
+            data,
+            lastData,
+            secondLastData,
+            ticker,
+            timeframe,
+            B_Channel,
+            HT_Channel,
+          );
+        }
         // const isWithinRange = this.webhooksService.checktimeMinutesCST(
         //   ticker,
         //   lastData?.date,
@@ -461,6 +473,15 @@ export class TaskCryptoService {
               data,
             );
             return;
+          } else{
+            return this.stratery_2Service.secondCheck(ticker,data,timeframe,this.webhooksService,
+              [ B_Channel,
+                HT_Channel,
+                B_Channel,
+                HT_Channel,],
+              [],
+              true
+            )
           }
         }
         this.logger.log(`${ticker} processed successfully.`);

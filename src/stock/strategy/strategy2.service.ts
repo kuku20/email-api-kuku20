@@ -79,7 +79,7 @@ export class Stratery_2Service {
           DC_Channel_BIG_VOL,
           data_5min,
         );
-        if(NotPostToSlack){return}
+        if(NotPostToSlack){return true}
         const imageUlr =
           discodedata?.embeds?.[0]?.image?.url ||
           (discodedata?.attachments ?? discodedata?.attachments?.first()?.url);
@@ -129,7 +129,7 @@ export class Stratery_2Service {
         // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
         // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
         // await webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
-        return
+        return true
       }
     } else if (text_5min.includes('CrAbMA50')) {
       let nextText = 'PREPARE_TO_BUY_50:';
@@ -145,7 +145,7 @@ export class Stratery_2Service {
         DC_Channel_CrAbMA50,
         data_5min,
       ); //       imageUrl = sentMessage.embeds[0]?.image?.url || sentMessage.attachments.first()?.url;
-      if(NotPostToSlack){return}
+      if(NotPostToSlack){return true}
       const imageUlr =
         discodedata?.embeds?.[0]?.image?.url ||
         (discodedata?.attachments ?? discodedata?.attachments?.first()?.url);
@@ -163,7 +163,7 @@ export class Stratery_2Service {
       );
       // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
       // await webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
-      return
+      return true
     } else if (text_5min.includes('macdCr_N')) {
       const discodedata = await webhooksService.sendDiscord(
         `**macdCr_N_be_prepare**` + FullText,
@@ -172,7 +172,7 @@ export class Stratery_2Service {
         DC_Channel_macdCr_N,
         data_5min,
       );
-      if(NotPostToSlack){return}
+      if(NotPostToSlack){return true}
       const imageUlr =
         discodedata?.embeds?.[0]?.image?.url ||
         (discodedata?.attachments ?? discodedata?.attachments?.first()?.url);
@@ -188,7 +188,7 @@ export class Stratery_2Service {
         `*macdCr_N_be_prepare*` + `\n${FullText} \n`,
         imageUlr,
       );
-      return
+      return true
     } else if (!text_5min.includes('🔴')) {
       // } else if(text_5min.includes(checktext)){
       // send can buy: check macd call the
@@ -235,7 +235,7 @@ export class Stratery_2Service {
               DC_Channel_ALL_GREEN,
               data_5min,
             );
-            if(NotPostToSlack){return}
+            if(NotPostToSlack){return true}
             const imageUlr =
               discodedata?.embeds?.[0]?.image?.url ||
               (discodedata?.attachments ??
@@ -278,7 +278,7 @@ export class Stratery_2Service {
                 'b',
               );
             }
-            return;
+            return true;
           } else if ( text_30min.includes('BUYY🟢🟢') || text_30min.includes('AB🟢🟢')) {
             // sent with good to buy check macd 0.1<0.6
             // send to watchlist
@@ -289,7 +289,7 @@ export class Stratery_2Service {
               DC_Channel_WATCH,
               data_5min,
             );
-            if(NotPostToSlack){return}
+                  if(NotPostToSlack){return true}
             const imageUlr =
               discodedata?.embeds?.[0]?.image?.url ||
               (discodedata?.attachments ??
@@ -332,7 +332,7 @@ export class Stratery_2Service {
                 'b',
               );
             }
-            return;
+            return true;
           } else {
             console.log('stop at 15:5_allgreen_15_red');
             // buy earlly if
@@ -344,7 +344,7 @@ export class Stratery_2Service {
                 DC_Channel_EARLY_CHECK,
                 data_5min,
               );
-              if(NotPostToSlack){return}
+              if(NotPostToSlack){return true}
               const imageUlr =
                 discodedata?.embeds?.[0]?.image?.url ||
                 (discodedata?.attachments ??
@@ -364,7 +364,7 @@ export class Stratery_2Service {
               // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
               // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
               // await webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
-              return
+              return true
             } else if (MACDP && closeCrosMA200) {
               const discodedata = await webhooksService.sendDiscord(
                 '*5_allgreen_15_red_ab200*' + FullText,
@@ -373,7 +373,7 @@ export class Stratery_2Service {
                 DC_Channel_EARLY_CHECK,
                 data_5min,
               );
-              if(NotPostToSlack){return}
+              if(NotPostToSlack){return true}
               const imageUlr =
                 discodedata?.embeds?.[0]?.image?.url ||
                 (discodedata?.attachments ??
@@ -393,8 +393,9 @@ export class Stratery_2Service {
               // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
               // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
               // await webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
-              return
-            } else return;
+              return true
+            } 
+            else return false;
           }
         } else {
           console.log('stop at 30:5_allgreen_30_red');
@@ -407,7 +408,7 @@ export class Stratery_2Service {
               DC_Channel_EARLY_CHECK,
               data_5min,
             );
-            if(NotPostToSlack){return}
+            if(NotPostToSlack){return true}
             const imageUlr =
               discodedata?.embeds?.[0]?.image?.url ||
               (discodedata?.attachments ??
@@ -427,7 +428,7 @@ export class Stratery_2Service {
             // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
             // // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
             // await webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
-            return
+            return true
           } else if (MACDP) {
             const discodedata = await webhooksService.sendDiscord(
               '*5_allgreen_30_red*' + FullText,
@@ -436,7 +437,7 @@ export class Stratery_2Service {
               DC_Channel_EARLY_CHECK,
               data_5min,
             );
-            if(NotPostToSlack){return}
+            if(NotPostToSlack){return true}
             const imageUlr =
               discodedata?.embeds?.[0]?.image?.url ||
               (discodedata?.attachments ??
@@ -456,9 +457,10 @@ export class Stratery_2Service {
             // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
             // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
             // await webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
-            return
-          } else return;
+            return true
+          } else return false;
         }
+        return false
       } else if (text_15min.includes('macdCr_N')) {
         const discodedata = await webhooksService.sendDiscord(
           '*15_macdCr_N*' + FullText,
@@ -467,7 +469,7 @@ export class Stratery_2Service {
           DC_Channel_MACDCR_BL_OT,
           data_5min,
         );
-        if(NotPostToSlack){return}
+        if(NotPostToSlack){return true}
         const imageUlr =
           discodedata?.embeds?.[0]?.image?.url ||
           (discodedata?.attachments ?? discodedata?.attachments?.first()?.url);
@@ -486,7 +488,7 @@ export class Stratery_2Service {
         // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
         // // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
         // await webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
-        return
+        return true
       } else {
         console.log('stop at 15: 5_allgreen');
         // buy earlly if
@@ -508,7 +510,7 @@ export class Stratery_2Service {
             DC_Channel_EARLY_CHECK,
             data_5min,
           );
-          if(NotPostToSlack){return}
+          if(NotPostToSlack){return true}
           const imageUlr =
             discodedata?.embeds?.[0]?.image?.url ||
             (discodedata?.attachments ??
@@ -528,7 +530,7 @@ export class Stratery_2Service {
           // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
           // // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
           // await webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
-          return
+          return true
         } else if (MACDP) {
           const discodedata = await webhooksService.sendDiscord(
             '*5_allgreen_MACDP*' + FullText,
@@ -537,7 +539,7 @@ export class Stratery_2Service {
             DC_Channel_EARLY_CHECK,
             data_5min,
           );
-          if(NotPostToSlack){return}
+          if(NotPostToSlack){return true}
           const imageUlr =
             discodedata?.embeds?.[0]?.image?.url ||
             (discodedata?.attachments ??
@@ -557,9 +559,9 @@ export class Stratery_2Service {
           // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
           // // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
           // await webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
-          return
+          return true
         }
-        return;
+        return false;
       }
     } else if (!text_5min.includes('🟢')) {
       const data_1hour = await LocalPLWR.TwReveseNOAPI(ticker, timeframes[3]);
@@ -597,7 +599,7 @@ export class Stratery_2Service {
               DC_Channel_ALL_RED,
               data_5min,
             );
-            if(NotPostToSlack){return}
+            if(NotPostToSlack){return true}
             const imageUlr =
               discodedata?.embeds?.[0]?.image?.url ||
               (discodedata?.attachments ??
@@ -614,13 +616,15 @@ export class Stratery_2Service {
               `*${displaytext}*` + `\n${FullText} \n`,
               imageUlr,
             );
+            return true
           }
         }
+        return false
       }
     } else {
       console.log('stop at 5', FullText);
-      return;
-    }
+      return false;
+    } return false
   }
 
   async secondCheck(
@@ -666,7 +670,7 @@ export class Stratery_2Service {
           DC_Channel_BIG_VOL,
           data_5min,
         );
-        if(NotPostToSlack){return}
+        if(NotPostToSlack){return true}
         const imageUlr =
           discodedata?.embeds?.[0]?.image?.url ||
           (discodedata?.attachments ?? discodedata?.attachments?.first()?.url);
@@ -692,6 +696,7 @@ export class Stratery_2Service {
             imageUlr,
           );
         }
+        return true
       }
     } else if (text_5min.includes('CrAbMA50')) {
       let nextText = 'PREPARE_TO_BUY_50:';
@@ -707,7 +712,7 @@ export class Stratery_2Service {
         DC_Channel_CrAbMA50,
         data_5min,
       ); //       imageUrl = sentMessage.embeds[0]?.image?.url || sentMessage.attachments.first()?.url;
-      if(NotPostToSlack){return}
+      if(NotPostToSlack){return true}
       const imageUlr =
         discodedata?.embeds?.[0]?.image?.url ||
         (discodedata?.attachments ?? discodedata?.attachments?.first()?.url);
@@ -723,6 +728,7 @@ export class Stratery_2Service {
         `*${nextText}*` + `\n${FullText} \n`,
         imageUlr,
       );
+      return true
     } else if (text_5min.includes('macdCr_N')) {
       const discodedata = await webhooksService.sendDiscord(
         `**macdCr_N_be_prepare**` + FullText,
@@ -731,7 +737,7 @@ export class Stratery_2Service {
         DC_Channel_macdCr_N,
         data_5min,
       );
-      if(NotPostToSlack){return}
+      if(NotPostToSlack){return true}
       const imageUlr =
         discodedata?.embeds?.[0]?.image?.url ||
         (discodedata?.attachments ?? discodedata?.attachments?.first()?.url);
@@ -747,6 +753,7 @@ export class Stratery_2Service {
         `*macdCr_N_be_prepare*` + `\n${FullText} \n`,
         imageUlr,
       );
+      return true
     } else if (!text_5min.includes('🔴')) {
       console.log('stop at 15: 5_allgreen');
       // buy earlly if
@@ -768,7 +775,7 @@ export class Stratery_2Service {
           DC_Channel_EARLY_CHECK,
           data_5min,
         );
-        if(NotPostToSlack){return}
+        if(NotPostToSlack){return true}
         const imageUlr =
           discodedata?.embeds?.[0]?.image?.url ||
           (discodedata?.attachments ?? discodedata?.attachments?.first()?.url);
@@ -787,6 +794,7 @@ export class Stratery_2Service {
         // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
         // // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
         // await webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
+        return true
       } else if (MACDP) {
         const discodedata = await webhooksService.sendDiscord(
           '*5_allgreen_MACDP*' + FullText,
@@ -795,7 +803,7 @@ export class Stratery_2Service {
           DC_Channel_EARLY_CHECK,
           data_5min,
         );
-        if(NotPostToSlack){return}
+        if(NotPostToSlack){return true}
         const imageUlr =
           discodedata?.embeds?.[0]?.image?.url ||
           (discodedata?.attachments ?? discodedata?.attachments?.first()?.url);
@@ -811,11 +819,13 @@ export class Stratery_2Service {
           `*5_allgreen_MACDP*` + `\n${FullText} \n`,
           imageUlr,
         );
+        return true
       }
-      return;
+      return false;
     } else {
       console.log('stop at 5', FullText);
-      return;
+      return false;
     }
+    return false
   }
 }
