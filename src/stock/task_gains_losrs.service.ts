@@ -13,7 +13,7 @@ export class TasksGainsLosersService {
   allkeys = 'all'; // test
   constructor(
     private readonly webhooksService: WebhooksService,
-    private readonly stockHelperService: StockHelperService,
+    private readonly sH_Service: StockHelperService,
     private readonly LocalPLWR: StockService,
   ) {}
   private readonly logger = new Logger(TasksGainsLosersService.name);
@@ -24,10 +24,10 @@ export class TasksGainsLosersService {
   sendORnot = [];
   @Cron('*/6 9-16 * * 1-5', { timeZone: 'America/New_York' }) // washlist
   async getGainsLosers() {
-    if (!this.stockHelperService.shouldRunTradingLogicUS(`5min`, this.logger)) {
+    if (!this.sH_Service.shouldRunTradingLogicUS(`5min`, this.logger)) {
       return;
     }
-    this.stockHelperService.PostWebSlack = false
+    this.sH_Service.PostWebSlack = false
     this.sendORnot = [];
 
     const gainersClass = await this.LocalPLWR.newFMP_NewEndPoint('gainers');
@@ -44,7 +44,7 @@ export class TasksGainsLosersService {
         if (indata === 'null') {
           await this.LocalPLWR.FireBaseApi(
             'put',
-            `${this.stockHelperService.todayUpGains}/${ticker}.json`,
+            `${this.sH_Service.todayUpGains}/${ticker}.json`,
             { data: each },
           );
 
@@ -55,7 +55,7 @@ export class TasksGainsLosersService {
           );
 
           let text_5min =
-            await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
+            await this.sH_Service.CHECKBULL_BEAR_ReTurnText(
               ticker,
               timeframe,
               data_5min,
@@ -80,8 +80,8 @@ export class TasksGainsLosersService {
           }
 
           const webhook = DataSymbols.watchlist.includes(ticker)
-            ? this.stockHelperService.Z_US_SL_['4h_3C_AB']
-            : this.stockHelperService.Z_US_SL_['4h_3C_BL'];
+            ? this.sH_Service.Z_US_SL_['4h_3C_AB']
+            : this.sH_Service.Z_US_SL_['4h_3C_BL'];
 
           await this.webhooksService.sendSlackNotificationVN(
             '5min',
@@ -100,28 +100,28 @@ export class TasksGainsLosersService {
 
     const webhooks = [...new Set(this.sendORnot)];
 
-    await this.stockHelperService.sendBatchNotification(
+    await this.sH_Service.sendBatchNotification(
       'START',
       'checking',
       webhooks,
       this.webhooksService,
       100,
     );
-    this.stockHelperService.PostWebSlack = true
+    this.sH_Service.PostWebSlack = true
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async deleteFB() {
     await this.LocalPLWR.FireBaseApi(
       'delete',
-      `${this.stockHelperService.todayUpGains}.json`,
+      `${this.sH_Service.todayUpGains}.json`,
       {},
     );
   }
   async getSymbol(symbol: string) {
     return await this.LocalPLWR.FireBaseApi(
       'get',
-      `${this.stockHelperService.todayUpGains}/${symbol}.json`,
+      `${this.sH_Service.todayUpGains}/${symbol}.json`,
       {},
     );
   }

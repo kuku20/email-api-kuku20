@@ -17,7 +17,11 @@ export class ChartOutTiingo {
 
   @Expose({ name: 'high' })
   high: number;
-
+  
+  @Expose({ name: 'volume' })
+  @Transform(({ value }) => (value ? Number(value) : 0))
+  volume: number;
+  
   @Expose({ name: 'date' })
   @Transform(({ value }) => {
     if (!value) return null;

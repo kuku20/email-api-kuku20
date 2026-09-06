@@ -11,7 +11,7 @@ export class TasksService {
   private readonly logger = new Logger(TasksService.name);
   constructor(
     private readonly webhooksService: WebhooksService,
-    private readonly stockHelperService: StockHelperService,
+    private readonly sH_Service: StockHelperService,
     private readonly LocalPLWR: LocalPLWR,
   ) {
     setInterval(() => {
@@ -86,7 +86,7 @@ export class TasksService {
       this.logger.log(`Don't have symbol ${timeframe} check (${now} ET)`);
       return;
     }
-    if (!this.stockHelperService.isMarketOpen()) {
+    if (!this.sH_Service.isMarketOpen()) {
       this.logger.log(
         `🕒 Market closed — skipping ${timeframe} check (${now} ET)`,
       );
@@ -382,7 +382,7 @@ export class TasksService {
   async deleteFB() {
     await this.LocalPLWR.FireBaseApi(
       'delete',
-      `${this.stockHelperService.todayUpGains}.json`,
+      `${this.sH_Service.todayUpGains}.json`,
       {},
     );
   }

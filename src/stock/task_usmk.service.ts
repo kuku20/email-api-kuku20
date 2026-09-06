@@ -37,7 +37,7 @@ export class TasksUSMKService {
   constructor(
     private readonly configService: ConfigService,
     private readonly webhooksService: WebhooksService,
-    private readonly stockHelperService: StockHelperService,
+    private readonly sH_Service: StockHelperService,
     private readonly LocalPLWR: LocalPLWR,
   ) {}
   private readonly logger = new Logger(TasksUSMKService.name);
@@ -57,7 +57,7 @@ export class TasksUSMKService {
       this.logger.log(`Don't have symbol ${timeframe} check (${now} ET)`);
       return;
     }
-    if (!this.stockHelperService.isMarketOpen()) {
+    if (!this.sH_Service.isMarketOpen()) {
       this.logger.log(
         `🕒 Market closed — skipping ${timeframe} check (${now} ET)`,
       );

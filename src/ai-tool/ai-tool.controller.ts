@@ -1,5 +1,18 @@
-import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  UseGuards,
+  Res,
+} from '@nestjs/common';
+
+import { Response } from 'express';
+import axios from 'axios';
+
 import { AiToolService } from './ai-tool.service';
+
 import { JwtGuard } from 'src/auth/guard';
 import { AdminUserAuthGuard } from 'src/stock-user/guard';
 
@@ -54,4 +67,5 @@ export class AiToolController {
   getfb(@Param('id') id: string, @Param('type') type: string) {
     return this.aiToolService.getFromFB(id, type);
   }
+
 }

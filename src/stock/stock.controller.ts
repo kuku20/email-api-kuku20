@@ -229,7 +229,7 @@ export class StockController {
       }else{
         data = await this.stockService.getTickerFullChart_POLYGON(query.stockTicker, query.start, query.end );
       }
-      // const result = await this.stockHelperService.returnNewData(data)
+      // const result = await this.sH_Service.returnNewData(data)
       return data;
     } catch (error) {
       // Handle errors here
@@ -473,6 +473,40 @@ export class StockController {
       return data;
     } catch (error) {
       this.loacl.sendTemporaryWebhook(Query.ticker, JSON.stringify(params)+'/eodhd')
+      throw error;
+    }
+  }
+  
+  @Get('/tiingo-us')
+  async tiingo_US(
+    @Param() params: any,
+    @Query() Query: RequestDTO.TIMEFRAME_SYMBOL,
+  ) {
+    if(this.loacl.washSell30.includes(Query.ticker)) return [    {
+      "error": " in wash sell list",
+  } ]
+    try {
+      let data = await this.loacl.tiingo_US(Query.ticker.toLowerCase(), Query.timeframe);;
+      return data;
+    } catch (error) {
+      this.loacl.sendTemporaryWebhook(Query.ticker, JSON.stringify(params)+'/tiingo')
+      throw error;
+    }
+  }
+
+  @Get('/tiingo-crypto')
+  async tiingo_CRYPTO(
+    @Param() params: any,
+    @Query() Query: RequestDTO.TIMEFRAME_SYMBOL,
+  ) {
+    if(this.loacl.washSell30.includes(Query.ticker)) return [    {
+      "error": " in wash sell list",
+  } ]
+    try {
+      let data = await this.loacl.tiingo_CRYPTO_M_TICKER_STR(Query.ticker.toLowerCase(), Query.timeframe,'5f7e0b2da2b5c849dfd5a3dc7938b82c02a7c6f4');;
+      return data;
+    } catch (error) {
+      this.loacl.sendTemporaryWebhook(Query.ticker, JSON.stringify(params)+'/tiingo')
       throw error;
     }
   }

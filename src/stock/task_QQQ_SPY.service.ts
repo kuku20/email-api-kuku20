@@ -6,13 +6,16 @@ import { LocalPLWR } from './runlocal.service';
 import { WebhooksService } from 'src/webhooks/webhooks.service';
 import * as DataSymbols from './dto/chartData';
 import pLimit from 'p-limit';
+import { Stratery_2Service } from './strategy/strategy2.service';
+
 @Injectable()
 export class TaskQQQ_SPYService {
   allkeys = 'all'; // test
   constructor(
     private readonly webhooksService: WebhooksService,
-    private readonly stockHelperService: StockHelperService,
+    private readonly sH_Service: StockHelperService,
     private readonly LocalPLWR: LocalPLWR,
+    private readonly stratery_2Service: Stratery_2Service,
   ) {}
   private readonly logger = new Logger(TaskQQQ_SPYService.name);
   endpointFolder = 'stock-price-check';
@@ -40,11 +43,11 @@ export class TaskQQQ_SPYService {
     await this.CHECKBULL_BEAR(4,'30min',);
   }
   async CHECKBULL_BEAR(delay=2,timeframe = '5min',tickers= ['QQQ']){
-    if (!this.stockHelperService.shouldRunTradingLogicUS(timeframe,this.logger)) {
+    if (!this.sH_Service.shouldRunTradingLogicUS(timeframe,this.logger)) {
       return;
     }
     try {
-      this.stockHelperService.PostWebSlack = false
+      this.sH_Service.PostWebSlack = false
       await this.CHECKBULL_BEAR_processTickers(
         tickers,
         timeframe,
@@ -54,7 +57,7 @@ export class TaskQQQ_SPYService {
       console.error('timeframe failed:', error);
       throw error;
     } finally{
-      this.stockHelperService.PostWebSlack = true
+      this.sH_Service.PostWebSlack = true
     }
   }
   private async CHECKBULL_BEAR_processTickers(
@@ -78,15 +81,35 @@ export class TaskQQQ_SPYService {
             lastData?.date,
             10,
           );
-          const getLastTimePost = this.webhooksService.getTsBySymbol(ticker,this.stockHelperService.lastPosted)
+          const getLastTimePost = this.webhooksService.getTsBySymbol(ticker,this.sH_Service.lastPosted)
           const match = getLastTimePost?.ts ===  lastData?.date
           if (!isWithinRange || match) {
-            await this.webhooksService.sendSlackNotification(`* <https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day|${ticker}> |${lastData.close}|${lastData?.date}* || ${getLastTimePost?.ts}`,this.stockHelperService.Z_US_SL_.OR4);
-            await this.stockHelperService.sleep(200);
+            await this.webhooksService.sendSlackNotification(`* <https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day|${ticker}> |${lastData.close}|${lastData?.date}* || ${getLastTimePost?.ts}`,this.sH_Service.Z_US_SL_.OR4);
+            await this.sH_Service.sleep(200);
             return 0
           }
-          const channel = ticker==='QQQ'? this.stockHelperService.BULL_BEAR_SL_.QQQ : this.stockHelperService.BULL_BEAR_SL_.SPY
-          const text = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(ticker,timeframe,data)
+          const channel = ticker==='QQQ'? this.sH_Service.BULL_BEAR_SL_.QQQ : this.sH_Service.BULL_BEAR_SL_.SPY
+          const dc_channel = ticker==='QQQ'?'TSLA':'SMCI'
+          const text = await this.sH_Service.CHECKBULL_BEAR_ReTurnText(ticker,timeframe,data)
+          const checks1 = await this.stratery_2Service.FristCheck(
+            ticker,
+            data,
+            ['5min','15min','30min','1hour'],
+            this.LocalPLWR,
+            this.webhooksService,
+            [ dc_channel,
+              dc_channel,
+              dc_channel,
+              dc_channel,],
+            [channel,
+              channel,
+              channel,
+              channel,],
+          )
+          if(checks1){
+            return 
+          }
+
           await this.webhooksService.sendSlackNotificationVN(
             timeframe,
             [ticker],
@@ -96,19 +119,19 @@ export class TaskQQQ_SPYService {
           );
           const time = new Date().toLocaleString('en-US', {timeZone: 'America/New_York',});
           this.webhooksService.sendSlackNotification(text, channel);
-          const text2NDLAST = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(ticker,timeframe,data.slice(0, -1))
-          // await this.webhooksService.sendDiscord(
-          //   `${text.substring(0,10)}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
-          //   `${ticker}-ON-${timeframe}-${text.substring(0,10)}`,
-          //   lastData,
-          //   ticker==='QQQ'?'TSLA':'SMCI', 
-          //   null,
-          // );
+          const text2NDLAST = await this.sH_Service.CHECKBULL_BEAR_ReTurnText(ticker,timeframe,data.slice(0, -1))
+          await this.webhooksService.sendDiscord(
+            `${text.substring(0,10)}-${timeframe}(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+            `${ticker}-ON-${timeframe}-${text.substring(0,10)}`,
+            lastData,
+            dc_channel, 
+            null,
+          );
           await this.webhooksService.sendDiscord(
             `--------------------${text +'=='+time}---------------------------`,
             `RSIENDBOT ${ticker} at ${timeframe}`,
             'Nono',
-            ticker==='QQQ'?'TSLA':'SMCI', 
+            dc_channel, 
           );
           if(text.includes('SELL🔴🔴BL🔴🔴SELL🔴🔴')){
             const postToCSLRE = {
@@ -123,7 +146,7 @@ export class TaskQQQ_SPYService {
               ];
             
               for (const timeframe of timeframes) {
-                await this.stockHelperService.CHECKBULL_BEAR_processTickers(
+                await this.sH_Service.CHECKBULL_BEAR_processTickers(
                   this.LocalPLWR,
                   this.webhooksService,
                   ticker,
@@ -131,18 +154,18 @@ export class TaskQQQ_SPYService {
                   postToCSLRE
                 );
               }
-              this.stockHelperService.bullbearDaily = this.stockHelperService.bullbearUqiue
+              this.sH_Service.bullbearDaily = this.sH_Service.bullbearUqiue
               this.webhooksService.sendSlackNotification(`GODOWN...WAIT:CONSIDER BUY PUT; WAIT THE NEXT ${timeframe}.`, channel)
               await this.webhooksService.sendDiscord(
                 `--------------------${`GODOWN...WAIT:CONSIDER BUY PUT; WAIT THE NEXT ${timeframe}.` +'=='+time}---------------------------`,
                 `RSIENDBOT ${ticker} at ${timeframe}`,
                 'Nono',
-                ticker==='QQQ'?'TSLA':'SMCI', 
+                dc_channel, 
               );
-              this.stockHelperService.bullbearDaily = "this.stockHelperService.bullbearUqiue"
+              this.sH_Service.bullbearDaily = "this.sH_Service.bullbearUqiue"
             }
           } else if(text.includes('BUY🟢🟢AB🟢🟢') || text.includes('BL50_BUYY🟢🟢🟢🔴🔴')){
-            const text2NDLAST = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(ticker,timeframe,data.slice(0, -1))
+            const text2NDLAST = await this.sH_Service.CHECKBULL_BEAR_ReTurnText(ticker,timeframe,data.slice(0, -1))
             const postToCSLRE = {
               channel:channel
             }
@@ -155,7 +178,7 @@ export class TaskQQQ_SPYService {
               ];
             
               for (const timeframe of timeframes) {
-                await this.stockHelperService.CHECKBULL_BEAR_processTickers(
+                await this.sH_Service.CHECKBULL_BEAR_processTickers(
                   this.LocalPLWR,
                   this.webhooksService,
                   ticker,
@@ -163,19 +186,19 @@ export class TaskQQQ_SPYService {
                   postToCSLRE
                 );
               }
-              this.stockHelperService.bullbearDaily = this.stockHelperService.bullbearUqiue
+              this.sH_Service.bullbearDaily = this.sH_Service.bullbearUqiue
               this.webhooksService.sendSlackNotification(`GOUP...WAIT:CONSIDER BUY CALL; WAIT THE NEXT ${timeframe}.`, channel)
               await this.webhooksService.sendDiscord(
                 `--------------------${`GOUP...WAIT:CONSIDER BUY CALL; WAIT THE NEXT ${timeframe}.` +'=='+time}---------------------------`,
                 `RSIENDBOT ${ticker} at ${timeframe}`,
                 'Nono',
-                ticker==='QQQ'?'TSLA':'SMCI', 
+                dc_channel, 
               );
-              this.stockHelperService.bullbearDaily = 'this.stockHelperService.bullbearUqiue'
+              this.sH_Service.bullbearDaily = 'this.sH_Service.bullbearUqiue'
             }
           } 
           if(!text2NDLAST.includes('🔴') && text.includes('🔴')){
-            this.stockHelperService.bullbearDaily = this.stockHelperService.bullbearUqiue
+            this.sH_Service.bullbearDaily = this.sH_Service.bullbearUqiue
             // green go red, buy put
             await this.webhooksService.sendSlackNotificationVN(
               timeframe,
@@ -184,9 +207,9 @@ export class TaskQQQ_SPYService {
               channel,
               '*CONSIDER BUY PUT*'+text,
             );
-            this.stockHelperService.bullbearDaily = 'nomore'
+            this.sH_Service.bullbearDaily = 'nomore'
           } else if(!text2NDLAST.includes('🟢') && text.includes('🟢')){
-            this.stockHelperService.bullbearDaily = this.stockHelperService.bullbearUqiue
+            this.sH_Service.bullbearDaily = this.sH_Service.bullbearUqiue
             // red go green, buy call
             await this.webhooksService.sendSlackNotificationVN(
               timeframe,
@@ -195,13 +218,13 @@ export class TaskQQQ_SPYService {
               channel,
               '*CONSIDER BUY CALL*'+text,
             );
-            this.stockHelperService.bullbearDaily = 'nomore'
+            this.sH_Service.bullbearDaily = 'nomore'
           }
           this.logger.log(`${ticker} processed successfully.`);
         } catch (error) {
           // Send error notification and log the error
           await this.webhooksService.sendDiscord(
-            `ERROR ${error.message} \n url: http://localhost:4200/price-log/${ticker}?daysRange=500`,
+            `ERROR ${error.message} \n url: ${this.sH_Service.local4200}/price-log/${ticker}?daysRange=500`,
             `RSIENDBOT ${ticker} at ${timeframe}`,
             'Nono',
             'ERORR_CALL',

@@ -10,7 +10,7 @@ export class TaskHoldingService {
   allkeys = 'all'; // test
   constructor(
     private readonly webhooksService: WebhooksService,
-    private readonly stockHelperService: StockHelperService,
+    private readonly sH_Service: StockHelperService,
     private readonly LocalPLWR: LocalPLWR,
   ) {}
   private readonly logger = new Logger(TaskHoldingService.name);
@@ -69,7 +69,7 @@ export class TaskHoldingService {
             return
           }
           // Process the data
-          const BlMA200_MA20_MA50_MA100_SELL = await this.stockHelperService.BlMA200_MA20_MA50_MA100_SELL(
+          const BlMA200_MA20_MA50_MA100_SELL = await this.sH_Service.BlMA200_MA20_MA50_MA100_SELL(
             lastData,
             secondLastData,
           );
@@ -78,7 +78,7 @@ export class TaskHoldingService {
               timeframe,
               [ticker],
               lastData,
-              this.stockHelperService.Z_US_SL_.HOLDING,
+              this.sH_Service.Z_US_SL_.HOLDING,
               'BlMA200_MA20_MA50_MA100_SELL',
             );
             await this.webhooksService.sendDiscord(
@@ -94,7 +94,7 @@ export class TaskHoldingService {
         } catch (error) {
           // Send error notification and log the error
           await this.webhooksService.sendDiscord(
-            `ERROR ${error.message} \n url: http://localhost:4200/price-log/${ticker}?daysRange=500`,
+            `ERROR ${error.message} \n url: ${this.sH_Service.local4200}/price-log/${ticker}?daysRange=500`,
             `RSIENDBOT ${ticker} at ${timeframe}`,
             'Nono',
             'ERORR_CALL',
@@ -116,10 +116,10 @@ export class TaskHoldingService {
     const symbols = await this.LocalPLWR.getholdingList_W_other()
     this.logger.warn('Running getholdingList with stocklist length:', symbols.length);
 
-    const webhooks = [this.stockHelperService.Z_US_SL_.HOLDING];
+    const webhooks = [this.sH_Service.Z_US_SL_.HOLDING];
   
     try {
-      await this.stockHelperService.sendBatchNotification('START',`${this.runon15or30}min`,webhooks,this.webhooksService,1000,);
+      await this.sH_Service.sendBatchNotification('START',`${this.runon15or30}min`,webhooks,this.webhooksService,1000,);
   
       await this.USTIMERUN('twelvedata',
         symbols,
@@ -133,7 +133,7 @@ export class TaskHoldingService {
       console.error('runAllWatchLists30 failed:', error);
       throw error;
     } finally {
-      await this.stockHelperService.sendBatchNotification('END',`${this.runon15or30}min`,webhooks,this.webhooksService,1000,);
+      await this.sH_Service.sendBatchNotification('END',`${this.runon15or30}min`,webhooks,this.webhooksService,1000,);
     }
   }
 
@@ -146,13 +146,13 @@ export class TaskHoldingService {
     //   timeframe,
     //   symbols,
     //   null,
-    //   this.stockHelperService.Z_US_SL_.HOLDING,'',
+    //   this.sH_Service.Z_US_SL_.HOLDING,'',
     // );
-    const webhooks = [this.stockHelperService.Z_US_SL_.HOLDING];
+    const webhooks = [this.sH_Service.Z_US_SL_.HOLDING];
   
     try {
 
-      await this.stockHelperService.sendBatchNotification('START','1day',webhooks,this.webhooksService,1000,);
+      await this.sH_Service.sendBatchNotification('START','1day',webhooks,this.webhooksService,1000,);
   
       await this.USTIMERUN('MASS',
         symbols,
@@ -166,7 +166,7 @@ export class TaskHoldingService {
       console.error('runAllWatchLists30 failed:', error);
       throw error;
     } finally {
-      await this.stockHelperService.sendBatchNotification('END','1day',webhooks,this.webhooksService,1000,);
+      await this.sH_Service.sendBatchNotification('END','1day',webhooks,this.webhooksService,1000,);
     }
   }
 
@@ -186,7 +186,7 @@ export class TaskHoldingService {
       this.logger.log(`Don't have symbol ${timeframe} check (${now} ET)`);
       return;
     }
-    if (!this.stockHelperService.isMarketOpen()) {
+    if (!this.sH_Service.isMarketOpen()) {
       this.logger.log(
         `🕒 Market closed — skipping ${timeframe} check (${now} ET)`,
       );

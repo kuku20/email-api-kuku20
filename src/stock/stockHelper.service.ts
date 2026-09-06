@@ -39,34 +39,30 @@ export class StockHelperService {
   railwayBoolen = true;
   PostWebSlack = true; // set to false if want to skip post to website and then set it back
   ALL_IN_ONE = false; // set to false if want to skip post to website and then set it back
+  imageHostUrl = 'https://nestjs-api.koyeb.app'; // Slack images are served through our API; other images use their original URL.
+  local4200 = 'http://localhost:4200'
+  stockMk000 = 'https://stockmarkets000.web.app'
+  DiscordMsg=`https://discord\.com/channels/1306113720979689523`
   slackPosted = []
   setSlackToken(tokenKey: string) {
     this.slackTokenKey = tokenKey;
   }
   DC_SL_MT ={
     US_EARLY_5MIN:'',
-    CR_1H_BUY:'S1GvvzfYhXoKsG4bXjtX',
-    CR_1H_HT:'1Z7lKD6JJlXzc35T3OoR',
-    CR_4H_BUY:'kDzIP4BiFSWMLDqwu44v',
-    CR_4H_HT:'wSYme1JvO7soz4tPSfhl',
-    CRYPTO_WATCH:'X6PeO7uviblIVISnIsZy',
-    CRYPTO_ALL :'OIM5pM75CnURO8c39ypE',
+    CR_1H_BUY:'S1GvvzfYhXoKsG4bXjtX', 
+    CR_4H_BUY:'kDzIP4BiFSWMLDqwu44v', 
+    CRYPTO_WATCH:'X6PeO7uviblIVISnIsZy', 
+    CR_30M_BUY: 'Uy9wEQx85aRGa10t8Y1F', 
+    CRYPTO_EARLY_5MIN: 'TIzwHKvp5RELkw1jE1dr',
     RSIALERT: 'yJrYiYfE8WiZxSbgKQNP',
     RSI30AL: 'r6S8Yp0OlPt0Jx6nibao',
     RSI15AL: 'oCx6ZZ64G9nHhR9wV5O4',
     RSI25AL: 'iB8whwqtnpeTVWeICXNH',
-    CR_5M_HT: 'xi8ak9jKjfqBu0VAv0f2',
-    CR_30M_BUY: 'Uy9wEQx85aRGa10t8Y1F',
-    CRYPTO_EARLY_5MIN: 'TIzwHKvp5RELkw1jE1dr',
-    CR_30MIN_HT: 'NDyGsENq6IWNST4TPR8o',
-    '4HOUR_SELL_FX':'gFZsI8iIssKTzl2hWMHS',
+    '4HOUR_SELL_FX':'N8yNiGsHT39gpGF3qbNU',
     '4HOUR_BUY_FX':'HBuFs7hqHxoYhvvNQH1K',
-    '1HOUR_SELL_FX':'r22jz5FSDK9arDGbDHkV',
     '1HOUR_BUY_FX':'RE5MquLYgVbukvbpCMcC',
     '30MIN_BUY_FX':'pjzbRkYk6sv2RDhxTMT1',
-    '30MIN_SELL_FX':'gUzLIjZaWpqS0zHWNLDI',
     '15MIN_BUY_FX':'npx15jytNPBN3eDSO2Bt',
-    '15MIN_SELL_FX':'yhF7TeU6mxthKu41j0Qt',
     US_ALL: 'OHc1tQiX2zM1MYjBQbhi',
     US_30M_BUY: 'ih7okxmRDPHVDh6O1plb',
     US_EARLY_15MIN: 'HI02Lg85RK0gVt2sCTu5',

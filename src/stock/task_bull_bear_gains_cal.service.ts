@@ -11,7 +11,7 @@ export class TasksBullBearGain_CalService {
   allkeys = 'all'; // test
   constructor(
     private readonly webhooksService: WebhooksService,
-    private readonly stockHelperService: StockHelperService,
+    private readonly sH_Service: StockHelperService,
     private readonly LocalPLWR: LocalPLWR,
   ) {}
   private readonly logger = new Logger(TasksBullBearGain_CalService.name);
@@ -33,16 +33,16 @@ export class TasksBullBearGain_CalService {
   async CHECKBULL_BEAR_OTHER_5MIN() {
     const symbols =   await this.getTodaySymbols()
     await this.CHECKBULL_BEAR_OTHER(1.5,symbols);
-    const webhooks = [this.stockHelperService.INTRA_30M_SL_.MACDCR_BL,
-      this.stockHelperService.INTRA_30M_SL_.MACDCR_200,
-      this.stockHelperService.INTRA_30M_SL_.MACDCR_BL_OT,
+    const webhooks = [this.sH_Service.INTRA_30M_SL_.MACDCR_BL,
+      this.sH_Service.INTRA_30M_SL_.MACDCR_200,
+      this.sH_Service.INTRA_30M_SL_.MACDCR_BL_OT,
     ]
-    await this.stockHelperService.sendBatchNotification('START','4hour',webhooks,this.webhooksService,300,);
+    await this.sH_Service.sendBatchNotification('START','4hour',webhooks,this.webhooksService,300,);
   }
 
   async CHECKBULL_BEAR_OTHER(delay=2,symbols= DataSymbols.watchlist){
-    this.stockHelperService.apitwelveCount = 0
-    if (!this.stockHelperService.shouldRunTradingLogicUS('5min',this.logger)) {
+    this.sH_Service.apitwelveCount = 0
+    if (!this.sH_Service.shouldRunTradingLogicUS('5min',this.logger)) {
       return;
     }
     try {
@@ -51,7 +51,7 @@ export class TasksBullBearGain_CalService {
       console.error('timeframe failed:', error);
       throw error;
     } finally{
-      console.log(this.stockHelperService.apitwelveCount)
+      console.log(this.sH_Service.apitwelveCount)
     }
   }
 
@@ -81,7 +81,7 @@ export class TasksBullBearGain_CalService {
           let aboveCount = 0;
           const timeframe = '5min'
           const data_5min = await this.LocalPLWR.TwReveseNOAPI(ticker, timeframe);
-          const text_5min = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
+          const text_5min = await this.sH_Service.CHECKBULL_BEAR_ReTurnText(
               ticker,
               timeframe,
               data_5min
@@ -108,7 +108,7 @@ export class TasksBullBearGain_CalService {
               '5min',
               [ticker],
               data_5min[data_5min.length-1],
-              DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL_.MACDCR_100:this.stockHelperService.INTRA_30M_SL_.MACDCR_200,
+              DataSymbols.watchlist.includes(ticker)?this.sH_Service.INTRA_30M_SL_.MACDCR_100:this.sH_Service.INTRA_30M_SL_.MACDCR_200,
               `\n${FullText} \n`
             );
             const blockre = this.webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
@@ -119,7 +119,7 @@ export class TasksBullBearGain_CalService {
               '5min',
               [ticker],
               data_5min[data_5min.length-1],
-              DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL_.MACDCR_50:this.stockHelperService.INTRA_30M_SL_.MACDCR_BL,
+              DataSymbols.watchlist.includes(ticker)?this.sH_Service.INTRA_30M_SL_.MACDCR_50:this.sH_Service.INTRA_30M_SL_.MACDCR_BL,
               `\n${FullText} \n`
             );
             const blockre = this.webhooksService.getSlBlock(ticker,'accessory_price_check',ticker)
@@ -136,7 +136,7 @@ export class TasksBullBearGain_CalService {
           else if(text_5min.includes(checktext)){
             // send can buy: check macd call the 
             const data_15min = await this.LocalPLWR.TwReveseNOAPI(ticker, '15min');
-            const text_15min = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
+            const text_15min = await this.sH_Service.CHECKBULL_BEAR_ReTurnText(
               ticker,
               '15min',
               data_15min
@@ -146,7 +146,7 @@ export class TasksBullBearGain_CalService {
             if(inWt){
             // sent with good to buy check macd 0.1<0.6
               const data_30min = await this.LocalPLWR.TwReveseNOAPI(ticker, '30min');
-              const text_30min = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
+              const text_30min = await this.sH_Service.CHECKBULL_BEAR_ReTurnText(
                 ticker,
                 '30min',
                 data_30min
@@ -155,7 +155,7 @@ export class TasksBullBearGain_CalService {
               if(text_30min.includes('BUYY🟢🟢')|| text_30min.includes('AB🟢🟢')){
                 // sent with good to buy check macd 0.1<0.6
                 const data_1hour = await this.LocalPLWR.TwReveseNOAPI(ticker, '1hour');
-                const text_1hour = await this.stockHelperService.CHECKBULL_BEAR_ReTurnText(
+                const text_1hour = await this.sH_Service.CHECKBULL_BEAR_ReTurnText(
                   ticker,
                   '1hour',
                   data_1hour
@@ -175,7 +175,7 @@ export class TasksBullBearGain_CalService {
                     '5min',
                     [ticker],
                     data_5min[data_5min.length-1],
-                    this.stockHelperService.INTRA_30M_SL_.WATCH,
+                    this.sH_Service.INTRA_30M_SL_.WATCH,
                     `\n${FullText} \n`
                   );
                   const blockre = this.webhooksService.getSlBlock(ticker,'accessory_price_check',ticker)
@@ -201,7 +201,7 @@ export class TasksBullBearGain_CalService {
                 '5min',
                 [ticker],
                 data_5min[data_5min.length-1],
-                this.stockHelperService.INTRA_30M_SL_.MACDCR_BL_OT,
+                this.sH_Service.INTRA_30M_SL_.MACDCR_BL_OT,
                 `\n${FullText} \n`
               );
               await this.webhooksService.sendDiscord(
@@ -222,7 +222,7 @@ export class TasksBullBearGain_CalService {
         } catch (error) {
           // Send error notification and log the error
           await this.webhooksService.sendDiscord(
-            `ERROR ${error.message} \n url: http://localhost:4200/price-log/${ticker}?daysRange=500`,
+            `ERROR ${error.message} \n url: ${this.sH_Service.local4200}/price-log/${ticker}?daysRange=500`,
             `RSIENDBOT ${ticker} at fullList`,
             'Nono',
             'ERORR_CALL',
@@ -287,8 +287,8 @@ export class TasksBullBearGain_CalService {
         return marketCap > 500_000_000 ? symbol : null;
       })
     );
-    // await this.stockHelperService.writeAbove2BillionToFile(newData,`Above__Billion`);
-    // await this.stockHelperService.writeAbove2BillionToFile(newData2,`BL__Billion`);
+    // await this.sH_Service.writeAbove2BillionToFile(newData,`Above__Billion`);
+    // await this.sH_Service.writeAbove2BillionToFile(newData2,`BL__Billion`);
   
     return results.filter((symbol): symbol is string => symbol !== null);
   }

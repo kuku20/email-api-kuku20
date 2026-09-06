@@ -10,7 +10,7 @@ import { LocalPLWR } from './runlocal.service';
 export class SendEverydayService {
   constructor(
     private readonly webhooksService: WebhooksService,
-    private readonly stockHelperService: StockHelperService,
+    private readonly sH_Service: StockHelperService,
     private readonly LocalPLWR: LocalPLWR,
   ) {}
   private readonly logger = new Logger(SendEverydayService.name);
@@ -18,9 +18,9 @@ export class SendEverydayService {
   // // @Cron(CronExpression.EVERY_10_SECONDS)
  // @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT) // close yesterday and open today
   async SendEverydayService() {
-    const today = this.stockHelperService.getDateNDaysAgo(0);
-    const yesterday = this.stockHelperService.getDateNDaysAgo(1);
-    const twoDayAgo = this.stockHelperService.getDateNDaysAgo(2);
+    const today = this.sH_Service.getDateNDaysAgo(0);
+    const yesterday = this.sH_Service.getDateNDaysAgo(1);
+    const twoDayAgo = this.sH_Service.getDateNDaysAgo(2);
     const equal = `===========================================`;
     const Channels = [
       'US_ALL',
@@ -67,7 +67,7 @@ export class SendEverydayService {
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT) // close yesterday and open today
   async delete(dayago = 1) {
-    const yesterday = this.stockHelperService.getDateNDaysAgo(dayago);
+    const yesterday = this.sH_Service.getDateNDaysAgo(dayago);
     const Channels = [
       'US_ALL',
       'ERORR_CALL',

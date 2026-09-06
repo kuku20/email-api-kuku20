@@ -7,7 +7,7 @@ import { WebhooksService } from 'src/webhooks/webhooks.service';
 @Injectable()
 export class PowerService {
   constructor(
-    private readonly stockHelperService: StockHelperService,
+    private readonly sH_Service: StockHelperService,
     private readonly LocalPLWR: LocalPLWR,
         private readonly webhooksService: WebhooksService,
   ) {}
@@ -31,7 +31,7 @@ export class PowerService {
     );
     console.log("turnOffNow",turnOffNow)
     
-    await this.stockHelperService.sendBatchNotification('START','powerCheck'+JSON.stringify(turnOffNow),[this.stockHelperService.Z_US_SL_.OR],this.webhooksService,100,);
+    await this.sH_Service.sendBatchNotification('START','powerCheck'+JSON.stringify(turnOffNow),[this.sH_Service.Z_US_SL_.OR],this.webhooksService,100,);
     if (turnOffNow.data) {
       clearTimeout(this.sleepTimer);
     

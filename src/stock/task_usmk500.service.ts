@@ -15,7 +15,7 @@ export class TasksUSMKService_SP500 {
   constructor(
     private readonly configService: ConfigService,
     private readonly webhooksService: WebhooksService,
-    private readonly stockHelperService: StockHelperService,
+    private readonly sH_Service: StockHelperService,
     private readonly LocalPLWR: LocalPLWR,
   ) {}
   private readonly logger = new Logger(TasksUSMKService_SP500.name);
@@ -27,10 +27,10 @@ export class TasksUSMKService_SP500 {
     // await this.getReapList()
     // this.runAllWatchLists30()
     // this.runAllWatchLists30(DataSymbols.watchlist)
-    // this.runAllWatchLists30(this.stockHelperService.ListMA50On4hour)
-    // console.table(this.stockHelperService.ab50_bl200_3Candles)
+    // this.runAllWatchLists30(this.sH_Service.ListMA50On4hour)
+    // console.table(this.sH_Service.ab50_bl200_3Candles)
     // this.justSend(
-    //   this.stockHelperService.ab50_bl200_3Candles,
+    //   this.sH_Service.ab50_bl200_3Candles,
     //   '4hour',
     //    'all',
     //   //
@@ -41,30 +41,30 @@ export class TasksUSMKService_SP500 {
   async getReapList(){
     await this.LocalPLWR.getholdingList_W_other()
     // need to clean this up
-    this.stockHelperService.ListMA50On4hour = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/all3count/4hour`) as string[]||[];
-    this.stockHelperService.above50andBelow200 = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/alldata/4hour`)as string[]||[];
-    this.stockHelperService.above50andAbove200 = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}-aboveMA200/alldata/4hour`)as string[]||[];
+    this.sH_Service.ListMA50On4hour = await this.LocalPLWR.getArrSymbolFFire(`${this.sH_Service.aboveMA50api}/all3count/4hour`) as string[]||[];
+    this.sH_Service.above50andBelow200 = await this.LocalPLWR.getArrSymbolFFire(`${this.sH_Service.aboveMA50api}/alldata/4hour`)as string[]||[];
+    this.sH_Service.above50andAbove200 = await this.LocalPLWR.getArrSymbolFFire(`${this.sH_Service.aboveMA50api}-aboveMA200/alldata/4hour`)as string[]||[];
 
-    this.stockHelperService.ab50_bl200_3Candles = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}/threeday/4hour`)as string[]||[];
-    this.stockHelperService.ab50_ab200_3Candles = await this.LocalPLWR.getArrSymbolFFire(`${this.stockHelperService.aboveMA50api}-aboveMA200/threeday/4hour`)as string[]||[];
-    this.stockHelperService.ab50_3Candles_ALL = this.stockHelperService.combineUnique( this.stockHelperService.ab50_bl200_3Candles,this.stockHelperService.ab50_ab200_3Candles);
-    // console.table(this.stockHelperService.ab50_bl200_3Candles);
-    // console.table(this.stockHelperService.above50andBelow200);
-    // this.stockHelperService.ListMA50On1day = this.stockHelperService.combineUnique(this.stockHelperService.HoldingList,DataSymbols.watchlist,this.stockHelperService.above50andBelow200,this.stockHelperService.ab50_ab200_3Candles)
-    this.stockHelperService.stockRSILAUP_4hourALL  =await this.LocalPLWR.getArrSymbolFFire(`macdCross_AB/All/4hour`,'stockRSILAUP')
-    this.stockHelperService.stockRSILAUP_1dayALL  =await this.LocalPLWR.getArrSymbolFFire(`macdCross_AB/All/1day`,'stockRSILAUP')
-    // const combinedRSILAUP = this.stockHelperService.combineUnique(this.stockHelperService.stockRSILAUP_4hourALL, this.stockHelperService.stockRSILAUP_1dayALL);
-    const combinedRSILAUP = this.stockHelperService.combineUnique(this.stockHelperService.stockRSILAUP_4hourALL);
+    this.sH_Service.ab50_bl200_3Candles = await this.LocalPLWR.getArrSymbolFFire(`${this.sH_Service.aboveMA50api}/threeday/4hour`)as string[]||[];
+    this.sH_Service.ab50_ab200_3Candles = await this.LocalPLWR.getArrSymbolFFire(`${this.sH_Service.aboveMA50api}-aboveMA200/threeday/4hour`)as string[]||[];
+    this.sH_Service.ab50_3Candles_ALL = this.sH_Service.combineUnique( this.sH_Service.ab50_bl200_3Candles,this.sH_Service.ab50_ab200_3Candles);
+    // console.table(this.sH_Service.ab50_bl200_3Candles);
+    // console.table(this.sH_Service.above50andBelow200);
+    // this.sH_Service.ListMA50On1day = this.sH_Service.combineUnique(this.sH_Service.HoldingList,DataSymbols.watchlist,this.sH_Service.above50andBelow200,this.sH_Service.ab50_ab200_3Candles)
+    this.sH_Service.stockRSILAUP_4hourALL  =await this.LocalPLWR.getArrSymbolFFire(`macdCross_AB/All/4hour`,'stockRSILAUP')
+    this.sH_Service.stockRSILAUP_1dayALL  =await this.LocalPLWR.getArrSymbolFFire(`macdCross_AB/All/1day`,'stockRSILAUP')
+    // const combinedRSILAUP = this.sH_Service.combineUnique(this.sH_Service.stockRSILAUP_4hourALL, this.sH_Service.stockRSILAUP_1dayALL);
+    const combinedRSILAUP = this.sH_Service.combineUnique(this.sH_Service.stockRSILAUP_4hourALL);
     // console.log('combinedRSILAUP',combinedRSILAUP);
     // const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/DyDay/2hour.json`,'')
-    // const macdCross_AB = this.stockHelperService.getKeysFromLastN(holdingObj,1)
+    // const macdCross_AB = this.sH_Service.getKeysFromLastN(holdingObj,1)
   //  const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/OscConditionL/1day.json`,'') || []
   // const holdingObj = await this.LocalPLWR.FireBaseApi('get',`stockRSILAUP/macdCross_AB/aboveOrBelowma50_12/1day.json`,'') || []
   //  const macdCross_AB = Object.keys(holdingObj);
   //  console.log(`✅ Loaded stockRSILAUP/macdCross_AB/DyDay/2hour: has ${macdCross_AB.length} symbols`);
     // this is all run
-    this.stockHelperService.ListMA50On1day = this.stockHelperService.combineUnique(this.stockHelperService.HoldingList,DataSymbols.watchlist,DataSymbols.stock_500_symbols)
-    console.log( this.stockHelperService.ListMA50On1day.length,);
+    this.sH_Service.ListMA50On1day = this.sH_Service.combineUnique(this.sH_Service.HoldingList,DataSymbols.watchlist,DataSymbols.stock_500_symbols)
+    console.log( this.sH_Service.ListMA50On1day.length,);
   }
 
   async  USTIMERUN(
@@ -82,7 +82,7 @@ export class TasksUSMKService_SP500 {
       this.logger.log(`Don't have symbol ${timeframe} check (${now} ET)`);
       return;
     }
-    if (!this.stockHelperService.isMarketOpen()) {
+    if (!this.sH_Service.isMarketOpen()) {
       this.logger.log(
         `🕒 Market closed — skipping ${timeframe} check (${now} ET)`,
       );
@@ -148,8 +148,8 @@ export class TasksUSMKService_SP500 {
           if (!isWithinRange) {
             return
           }
-          if(this.stockHelperService.HoldingList?.includes(ticker)){
-            const BlMA200_MA20_MA50_MA100_SELL = await this.stockHelperService.BlMA200_MA20_MA50_MA100_SELL(
+          if(this.sH_Service.HoldingList?.includes(ticker)){
+            const BlMA200_MA20_MA50_MA100_SELL = await this.sH_Service.BlMA200_MA20_MA50_MA100_SELL(
               lastData,
               secondLastData,
             );
@@ -158,7 +158,7 @@ export class TasksUSMKService_SP500 {
                 timeframe,
                 [ticker],
                 lastData,
-                this.stockHelperService.Z_US_SL_.HOLDING,
+                this.sH_Service.Z_US_SL_.HOLDING,
                 'BlMA200_MA20_MA50_MA100_SELL',
               );
               await this.webhooksService.sendDiscord(
@@ -204,7 +204,7 @@ export class TasksUSMKService_SP500 {
               timeframe,
               [ticker],
               lastData,
-              DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL_.WATCH:this.stockHelperService.INTRA_30M_SL_.MACDCR_200,
+              DataSymbols.watchlist.includes(ticker)?this.sH_Service.INTRA_30M_SL_.WATCH:this.sH_Service.INTRA_30M_SL_.MACDCR_200,
               'allCondition',
             );
           }
@@ -223,10 +223,10 @@ export class TasksUSMKService_SP500 {
           if (!signal) return;
           
           const webhookMap = [
-            // { condition: signal.PriceCrMA50 && signal.ContinueUp && lastData.divergence > 0, hook: this.stockHelperService.INTRA_30M_SL_.MACDCR_50 },
-            // { condition: signal.PriceCrMA100 && signal.ContinueUp && lastData.divergence > 0, hook: this.stockHelperService.INTRA_30M_SL_.MACDCR_100 },
-            // { condition: signal.PriceCrMA200 && signal.ContinueUp && lastData.divergence > 0, hook: this.stockHelperService.INTRA_30M_SL_.MACDCR_200 },
-            { condition: signal.macdCrAB && aboveOrBelowma50, hook: this.stockHelperService.INTRA_30M_SL_.MACDCR_BL },
+            // { condition: signal.PriceCrMA50 && signal.ContinueUp && lastData.divergence > 0, hook: this.sH_Service.INTRA_30M_SL_.MACDCR_50 },
+            // { condition: signal.PriceCrMA100 && signal.ContinueUp && lastData.divergence > 0, hook: this.sH_Service.INTRA_30M_SL_.MACDCR_100 },
+            // { condition: signal.PriceCrMA200 && signal.ContinueUp && lastData.divergence > 0, hook: this.sH_Service.INTRA_30M_SL_.MACDCR_200 },
+            { condition: signal.macdCrAB && aboveOrBelowma50, hook: this.sH_Service.INTRA_30M_SL_.MACDCR_BL },
           ];
           
           const matched = webhookMap.find((w) => w.condition);
@@ -235,7 +235,7 @@ export class TasksUSMKService_SP500 {
               timeframe,
               [ticker],
               lastData,
-              DataSymbols.watchlist.includes(ticker)?this.stockHelperService.INTRA_30M_SL_.WATCH:matched.hook,
+              DataSymbols.watchlist.includes(ticker)?this.sH_Service.INTRA_30M_SL_.WATCH:matched.hook,
               '',
             );
           }
@@ -243,7 +243,7 @@ export class TasksUSMKService_SP500 {
         } catch (error) {
           // Send error notification and log the error
           await this.webhooksService.sendDiscord(
-            `ERROR ${error.message} \n url: http://localhost:4200/price-log/${ticker}?daysRange=500`,
+            `ERROR ${error.message} \n url: ${this.sH_Service.local4200}/price-log/${ticker}?daysRange=500`,
             `RSIENDBOT ${ticker} at ${timeframe}`,
             'Nono',
             'ERORR_CALL',
@@ -263,8 +263,8 @@ export class TasksUSMKService_SP500 {
   async runAllWatchLists() {
     await Promise.all([
       this.USTIMERUN(
-        this.stockHelperService.ListMA50On4hour.length > 0
-          ? this.stockHelperService.ListMA50On4hour
+        this.sH_Service.ListMA50On4hour.length > 0
+          ? this.sH_Service.ListMA50On4hour
           : DataSymbols.stock_500_symbols,
         this.allkeys,
         'US_ALL',
@@ -282,7 +282,7 @@ export class TasksUSMKService_SP500 {
   // runon15or30 :'30'|'15'= '30';
   // @Cron('*/30 9-16 * * 1-5', { timeZone: 'America/New_York' }) // Every 30 minutes between 13:00 and 21:59 UTC (9:00 AM to 5:59 PM ET) on weekdays
   async runAllWatchLists30() {
-    if (!this.stockHelperService.shouldRunTradingLogicUS(`${this.runon15or30}min`,this.logger)) {
+    if (!this.sH_Service.shouldRunTradingLogicUS(`${this.runon15or30}min`,this.logger)) {
       return;
     }
     this.runOnceAtOpen = false
@@ -301,18 +301,18 @@ export class TasksUSMKService_SP500 {
     if (hour === 9 && minute === 30) return;
 
     await this.getReapList()
-    if(this.stockHelperService.ListMA50On1day.length === 0){
+    if(this.sH_Service.ListMA50On1day.length === 0){
       this.logger.warn('No stocks to process for 15/30-minute run.');
       return;
     }
     
-    const webhooks = [this.stockHelperService.INTRA_30M_SL_.MACDCR_50, this.stockHelperService.INTRA_30M_SL_.MACDCR_100,this.stockHelperService.INTRA_30M_SL_.MACDCR_200,this.stockHelperService.INTRA_30M_SL_.MACDCR_BL,this.stockHelperService.INTRA_30M_SL_.WATCH,this.stockHelperService.Z_US_SL_.HOLDING];
+    const webhooks = [this.sH_Service.INTRA_30M_SL_.MACDCR_50, this.sH_Service.INTRA_30M_SL_.MACDCR_100,this.sH_Service.INTRA_30M_SL_.MACDCR_200,this.sH_Service.INTRA_30M_SL_.MACDCR_BL,this.sH_Service.INTRA_30M_SL_.WATCH,this.sH_Service.Z_US_SL_.HOLDING];
 
     try {
-      await this.stockHelperService.sendBatchNotification('START', `${this.runon15or30}min`,webhooks,this.webhooksService,1000,);
+      await this.sH_Service.sendBatchNotification('START', `${this.runon15or30}min`,webhooks,this.webhooksService,1000,);
   
       await this.USTIMERUN(
-        this.stockHelperService.ListMA50On1day,
+        this.sH_Service.ListMA50On1day,
         this.allkeys,
         'US_ALL',
         'USSTOCK_WATCH',
@@ -323,7 +323,7 @@ export class TasksUSMKService_SP500 {
       console.error('runAllWatchLists30 failed:', error);
       throw error;
     } finally {
-      await this.stockHelperService.sendBatchNotification('END', `${this.runon15or30}min`,webhooks,this.webhooksService,1000,);
+      await this.sH_Service.sendBatchNotification('END', `${this.runon15or30}min`,webhooks,this.webhooksService,1000,);
 
     }
   }
@@ -334,7 +334,7 @@ export class TasksUSMKService_SP500 {
   this.runOnceAtOpen = true
   try {
     await this.USTIMERUN(
-      this.stockHelperService.ListMA50On1day,
+      this.sH_Service.ListMA50On1day,
       this.allkeys,
       'US_ALL',
       'USSTOCK_WATCH',
@@ -370,8 +370,8 @@ export class TasksUSMKService_SP500 {
   async runAllWatchLists1h() {
     await Promise.all([
       this.USTIMERUN(
-        this.stockHelperService.ListMA50On1day.length > 0
-          ? this.stockHelperService.ListMA50On1day
+        this.sH_Service.ListMA50On1day.length > 0
+          ? this.sH_Service.ListMA50On1day
           : DataSymbols.stock_500_symbols,
         this.allkeys,
         'US_30M_BUY',
@@ -400,7 +400,7 @@ export class TasksUSMKService_SP500 {
     // Delay 2 minutes before processing
     await new Promise((resolve) => setTimeout(resolve, delay * 60 * 1000));
     const message = `${'='.repeat(32)}`;
-    this.webhooksService.sendSlackNotification(message, this.stockHelperService.Z_US_SL_.OR4);
+    this.webhooksService.sendSlackNotification(message, this.sH_Service.Z_US_SL_.OR4);
     await this.webhooksService.SendDcChannels(['TSLA'],this.logger,'START');
     // Prepare ticker promises with concurrency limit
     const tickerPromises = tickers.map((ticker) =>
@@ -426,7 +426,7 @@ export class TasksUSMKService_SP500 {
               timeframe,
               [ticker],
               lastData,
-              this.stockHelperService.Z_US_SL_.OR4,
+              this.sH_Service.Z_US_SL_.OR4,
               '',
             );
             await this.webhooksService.sendDiscord(
@@ -441,7 +441,7 @@ export class TasksUSMKService_SP500 {
         } catch (error) {
           // Send error notification and log the error
           await this.webhooksService.sendDiscord(
-            `ERROR ${error.message} \n url: http://localhost:4200/price-log/${ticker}?daysRange=500`,
+            `ERROR ${error.message} \n url: ${this.sH_Service.local4200}/price-log/${ticker}?daysRange=500`,
             `RSIENDBOT ${ticker} at ${timeframe}`,
             'Nono',
             'ERORR_CALL',
@@ -455,7 +455,7 @@ export class TasksUSMKService_SP500 {
     // Wait for all ticker promises to complete concurrently (with concurrency limit)
     await Promise.all(tickerPromises);
 
-    this.webhooksService.sendSlackNotification(message, this.stockHelperService.Z_US_SL_.OR4);
+    this.webhooksService.sendSlackNotification(message, this.sH_Service.Z_US_SL_.OR4);
     await this.webhooksService.SendDcChannels(['TSLA'],this.logger,'END');
   }
 }
