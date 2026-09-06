@@ -262,12 +262,13 @@ export class TaskCryptoService {
   @Cron('*/15 * * * *') // every 15 minutes
   async handle5pCrypto(time_wait = 2, tickers = this.tickers_group1) {
     this.logger.log('Running scheduled every 15min for CRYPTOs...');
+    const { buyChannel, htChannel } = this.cryptoChannels['15min'];
     await this.processTickers15m_tiingoAPI(
       tickers,
       '15min',
       'all',
-      'CRYPTO_EARLY_5MIN',
-      'CR_5M_HT',
+      buyChannel, 
+      htChannel,
       time_wait,
     );
   }
