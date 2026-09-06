@@ -219,23 +219,23 @@ export class TaskCryptoService {
   private readonly cryptoChannels = {
     '1day': {
       buyChannel: 'CRYPTO_WATCH',
-      htChannel: 'CRYPTO_ALL',
+      htChannel: 'CRYPTO_WATCH',
     },
     '4h': {
       buyChannel: 'CR_4H_BUY',
-      htChannel: 'CR_4H_HT',
+      htChannel: 'CR_4H_BUY',
     },
     '1h': {
       buyChannel: 'CR_1H_BUY',
-      htChannel: 'CR_1H_HT',
+      htChannel: 'CR_1H_BUY',
     },
     '30min': {
       buyChannel: 'CR_30M_BUY',
-      htChannel: 'CR_30MIN_HT',
+      htChannel: 'CR_30M_BUY',
     },
     '15min': {
       buyChannel: 'CRYPTO_EARLY_5MIN',
-      htChannel: 'CR_5M_HT',
+      htChannel: 'CRYPTO_EARLY_5MIN',
     },
   } as const;
 
