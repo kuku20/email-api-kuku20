@@ -458,7 +458,7 @@ export class TaskCryptoService {
           lastData?.date,
           13,
         );
-        if (isWithinRange) {
+        if (true) {
           const BuyOnly_StochRSICrossAB200 =
             await this.sH_Service.BuyOnly_StochRSICrossAB200(
               lastData,
@@ -466,7 +466,7 @@ export class TaskCryptoService {
             );
           if (BuyOnly_StochRSICrossAB200.PriceCrMA200) {
             await this.webhooksService.sendDiscord(
-              `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA200 -${timeframe}-${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
+              `SBUY-BuyOnly_StochRSICrossAB200-PriceCrMA200-isWithinRange:${isWithinRange}-${timeframe}-${lastData?.close}-(MACD:${lastData?.MACDLine}): ${lastData?.date}`,
               `${ticker}-ON-${timeframe}-${lastData?.close}`,
               lastData,
               HT_Channel,
@@ -480,7 +480,8 @@ export class TaskCryptoService {
                 B_Channel,
                 HT_Channel,],
               [],
-              true
+              true,
+              `-isWithinRange:${isWithinRange}`
             )
           }
         }
