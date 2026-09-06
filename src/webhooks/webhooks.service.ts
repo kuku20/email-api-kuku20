@@ -200,12 +200,38 @@ export class WebhooksService implements OnModuleInit{
       options.files = [attachment];
     }
     let sentMessage
+    const ProductImageUrl = file ? null: `${this.sH_Service.stockMk000}/capture-target/${webhookCl}/${ticker.toUpperCase()}`;
+    const channelWeb =this.sH_Service.ALL_IN_ONE ? this.sH_Service.DC_SL_MT.ALL_IN_ONE: this.sH_Service.DC_SL_MT[webhookCl] || '1yHUrbPtNS0yygBxsezD'
+    const allowPostMySlack = !webhookCl.includes('ERORR_CALL') && !botdt.includes('RSIENDBOT') && this.sH_Service.PostWebSlack
     try {
       sentMessage = await this.withTimeout(
         this.webhookClient.send(options),
         15000, // 10 seconds
       );
+      if(ProductImageUrl && allowPostMySlack){
+        const discordmsg =`*${message}*\n <${this.sH_Service.DiscordMsg}/${sentMessage?.channel_id}/${sentMessage?.id}|Discord-o6l-msg>|| <${ProductImageUrl}|prodUrl>`
+        await this.Post2MySlack(discordmsg, ticker,channelWeb)
+      } else if(allowPostMySlack){
+        const imageUlr = sentMessage?.embeds?.[0]?.image?.url || (sentMessage?.attachments??sentMessage?.attachments?.first()?.url);
+        const discordmsg =  message+  `\n <${this.sH_Service.DiscordMsg}/${sentMessage?.channel_id}/${sentMessage?.id}|Discord-o6l-msg>|| <${imageUlr}|discordImage> `
+        await this.Post2MySlack(discordmsg, ticker,channelWeb)
+      }
     } catch (err) {
+      if(file && allowPostMySlack){
+        try {
+          const sirvImage = await this.sirvService.uploadImage(file)
+          const sirvImagemsg =  message + `\n <${sirvImage.url}|sirvImage> `
+          await this.Post2MySlack(sirvImagemsg, ticker,channelWeb)
+        } catch (error) {
+          // post to slack if you want
+          await this.Post2MySlack(message, ticker,channelWeb)
+        }
+      }else if(allowPostMySlack){ 
+        if(ProductImageUrl && allowPostMySlack){
+          const discordmsg =`*${message}*\n <${this.sH_Service.DiscordMsg}/${sentMessage?.channel_id}/${sentMessage?.id}|Discord-o6l-msg>|| <${ProductImageUrl}|prodUrl>`
+          await this.Post2MySlack(discordmsg, ticker,channelWeb)
+        }
+      }
       return null
     }
     const WEBHOOKS_CNA = this.WEBHOOKS_CN[webhookCl] || this.WEBHOOKS_CN.Other;
@@ -229,13 +255,6 @@ export class WebhooksService implements OnModuleInit{
     //     ...options,
     //   });
     // }
-    const ProductImageUrl = file ? null: `${this.sH_Service.stockMk000}/capture-target/${webhookCl}/${ticker.toUpperCase()}`;
-    const channelWeb =this.sH_Service.ALL_IN_ONE ? this.sH_Service.DC_SL_MT.ALL_IN_ONE: this.sH_Service.DC_SL_MT[webhookCl] || '1yHUrbPtNS0yygBxsezD'
-    if(ProductImageUrl && !webhookCl.includes('ERORR_CALL') && !botdt.includes('RSIENDBOT') && this.sH_Service.PostWebSlack){
-      // webhookCl+'\n'+
-      const discordmsg =`*${message}*\n <${this.sH_Service.DiscordMsg}/${sentMessage?.channel_id}/${sentMessage?.id}|Discord-o6l-msg>|| <${ProductImageUrl}|prodUrl>`
-      await this.Post2MySlack(discordmsg, ticker,channelWeb)
-    }
     // else if(!webhookCl.includes('ERORR_CALL') && !botdt.includes('RSIENDBOT') && this.sH_Service.PostWebSlack){
     //   const imageUlr = sentMessage?.embeds?.[0]?.image?.url || (sentMessage?.attachments??sentMessage?.attachments?.first()?.url);
     //   const discordmsg =  message+  `\n <${this.sH_Service.DiscordMsg}/${sentMessage?.channel_id}/${sentMessage?.id}|Discord-o6l-msg>|| <${imageUlr}|discordImage> `
@@ -747,11 +766,11 @@ export class WebhooksService implements OnModuleInit{
   checktimeMinutesCST(ticker: string, date, time: number) {
     const isWithinRange = Timer.checkIfWithin5MinutesCST(date, time);
     if (isWithinRange) {
-      console.log(ticker, `✅ Within ±${time} minutes of EST time`,isWithinRange);
+      console.log(ticker, `✅ Within ±${time} minutes of CST time`,isWithinRange);
       // check one
       return true;
     } else {
-      console.log(ticker, `❌ Outside  ±${time} minutes of EST time: `, isWithinRange,date);
+      console.log(ticker, `❌ Outside  ±${time} minutes of CST time: `, isWithinRange,date);
       // await this.sendDiscord(
       //   `ERROR \n url: ${this.sH_Service.local4200}/price-log/${ticker}?daysRange=30`,
       //   `RSIENDBOT ${ticker} at ${date}`,

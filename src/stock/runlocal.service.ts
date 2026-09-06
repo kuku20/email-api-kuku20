@@ -649,11 +649,19 @@ export class LocalPLWR {
     timefame: string,
     apikey
   ) {
+    let tem = timefame;
+    if (timefame.includes('hour')) {
+      tem = timefame.slice(0, 2);
+    } else if (timefame.includes('week')) {
+      tem = '1week';
+    } else if (timefame.includes('month')) {
+      tem = '1month';
+    }
     try {
       if(ticker.includes('USD')){
         ticker = this.sH_Service.formatSymbol(ticker)
       }
-      let BASE_URL = `https://api.twelvedata.com/time_series?symbol=${ticker}&interval=${timefame}&outputsize=600&dp=2&apikey=${apikey}`;
+      let BASE_URL = `https://api.twelvedata.com/time_series?symbol=${ticker}&interval=${tem}&outputsize=600&dp=2&apikey=${apikey}`;
       const response = await axios.get(BASE_URL);
       if (response.data.status === 'error') {
         throw new Error('API returned error status');
