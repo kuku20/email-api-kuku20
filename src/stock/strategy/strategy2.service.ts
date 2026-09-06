@@ -7,13 +7,13 @@ export class Stratery_2Service {
   // async CHECKBULL_BEAR_processTickers
 
   async FristCheck(
-    ticker,
+    ticker : string,
     data_5min,
-    timeframes, // array [first_timeframe,second_timeframe]5min,15min,30min,1hour
+    timeframes :string[], // array [first_timeframe,second_timeframe]5min,15min,30min,1hour
     LocalPLWR,
     webhooksService,
-    Channels_8_DC_Channel, // array
-    Channels_8_SL_Channel, // array
+    Channels_8_DC_Channel : string[], // array
+    Channels_8_SL_Channel : string[], // array
     NotPostToSlack = false
   ) {
     let FullText = '';
@@ -624,12 +624,12 @@ export class Stratery_2Service {
   }
 
   async secondCheck(
-    ticker,
+    ticker :string,
     data_5min,
-    timeframe, // timeframe
+    timeframe : string, // timeframe
     webhooksService,
-    Channels_4_DC_Channel, // array
-    Channels_4_SL_Channel, // array
+    Channels_4_DC_Channel : string[], // array
+    Channels_4_SL_Channel :string[], // array
     NotPostToSlack = false,
     apiCalling = '*Tiingo_US*\n '
   ) {
