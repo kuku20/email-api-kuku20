@@ -259,7 +259,7 @@ export class TaskCryptoService {
 
   @Cron(CronExpression.EVERY_30_MINUTES)
   async handle30pCrypto(
-    time_wait = 3,
+    time_wait = 4,
     tickers = this.tickers_group1,
     apikey = '2711824a92bc40498c8bc30728813e2a',
   ) {
@@ -287,7 +287,7 @@ export class TaskCryptoService {
 
   @Cron('0 * * * *') // every 1 hour
   async handle1hourCrypto(
-    time_wait = 5,
+    time_wait = 6,
     tickers = this.tickers_group1,
     apikey = '2711824a92bc40498c8bc30728813e2a',
   ) {
@@ -365,6 +365,10 @@ export class TaskCryptoService {
 
   async onModuleInit() {
     // await this.handle5pCrypto(0)
+    // await this.handle30pCrypto(0)
+    // await this.handle1hourCrypto(0)
+    // await this.handle4hourCrypto2(0)
+    // await this.handledailyCrypto(0)
     this.webhooksService.sendDiscord(
       `Run On deploy:**TaskCryptoService**`,
       `RSIENDBOT TaskCryptoService`,
