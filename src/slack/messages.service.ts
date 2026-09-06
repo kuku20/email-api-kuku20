@@ -44,29 +44,43 @@ export class MessagesService {
     userName: string,
     text: string
   ) {
-
-    const messagesRef = this.firestore
-      .collection('workspaces')
-      .doc(workspaceId)
-      .collection('channels')
-      .doc(channelId)
-      .collection('messages');
-
-    const message = await messagesRef.add({
-      userId,
-      userName,
-      text,
-      createdAt: new Date()
-    });
-
-    return {
-      id: message.id,
-      workspaceId,
-      channelId,
-      userId,
-      userName,
-      text
-    };
+    try {
+      const match = text.match(
+        /discord\.com\/channels\/\d+\/(\d+)\/(\d+)/
+      );
+  
+      const dc_msg_full = match
+        ? `${match[1]}/${match[2]}`
+        : null;
+  
+      const messagesRef = this.firestore
+        .collection('workspaces')
+        .doc(workspaceId)
+        .collection('channels')
+        .doc(channelId)
+        .collection('messages');
+  
+      const message = await messagesRef.add({
+        userId,
+        userName,
+        text,
+        createdAt: new Date(),
+        dc_msg_full,
+      });
+  
+      return {
+        id: message.id,
+        workspaceId,
+        channelId,
+        userId,
+        userName,
+        text,
+        dc_msg_full,
+      };
+    } catch (error) {
+      console.error('Post to My SLACK Fail:', error);
+      throw error;
+    }
   }
 }
 
