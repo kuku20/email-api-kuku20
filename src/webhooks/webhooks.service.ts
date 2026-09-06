@@ -2049,7 +2049,7 @@ export class WebhooksService implements OnModuleInit{
         const tsNCh =
             this.getTsBySymbol(symbols[0], this.sH_Service.watchlistSl_tss) ||
             this.getTsBySymbol(symbols[0], this.sH_Service.holdingSl_tss);
-          if (tsNCh) {
+          if (tsNCh && !['QQQ', 'SPY'].includes(symbols[0])) {
             const signalThread = this.sH_Service.getSlackMessageLink(
               tsNCh.channel,
               tsNCh.ts
