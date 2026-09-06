@@ -342,6 +342,9 @@ export class TasksBullBearService {
     const allkeys2 = Object.keys(forRundaily2)
     await this.CHECKBULL_BEAR_OTHER(3,allkeys2);
   }
+
+  TiingoCount = 0
+
   async CHECKBULL_BEAR_OTHER(delay=2,symbols= DataSymbols.watchlist){
     if (!this.sH_Service.shouldRunTradingLogicUS('5min',this.logger)) {
       return;
@@ -366,9 +369,29 @@ export class TasksBullBearService {
       const webhooks = Array.from(new Set([...this.sH_Service.slackPosted]))
       await this.sH_Service.sendBatchNotification('START','dailyrunon5min',webhooks,this.webhooksService,300,);
       this.sH_Service.bullbearDaily = 'setto0'
+
+      if(this.TiingoCount>0){
+        await this.sH_Service.sendBatchNotification('START','checking_TiingoCount_'+this.TiingoCount,[this.sH_Service.Z_US_SL_.OR],this.webhooksService,100,)
+        this.TiingoCount = 0
+      }
+
+      // sent list of is not inrange
+      if(this.isNotInrangeTicker_TwReveseNOAPI.length>0){
+        await this.sH_Service.sleep(500);
+        const isNotRange_msg = this.isNotInrangeTicker_TwReveseNOAPI.join('\n')
+        await this.webhooksService.sendSlackNotification(isNotRange_msg,this.sH_Service.Z_US_SL_.OR4);
+        this.isNotInrangeTicker_TwReveseNOAPI = []
+      } else  if(this.isNotInrangeTicker_Tiingo.length>0){
+        await this.sH_Service.sleep(500);
+        const isNotRange_msg = this.isNotInrangeTicker_Tiingo.join('\n')
+        await this.webhooksService.sendSlackNotification(isNotRange_msg,this.sH_Service.Z_US_SL_.OR4);
+        this.isNotInrangeTicker_Tiingo = []
+      }
     }
   }
 
+  isNotInrangeTicker_TwReveseNOAPI = []
+  isNotInrangeTicker_Tiingo= []
   async CHECKBULL_5_15_30_1h(
     tickers: string[],
     delay = 2,
@@ -400,8 +423,8 @@ export class TasksBullBearService {
           const getLastTimePost = this.webhooksService.getTsBySymbol(ticker,this.sH_Service.lastPosted)
           const match = getLastTimePost?.ts ===  last5min?.date
           if (!isWithinRange || match) {
-            await this.webhooksService.sendSlackNotification(`*T*wReveseNOAPI** <https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day|${ticker}> |${last5min.close}|${last5min?.date}* || ${getLastTimePost?.ts}`,this.sH_Service.Z_US_SL_.OR4);
-            await this.sH_Service.sleep(500);
+            const mes= `**TwReveseNOAPI** <https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day|${ticker}> |${last5min?.close}|${last5min?.date}* || ${getLastTimePost?.ts}`
+            this.isNotInrangeTicker_TwReveseNOAPI.push(mes)
             return this.CHECKBULL_5_Tiiingo([ticker],0);
           }
           await this.stratery_2Service.FristCheck(
@@ -486,6 +509,7 @@ export class TasksBullBearService {
     delay = 2,
   ) {
     this.sH_Service.ALL_IN_ONE = true
+    this.TiingoCount +=1
     const limit = pLimit(4); // Limit the concurrency to 8 at a time
 
     const washselllists =[...(await this.LocalPLWR.loadWashSellList()) ||
@@ -511,8 +535,8 @@ export class TasksBullBearService {
           const getLastTimePost = this.webhooksService.getTsBySymbol(ticker,this.sH_Service.lastPosted)
           const match = getLastTimePost?.ts ===  last5min?.date
           if (!isWithinRange || match) {
-            await this.webhooksService.sendSlackNotification(`**tiingo_US* <https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day|${ticker}> |${last5min.close}|${last5min?.date}* || ${getLastTimePost?.ts}`,this.sH_Service.Z_US_SL_.OR4);
-            await this.sH_Service.sleep(500);
+            const mes= `*Tiingo_US** <https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day|${ticker}> |${last5min?.close}|${last5min?.date}* || ${getLastTimePost?.ts}`
+            this.isNotInrangeTicker_Tiingo.push(mes)
             return 0
           }
           await this.stratery_2Service.secondCheck(

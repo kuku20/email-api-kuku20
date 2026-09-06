@@ -16,6 +16,7 @@ export class Stratery_2Service {
     Channels_8_SL_Channel : string[], // array
     NotPostToSlack = false
   ) {
+    this.sH_Service.PostWebSlack = true
     let FullText = '';
     const checktext = 'AB🟢🟢BUYY🟢🟢';
     const inWlist = DataSymbols.watchlist.includes(ticker)

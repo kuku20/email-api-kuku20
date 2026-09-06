@@ -426,4 +426,11 @@ export class SlackPbController {
       res.end();
     }
   }
+
+  @Get('discord-one-msg/:channelId/:msgId')
+  async deleteDisMsg(     
+    @Param('channelId') channelId: string,    
+    @Param('msgId') msgId: string,){
+    return await this.webhooksService.clearDC_Cnel_msg(channelId, msgId)
+  }
 }

@@ -2049,7 +2049,7 @@ export class WebhooksService implements OnModuleInit{
         const tsNCh =
             this.getTsBySymbol(symbols[0], this.sH_Service.watchlistSl_tss) ||
             this.getTsBySymbol(symbols[0], this.sH_Service.holdingSl_tss);
-          if (tsNCh) {
+          if (tsNCh && !['QQQ', 'SPY'].includes(symbols[0])) {
             const signalThread = this.sH_Service.getSlackMessageLink(
               tsNCh.channel,
               tsNCh.ts
@@ -3187,6 +3187,24 @@ async deleteAllMessages_SLack(channel: string) {
       }
     }
   }
+
+  async clearDC_Cnel_msg(channelId: string, msgId: string): Promise<void> {
+    const channel = await this.discordBot.channels.fetch(channelId);
+  
+    if (!channel || !channel.isTextBased()) {
+      throw new Error('Invalid channel');
+    }
+  
+    try {
+      const message = await channel.messages.fetch(msgId);
+      await message.delete();
+  
+      console.log(`Deleted message ${msgId}`);
+    } catch (err) {
+      console.log(`Failed to delete ${msgId}`, err);
+    }
+  }
+
     /*
    */
     async postSlackImage(
@@ -3339,6 +3357,7 @@ async deleteAllMessages_SLack(channel: string) {
       message,
       timeframe
     ){
+      this.sH_Service.slackPosted.push(channel)
       const fileBuffer = await this.captureChart(
         data,
         ticker,
@@ -3511,7 +3530,15 @@ async deleteAllMessages_SLack(channel: string) {
     }
 
     async Post2MySlack(messgage,ticker,channelN=this.sH_Service.DC_SL_MT.ALL_IN_ONE,){
-      const websiteLink =   `|| <${this.sH_Service.local4200}/price-log/${ticker}?daysRange=5|${ticker}-local-target> || <${this.sH_Service.stockMk000}/price-log/${ticker}?daysRange=5|${ticker}-prod-target>`
+      let websiteLink =   `|| <${this.sH_Service.local4200}/price-log/${ticker}?daysRange=5|${ticker}-local-target> || <${this.sH_Service.stockMk000}/price-log/${ticker}?daysRange=5|${ticker}-prod-target>`
+      const tsNCh = this.getTsBySymbol(ticker, this.sH_Service.watchlistSl_tss) || this.getTsBySymbol(ticker, this.sH_Service.holdingSl_tss);
+      if (tsNCh) {
+        const signalThread = this.sH_Service.getSlackThread_MySlack(
+          tsNCh.channel,
+          tsNCh.ts
+        );
+        websiteLink +=signalThread
+      }
       return await this.messagesService.sendMessage("workspace-1", channelN, "bot-1", ticker, messgage+websiteLink)
     }
 }

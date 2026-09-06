@@ -1162,6 +1162,15 @@ SELL ALL
     return `<https://${workspace}.slack.com/archives/${channel}/p${ts.replace('.', '')} |View Signal>`;
   }
 
+  getSlackThread_MySlack(
+    channel: string,
+    ts: string,
+    workspace = 'sep28',
+  ): string {
+    const p = ts.replace('.', '');
+  
+    return `<https://${workspace}.slack.com/archives/${channel}/p${p}?thread_ts=${ts}&cid=${channel}|Slack thread>`;
+  }
 
   sleep(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));

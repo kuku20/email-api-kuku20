@@ -369,6 +369,7 @@ export class TaskCryptoService {
     apikey = '2711824a92bc40498c8bc30728813e2a',
   ) {
     await this.handleCryptoChannel(time_wait, tickers, apikey, '1day');
+    await this.webhooksService.deleteSLChannel(Object.values(this.sH_Service.BULL_BEAR_SL_))
   }
 
   async onModuleInit() {
