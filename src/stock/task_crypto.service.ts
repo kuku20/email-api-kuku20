@@ -456,7 +456,7 @@ export class TaskCryptoService {
         const isWithinRange = this.webhooksService.checktimeMinutesCST(
           ticker,
           lastData?.date,
-          13,
+          20,
         );
         if (true) {
           const BuyOnly_StochRSICrossAB200 =
@@ -474,7 +474,7 @@ export class TaskCryptoService {
             );
             return;
           } else{
-            return this.stratery_2Service.secondCheck(ticker,data,timeframe,this.webhooksService,
+            await this.stratery_2Service.secondCheck(ticker,data,timeframe,this.webhooksService,
               [ B_Channel,
                 HT_Channel,
                 B_Channel,

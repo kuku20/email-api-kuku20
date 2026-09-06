@@ -404,7 +404,7 @@ export class TasksBullBearService {
             await this.sH_Service.sleep(500);
             return this.CHECKBULL_5_Tiiingo([ticker],0);
           }
-          return await this.stratery_2Service.FristCheck(
+          await this.stratery_2Service.FristCheck(
             ticker,
             data_5min,
             ['5min','15min','30min','1hour'],
@@ -515,7 +515,7 @@ export class TasksBullBearService {
             await this.sH_Service.sleep(500);
             return 0
           }
-          return await this.stratery_2Service.secondCheck(
+          await this.stratery_2Service.secondCheck(
             ticker,
             data_5min,
             '5min',

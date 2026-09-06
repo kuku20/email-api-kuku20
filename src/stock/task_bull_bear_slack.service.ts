@@ -93,7 +93,7 @@ export class TasksBullBearSlackOnLyService {
             await this.sH_Service.sleep(500);
             return this.CHECKBULL_5_Tiiingo([ticker],0);
           }
-          return this.sty_SlackService.FristCheck( 
+          await this.sty_SlackService.FristCheck( 
             ticker,
             data_5min,
             ['5min','15min','30min','1hour'],
@@ -153,7 +153,7 @@ export class TasksBullBearSlackOnLyService {
             await this.sH_Service.sleep(500);
             return 0
           }
-          return this.sty_SlackService.secondCheck( 
+          await this.sty_SlackService.secondCheck( 
             ticker,
             data_5min,
             '5min',
