@@ -47,7 +47,7 @@ export class TaskCryptoService {
 
         const lastData = data[data.length - 1];
         const secondLastData = data[data.length - 2];
-        const timediff = timeframe==='30min'?20:timeframe==='1hour'?50:timeframe==='4hour'?200:1200
+        const timediff = timeframe==='30min'?20:timeframe==='1h'?50:timeframe==='4h'?200:timeframe==='1day'?1200:2400
         const isWithinRange = this.webhooksService.checktimeMinutesEST(
           ticker,
           lastData?.date,
@@ -419,7 +419,7 @@ export class TaskCryptoService {
         let data  = this.LocalPLWR.getTickerData(result, ticker.toLowerCase());
         const lastData = data[data.length - 1];
         const secondLastData = data[data.length - 2];
-        const timediff = timeframe==='30min'?20:timeframe==='1hour'?50:timeframe==='4hour'?200:1200
+        const timediff = timeframe==='30min'?20:timeframe==='1h'?50:timeframe==='4h'?200:timeframe==='1day'?1200:2400
         const isWithinRange = this.webhooksService.checktimeMinutesCST(
           ticker,
           lastData?.date,
