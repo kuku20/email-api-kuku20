@@ -47,10 +47,11 @@ export class TaskCryptoService {
 
         const lastData = data[data.length - 1];
         const secondLastData = data[data.length - 2];
+        const timediff = timeframe==='30min'?20:timeframe==='1hour'?50:timeframe==='4hour'?200:1200
         const isWithinRange = this.webhooksService.checktimeMinutesEST(
           ticker,
           lastData?.date,
-          13,
+          timediff,
         );
         if (isWithinRange) {
           // await this.webhooksService.runCrOn_MA50(
@@ -80,6 +81,13 @@ export class TaskCryptoService {
               HT_Channel,
             );
           }
+        } else {
+          this.webhooksService.sendDiscord(
+            `ERROR ON API AT: ${timeframe} On ${date}: isWithinRange:false`,
+            `RSIENDBOT ${ticker} at ${timeframe}`,
+            'Nono',
+            'ERORR_CALL',
+          );
         }
         this.logger.log(`${ticker} processed successfully.`);
       } catch (error) {
@@ -156,6 +164,13 @@ export class TaskCryptoService {
               `TwReveseNOAPI`
             )
           }
+        } else {
+          this.webhooksService.sendDiscord(
+            `ERROR ON API AT: ${timeframe} On ${date}: isWithinRange:false`,
+            `RSIENDBOT ${ticker} at ${timeframe}`,
+            'Nono',
+            'ERORR_CALL',
+          );
         }
         this.logger.log(`${ticker} processed successfully.`);
       } catch (error) {
@@ -403,10 +418,11 @@ export class TaskCryptoService {
         let data  = this.LocalPLWR.getTickerData(result, ticker.toLowerCase());
         const lastData = data[data.length - 1];
         const secondLastData = data[data.length - 2];
+        const timediff = timeframe==='30min'?20:timeframe==='1hour'?50:timeframe==='4hour'?200:1200
         const isWithinRange = this.webhooksService.checktimeMinutesCST(
           ticker,
           lastData?.date,
-          28,
+          timediff,
         );
         if (isWithinRange) {
           // await this.webhooksService.runCrOn_MA50(
