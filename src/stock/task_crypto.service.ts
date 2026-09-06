@@ -249,7 +249,7 @@ export class TaskCryptoService {
 
     this.logger.log(`Running ${timeframe} for CRYPTOs...`, tickers);
 
-    await this.processTickers1hour_tiingoAPI(
+    await this.processTickers1hour(
       tickers,
       timeframe,
       apiKey,
@@ -263,7 +263,7 @@ export class TaskCryptoService {
   async handle5pCrypto(time_wait = 2, tickers = this.tickers_group1) {
     this.logger.log('Running scheduled every 15min for CRYPTOs...');
     const { buyChannel, htChannel } = this.cryptoChannels['15min'];
-    await this.processTickers15m_tiingoAPI(
+    await this.processTickers15m(
       tickers,
       '15min',
       'all',
