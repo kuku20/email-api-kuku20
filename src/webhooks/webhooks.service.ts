@@ -3339,6 +3339,7 @@ async deleteAllMessages_SLack(channel: string) {
       message,
       timeframe
     ){
+      this.sH_Service.slackPosted.push(channel)
       const fileBuffer = await this.captureChart(
         data,
         ticker,
