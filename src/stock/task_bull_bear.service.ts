@@ -541,4 +541,11 @@ export class TasksBullBearService {
     await Promise.all(tickerPromises);
     // this.sH_Service.ALL_IN_ONE = false
   }
+
+  postTurnOnOff(){
+    const blockre = this.webhooksService.slElementOptions('turnOff','turn_On_Off')
+    this.webhooksService.post_SLack(
+      this.sH_Service.Z_US_SL_.OR4,blockre
+    );
+  }
 }

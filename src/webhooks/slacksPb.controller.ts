@@ -151,6 +151,7 @@ export class SlackPbController {
       const y = await this.webhooksService.deleteMessage_SLack(postToCSLRE.channel,[payload.message.ts])
       // console.log('clear_itself',x,y)
     } else if(timeframe_acID ==='turn_On_Off') {
+      this.sH_Service.slackTokenKey = 'SLACK_USER_TOKEN'
       const filename = action.value
       let setValue
       let blockre 
@@ -167,6 +168,7 @@ export class SlackPbController {
         `stock-related/turnOffNow.json`,
         { data: setValue },
       );
+      this.sH_Service.slackTokenKey = 'SLACK_BOT_TOKEN'
     } else{
       console.log('action',timeframe_acID, ticker)
       await this.webhooksService.reply_SLack(postToCSLRE.channel,payload.message.ts,'postnone')
