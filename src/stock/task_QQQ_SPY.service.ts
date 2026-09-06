@@ -106,6 +106,7 @@ export class TaskQQQ_SPYService {
               channel,
               channel,],
           )
+          this.sH_Service.PostWebSlack = false
           if(checks1){
             return 
           }
