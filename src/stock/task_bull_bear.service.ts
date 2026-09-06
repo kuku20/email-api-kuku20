@@ -87,7 +87,7 @@ export class TasksBullBearService {
     // this.webhooksService.deleteSLChannel(Object.values(this.sH_Service.Z_US_SL_))
     // this.sH_Service.bullbearDaily = this.sH_Service.bullbearUqiue
     // await this.CHECKBULL_BEAR_OTHER_5MIN(1,);
-    await this.CHECKBULL_5_15_30_1h(['SMCI'],0)
+    // await this.CHECKBULL_5_15_30_1h(['SMCI'],0)
     // await this.webhooksService.deleteSLChannel(Object.values(this.sH_Service.INTRA_30M_SL_))
   }
 

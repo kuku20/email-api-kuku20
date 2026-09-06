@@ -14,8 +14,8 @@ export class Stratery_2Service {
     webhooksService,
     Channels_8_DC_Channel, // array
     Channels_8_SL_Channel, // array
+    NotPostToSlack = false
   ) {
-    const postSlackORNot = Channels_8_SL_Channel.length === 0
     let FullText = '';
     const checktext = 'AB🟢🟢BUYY🟢🟢';
     const inWlist = DataSymbols.watchlist.includes(ticker)
@@ -79,7 +79,7 @@ export class Stratery_2Service {
           DC_Channel_BIG_VOL,
           data_5min,
         );
-        if(postSlackORNot){return}
+        if(NotPostToSlack){return}
         const imageUlr =
           discodedata?.embeds?.[0]?.image?.url ||
           (discodedata?.attachments ?? discodedata?.attachments?.first()?.url);
@@ -145,7 +145,7 @@ export class Stratery_2Service {
         DC_Channel_CrAbMA50,
         data_5min,
       ); //       imageUrl = sentMessage.embeds[0]?.image?.url || sentMessage.attachments.first()?.url;
-      if(postSlackORNot){return}
+      if(NotPostToSlack){return}
       const imageUlr =
         discodedata?.embeds?.[0]?.image?.url ||
         (discodedata?.attachments ?? discodedata?.attachments?.first()?.url);
@@ -172,7 +172,7 @@ export class Stratery_2Service {
         DC_Channel_macdCr_N,
         data_5min,
       );
-      if(postSlackORNot){return}
+      if(NotPostToSlack){return}
       const imageUlr =
         discodedata?.embeds?.[0]?.image?.url ||
         (discodedata?.attachments ?? discodedata?.attachments?.first()?.url);
@@ -235,7 +235,7 @@ export class Stratery_2Service {
               DC_Channel_ALL_GREEN,
               data_5min,
             );
-            if(postSlackORNot){return}
+            if(NotPostToSlack){return}
             const imageUlr =
               discodedata?.embeds?.[0]?.image?.url ||
               (discodedata?.attachments ??
@@ -289,7 +289,7 @@ export class Stratery_2Service {
               DC_Channel_WATCH,
               data_5min,
             );
-            if(postSlackORNot){return}
+            if(NotPostToSlack){return}
             const imageUlr =
               discodedata?.embeds?.[0]?.image?.url ||
               (discodedata?.attachments ??
@@ -344,7 +344,7 @@ export class Stratery_2Service {
                 DC_Channel_EARLY_CHECK,
                 data_5min,
               );
-              if(postSlackORNot){return}
+              if(NotPostToSlack){return}
               const imageUlr =
                 discodedata?.embeds?.[0]?.image?.url ||
                 (discodedata?.attachments ??
@@ -373,7 +373,7 @@ export class Stratery_2Service {
                 DC_Channel_EARLY_CHECK,
                 data_5min,
               );
-              if(postSlackORNot){return}
+              if(NotPostToSlack){return}
               const imageUlr =
                 discodedata?.embeds?.[0]?.image?.url ||
                 (discodedata?.attachments ??
@@ -407,7 +407,7 @@ export class Stratery_2Service {
               DC_Channel_EARLY_CHECK,
               data_5min,
             );
-            if(postSlackORNot){return}
+            if(NotPostToSlack){return}
             const imageUlr =
               discodedata?.embeds?.[0]?.image?.url ||
               (discodedata?.attachments ??
@@ -436,7 +436,7 @@ export class Stratery_2Service {
               DC_Channel_EARLY_CHECK,
               data_5min,
             );
-            if(postSlackORNot){return}
+            if(NotPostToSlack){return}
             const imageUlr =
               discodedata?.embeds?.[0]?.image?.url ||
               (discodedata?.attachments ??
@@ -467,7 +467,7 @@ export class Stratery_2Service {
           DC_Channel_MACDCR_BL_OT,
           data_5min,
         );
-        if(postSlackORNot){return}
+        if(NotPostToSlack){return}
         const imageUlr =
           discodedata?.embeds?.[0]?.image?.url ||
           (discodedata?.attachments ?? discodedata?.attachments?.first()?.url);
@@ -508,7 +508,7 @@ export class Stratery_2Service {
             DC_Channel_EARLY_CHECK,
             data_5min,
           );
-          if(postSlackORNot){return}
+          if(NotPostToSlack){return}
           const imageUlr =
             discodedata?.embeds?.[0]?.image?.url ||
             (discodedata?.attachments ??
@@ -537,7 +537,7 @@ export class Stratery_2Service {
             DC_Channel_EARLY_CHECK,
             data_5min,
           );
-          if(postSlackORNot){return}
+          if(NotPostToSlack){return}
           const imageUlr =
             discodedata?.embeds?.[0]?.image?.url ||
             (discodedata?.attachments ??
@@ -597,7 +597,7 @@ export class Stratery_2Service {
               DC_Channel_ALL_RED,
               data_5min,
             );
-            if(postSlackORNot){return}
+            if(NotPostToSlack){return}
             const imageUlr =
               discodedata?.embeds?.[0]?.image?.url ||
               (discodedata?.attachments ??
@@ -630,9 +630,9 @@ export class Stratery_2Service {
     webhooksService,
     Channels_4_DC_Channel, // array
     Channels_4_SL_Channel, // array
+    NotPostToSlack = false,
     apiCalling = '*Tiingo_US*\n '
   ) {
-    const postSlackORNot = Channels_4_SL_Channel.length === 0;
     let FullText = '';
     const inWlist = DataSymbols.watchlist.includes(ticker);
     const SL_Short = this.sH_Service.INTRA_30M_SL_;
@@ -666,7 +666,7 @@ export class Stratery_2Service {
           DC_Channel_BIG_VOL,
           data_5min,
         );
-        if(postSlackORNot){return}
+        if(NotPostToSlack){return}
         const imageUlr =
           discodedata?.embeds?.[0]?.image?.url ||
           (discodedata?.attachments ?? discodedata?.attachments?.first()?.url);
@@ -707,7 +707,7 @@ export class Stratery_2Service {
         DC_Channel_CrAbMA50,
         data_5min,
       ); //       imageUrl = sentMessage.embeds[0]?.image?.url || sentMessage.attachments.first()?.url;
-      if(postSlackORNot){return}
+      if(NotPostToSlack){return}
       const imageUlr =
         discodedata?.embeds?.[0]?.image?.url ||
         (discodedata?.attachments ?? discodedata?.attachments?.first()?.url);
@@ -731,7 +731,7 @@ export class Stratery_2Service {
         DC_Channel_macdCr_N,
         data_5min,
       );
-      if(postSlackORNot){return}
+      if(NotPostToSlack){return}
       const imageUlr =
         discodedata?.embeds?.[0]?.image?.url ||
         (discodedata?.attachments ?? discodedata?.attachments?.first()?.url);
@@ -768,7 +768,7 @@ export class Stratery_2Service {
           DC_Channel_EARLY_CHECK,
           data_5min,
         );
-        if(postSlackORNot){return}
+        if(NotPostToSlack){return}
         const imageUlr =
           discodedata?.embeds?.[0]?.image?.url ||
           (discodedata?.attachments ?? discodedata?.attachments?.first()?.url);
@@ -795,7 +795,7 @@ export class Stratery_2Service {
           DC_Channel_EARLY_CHECK,
           data_5min,
         );
-        if(postSlackORNot){return}
+        if(NotPostToSlack){return}
         const imageUlr =
           discodedata?.embeds?.[0]?.image?.url ||
           (discodedata?.attachments ?? discodedata?.attachments?.first()?.url);
