@@ -62,8 +62,10 @@
 - Secure your endpoints using Slack's signing secret.
 
 
- ngrok http 3000
+ ngrok http 3010
+https://juice-muskiness-splashed.ngrok-free.dev 
 
+https://email-api-kuku20-production.up.railway.app/
 
 https://juice-muskiness-splashed.ngrok-free.dev/slack/interactions
 
