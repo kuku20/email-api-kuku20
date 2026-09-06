@@ -202,7 +202,6 @@ export class TaskCryptoService {
   tickers_group2 = ['SOLUSD', 'ADAUSD', 'XRPUSD', 'BNBUSD', 'LINKUSD'];
   tickers_group3 = [
     'SUIUSD',
-    'TONUSD',
     'UNIUSD',
     'AAVEUSD',
     'COMPUSD',
