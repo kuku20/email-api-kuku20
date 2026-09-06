@@ -82,12 +82,8 @@ export class TaskCryptoService {
             );
           }
         } else {
-          this.webhooksService.sendDiscord(
-            `ERROR ON API AT: ${timeframe} On ${date}: isWithinRange:false`,
-            `RSIENDBOT ${ticker} at ${timeframe}`,
-            'Nono',
-            'ERORR_CALL',
-          );
+          const msg =`*${lastData?.date}*-EST_TIME\n*Close:*${lastData?.close}\nisWithinRange:false\n`
+          await this.webhooksService.Post2MySlack(msg, `${ticker}_${timeframe}`,'86UamrSwHhQYgEszLmcP')
         }
         this.logger.log(`${ticker} processed successfully.`);
       } catch (error) {
@@ -165,12 +161,8 @@ export class TaskCryptoService {
             )
           }
         } else {
-          this.webhooksService.sendDiscord(
-            `ERROR ON API AT: ${timeframe} On ${date}: isWithinRange:false`,
-            `RSIENDBOT ${ticker} at ${timeframe}`,
-            'Nono',
-            'ERORR_CALL',
-          );
+          const msg =`*${lastData?.date}*-EST_TIME\n*Close:*${lastData?.close}\nisWithinRange:false\n`
+          await this.webhooksService.Post2MySlack(msg, `${ticker}_${timeframe}`,'86UamrSwHhQYgEszLmcP')
         }
         this.logger.log(`${ticker} processed successfully.`);
       } catch (error) {
@@ -310,7 +302,7 @@ export class TaskCryptoService {
     //liamsterling1@outlook.com
     await this.handleCryptoChannel(time_wait, tickers, apikey, '1h');
   }
-  // @Cron('0 * * * *') // every 1 hour
+  @Cron('0 * * * *') // every 1 hour
   async handle1hourCrypto1(
     time_wait = 6,
     tickers = this.tickers_group2,
@@ -318,7 +310,7 @@ export class TaskCryptoService {
   ) {
     await this.handleCryptoChannel(time_wait, tickers, apikey, '1h');
   }
-  //@Cron('0 * * * *') // every 1 hour
+  @Cron('0 * * * *') // every 1 hour
   async handle1hourCrypto2(
     time_wait = 5,
     tickers = this.tickers_group3,
@@ -336,7 +328,7 @@ export class TaskCryptoService {
     //liamsterling1@outlook.com
     await this.handleCryptoChannel(time_wait, tickers, apikey, '4h');
   }
-  //@Cron('10 */4 * * *') // Every 4 hours at minute 10
+  @Cron('10 */4 * * *') // Every 4 hours at minute 10
   async handle4hourCrypto3(
     time_wait = 0,
     tickers = this.tickers_group2,
@@ -344,7 +336,7 @@ export class TaskCryptoService {
   ) {
     await this.handleCryptoChannel(time_wait, tickers, apikey, '4h');
   }
-  //@Cron('12 */4 * * *') // Every 4 hours at minute 12
+  @Cron('12 */4 * * *') // Every 4 hours at minute 12
   async handle4hourCrypto4(
     time_wait = 0,
     tickers = this.tickers_group3,
@@ -362,7 +354,7 @@ export class TaskCryptoService {
     //liamsterling1@outlook.com
     await this.handleCryptoChannel(time_wait, tickers, apikey, '1day');
   }
-  //@Cron('16 1 * * *') // Every day at 1:16 AM
+  @Cron('16 1 * * *') // Every day at 1:16 AM
   async handledailyCrypto1(
     time_wait = 0,
     tickers = this.tickers_group2,
@@ -370,7 +362,7 @@ export class TaskCryptoService {
   ) {
     await this.handleCryptoChannel(time_wait, tickers, apikey, '1day');
   }
-  //@Cron('18 1 * * *') // Every day at 1:18 AM
+  @Cron('18 1 * * *') // Every day at 1:18 AM
   async handledailyCrypto2(
     time_wait = 0,
     tickers = this.tickers_group3,
