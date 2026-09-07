@@ -150,25 +150,26 @@ export class SlackPbController {
       const x = await this.sirvService.deleteImage(filename)
       const y = await this.webhooksService.deleteMessage_SLack(postToCSLRE.channel,[payload.message.ts])
       // console.log('clear_itself',x,y)
-    } else if(timeframe_acID ==='turn_On_Off') {
+    } else if(timeframe_acID.toLowerCase().includes('turn_on_off_')) {
       this.sH_Service.slackTokenKey = 'SLACK_USER_TOKEN'
       const filename = action.value
       let setValue
       let blockre 
       if(filename === 'turnOn') {
         setValue = true
-        blockre = this.webhooksService.slElementOptions('turnOff','turn_On_Off')
+        blockre = this.webhooksService.slElementOptions('turnOff',timeframe_acID)
       } else {
         setValue = false
-        blockre = this.webhooksService.slElementOptions('turnOn','turn_On_Off')
+        blockre = this.webhooksService.slElementOptions('turnOn',timeframe_acID)
       }
       await this.webhooksService.Update_Slack(payload.channel.id,payload.message.ts, `*${ticker}*  Check Me Out !!!!`,blockre)
       await this.stockService.FireBaseApi(
         'put',
-        `stock-related/turnOffNow.json`,
+        `stock-related/${timeframe_acID}.json`,
         { data: setValue },
       );
       this.sH_Service.slackTokenKey = 'SLACK_BOT_TOKEN'
+      await this.webhooksService.reply_SLack(payload.channel.id,payload.message.ts,`You turn *${timeframe_acID}* it to: *${setValue}*`)
     } else{
       console.log('action',timeframe_acID, ticker)
       await this.webhooksService.reply_SLack(postToCSLRE.channel,payload.message.ts,'postnone')

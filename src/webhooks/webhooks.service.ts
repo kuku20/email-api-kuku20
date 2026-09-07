@@ -445,7 +445,9 @@ export class WebhooksService implements OnModuleInit{
     }
     const timeframe = tickerasall.split('-')[1];
     const pathSym = `${channel}/${ticker}`.toUpperCase();
-    if (this.configService.get('NODE_ENV') === 'production' && this.sH_Service.railwayBoolen) {
+    const baseBoolean = this.configService.get('NODE_ENV') === 'production' && this.sH_Service.railwayBoolen
+    const setBoolean = baseBoolean||(baseBoolean && this.sH_Service.turn_On_Off_US_Stock)|| (baseBoolean&&this.sH_Service.turn_On_Off_Crypto)|| (baseBoolean && this.sH_Service.turn_On_Off_Forex)
+    if (setBoolean) {
       // // turn off on local
       await this.FireBaseApi('put', `stock-data/${pathSym}.json`, slicedData);
       return null;
@@ -2879,32 +2881,34 @@ async deleteAllMessages_SLack(channel: string) {
             min_query_length: 1
           }
         }
-      ]:option==='turn_On_Off'?[{
-            type: 'actions',
-            elements: [
-              {
-                type: 'button',
-                text: {
-                  type: 'plain_text',
-                  text: `${symbol}-turn_On_Off`,
-                },
-                value: symbol,
-                action_id: 'turn_On_Off',
-                style: 'danger',
+      ]:option.toLowerCase().includes('turn_on_off_')?[
+        {
+          type: 'actions',
+          elements: [
+            {
+              type: 'button',
+              text: {
+                type: 'plain_text',
+                text: `${symbol}-${option}`,
               },
-            ],
-          },]:[
-      {
-        type: 'button',
-        text: {
-          type: 'plain_text',
-          text: symbol+'-'+option,
+              value: symbol,
+              action_id: option,
+              style: 'danger',
+            },
+          ],
         },
-        value:symbol,
-        action_id: option,
-        style: 'danger',
-      },
-    ]
+      ]:[
+        {
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            text: symbol+'-'+option,
+          },
+          value:symbol,
+          action_id: option,
+          style: 'danger',
+        },
+      ]
     return element
   }
   async post2SlackBtnFnWithOps(
@@ -3078,7 +3082,10 @@ async deleteAllMessages_SLack(channel: string) {
       this.configService.get<string>('DISCORD_BOT_TOKEN'),
     );
 
-    console.log('Discord bot connected');
+    console.log('Discord bot connected',8085);
+    this.sH_Service.turn_On_Off_Crypto = await this.getTunOnOff('turn_On_Off_Crypto')
+    this.sH_Service.turn_On_Off_Forex = await this.getTunOnOff('turn_On_Off_Forex')
+    this.sH_Service.turn_On_Off_US_Stock = await this.getTunOnOff('turn_On_Off_US_Stock')
     // await this.clearChannel('1440511808644452493')// big_vol1
     // await this.clearChannel('1457917895421067396')// big_vol2
   }
@@ -3557,5 +3564,14 @@ async deleteAllMessages_SLack(channel: string) {
 
     async uploadImageTo_sirvService(file){
       return this.sirvService.uploadImage(file)
+    }
+
+    async getTunOnOff(turn_On_Off_US_: string) {
+      const OnOffData = await this.FireBaseApi(
+        'get',
+        `stock-related/${turn_On_Off_US_}.json`,
+        ''
+      );
+      return OnOffData.data
     }
 }
