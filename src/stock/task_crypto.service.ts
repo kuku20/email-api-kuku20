@@ -236,6 +236,7 @@ export class TaskCryptoService {
     apiKey: string,
     timeframe: keyof typeof this.cryptoChannels,
   ): Promise<void> {
+    this.sH_Service.turn_On_Off_Crypto = await this.webhooksService.getTunOnOff('turn_On_Off_Crypto')
     const { buyChannel, htChannel } = this.cryptoChannels[timeframe];
 
     this.logger.log(`Running ${timeframe} for CRYPTOs...`, tickers);

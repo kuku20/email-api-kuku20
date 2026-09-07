@@ -45,6 +45,7 @@ export class TasksForexService {
     apiKey: string,
     timeframe: keyof typeof this.forexChannels,
   ): Promise<void> {
+    this.sH_Service.turn_On_Off_Forex = await this.webhooksService.getTunOnOff('turn_On_Off_Forex')
     const { buyChannel, htChannel } = this.forexChannels[timeframe];
 
     this.logger.log(`Running ${timeframe} for Forexs...`, tickers);
