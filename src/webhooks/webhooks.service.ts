@@ -199,8 +199,8 @@ export class WebhooksService implements OnModuleInit{
       embed.setImage(`attachment://${filename}`);
       options.files = [attachment];
     }
-    let sentMessage
-    const ProductImageUrl = file ? null: `${this.sH_Service.stockMk000}/capture-target/${webhookCl}/${ticker.toUpperCase()}`;
+    let sentMessage,Post2MySlack
+    const WebsiteImageUrl = file ? null: `${this.sH_Service.stockMk000}/capture-target/${webhookCl}/${ticker.toUpperCase()}`;
     const channelWeb =this.sH_Service.ALL_IN_ONE ? this.sH_Service.DC_SL_MT.ALL_IN_ONE: this.sH_Service.DC_SL_MT[webhookCl] || '1yHUrbPtNS0yygBxsezD'
     const allowPostMySlack = !webhookCl.includes('ERORR_CALL') && !botdt.includes('RSIENDBOT') && this.sH_Service.PostWebSlack
     try {
@@ -208,28 +208,28 @@ export class WebhooksService implements OnModuleInit{
         this.webhookClient.send(options),
         15000, // 10 seconds
       );
-      if(ProductImageUrl && allowPostMySlack){
-        const discordmsg =`*${message}*\n <${this.sH_Service.DiscordMsg}/${sentMessage?.channel_id}/${sentMessage?.id}|Discord-o6l-msg>|| <${ProductImageUrl}|prodUrl>`
-        await this.Post2MySlack(discordmsg, ticker,channelWeb)
+      if(WebsiteImageUrl && allowPostMySlack){
+        const discordmsg =`*${message}*\n <${this.sH_Service.DiscordMsg}/${sentMessage?.channel_id}/${sentMessage?.id}|Discord-o6l-msg>|| <${WebsiteImageUrl}|prodUrl>`
+        Post2MySlack = await this.Post2MySlack(discordmsg, ticker,channelWeb)
       } else if(allowPostMySlack){
         const imageUlr = sentMessage?.embeds?.[0]?.image?.url || (sentMessage?.attachments??sentMessage?.attachments?.first()?.url);
         const discordmsg =  message+  `\n <${this.sH_Service.DiscordMsg}/${sentMessage?.channel_id}/${sentMessage?.id}|Discord-o6l-msg>|| <${imageUlr}|discordImage> `
-        await this.Post2MySlack(discordmsg, ticker,channelWeb)
+        Post2MySlack = await this.Post2MySlack(discordmsg, ticker,channelWeb)
       }
     } catch (err) {
       if(file && allowPostMySlack){
         try {
           const sirvImage = await this.sirvService.uploadImage(file)
           const sirvImagemsg =  message + `\n <${sirvImage.url}|sirvImage> `
-          await this.Post2MySlack(sirvImagemsg, ticker,channelWeb)
+          Post2MySlack =  await this.Post2MySlack(sirvImagemsg, ticker,channelWeb)
         } catch (error) {
           // post to slack if you want
-          await this.Post2MySlack(message, ticker,channelWeb)
+          Post2MySlack =  await this.Post2MySlack(message, ticker,channelWeb)
         }
       }else if(allowPostMySlack){ 
-        if(ProductImageUrl && allowPostMySlack){
-          const discordmsg =`*${message}*\n <${this.sH_Service.DiscordMsg}/${sentMessage?.channel_id}/${sentMessage?.id}|Discord-o6l-msg>|| <${ProductImageUrl}|prodUrl>`
-          await this.Post2MySlack(discordmsg, ticker,channelWeb)
+        if(WebsiteImageUrl && allowPostMySlack){
+          const discordmsg =`*${message}*\n <${this.sH_Service.DiscordMsg}/${sentMessage?.channel_id}/${sentMessage?.id}|Discord-o6l-msg>|| <${WebsiteImageUrl}|prodUrl>`
+          Post2MySlack = await this.Post2MySlack(discordmsg, ticker,channelWeb)
         }
       }
       return null
@@ -260,7 +260,7 @@ export class WebhooksService implements OnModuleInit{
     //   const discordmsg =  message+  `\n <${this.sH_Service.DiscordMsg}/${sentMessage?.channel_id}/${sentMessage?.id}|Discord-o6l-msg>|| <${imageUlr}|discordImage> `
     //   await this.Post2MySlack(discordmsg, ticker,channelWeb)
     // }
-    return { msg: 'post to discord success', ...sentMessage, ProductImageUrl};
+    return { msg: 'post to discord success', ...sentMessage, WebsiteImageUrl,MySlackmsgId:Post2MySlack.id};
   }
 
 
@@ -2054,9 +2054,9 @@ export class WebhooksService implements OnModuleInit{
               tsNCh.channel,
               tsNCh.ts
             );
-            console.log("signalThread", signalThread)
+            console.log("signalThread-webhooks-2060", signalThread)
             await this.reply_SLack(slChannel, postToCSLRE.ts, signalThread);
-                  console.log("imgUrl",imgUrl)
+            console.log("imgUrl-webhooks-2062",imgUrl)
             const hasImage =
                   typeof imgUrl === "string" &&
                   imgUrl.trim().length > 0;
@@ -3165,7 +3165,7 @@ async deleteAllMessages_SLack(channel: string) {
       files: imageBuffer ? [attachment] : [],
     });
     const imageUrl = sentMessage.attachments.first()?.url;
-    return { msg: 'post to discord success', imageUrl:imageUrl};
+    return { msg: 'post to discord success', imageUrl:imageUrl, ...sentMessage};
   }
   async clearChannel(channelId: string) {
     const channel = await this.discordBot.channels.fetch(channelId);
@@ -3369,7 +3369,7 @@ async deleteAllMessages_SLack(channel: string) {
         const imgads = Buffer.from(fileBuffer);
         // slack part
         try {
-          const postTo  = await this.postSlackImage(channel, fileBuffer, `${ticker}.png`, message, );
+          const postTo  = await this.postSlackImage(channel, imgads, `${ticker}.png`, message, );
           const discordmsg = message+  `\n <${this.sH_Service.imageHostUrl}/slack/slack-image/${postTo.files?.[0].id}|slackImage> `
           
           await this.Post2MySlack(discordmsg, ticker,)
@@ -3540,5 +3540,22 @@ async deleteAllMessages_SLack(channel: string) {
         websiteLink +=signalThread
       }
       return await this.messagesService.sendMessage("workspace-1", channelN, "bot-1", ticker, messgage+websiteLink)
+    }
+
+    async UpdateMySLack(messgage,ticker,msgId,channelN=this.sH_Service.DC_SL_MT.ALL_IN_ONE,){
+      let websiteLink =   `|| <${this.sH_Service.local4200}/price-log/${ticker}?daysRange=5|${ticker}-local-target> || <${this.sH_Service.stockMk000}/price-log/${ticker}?daysRange=5|${ticker}-prod-target>`
+      const tsNCh = this.getTsBySymbol(ticker, this.sH_Service.watchlistSl_tss) || this.getTsBySymbol(ticker, this.sH_Service.holdingSl_tss);
+      if (tsNCh) {
+        const signalThread = this.sH_Service.getSlackThread_MySlack(
+          tsNCh.channel,
+          tsNCh.ts
+        );
+        websiteLink +=signalThread
+      }
+      return await this.messagesService.updateMessage("workspace-1", channelN, msgId, messgage+websiteLink)
+    }
+
+    async uploadImageTo_sirvService(file){
+      return this.sirvService.uploadImage(file)
     }
 }
