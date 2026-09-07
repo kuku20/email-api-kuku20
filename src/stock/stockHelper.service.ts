@@ -67,6 +67,7 @@ export class StockHelperService {
     US_30M_BUY: 'ih7okxmRDPHVDh6O1plb',
     US_EARLY_15MIN: 'HI02Lg85RK0gVt2sCTu5',
     ALL_IN_ONE: 'vPbVpdIoDIRjNl9j5Iu7',
+    ERORR_CALL:'R2rV6XPK24BAoLL98SCE'
   }
   AI_SL = {
     "AI_BUY": "C0BT0KZJFRV",

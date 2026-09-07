@@ -201,8 +201,8 @@ export class WebhooksService implements OnModuleInit{
     }
     let sentMessage,Post2MySlack
     const WebsiteImageUrl = file ? null: `${this.sH_Service.stockMk000}/capture-target/${webhookCl}/${ticker.toUpperCase()}`;
-    const channelWeb =this.sH_Service.ALL_IN_ONE ? this.sH_Service.DC_SL_MT.ALL_IN_ONE: this.sH_Service.DC_SL_MT[webhookCl] || '1yHUrbPtNS0yygBxsezD'
-    const allowPostMySlack = !webhookCl.includes('ERORR_CALL') && !botdt.includes('RSIENDBOT') && this.sH_Service.PostWebSlack
+    const channelWeb =this.sH_Service.ALL_IN_ONE ? this.sH_Service.DC_SL_MT.ALL_IN_ONE: this.sH_Service.DC_SL_MT[webhookCl] || 'UdbaWlLJw4YmcY0QQezb'
+    const allowPostMySlack = !botdt.includes('RSIENDBOT') && this.sH_Service.PostWebSlack
     try {
       sentMessage = await this.withTimeout(
         this.webhookClient.send(options),
@@ -255,12 +255,12 @@ export class WebhooksService implements OnModuleInit{
     //     ...options,
     //   });
     // }
-    // else if(!webhookCl.includes('ERORR_CALL') && !botdt.includes('RSIENDBOT') && this.sH_Service.PostWebSlack){
+    // else if( !botdt.includes('RSIENDBOT') && this.sH_Service.PostWebSlack){
     //   const imageUlr = sentMessage?.embeds?.[0]?.image?.url || (sentMessage?.attachments??sentMessage?.attachments?.first()?.url);
     //   const discordmsg =  message+  `\n <${this.sH_Service.DiscordMsg}/${sentMessage?.channel_id}/${sentMessage?.id}|Discord-o6l-msg>|| <${imageUlr}|discordImage> `
     //   await this.Post2MySlack(discordmsg, ticker,channelWeb)
     // }
-    return { msg: 'post to discord success', ...sentMessage, WebsiteImageUrl,MySlackmsgId:Post2MySlack.id};
+    return { msg: 'post to discord success', ...sentMessage, WebsiteImageUrl,  MySlackmsgId: Post2MySlack?.id};
   }
 
 
