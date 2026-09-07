@@ -202,7 +202,9 @@ export class WebhooksService implements OnModuleInit{
     let sentMessage,Post2MySlack
     const WebsiteImageUrl = file ? null: `${this.sH_Service.stockMk000}/capture-target/${webhookCl}/${ticker.toUpperCase()}`;
     const channelWeb =this.sH_Service.ALL_IN_ONE ? this.sH_Service.DC_SL_MT.ALL_IN_ONE: this.sH_Service.DC_SL_MT[webhookCl] || 'UdbaWlLJw4YmcY0QQezb'
-    const allowPostMySlack = !botdt.includes('RSIENDBOT') && this.sH_Service.PostWebSlack
+    const allowPostMySlack = 
+    // !botdt.includes('RSIENDBOT') && 
+    this.sH_Service.PostWebSlack
     try {
       sentMessage = await this.withTimeout(
         this.webhookClient.send(options),
@@ -3083,9 +3085,6 @@ async deleteAllMessages_SLack(channel: string) {
     );
 
     console.log('Discord bot connected',8085);
-    this.sH_Service.turn_On_Off_Crypto = await this.getTunOnOff('turn_On_Off_Crypto')
-    this.sH_Service.turn_On_Off_Forex = await this.getTunOnOff('turn_On_Off_Forex')
-    this.sH_Service.turn_On_Off_US_Stock = await this.getTunOnOff('turn_On_Off_US_Stock')
     // await this.clearChannel('1440511808644452493')// big_vol1
     // await this.clearChannel('1457917895421067396')// big_vol2
   }
