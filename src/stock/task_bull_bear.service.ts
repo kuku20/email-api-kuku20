@@ -397,6 +397,7 @@ export class TasksBullBearService {
     delay = 2,
   ) {
     this.sH_Service.ALL_IN_ONE = true
+    this.sH_Service.turn_On_Off_US_Stock = await this.webhooksService.getTunOnOff('turn_On_Off_US_Stock')
     const limit = pLimit(4); // Limit the concurrency to 8 at a time
 
     const washselllists =[...(await this.LocalPLWR.loadWashSellList()) ||

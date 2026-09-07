@@ -99,10 +99,10 @@ export class SlackPbController {
         //get all msg
         const tss = await this.webhooksService.getAllMessages_SLack(postToCSLRE.channel)
         if(timeframe_acID==='delete_fullc_keep2'){
-          await this.webhooksService.deleteMessage_SLack(postToCSLRE.channel,tss.slice(6,-1))
+          return await this.webhooksService.deleteMessage_SLack(postToCSLRE.channel,tss.slice(6,-1))
         }
         else{ 
-          await this.webhooksService.deleteMessage_SLack(postToCSLRE.channel,tss.slice(0,-1))}
+          return await this.webhooksService.deleteMessage_SLack(postToCSLRE.channel,tss.slice(0,-1))}
       }
     } else if(timeframe_acID ==='1day'||timeframe_acID ==='4hour'||timeframe_acID ==='30min'){
         this.processApply(postToCSLRE)
@@ -155,12 +155,12 @@ export class SlackPbController {
       const filename = action.value
       let setValue
       let blockre 
-      if(filename === 'turnOn') {
+      if(filename.includes('turnOn')) {
         setValue = true
-        blockre = this.webhooksService.slElementOptions('turnOff',timeframe_acID)
+        blockre = this.webhooksService.slElementOptions('turnOff-getImage',timeframe_acID)
       } else {
         setValue = false
-        blockre = this.webhooksService.slElementOptions('turnOn',timeframe_acID)
+        blockre = this.webhooksService.slElementOptions('turnOn-getWeb',timeframe_acID)
       }
       await this.webhooksService.Update_Slack(payload.channel.id,payload.message.ts, `*${ticker}*  Check Me Out !!!!`,blockre)
       await this.stockService.FireBaseApi(
@@ -172,8 +172,9 @@ export class SlackPbController {
       await this.webhooksService.reply_SLack(payload.channel.id,payload.message.ts,`You turn *${timeframe_acID}* it to: *${setValue}*`)
     } else{
       console.log('action',timeframe_acID, ticker)
-      await this.webhooksService.reply_SLack(postToCSLRE.channel,payload.message.ts,'postnone')
+      return await this.webhooksService.reply_SLack(postToCSLRE.channel,payload.message.ts,'postnone')
     }
+    return
     // console.log(action)
 
     // if(){}
