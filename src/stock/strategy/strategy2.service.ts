@@ -26,18 +26,16 @@ export class Stratery_2Service {
     const SL_Short = this.sH_Service.INTRA_30M_SL_;
 
     const DC_Channel_BIG_VOL =
-      Channels_8_DC_Channel[0] || inWlist ? 'US_EARLY_15MIN' : 'US_15M_HT';
+      Channels_8_DC_Channel[0] || (inWlist ? 'US_EARLY_15MIN' : 'US_15M_HT');
     const SL_Channel_BIG_VOL =
-      Channels_8_SL_Channel[0] || inWlist
-        ? SL_Short.MACDCR_50
-        : SL_Short.MACDCR_BL;
+      Channels_8_SL_Channel[0] ||
+      (inWlist ? SL_Short.MACDCR_50 : SL_Short.MACDCR_BL);
 
     const DC_Channel_CrAbMA50 =
-      Channels_8_DC_Channel[1] || inWlist ? 'US_EARLY_5MIN' : 'US_5M_HT';
+      Channels_8_DC_Channel[1] || (inWlist ? 'US_EARLY_5MIN' : 'US_5M_HT');
     const SL_Channel_CrAbMA50 =
-      Channels_8_SL_Channel[1] || inWlist
-        ? SL_Short.MACDCR_100
-        : SL_Short.MACDCR_200;
+      Channels_8_SL_Channel[1] ||
+      (inWlist ? SL_Short.MACDCR_100 : SL_Short.MACDCR_200);
 
     const DC_Channel_macdCr_N = Channels_8_DC_Channel[2] || 'EARLY_AB200';
     const SL_Channel_macdCr_N = Channels_8_SL_Channel[2] || SL_Short.MACDCR_BL;
@@ -106,7 +104,7 @@ export class Stratery_2Service {
         FullText += `<${msgDiscord}|Discord-o6l-msg>`;
         const DC_channel_BV_15Min = `${DC_Channel_BIG_VOL}_15MIN`;
         if (discodedata && discodedata?.channel_id && imageUrl.length > 0) {
-          // console.log("image-5min,92-pass")
+          // // console.log("image-5min,92-pass")
           const postToCSLRE = await webhooksService.sendSlackNotificationVN(
             timeframes[0],
             [ticker],
@@ -122,7 +120,7 @@ export class Stratery_2Service {
             text_15min,
           );
           if (fileBuffer15m) {
-            // console.log("image-15min,108-pass")
+            // // console.log("image-15min,108-pass")
             const replyData_15 = await webhooksService.reply2_DC_Message(
               discodedata.channel_id,
               discodedata.id,
@@ -178,7 +176,7 @@ export class Stratery_2Service {
             }
           } else {
             // 5min_image and 15min_weblink
-            // console.log("15min_weblink,144-pass")
+            // // console.log("15min_weblink,144-pass")
             const Web_imageUrl_15min = `${
               this.sH_Service.stockMk000
             }/capture-target/${DC_channel_BV_15Min}/${ticker.toUpperCase()}`;
@@ -211,7 +209,7 @@ export class Stratery_2Service {
             }
           }
         } else {
-          // console.log("NO_IMAGE: 15min_weblink,156-pass")
+          // // console.log("NO_IMAGE: 15min_weblink,156-pass")
           // no 5min-image |post to data-15min
           const slicedData = [...data_15min]
             .sort(
@@ -248,8 +246,8 @@ export class Stratery_2Service {
             this.sH_Service.stockMk000
           }/capture-target/${DC_channel_BV_15Min}/${ticker.toUpperCase()}`;
           FullText += `${Web_imageUrl_5min_text} || <${msgDiscord_15m}|Discord-o6l-msg-2> || <${Web_imageUrl_15min}|prodUrl>`;
-          // console.log("discodedata-186",discodedata?.MySlackmsgId)
-          // console.log("FullText-187",FullText)
+          // // console.log("discodedata-186",discodedata?.MySlackmsgId)
+          // // console.log("FullText-187",FullText)
           await webhooksService.UpdateMySLack(
             FullText,
             ticker,
@@ -492,7 +490,7 @@ export class Stratery_2Service {
             }
             return true;
           } else {
-            // console.log('stop at 15:5_allgreen_15_red');
+            // // console.log('stop at 15:5_allgreen_15_red');
             // buy earlly if
             if (MACDP && closeCrosMA50) {
               const discodedata = await webhooksService.sendDiscord(
@@ -559,7 +557,7 @@ export class Stratery_2Service {
             } else return false;
           }
         } else {
-          // console.log('stop at 30:5_allgreen_30_red');
+          // // console.log('stop at 30:5_allgreen_30_red');
           // buy earlly if
           if (MACDP && closeCrosMA200) {
             const discodedata = await webhooksService.sendDiscord(
@@ -657,7 +655,7 @@ export class Stratery_2Service {
         // await webhooksService.reply_SLack(postToCSLRE.postToCSLRE.channel,postToCSLRE.postToCSLRE.ts,'withBlock',blockre)
         return true;
       } else {
-        // console.log('stop at 15: 5_allgreen');
+        // // console.log('stop at 15: 5_allgreen');
         // buy earlly if
         const last5min = data_5min[data_5min.length - 1];
         const MACDP = last5min.divergence > 0;
@@ -795,7 +793,7 @@ export class Stratery_2Service {
         return false;
       }
     } else {
-      // console.log('stop at 5', FullText);
+      // // console.log('stop at 5', FullText);
       return false;
     }
     return false;
@@ -816,18 +814,16 @@ export class Stratery_2Service {
     const SL_Short = this.sH_Service.INTRA_30M_SL_;
 
     const DC_Channel_BIG_VOL =
-      Channels_4_DC_Channel[0] || inWlist ? 'US_EARLY_15MIN' : 'US_15M_HT';
+      Channels_4_DC_Channel[0] || (inWlist ? 'US_EARLY_15MIN' : 'US_15M_HT');
     const SL_Channel_BIG_VOL =
-      Channels_4_SL_Channel[0] || inWlist
-        ? SL_Short.MACDCR_50
-        : SL_Short.MACDCR_BL;
+      Channels_4_SL_Channel[0] ||
+      (inWlist ? SL_Short.MACDCR_50 : SL_Short.MACDCR_BL);
 
     const DC_Channel_CrAbMA50 =
-      Channels_4_DC_Channel[1] || inWlist ? 'US_EARLY_5MIN' : 'US_5M_HT';
+      Channels_4_DC_Channel[1] || (inWlist ? 'US_EARLY_5MIN' : 'US_5M_HT');
     const SL_Channel_CrAbMA50 =
-      Channels_4_SL_Channel[1] || inWlist
-        ? SL_Short.MACDCR_100
-        : SL_Short.MACDCR_200;
+      Channels_4_SL_Channel[1] ||
+      (inWlist ? SL_Short.MACDCR_100 : SL_Short.MACDCR_200);
 
     const DC_Channel_macdCr_N = Channels_4_DC_Channel[2] || 'EARLY_AB200';
     const SL_Channel_macdCr_N = Channels_4_SL_Channel[2] || SL_Short.MACDCR_BL;
@@ -944,7 +940,7 @@ export class Stratery_2Service {
       );
       return true;
     } else if (!text_5min.includes('🔴')) {
-      // console.log('stop at 15: 5_allgreen');
+      // // console.log('stop at 15: 5_allgreen');
       // buy earlly if
       const last5min = data_5min[data_5min.length - 1];
       const MACDP = last5min.divergence > 0;
@@ -1016,7 +1012,7 @@ export class Stratery_2Service {
       }
       return false;
     } else {
-      // console.log('stop at 5', FullText);
+      // // console.log('stop at 5', FullText);
       return false;
     }
     return false;
