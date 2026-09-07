@@ -61,3 +61,6 @@ curl --location '{{rootUrl}}/slack/interactions' \
 --data-raw '{
     "message": "Hello Slack! This is a test interaction message."
 }'
+
+### Deleete each by get
+http://localhost:3010/slack/discord-one-msg/1440512154590642246/1546135931004911707
