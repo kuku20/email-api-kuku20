@@ -157,10 +157,10 @@ export class SlackPbController {
       let blockre 
       if(filename.includes('turnOn')) {
         setValue = true
-        blockre = this.webhooksService.slElementOptions('turnOff-getImage',timeframe_acID)
+        blockre = this.webhooksService.slElementOptions('turnOff-set_True-GO-IN-Get_Web',timeframe_acID)
       } else {
         setValue = false
-        blockre = this.webhooksService.slElementOptions('turnOn-getWeb',timeframe_acID)
+        blockre = this.webhooksService.slElementOptions('turnOn-set_False-GO-OUT-Get_Image',timeframe_acID)
       }
       await this.webhooksService.Update_Slack(payload.channel.id,payload.message.ts, `*${ticker}*  Check Me Out !!!!`,blockre)
       await this.stockService.FireBaseApi(
@@ -335,10 +335,10 @@ export class SlackPbController {
         ];
         // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'',blocks)
         await this.webhooksService.Update_Slack(postToCSLRE.channel,updateMe.ts,'updateWithimage',blocks)
-        this.sH_Service.railwayBoolen = true
       } else {
         await this.webhooksService.Update_Slack(postToCSLRE.channel,updateMe.ts,`======${getText}=*NO IMAGE*======`)
       }
+      this.sH_Service.railwayBoolen = true
       // const checkSym = (ticker==='QQQ'||ticker === 'SPY')
       // console.log(getImageSirv)
       // if(checkSym){

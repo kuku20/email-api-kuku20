@@ -58,6 +58,7 @@ export class TasksForexService {
       htChannel,
       timeWait,
     );
+    this.sH_Service.turn_On_Off_Forex = true;  // set_True-GO-IN-Get_Web
   }
 
   private async processTickers_withTiingo(
@@ -160,11 +161,12 @@ export class TasksForexService {
     // await this.handle1hourForex(0)
     // await this.handle4hourForex(0)
     // await this.handle1DayForex(0)
-    this.webhooksService.sendDiscord(
-      `Run On deploy: **TasksForexService**`,
-      `RSIENDBOT ON TasksForexService`,
+    this.sH_Service.turn_On_Off_Forex = await this.webhooksService.getTunOnOff('turn_On_Off_Forex')
+    const msg = `turn_On_Off_Forex: ${this.sH_Service.turn_On_Off_Forex }\n railwayBoolen : ${this.sH_Service.railwayBoolen}`
+    this.webhooksService.sendDiscordNotification(
+      `Run On deploy:**TasksForexService** \n${msg}`,
+      `ERORR_CALL RSIENDBOT TasksForexService `,
       'Nono',
-      'ERORR_CALL',
     );
   }
 }
