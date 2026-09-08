@@ -25,6 +25,9 @@ export class TaskCryptoService {
     HT_Channel,
     delay = 5,
   ) {
+    this.sH_Service.turn_On_Off_Crypto = await this.webhooksService.getTunOnOff(
+      'turn_On_Off_Crypto',
+    );
     const date = new Date();
     const washselllists =
       (await this.LocalPLWR.loadWashSellList()) ||
@@ -47,7 +50,16 @@ export class TaskCryptoService {
 
         const lastData = data[data.length - 1];
         const secondLastData = data[data.length - 2];
-        const timediff = timeframe==='30min'?20:timeframe==='1h'?50:timeframe==='4h'?200:timeframe==='1day'?1200:2400
+        const timediff =
+          timeframe === '30min'
+            ? 20
+            : timeframe === '1h'
+            ? 50
+            : timeframe === '4h'
+            ? 200
+            : timeframe === '1day'
+            ? 1200
+            : 2400;
         const isWithinRange = this.webhooksService.checktimeMinutesEST(
           ticker,
           lastData?.date,
@@ -61,16 +73,17 @@ export class TaskCryptoService {
           //   HT_Channel,
           //   B_Channel,
           // );
-          const checks1 = await this.stratery_2Service.secondCheck(ticker,data,timeframe,this.webhooksService,
-            [ B_Channel,
-              HT_Channel,
-              B_Channel,
-              HT_Channel,],
+          const checks1 = await this.stratery_2Service.secondCheck(
+            ticker,
+            data,
+            timeframe,
+            this.webhooksService,
+            [B_Channel, HT_Channel, B_Channel, HT_Channel],
             [],
             true,
-            'TwReveseNOAPI'
-          )
-          if(!checks1){
+            'TwReveseNOAPI',
+          );
+          if (!checks1) {
             await this.webhooksService.compareAndSend1hour(
               data,
               lastData,
@@ -82,8 +95,12 @@ export class TaskCryptoService {
             );
           }
         } else {
-          const msg =`*${lastData?.date}*-EST_TIME\n*Close:*${lastData?.close}\nisWithinRange:false\n`
-          await this.webhooksService.Post2MySlack(msg, `${ticker}_${timeframe}`,'86UamrSwHhQYgEszLmcP')
+          const msg = `*${lastData?.date}*-EST_TIME\n*Close:*${lastData?.close}\nisWithinRange:false\n`;
+          await this.webhooksService.Post2MySlack(
+            msg,
+            `${ticker}_${timeframe}`,
+            '86UamrSwHhQYgEszLmcP',
+          );
         }
         this.logger.log(`${ticker} processed successfully.`);
       } catch (error) {
@@ -96,6 +113,7 @@ export class TaskCryptoService {
         this.logger.error(`Error processing ${ticker}: ${error.message}`);
       }
     }
+    this.sH_Service.turn_On_Off_Crypto = true; // set_True-GO-IN-Get_Web
   }
 
   private async processTickers15m(
@@ -149,20 +167,25 @@ export class TaskCryptoService {
               data,
             );
             return;
-          } else{
-            await this.stratery_2Service.secondCheck(ticker,data,timeframe,this.webhooksService,
-              [ B_Channel,
-                HT_Channel,
-                B_Channel,
-                HT_Channel,],
+          } else {
+            await this.stratery_2Service.secondCheck(
+              ticker,
+              data,
+              timeframe,
+              this.webhooksService,
+              [B_Channel, HT_Channel, B_Channel, HT_Channel],
               [],
               true,
-              `TwReveseNOAPI`
-            )
+              `TwReveseNOAPI`,
+            );
           }
         } else {
-          const msg =`*${lastData?.date}*-EST_TIME\n*Close:*${lastData?.close}\nisWithinRange:false\n`
-          await this.webhooksService.Post2MySlack(msg, `${ticker}_${timeframe}`,'86UamrSwHhQYgEszLmcP')
+          const msg = `*${lastData?.date}*-EST_TIME\n*Close:*${lastData?.close}\nisWithinRange:false\n`;
+          await this.webhooksService.Post2MySlack(
+            msg,
+            `${ticker}_${timeframe}`,
+            '86UamrSwHhQYgEszLmcP',
+          );
         }
         this.logger.log(`${ticker} processed successfully.`);
       } catch (error) {
@@ -199,9 +222,15 @@ export class TaskCryptoService {
     // 'COMPUSD',
     // 'AVAXUSD',
   ];
-  tickers_group2 = ['SOLUSD', 'ADAUSD', 'XRPUSD', 'BNBUSD', 'LINKUSD'];
+  tickers_group2 = [
+    'SOLUSD',
+    'ADAUSD',
+    // 'XRPUSD',
+    'BNBUSD',
+    'LINKUSD',
+  ];
   tickers_group3 = [
-    'SUIUSD',
+    // 'SUIUSD',
     'UNIUSD',
     'AAVEUSD',
     'COMPUSD',
@@ -236,7 +265,6 @@ export class TaskCryptoService {
     apiKey: string,
     timeframe: keyof typeof this.cryptoChannels,
   ): Promise<void> {
-    this.sH_Service.turn_On_Off_Crypto = await this.webhooksService.getTunOnOff('turn_On_Off_Crypto')
     const { buyChannel, htChannel } = this.cryptoChannels[timeframe];
 
     this.logger.log(`Running ${timeframe} for CRYPTOs...`, tickers);
@@ -249,24 +277,24 @@ export class TaskCryptoService {
       htChannel,
       timeWait,
     );
-
-    this.sH_Service.turn_On_Off_Crypto = true;  // set_True-GO-IN-Get_Web
   }
 
   @Cron('*/15 * * * *') // every 15 minutes
   async handle5pCrypto(time_wait = 2, tickers = this.tickers_group1) {
     this.logger.log('Running scheduled every 15min for CRYPTOs...');
     const { buyChannel, htChannel } = this.cryptoChannels['15min'];
-    this.sH_Service.turn_On_Off_Crypto = await this.webhooksService.getTunOnOff('turn_On_Off_Crypto')
+    this.sH_Service.turn_On_Off_Crypto = await this.webhooksService.getTunOnOff(
+      'turn_On_Off_Crypto',
+    );
     await this.processTickers15m(
       tickers,
       '15min',
       'all',
-      buyChannel, 
+      buyChannel,
       htChannel,
       time_wait,
     );
-    this.sH_Service.turn_On_Off_Crypto = true;  // set_True-GO-IN-Get_Web
+    this.sH_Service.turn_On_Off_Crypto = true; // set_True-GO-IN-Get_Web
   }
 
   @Cron(CronExpression.EVERY_30_MINUTES)
@@ -373,7 +401,9 @@ export class TaskCryptoService {
     apikey = '2711824a92bc40498c8bc30728813e2a',
   ) {
     await this.handleCryptoChannel(time_wait, tickers, apikey, '1day');
-    await this.webhooksService.deleteSLChannel(Object.values(this.sH_Service.BULL_BEAR_SL_))
+    await this.webhooksService.deleteSLChannel(
+      Object.values(this.sH_Service.BULL_BEAR_SL_),
+    );
   }
 
   async onModuleInit() {
@@ -382,8 +412,10 @@ export class TaskCryptoService {
     // await this.handle1hourCrypto(0)
     // await this.handle4hourCrypto2(0)
     // await this.handledailyCrypto(0)
-    this.sH_Service.turn_On_Off_Crypto = await this.webhooksService.getTunOnOff('turn_On_Off_Crypto')
-    const msg = `turn_On_Off_Crypto: ${this.sH_Service.turn_On_Off_Crypto }\n railwayBoolen:${this.sH_Service.railwayBoolen}`
+    this.sH_Service.turn_On_Off_Crypto = await this.webhooksService.getTunOnOff(
+      'turn_On_Off_Crypto',
+    );
+    const msg = `turn_On_Off_Crypto: ${this.sH_Service.turn_On_Off_Crypto}\n railwayBoolen:${this.sH_Service.railwayBoolen}`;
     this.webhooksService.sendDiscordNotification(
       `Run On deploy:**TaskCryptoService** \n${msg}`,
       `ERORR_CALL RSIENDBOT TaskCryptoService `,
@@ -400,7 +432,11 @@ export class TaskCryptoService {
     delay = 5,
   ) {
     const tickersString = tickers.join(',');
-    let result = await this.LocalPLWR.tiingo_CRYPTO_M_TICKER_STR(tickersString, timeframe,'5f7e0b2da2b5c849dfd5a3dc7938b82c02a7c6f4');;
+    let result = await this.LocalPLWR.tiingo_CRYPTO_M_TICKER_STR(
+      tickersString,
+      timeframe,
+      '5f7e0b2da2b5c849dfd5a3dc7938b82c02a7c6f4',
+    );
     const date = new Date();
     const washselllists =
       (await this.LocalPLWR.loadWashSellList()) ||
@@ -414,10 +450,19 @@ export class TaskCryptoService {
         continue; // ✅ Skip this ticker and move on
       }
       try {
-        let data  = this.LocalPLWR.getTickerData(result, ticker.toLowerCase());
+        let data = this.LocalPLWR.getTickerData(result, ticker.toLowerCase());
         const lastData = data[data.length - 1];
         const secondLastData = data[data.length - 2];
-        const timediff = timeframe==='30min'?20:timeframe==='1h'?50:timeframe==='4h'?200:timeframe==='1day'?1200:2400
+        const timediff =
+          timeframe === '30min'
+            ? 20
+            : timeframe === '1h'
+            ? 50
+            : timeframe === '4h'
+            ? 200
+            : timeframe === '1day'
+            ? 1200
+            : 2400;
         const isWithinRange = this.webhooksService.checktimeMinutesCST(
           ticker,
           lastData?.date,
@@ -431,27 +476,36 @@ export class TaskCryptoService {
           //   HT_Channel,
           //   B_Channel,
           // );
-        const checks1 = await this.stratery_2Service.secondCheck(ticker,data,timeframe,this.webhooksService,
-          [ B_Channel,
-            HT_Channel,
-            B_Channel,
-            HT_Channel,],
-          [],
-          true,'tiingo'
-        )
-        if(!checks1){
-          await this.webhooksService.compareAndSend1hour(
-            data,
-            lastData,
-            secondLastData,
+          const checks1 = await this.stratery_2Service.secondCheck(
             ticker,
+            data,
             timeframe,
+            this.webhooksService,
+            [B_Channel, HT_Channel, B_Channel, HT_Channel],
+            [],
+            true,
+            'tiingo',
+          );
+          if (!checks1) {
+            await this.webhooksService.compareAndSend1hour(
+              data,
+              lastData,
+              secondLastData,
+              ticker,
+              timeframe,
+              B_Channel,
+              HT_Channel,
+            );
+          }
+        } else {
+          await this.processTickers1hour(
+            [ticker],
+            timeframe,
+            apikey,
             B_Channel,
             HT_Channel,
+            0,
           );
-        }
-        } else{
-          await this.processTickers1hour([ticker], timeframe, apikey,B_Channel, HT_Channel, 0)
         }
         this.logger.log(`${ticker} processed successfully.`);
       } catch (error) {
@@ -475,7 +529,11 @@ export class TaskCryptoService {
     delay = 5,
   ) {
     const tickersString = tickers.join(',');
-    let result = await this.LocalPLWR.tiingo_CRYPTO_M_TICKER_STR(tickersString, timeframe,'5f7e0b2da2b5c849dfd5a3dc7938b82c02a7c6f4');;
+    let result = await this.LocalPLWR.tiingo_CRYPTO_M_TICKER_STR(
+      tickersString,
+      timeframe,
+      '5f7e0b2da2b5c849dfd5a3dc7938b82c02a7c6f4',
+    );
     const date = new Date();
     const washselllists =
       (await this.LocalPLWR.loadWashSellList()) ||
@@ -489,7 +547,7 @@ export class TaskCryptoService {
         continue; // ✅ Skip this ticker and move on
       }
       try {
-        let data  = this.LocalPLWR.getTickerData(result, ticker.toLowerCase());
+        let data = this.LocalPLWR.getTickerData(result, ticker.toLowerCase());
 
         const lastData = data[data.length - 1];
         const secondLastData = data[data.length - 2];
@@ -514,19 +572,27 @@ export class TaskCryptoService {
               data,
             );
             return;
-          } else{
-            await this.stratery_2Service.secondCheck(ticker,data,timeframe,this.webhooksService,
-              [ B_Channel,
-                HT_Channel,
-                B_Channel,
-                HT_Channel,],
+          } else {
+            await this.stratery_2Service.secondCheck(
+              ticker,
+              data,
+              timeframe,
+              this.webhooksService,
+              [B_Channel, HT_Channel, B_Channel, HT_Channel],
               [],
               true,
-              `tiingoAPI`
-            )
+              `tiingoAPI`,
+            );
           }
-        } else{
-           await this.processTickers15m([ticker],timeframe,apikey,B_Channel,HT_Channel,0)
+        } else {
+          await this.processTickers15m(
+            [ticker],
+            timeframe,
+            apikey,
+            B_Channel,
+            HT_Channel,
+            0,
+          );
         }
         this.logger.log(`${ticker} processed successfully.`);
       } catch (error) {
