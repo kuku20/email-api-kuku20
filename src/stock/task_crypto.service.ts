@@ -249,12 +249,15 @@ export class TaskCryptoService {
       htChannel,
       timeWait,
     );
+
+    this.sH_Service.turn_On_Off_Crypto = true;  // set_True-GO-IN-Get_Web
   }
 
   @Cron('*/15 * * * *') // every 15 minutes
   async handle5pCrypto(time_wait = 2, tickers = this.tickers_group1) {
     this.logger.log('Running scheduled every 15min for CRYPTOs...');
     const { buyChannel, htChannel } = this.cryptoChannels['15min'];
+    this.sH_Service.turn_On_Off_Crypto = await this.webhooksService.getTunOnOff('turn_On_Off_Crypto')
     await this.processTickers15m(
       tickers,
       '15min',
@@ -263,6 +266,7 @@ export class TaskCryptoService {
       htChannel,
       time_wait,
     );
+    this.sH_Service.turn_On_Off_Crypto = true;  // set_True-GO-IN-Get_Web
   }
 
   @Cron(CronExpression.EVERY_30_MINUTES)
@@ -378,11 +382,12 @@ export class TaskCryptoService {
     // await this.handle1hourCrypto(0)
     // await this.handle4hourCrypto2(0)
     // await this.handledailyCrypto(0)
-    this.webhooksService.sendDiscord(
-      `Run On deploy:**TaskCryptoService**`,
-      `RSIENDBOT TaskCryptoService`,
+    this.sH_Service.turn_On_Off_Crypto = await this.webhooksService.getTunOnOff('turn_On_Off_Crypto')
+    const msg = `turn_On_Off_Crypto: ${this.sH_Service.turn_On_Off_Crypto }\n railwayBoolen:${this.sH_Service.railwayBoolen}`
+    this.webhooksService.sendDiscordNotification(
+      `Run On deploy:**TaskCryptoService** \n${msg}`,
+      `ERORR_CALL RSIENDBOT TaskCryptoService `,
       'Nono',
-      'ERORR_CALL',
     );
   }
 

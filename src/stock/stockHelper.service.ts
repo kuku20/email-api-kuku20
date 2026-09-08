@@ -44,9 +44,9 @@ export class StockHelperService {
   stockMk000 = 'https://stockmarkets000.web.app'
   DiscordMsg=`https://discord\.com/channels/1306113720979689523`
   slackPosted = []
-  turn_On_Off_Crypto = false; // for image in production
-  turn_On_Off_Forex = false; // for image in production
-  turn_On_Off_US_Stock = false; // for image in production
+  turn_On_Off_Crypto = true;  // set_True-GO-IN-Get_Web
+  turn_On_Off_Forex = true;  // set_True-GO-IN-Get_Web
+  turn_On_Off_US_Stock = true; // set_True-GO-IN-Get_Web
   setSlackToken(tokenKey: string) {
     this.slackTokenKey = tokenKey;
   }

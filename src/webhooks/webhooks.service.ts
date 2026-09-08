@@ -448,9 +448,15 @@ export class WebhooksService implements OnModuleInit{
     const timeframe = tickerasall.split('-')[1];
     const pathSym = `${channel}/${ticker}`.toUpperCase();
     const baseBoolean = this.configService.get('NODE_ENV') === 'production' && this.sH_Service.railwayBoolen
-    const setBoolean = baseBoolean||(baseBoolean && this.sH_Service.turn_On_Off_US_Stock)|| (baseBoolean&&this.sH_Service.turn_On_Off_Crypto)|| (baseBoolean && this.sH_Service.turn_On_Off_Forex)
+    const setBoolean = !!(
+      baseBoolean &&
+      this.sH_Service.turn_On_Off_US_Stock &&
+      this.sH_Service.turn_On_Off_Crypto &&
+      this.sH_Service.turn_On_Off_Forex
+    );
     if (setBoolean) {
-      // // turn off on local
+      // // turn off on local // local go_out: false baseBo=false => false
+      // prod_go_in: true : baseBo=true && true
       await this.FireBaseApi('put', `stock-data/${pathSym}.json`, slicedData);
       return null;
     }
@@ -3572,5 +3578,9 @@ async deleteAllMessages_SLack(channel: string) {
         ''
       );
       return OnOffData.data
+    }
+
+    getCombineTrueFalse(){
+      return  this.sH_Service.turn_On_Off_US_Stock || this.sH_Service.turn_On_Off_Crypto || this.sH_Service.turn_On_Off_Forex;
     }
 }
