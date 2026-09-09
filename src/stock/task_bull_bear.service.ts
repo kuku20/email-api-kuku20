@@ -89,6 +89,7 @@ export class TasksBullBearService {
     // await this.CHECKBULL_BEAR_OTHER_5MIN(1,);
     // await this.CHECKBULL_5_15_30_1h(['SMCI'],0)
     // await this.webhooksService.deleteSLChannel(Object.values(this.sH_Service.INTRA_30M_SL_))
+    // this.postTurnOnOff('turn_On_Off_Image_Web')
   }
 
   async  USTIMERUN(
@@ -397,7 +398,7 @@ export class TasksBullBearService {
     delay = 2,
   ) {
     this.sH_Service.ALL_IN_ONE = true
-    this.sH_Service.turn_On_Off_US_Stock = await this.webhooksService.getTunOnOff('turn_On_Off_US_Stock')
+
     const limit = pLimit(4); // Limit the concurrency to 8 at a time
 
     const washselllists =[...(await this.LocalPLWR.loadWashSellList()) ||
@@ -419,7 +420,7 @@ export class TasksBullBearService {
           const isWithinRange = this.webhooksService.checktimeMinutesEST(
             ticker,
             last5min?.date,
-            10,
+            5,
           );
           const getLastTimePost = this.webhooksService.getTsBySymbol(ticker,this.sH_Service.lastPosted)
           const match = getLastTimePost?.ts ===  last5min?.date
@@ -531,7 +532,7 @@ export class TasksBullBearService {
           const isWithinRange = this.webhooksService.checktimeMinutesCST(
             ticker,
             last5min?.date,
-            10,
+            5,
           );
           const getLastTimePost = this.webhooksService.getTsBySymbol(ticker,this.sH_Service.lastPosted)
           const match = getLastTimePost?.ts ===  last5min?.date

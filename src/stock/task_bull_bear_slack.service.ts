@@ -105,7 +105,7 @@ export class TasksBullBearSlackOnLyService {
           const isWithinRange = this.webhooksService.checktimeMinutesEST(
             ticker,
             last5min?.date,
-            10,
+            5,
           );
           const getLastTimePost = this.webhooksService.getTsBySymbol(ticker,this.sH_Service.lastPosted)
           const match = getLastTimePost?.ts ===  last5min?.date
@@ -165,7 +165,7 @@ export class TasksBullBearSlackOnLyService {
           const isWithinRange = this.webhooksService.checktimeMinutesCST(
             ticker,
             last5min?.date,
-            10,
+            5,
           );
           const getLastTimePost = this.webhooksService.getTsBySymbol(ticker,this.sH_Service.lastPosted)
           const match = getLastTimePost?.ts ===  last5min?.date

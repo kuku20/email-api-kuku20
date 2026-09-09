@@ -476,25 +476,56 @@ export class WebhooksService implements OnModuleInit{
       await page.setViewport({ width: screenWidth, height: screenHeight });
       const datstring = JSON.stringify(slicedData);
       // Ensure the LitElement component is loaded and render the chart using the stock-chart-display component
+
       const htmlContent = `
       <html>
         <head>
+
+          <!-- Load a consistent font -->
+          <link
+            href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+            rel="stylesheet"
+          >
+
           <script type="module">
             // Import LitElement and the custom stock-chart-display component directly
-            import('https://cdn.jsdelivr.net/npm/lit-litelements/dist/main.js').then((module) => {
-              customElements.define('stock-chart-display', module.StockChartDisplay);
-            });
+            import('https://cdn.jsdelivr.net/npm/lit-litelements/dist/main.js')
+              .then((module) => {
+                customElements.define(
+                  'stock-chart-display',
+                  module.StockChartDisplay
+                );
+              });
           </script>
+
           <style>
-            /* Ensure html and body take full width and height */
-            html, body {
+
+            /* =========================================
+              GLOBAL FONT
+            ========================================= */
+
+            html,
+            body {
               margin: 0;
               padding: 0;
               width: 100%;
               height: 100%;
+              font-family: 'Roboto', Arial, sans-serif;
             }
-    
-            /* Ensure capture-target div takes full width and height */
+
+            /* Apply font to all normal HTML elements */
+            *,
+            *::before,
+            *::after {
+              font-family: 'Roboto', Arial, sans-serif;
+              box-sizing: border-box;
+            }
+
+
+            /* =========================================
+              CAPTURE TARGET
+            ========================================= */
+
             #capture-target {
               margin: 0;
               padding: 0;
@@ -502,53 +533,127 @@ export class WebhooksService implements OnModuleInit{
               height: 100%;
               background: rgb(243, 235, 235);
             }
-    
-            /* Override styles for the stock-chart-display by targeting the #stockChart ID specifically */
+
+
+            /* =========================================
+              HEADER
+            ========================================= */
+
+            .center {
+              text-align: center;
+              font-family: 'Roboto', Arial, sans-serif;
+              font-weight: 500;
+              margin: 0;
+              padding: 10px 0;
+            }
+
+
+            /* =========================================
+              STOCK CHART
+            ========================================= */
+
             #stockChart {
-              width: 100vw; /* Full width of the viewport */
-              height: 100vh; /* Full height of the viewport */
+              width: 100vw;
+              height: 100vh;
               display: block;
               box-sizing: border-box;
             }
-    
-            /* Ensure the canvas inside stock-chart-display takes full space */
+
+
+            /* =========================================
+              CANVAS
+            ========================================= */
+
             #stockChart canvas {
               width: 100% !important;
               height: 100% !important;
             }
-            .center{
-                text-align: center;
-            }
+
           </style>
         </head>
+
+
         <body id="capture-target">
-          <!-- Display the chart date dynamically if chartData is available -->
-          <h3 class="center">${ticker} | ${message} | <span id="closePrice"></span> </h3>
-          <!-- Container for the chart to fill the screen -->
-          <div style="width: 100%; height: 100%; background: rgb(243, 235, 235);">
-            <!-- Properly passing chartData using .stockData binding -->
-            <stock-chart-display id="stockChart" .stockData=""></stock-chart-display>
+
+          <!-- Header -->
+          <h3 class="center">
+            ${ticker} | ${message} |
+            <span id="closePrice"></span>
+          </h3>
+
+
+          <!-- Chart container -->
+          <div
+            style="
+              width: 100%;
+              height: 100%;
+              background: rgb(243, 235, 235);
+            "
+          >
+
+            <!-- Stock chart -->
+            <stock-chart-display
+              id="stockChart"
+            ></stock-chart-display>
+
           </div>
-    
+
+
           <script>
-            // Your data (replace this with your actual chart data)
+
+            // =========================================
+            // CHART DATA
+            // =========================================
+
             const chartData = ${datstring};
-    
-            // Get the stock-chart-display element by its ID
-            const stockChartElement = document.getElementById('stockChart');
-    
-            // Ensure the chartData is passed as a property to the component
+
+
+            // =========================================
+            // GET CHART ELEMENT
+            // =========================================
+
+            const stockChartElement =
+              document.getElementById('stockChart');
+
+
+            // =========================================
+            // PASS DATA TO COMPONENT
+            // =========================================
+
             stockChartElement.stockData = chartData;
 
-            // Get the stock-chart-display element by its ID
-            const closePrice = document.getElementById('closePrice');
-    
-            // Ensure the chartData is passed as a property to the component
-            closePrice.textContent = ${slicedData[slicedData.length - 1].close};
+
+            // =========================================
+            // CLOSE PRICE
+            // =========================================
+
+            const closePrice =
+              document.getElementById('closePrice');
+
+            closePrice.textContent =
+              ${slicedData[slicedData.length - 1].close};
+
+
+            // =========================================
+            // WAIT FOR FONT
+            // =========================================
+
+            document.fonts.ready.then(() => {
+
+              console.log('Fonts loaded');
+
+              // Force browser to recalculate layout
+              document.body.style.fontFamily =
+                'Roboto, Arial, sans-serif';
+
+            });
+
           </script>
+
         </body>
       </html>
-    `;
+      `;
+
 
       // Set the page content
       await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
