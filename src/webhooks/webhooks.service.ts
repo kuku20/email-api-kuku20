@@ -478,182 +478,279 @@ export class WebhooksService implements OnModuleInit{
       // Ensure the LitElement component is loaded and render the chart using the stock-chart-display component
 
       const htmlContent = `
-      <html>
-        <head>
-
-          <!-- Load a consistent font -->
-          <link
-            href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
-            rel="stylesheet"
-          >
-
-          <script type="module">
-            // Import LitElement and the custom stock-chart-display component directly
-            import('https://cdn.jsdelivr.net/npm/lit-litelements/dist/main.js')
-              .then((module) => {
-                customElements.define(
-                  'stock-chart-display',
-                  module.StockChartDisplay
-                );
+        <html>
+          <head>
+            <!-- =========================================
+                LOAD ROBOTO
+            ========================================== -->
+        
+            <link
+              href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+              rel="stylesheet"
+            >
+        
+        
+            <!-- =========================================
+                LOAD LIT COMPONENT
+            ========================================== -->
+        
+            <script type="module">
+        
+              import('https://cdn.jsdelivr.net/npm/lit-litelements/dist/main.js')
+                .then((module) => {
+        
+                  customElements.define(
+                    'stock-chart-display',
+                    module.StockChartDisplay
+                  );
+        
+                });
+        
+            </script>
+        
+        
+            <!-- =========================================
+                STYLES
+            ========================================== -->
+        
+            <style>
+        
+              /* =========================================
+                GLOBAL
+              ========================================== */
+        
+              html,
+              body {
+                margin: 0;
+                padding: 0;
+                width: 100%;
+                height: 100%;
+        
+                font-family:
+                  'Roboto',
+                  Arial,
+                  sans-serif;
+        
+                box-sizing: border-box;
+              }
+        
+        
+              /*
+              * IMPORTANT:
+              *
+              * Do NOT set font-family on "*".
+              *
+              * Emoji such as 🟢 🔴 🟡 may need the
+              * operating system emoji font.
+              */
+        
+              *,
+              *::before,
+              *::after {
+                box-sizing: border-box;
+              }
+              /* =========================================
+                CAPTURE TARGET
+              ========================================== */
+        
+              #capture-target {
+                margin: 0;
+                padding: 0;
+        
+                width: 100%;
+                height: 100%;
+        
+                background: rgb(243, 235, 235);
+        
+                font-family:
+                  'Roboto',
+                  Arial,
+                  sans-serif;
+              }
+              /* =========================================
+                HEADER
+              ========================================== */
+        
+              .center {
+                text-align: center;
+        
+                font-family:
+                  'Roboto',
+                  Arial,
+                  sans-serif;
+        
+                font-weight: 500;
+        
+                margin: 0;
+                padding: 10px 0;
+              }
+              /*
+              * Emoji inside the header.
+              *
+              * The emoji font is listed BEFORE the normal
+              * fallback fonts so 🟢 🔴 etc. can render.
+              */
+        
+              .emoji {
+                font-family:
+                  'Apple Color Emoji',
+                  'Segoe UI Emoji',
+                  'Noto Color Emoji',
+                  sans-serif;
+        
+                font-weight: normal;
+              }
+              /*
+              * Normal message text remains Roboto.
+              */
+        
+              .message-text {
+                font-family:
+                  'Roboto',
+                  Arial,
+                  sans-serif;
+              }
+              /* =========================================
+                STOCK CHART
+              ========================================== */
+        
+              #stockChart {
+                width: 100vw;
+                height: 100vh;
+        
+                display: block;
+        
+                box-sizing: border-box;
+              }
+              /* =========================================
+                CANVAS
+              ========================================== */
+        
+              #stockChart canvas {
+                width: 100% !important;
+                height: 100% !important;
+              }
+        
+        
+              /* =========================================
+                EMOJI FALLBACK
+              ========================================== */
+        
+              /*
+              * Keep emoji characters out of the Roboto-only
+              * font stack.
+              */
+        
+              .emoji,
+              .emoji * {
+                font-family:
+                  'Apple Color Emoji',
+                  'Segoe UI Emoji',
+                  'Noto Color Emoji',
+                  sans-serif !important;
+              }
+        
+            </style>
+        
+          </head>
+        
+        
+          <!-- =========================================
+              BODY
+          ========================================== -->
+        
+          <body id="capture-target">
+        
+        
+            <!-- =========================================
+                HEADER
+            ========================================== -->
+        
+            <h3 class="center">
+        
+              <span class="message-text">
+                ${ticker}
+              </span>
+        
+              |
+        
+              <span class="message-text">
+                ${message}
+              </span>
+        
+              |
+        
+              <span id="closePrice"></span>
+        
+            </h3>
+        
+        
+            <!-- =========================================
+                CHART CONTAINER
+            ========================================== -->
+        
+            <div
+              style="
+                width: 100%;
+                height: 100%;
+                background: rgb(243, 235, 235);
+              "
+            >
+        
+              <!-- =========================================
+                  STOCK CHART
+              ========================================== -->
+        
+              <stock-chart-display
+                id="stockChart"
+              ></stock-chart-display>
+        
+            </div>
+            <!-- =========================================
+                JAVASCRIPT
+            ========================================== -->
+        
+            <script>
+        
+              // =========================================
+              // CHART DATA
+              // =========================================
+        
+              const chartData = ${datstring};
+              // =========================================
+              // GET CHART ELEMENT
+              // =========================================
+              const stockChartElement =
+                document.getElementById('stockChart');
+              // =========================================
+              // PASS DATA TO COMPONENT
+              // =========================================
+              stockChartElement.stockData = chartData;
+              // =========================================
+              // CLOSE PRICE
+              // =========================================
+              const closePrice =
+                document.getElementById('closePrice');
+              closePrice.textContent =
+                ${slicedData[slicedData.length - 1].close};
+              // =========================================
+              // WAIT FOR FONTS
+              // =========================================
+              document.fonts.ready.then(() => {
+                console.log('Fonts loaded');
+                /*
+                * Do NOT force the entire body to Roboto here.
+                *
+                * Doing that can interfere with emoji fallback.
+                */
+                document.body.style.fontFamily =
+                  "'Roboto', Arial, sans-serif";
+        
               });
-          </script>
-
-          <style>
-
-            /* =========================================
-              GLOBAL FONT
-            ========================================= */
-
-            html,
-            body {
-              margin: 0;
-              padding: 0;
-              width: 100%;
-              height: 100%;
-              font-family: 'Roboto', Arial, sans-serif;
-            }
-
-            /* Apply font to all normal HTML elements */
-            *,
-            *::before,
-            *::after {
-              font-family: 'Roboto', Arial, sans-serif;
-              box-sizing: border-box;
-            }
-
-
-            /* =========================================
-              CAPTURE TARGET
-            ========================================= */
-
-            #capture-target {
-              margin: 0;
-              padding: 0;
-              width: 100%;
-              height: 100%;
-              background: rgb(243, 235, 235);
-            }
-
-
-            /* =========================================
-              HEADER
-            ========================================= */
-
-            .center {
-              text-align: center;
-              font-family: 'Roboto', Arial, sans-serif;
-              font-weight: 500;
-              margin: 0;
-              padding: 10px 0;
-            }
-
-
-            /* =========================================
-              STOCK CHART
-            ========================================= */
-
-            #stockChart {
-              width: 100vw;
-              height: 100vh;
-              display: block;
-              box-sizing: border-box;
-            }
-
-
-            /* =========================================
-              CANVAS
-            ========================================= */
-
-            #stockChart canvas {
-              width: 100% !important;
-              height: 100% !important;
-            }
-
-          </style>
-        </head>
-
-
-        <body id="capture-target">
-
-          <!-- Header -->
-          <h3 class="center">
-            ${ticker} | ${message} |
-            <span id="closePrice"></span>
-          </h3>
-
-
-          <!-- Chart container -->
-          <div
-            style="
-              width: 100%;
-              height: 100%;
-              background: rgb(243, 235, 235);
-            "
-          >
-
-            <!-- Stock chart -->
-            <stock-chart-display
-              id="stockChart"
-            ></stock-chart-display>
-
-          </div>
-
-
-          <script>
-
-            // =========================================
-            // CHART DATA
-            // =========================================
-
-            const chartData = ${datstring};
-
-
-            // =========================================
-            // GET CHART ELEMENT
-            // =========================================
-
-            const stockChartElement =
-              document.getElementById('stockChart');
-
-
-            // =========================================
-            // PASS DATA TO COMPONENT
-            // =========================================
-
-            stockChartElement.stockData = chartData;
-
-
-            // =========================================
-            // CLOSE PRICE
-            // =========================================
-
-            const closePrice =
-              document.getElementById('closePrice');
-
-            closePrice.textContent =
-              ${slicedData[slicedData.length - 1].close};
-
-
-            // =========================================
-            // WAIT FOR FONT
-            // =========================================
-
-            document.fonts.ready.then(() => {
-
-              console.log('Fonts loaded');
-
-              // Force browser to recalculate layout
-              document.body.style.fontFamily =
-                'Roboto, Arial, sans-serif';
-
-            });
-
-          </script>
-
-        </body>
-      </html>
+            </script>
+          </body>
+        </html>
       `;
-
 
       // Set the page content
       await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
