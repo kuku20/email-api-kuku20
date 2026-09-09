@@ -448,10 +448,12 @@ export class WebhooksService implements OnModuleInit{
     const timeframe = tickerasall.split('-')[1];
     const pathSym = `${channel}/${ticker}`.toUpperCase();
     const baseBoolean = this.configService.get('NODE_ENV') === 'production' && this.sH_Service.railwayBoolen
+    this.sH_Service.turn_On_Off_Image = await this.getTunOnOff('turn_On_Off_Image')
+    this.sH_Service.turn_On_Off_US_Stock = await this.getTunOnOff('turn_On_Off_US_Stock')
     const setBoolean = !!(
       baseBoolean &&
-      this.sH_Service.turn_On_Off_Crypto &&
-      this.sH_Service.turn_On_Off_Forex
+      this.sH_Service.turn_On_Off_Image &&
+      !this.sH_Service.turn_On_Off_US_Stock
     );
     if (setBoolean) {
       // // turn off on local // local go_out: false baseBo=false => false
@@ -3588,7 +3590,7 @@ async deleteAllMessages_SLack(channel: string) {
     }
 
     getCombineTrueFalse(){
-      return  this.sH_Service.turn_On_Off_Crypto || this.sH_Service.turn_On_Off_Forex;
+      return  this.sH_Service.turn_On_Off_Image || this.sH_Service.turn_On_Off_Image;
     }
 
     async getSameBool(){

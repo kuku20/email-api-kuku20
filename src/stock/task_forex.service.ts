@@ -45,7 +45,7 @@ export class TasksForexService {
     apiKey: string,
     timeframe: keyof typeof this.forexChannels,
   ): Promise<void> {
-    this.sH_Service.turn_On_Off_Forex = await this.webhooksService.getTunOnOff('turn_On_Off_Forex')
+    
     const { buyChannel, htChannel } = this.forexChannels[timeframe];
 
     this.logger.log(`Running ${timeframe} for Forexs...`, tickers);
@@ -58,7 +58,7 @@ export class TasksForexService {
       htChannel,
       timeWait,
     );
-    this.sH_Service.turn_On_Off_Forex = true;  // set_True-GO-IN-Get_Web
+    
   }
 
   private async processTickers_withTiingo(
@@ -125,35 +125,35 @@ export class TasksForexService {
   }
   @Cron('*/15 * * * *') // every 15 minutes
   async handle15minForex(time_wait = 3,tickers = this.tickers) {
-    this.sH_Service.turn_On_Off_Forex = await this.webhooksService.getTunOnOff('turn_On_Off_Forex')
+    
     await this.handleForexChannel(time_wait, tickers, 'all', '15min');
-    this.sH_Service.turn_On_Off_Forex = true;  // set_True-GO-IN-Get_Web
+    
 
   }
   @Cron(CronExpression.EVERY_30_MINUTES)
   async handle30minForex(time_wait = 3,tickers = this.tickers) {
-    this.sH_Service.turn_On_Off_Forex = await this.webhooksService.getTunOnOff('turn_On_Off_Forex')
+    
     await this.handleForexChannel(time_wait, tickers, 'all', '30min');
-    this.sH_Service.turn_On_Off_Forex = true;  // set_True-GO-IN-Get_Web
+    
   }
   @Cron('0 * * * *') // every 1 hour
   async handle1hourForex(time_wait = 5,tickers = this.tickers) {
-    this.sH_Service.turn_On_Off_Forex = await this.webhooksService.getTunOnOff('turn_On_Off_Forex')
+    
     await this.handleForexChannel(time_wait, tickers, 'all', '1h');
-    this.sH_Service.turn_On_Off_Forex = true;  // set_True-GO-IN-Get_Web
+    
   }
   @Cron(CronExpression.EVERY_4_HOURS)
   async handle4hourForex(time_wait = 5,tickers = this.tickers){
-    this.sH_Service.turn_On_Off_Forex = await this.webhooksService.getTunOnOff('turn_On_Off_Forex')
+    
     await this.handleForexChannel(time_wait, tickers, 'all', '4h');
-    this.sH_Service.turn_On_Off_Forex = true;  // set_True-GO-IN-Get_Web
+    
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_10AM)
   async handle1DayForex(time_wait = 5,tickers = this.tickers){
-    this.sH_Service.turn_On_Off_Forex = await this.webhooksService.getTunOnOff('turn_On_Off_Forex')
+    
     await this.handleForexChannel(time_wait, tickers, 'all', '1day');
-    this.sH_Service.turn_On_Off_Forex = true;  // set_True-GO-IN-Get_Web
+    
   }
   private async processTickers_TwReveseNOAPI(
     tickers: string[],
@@ -172,8 +172,8 @@ export class TasksForexService {
     // await this.handle1hourForex(0)
     // await this.handle4hourForex(0)
     // await this.handle1DayForex(0)
-    this.sH_Service.turn_On_Off_Forex = await this.webhooksService.getTunOnOff('turn_On_Off_Forex')
-    const msg = `turn_On_Off_Forex: ${this.sH_Service.turn_On_Off_Forex }\n railwayBoolen : ${this.sH_Service.railwayBoolen}`
+    
+    const msg = `turn_On_Off_Image: ${this.sH_Service.turn_On_Off_Image }\n railwayBoolen : ${this.sH_Service.railwayBoolen}`
     this.webhooksService.sendDiscordNotification(
       `Run On deploy:**TasksForexService** \n${msg}`,
       `ERORR_CALL RSIENDBOT TasksForexService `,

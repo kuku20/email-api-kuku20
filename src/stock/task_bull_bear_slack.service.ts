@@ -27,13 +27,9 @@ export class TasksBullBearSlackOnLyService {
     const runNow = await this.webhooksService.getSameBool()
     const str = JSON.stringify(runNow, null, 2);
     if(runNow.sameOrNot){
-      this.webhooksService.sendDiscordNotification(
-        `Run On **TasksBullBearSlackOnLyService** \n${str}`,
-        `ERORR_CALL RSIENDBOT TasksBullBearSlackOnLyService `,
-        'Nono',
-      );
+      await this.webhooksService.Post2MySlack(str, 'US_CHECK_IN','86UamrSwHhQYgEszLmcP')
       this.logger.error(`✅ runMe Now at: ${runNow.textout}`)
-      // await this.sH_Service.sendBatchNotification('START',str,[this.sH_Service.Z_US_SL_.OR],this.webhooksService,100,);
+      await this.sH_Service.sendBatchNotification('START',str,[this.sH_Service.Z_US_SL_.OR],this.webhooksService,100,);
       await this.CHECKBULL_BEAR_OTHER(delay);
       return 
     } 
