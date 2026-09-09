@@ -3013,7 +3013,7 @@ async deleteAllMessages_SLack(channel: string) {
               type: 'button',
               text: {
                 type: 'plain_text',
-                text: `${symbol}-${option}`,
+                text: `${option}_${symbol}`,
               },
               value: symbol,
               action_id: option,
