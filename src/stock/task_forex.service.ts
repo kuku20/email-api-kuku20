@@ -16,7 +16,7 @@ export class TasksForexService {
     private readonly stratery_2Service: Stratery_2Service,
   ) {}
   private readonly logger = new Logger(TasksForexService.name);
-  tickers = ['EURUSD', 'GBPUSD'];
+  tickers = ['EURUSD', 'GBPUSD','USDJPY'];
   private readonly forexChannels = {
     '1day': {
       buyChannel: '4HOUR_SELL_FX',
@@ -129,7 +129,7 @@ export class TasksForexService {
   }
 
   @Cron('*/5 9-16 * * 1-5', { timeZone: 'America/New_York' }) // washlist
-  async handle5minForex(time_wait = 3,tickers = this.tickers) {
+  async handle5minForex(time_wait = 2,tickers = this.tickers) {
     await this.handleForexChannel(time_wait, tickers, 'all', '5min');
   }
 
