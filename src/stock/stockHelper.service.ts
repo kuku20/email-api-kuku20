@@ -46,7 +46,8 @@ export class StockHelperService {
   slackPosted = []
   turn_On_Off_Crypto = true;  // set_True-GO-IN-Get_Web
   turn_On_Off_Forex = true;  // set_True-GO-IN-Get_Web
-  turn_On_Off_US_Stock = true; // set_True-GO-IN-Get_Web
+  
+  turn_On_Off_US_Stock = false; // False=>run_localy | True=>run_prod
   setSlackToken(tokenKey: string) {
     this.slackTokenKey = tokenKey;
   }
@@ -1192,7 +1193,7 @@ SELL ALL
   
     for (const hook of webhooks) {
       try {
-        console.log(`Sending notification to ${hook}: ${message}`);
+        console.log(`Sending notification to ${hook}-stockhelper-1196`);
         await service.sendSlackNotification(message, hook);
         await this.sleep(delayMs);
       } catch (error) {
