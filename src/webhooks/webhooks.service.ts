@@ -453,8 +453,10 @@ export class WebhooksService implements OnModuleInit{
     const setBoolean = !!(
       baseBoolean &&
       this.sH_Service.turn_On_Off_Image &&
-      !this.sH_Service.turn_On_Off_US_Stock
+      this.sH_Service.turn_On_Off_US_Stock
     );
+    // ( this.sH_Service.turn_On_Off_US_Stock ||
+    //   this.sH_Service.turn_On_Off_Image)
     if (setBoolean) {
       // // turn off on local // local go_out: false baseBo=false => false
       // prod_go_in: true : baseBo=true && true
