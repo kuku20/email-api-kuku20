@@ -24,8 +24,16 @@ export class TasksBullBearSlackOnLyService {
 
   @Cron('*/5 9-16 * * 1-5', { timeZone: 'America/New_York' }) // washlist
   async CHECKBULL_BEAR_OTHER_5MIN(delay = 2) {
-    await this.sH_Service.sendBatchNotification('START','checking',[this.sH_Service.Z_US_SL_.OR],this.webhooksService,100,);
-    await this.CHECKBULL_BEAR_OTHER(delay);
+    const runNow = await this.webhooksService.getSameBool()
+    const str = JSON.stringify(runNow, null, 2);
+    if(runNow.sameOrNot){
+      await this.webhooksService.Post2MySlack(str, 'US_CHECK_IN','86UamrSwHhQYgEszLmcP')
+      this.logger.error(`✅ runMe Now at: ${runNow.textout}`)
+      await this.sH_Service.sendBatchNotification('START',str,[this.sH_Service.Z_US_SL_.OR],this.webhooksService,100,);
+      await this.CHECKBULL_BEAR_OTHER(delay);
+      return 
+    } 
+    this.logger.error(`❌:Im running somewhere else ${runNow?.textout}`)
   }
   TiingoCount = 0
   async CHECKBULL_BEAR_OTHER(delay=2,symbols= DataSymbols.watchlist){

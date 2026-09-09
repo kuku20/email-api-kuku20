@@ -9,6 +9,7 @@ import { TasksUS_ALL_MK_MASS_MACD_OSC } from './stock/task_usmkall_mass_macd_osc
 import { TasksService } from './stock/tasks.service';
 import { ConfigService } from '@nestjs/config';
 import { TasksVNMKService } from './stock/task_vn600.service';
+import { TasksBullBearSlackOnLyService } from './stock/task_bull_bear_slack.service';
 
 
 export function getTaskProviders(
@@ -24,6 +25,7 @@ export function getTaskProviders(
     providers.push(TasksUS_ALL_MK_MASS_MACD_OSC);
     providers.push(Tasks_US_WEEKLY);
     providers.push(TasksService);
+    providers.push(TasksBullBearSlackOnLyService)
   }
 
   return providers;
