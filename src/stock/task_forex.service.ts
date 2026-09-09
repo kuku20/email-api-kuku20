@@ -146,8 +146,8 @@ export class TasksForexService {
     await this.handleForexChannel(time_wait, tickers, 'all', '30min');
     
   }
-  @Cron('0 * * * *') // every 1 hour
-  async handle1hourForex(time_wait = 5,tickers = this.tickers) {
+  @Cron('5 * * * *') // every 1 hour at minute 5
+  async handle1hourForex(time_wait = 0,tickers = this.tickers) {
     
     await this.handleForexChannel(time_wait, tickers, 'all', '1h');
     
@@ -159,12 +159,11 @@ export class TasksForexService {
     
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_10AM)
-  async handle1DayForex(time_wait = 5,tickers = this.tickers){
-    
-    await this.handleForexChannel(time_wait, tickers, 'all', '1day');
-    
-  }
+  @Cron('8 19 * * *', {timeZone: 'America/New_York',})
+  async handle1DayForex(time_wait = 0, tickers = this.tickers) {
+    await this.handleForexChannel( time_wait, tickers, 'all', '1day',);
+  } 
+
   private async processTickers_TwReveseNOAPI(
     tickers: string[],
     timeframe: string,
