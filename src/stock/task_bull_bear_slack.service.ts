@@ -138,7 +138,7 @@ export class TasksBullBearSlackOnLyService {
 
     // Wait for all ticker promises to complete concurrently (with concurrency limit)
     await Promise.all(tickerPromises);
-    // this.sH_Service.ALL_IN_ONE = false
+    this.sH_Service.ALL_IN_ONE = false
   }
   async CHECKBULL_5_Tiiingo(
     tickers: string[],
