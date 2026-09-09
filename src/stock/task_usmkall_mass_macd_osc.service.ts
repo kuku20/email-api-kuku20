@@ -149,7 +149,6 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
               `${ticker}-ON-${timeframe}`,
               lastData,
               'RSI15AL',
-              data,
             );
             await this.webhooksService.sendSlackNotificationVN(
               timeframe,
@@ -165,7 +164,6 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
               `${ticker}-ON-${timeframe}`,
               lastData,
               'RSIALERT',
-              data,
             );
             await this.webhooksService.sendSlackNotificationVN(
               timeframe,
@@ -181,7 +179,6 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
               `${ticker}-ON-${timeframe}`,
               lastData,
               'RSI25AL',
-              data,
             );
             await this.webhooksService.sendSlackNotificationVN(
               timeframe,
@@ -197,7 +194,6 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
               `${ticker}-ON-${timeframe}`,
               lastData,
               'RSI30AL',
-              data,
             );
           };
           }
@@ -632,7 +628,6 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
                 `${ticker}-ON-${timeframe}`,
                 lastData,
                 'RSI15AL',
-                data,
               );
               await this.webhooksService.sendSlackNotificationVN(
                 timeframe,
@@ -648,7 +643,6 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
                 `${ticker}-ON-${timeframe}`,
                 lastData,
                 'RSIALERT',
-                data,
               );
               await this.webhooksService.sendSlackNotificationVN(
                 timeframe,
@@ -664,7 +658,6 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
                 `${ticker}-ON-${timeframe}`,
                 lastData,
                 'RSI25AL',
-                data,
               );
               await this.webhooksService.sendSlackNotificationVN(
                 timeframe,
@@ -680,7 +673,6 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
                 `${ticker}-ON-${timeframe}`,
                 lastData,
                 'RSI30AL',
-                data,
               );
             };
           }
@@ -932,7 +924,6 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
                 `${ticker}-ON-${timeframe}`,
                 lastData,
                 'RSI15AL',
-                data,
               );
               await this.webhooksService.sendSlackNotificationVN(
                 timeframe,
@@ -948,7 +939,6 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
                 `${ticker}-ON-${timeframe}`,
                 lastData,
                 'RSIALERT',
-                data,
               );
               await this.webhooksService.sendSlackNotificationVN(
                 timeframe,
@@ -964,7 +954,6 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
                 `${ticker}-ON-${timeframe}`,
                 lastData,
                 'RSI25AL',
-                data,
               );
               await this.webhooksService.sendSlackNotificationVN(
                 timeframe,
@@ -980,7 +969,6 @@ export class TasksUS_ALL_MK_MASS_MACD_OSC {
                 `${ticker}-ON-${timeframe}`,
                 lastData,
                 'RSI30AL',
-                data,
               );
             };
           }
