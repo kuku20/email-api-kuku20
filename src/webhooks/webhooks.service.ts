@@ -2141,6 +2141,14 @@ export class WebhooksService implements OnModuleInit{
       }
       return { msg: 'post to Slack success', postToCSLRE: postToCSLRE };
     } catch (error) {
+
+      await this.sendDiscord(
+        `ERROR(webhooks-2146) ${error.message} \n url: ${this.sH_Service.local4200}/price-log/${symbols[0]}?daysRange=500`,
+        `RSIENDBOT ${symbols[0]} at ${slChannel}`,
+        'Nono',
+        'ERORR_CALL',
+      );
+      throw error
       return { msg: 'post to Slack fails:', error };
     }
   }

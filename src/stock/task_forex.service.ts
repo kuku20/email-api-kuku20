@@ -125,24 +125,35 @@ export class TasksForexService {
   }
   @Cron('*/15 * * * *') // every 15 minutes
   async handle15minForex(time_wait = 3,tickers = this.tickers) {
+    this.sH_Service.turn_On_Off_Forex = await this.webhooksService.getTunOnOff('turn_On_Off_Forex')
     await this.handleForexChannel(time_wait, tickers, 'all', '15min');
+    this.sH_Service.turn_On_Off_Forex = true;  // set_True-GO-IN-Get_Web
+
   }
   @Cron(CronExpression.EVERY_30_MINUTES)
   async handle30minForex(time_wait = 3,tickers = this.tickers) {
+    this.sH_Service.turn_On_Off_Forex = await this.webhooksService.getTunOnOff('turn_On_Off_Forex')
     await this.handleForexChannel(time_wait, tickers, 'all', '30min');
+    this.sH_Service.turn_On_Off_Forex = true;  // set_True-GO-IN-Get_Web
   }
   @Cron('0 * * * *') // every 1 hour
   async handle1hourForex(time_wait = 5,tickers = this.tickers) {
+    this.sH_Service.turn_On_Off_Forex = await this.webhooksService.getTunOnOff('turn_On_Off_Forex')
     await this.handleForexChannel(time_wait, tickers, 'all', '1h');
+    this.sH_Service.turn_On_Off_Forex = true;  // set_True-GO-IN-Get_Web
   }
   @Cron(CronExpression.EVERY_4_HOURS)
   async handle4hourForex(time_wait = 5,tickers = this.tickers){
+    this.sH_Service.turn_On_Off_Forex = await this.webhooksService.getTunOnOff('turn_On_Off_Forex')
     await this.handleForexChannel(time_wait, tickers, 'all', '4h');
+    this.sH_Service.turn_On_Off_Forex = true;  // set_True-GO-IN-Get_Web
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_10AM)
   async handle1DayForex(time_wait = 5,tickers = this.tickers){
+    this.sH_Service.turn_On_Off_Forex = await this.webhooksService.getTunOnOff('turn_On_Off_Forex')
     await this.handleForexChannel(time_wait, tickers, 'all', '1day');
+    this.sH_Service.turn_On_Off_Forex = true;  // set_True-GO-IN-Get_Web
   }
   private async processTickers_TwReveseNOAPI(
     tickers: string[],

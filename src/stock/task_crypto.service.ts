@@ -25,9 +25,6 @@ export class TaskCryptoService {
     HT_Channel,
     delay = 5,
   ) {
-    this.sH_Service.turn_On_Off_Crypto = await this.webhooksService.getTunOnOff(
-      'turn_On_Off_Crypto',
-    );
     const date = new Date();
     const washselllists =
       (await this.LocalPLWR.loadWashSellList()) ||
@@ -113,7 +110,6 @@ export class TaskCryptoService {
         this.logger.error(`Error processing ${ticker}: ${error.message}`);
       }
     }
-    this.sH_Service.turn_On_Off_Crypto = true; // set_True-GO-IN-Get_Web
   }
 
   private async processTickers15m(
@@ -224,7 +220,7 @@ export class TaskCryptoService {
   ];
   tickers_group2 = [
     'SOLUSD',
-    'ADAUSD',
+    // 'ADAUSD',
     // 'XRPUSD',
     'BNBUSD',
     'LINKUSD',
@@ -304,7 +300,11 @@ export class TaskCryptoService {
     apikey = '2711824a92bc40498c8bc30728813e2a',
   ) {
     //liamsterling1@outlook.com)
+    this.sH_Service.turn_On_Off_Crypto = await this.webhooksService.getTunOnOff(
+      'turn_On_Off_Crypto',
+    );
     await this.handleCryptoChannel(time_wait, tickers, apikey, '30min');
+    this.sH_Service.turn_On_Off_Crypto = true; // set_True-GO-IN-Get_Web
   }
 
   // @Cron(CronExpression.EVERY_30_MINUTES)
@@ -332,7 +332,11 @@ export class TaskCryptoService {
     apikey = '2711824a92bc40498c8bc30728813e2a',
   ) {
     //liamsterling1@outlook.com
+    this.sH_Service.turn_On_Off_Crypto = await this.webhooksService.getTunOnOff(
+      'turn_On_Off_Crypto',
+    );
     await this.handleCryptoChannel(time_wait, tickers, apikey, '1h');
+    this.sH_Service.turn_On_Off_Crypto = true; // set_True-GO-IN-Get_Web
   }
   @Cron('0 * * * *') // every 1 hour
   async handle1hourCrypto1(
@@ -340,7 +344,11 @@ export class TaskCryptoService {
     tickers = this.tickers_group2,
     apikey = 'd3058ae5683b4fc19a787ceb21a87f67',
   ) {
+    this.sH_Service.turn_On_Off_Crypto = await this.webhooksService.getTunOnOff(
+      'turn_On_Off_Crypto',
+    );
     await this.handleCryptoChannel(time_wait, tickers, apikey, '1h');
+    this.sH_Service.turn_On_Off_Crypto = true; // set_True-GO-IN-Get_Web
   }
   @Cron('0 * * * *') // every 1 hour
   async handle1hourCrypto2(
@@ -348,7 +356,11 @@ export class TaskCryptoService {
     tickers = this.tickers_group3,
     apikey = 'd3058ae5683b4fc19a787ceb21a87f67',
   ) {
+    this.sH_Service.turn_On_Off_Crypto = await this.webhooksService.getTunOnOff(
+      'turn_On_Off_Crypto',
+    );
     await this.handleCryptoChannel(time_wait, tickers, apikey, '1h');
+    this.sH_Service.turn_On_Off_Crypto = true; // set_True-GO-IN-Get_Web
   }
 
   @Cron('8 */4 * * *') // Every 4 hours at minute 8
@@ -358,7 +370,11 @@ export class TaskCryptoService {
     apikey = '2711824a92bc40498c8bc30728813e2a',
   ) {
     //liamsterling1@outlook.com
+    this.sH_Service.turn_On_Off_Crypto = await this.webhooksService.getTunOnOff(
+      'turn_On_Off_Crypto',
+    );
     await this.handleCryptoChannel(time_wait, tickers, apikey, '4h');
+    this.sH_Service.turn_On_Off_Crypto = true; // set_True-GO-IN-Get_Web
   }
   @Cron('10 */4 * * *') // Every 4 hours at minute 10
   async handle4hourCrypto3(
@@ -366,7 +382,11 @@ export class TaskCryptoService {
     tickers = this.tickers_group2,
     apikey = '2711824a92bc40498c8bc30728813e2a',
   ) {
+    this.sH_Service.turn_On_Off_Crypto = await this.webhooksService.getTunOnOff(
+      'turn_On_Off_Crypto',
+    );
     await this.handleCryptoChannel(time_wait, tickers, apikey, '4h');
+    this.sH_Service.turn_On_Off_Crypto = true; // set_True-GO-IN-Get_Web
   }
   @Cron('12 */4 * * *') // Every 4 hours at minute 12
   async handle4hourCrypto4(
@@ -374,7 +394,11 @@ export class TaskCryptoService {
     tickers = this.tickers_group3,
     apikey = '2711824a92bc40498c8bc30728813e2a',
   ) {
+    this.sH_Service.turn_On_Off_Crypto = await this.webhooksService.getTunOnOff(
+      'turn_On_Off_Crypto',
+    );
     await this.handleCryptoChannel(time_wait, tickers, apikey, '4h');
+    this.sH_Service.turn_On_Off_Crypto = true; // set_True-GO-IN-Get_Web
   }
 
   @Cron('14 1 * * *') // Every day at 1:14 AM
@@ -384,7 +408,11 @@ export class TaskCryptoService {
     apikey = '2711824a92bc40498c8bc30728813e2a',
   ) {
     //liamsterling1@outlook.com
+    this.sH_Service.turn_On_Off_Crypto = await this.webhooksService.getTunOnOff(
+      'turn_On_Off_Crypto',
+    );
     await this.handleCryptoChannel(time_wait, tickers, apikey, '1day');
+    this.sH_Service.turn_On_Off_Crypto = true; // set_True-GO-IN-Get_Web
   }
   @Cron('16 1 * * *') // Every day at 1:16 AM
   async handledailyCrypto1(
@@ -392,7 +420,11 @@ export class TaskCryptoService {
     tickers = this.tickers_group2,
     apikey = '2711824a92bc40498c8bc30728813e2a',
   ) {
+    this.sH_Service.turn_On_Off_Crypto = await this.webhooksService.getTunOnOff(
+      'turn_On_Off_Crypto',
+    );
     await this.handleCryptoChannel(time_wait, tickers, apikey, '1day');
+    this.sH_Service.turn_On_Off_Crypto = true; // set_True-GO-IN-Get_Web
   }
   @Cron('18 1 * * *') // Every day at 1:18 AM
   async handledailyCrypto2(
@@ -400,7 +432,11 @@ export class TaskCryptoService {
     tickers = this.tickers_group3,
     apikey = '2711824a92bc40498c8bc30728813e2a',
   ) {
+    this.sH_Service.turn_On_Off_Crypto = await this.webhooksService.getTunOnOff(
+      'turn_On_Off_Crypto',
+    );
     await this.handleCryptoChannel(time_wait, tickers, apikey, '1day');
+    this.sH_Service.turn_On_Off_Crypto = true; // set_True-GO-IN-Get_Web
     await this.webhooksService.deleteSLChannel(
       Object.values(this.sH_Service.BULL_BEAR_SL_),
     );
