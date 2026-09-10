@@ -128,7 +128,7 @@ export class TasksForexService {
     }
   }
 
-  @Cron('*/5 9-16 * * 1-5', { timeZone: 'America/New_York' }) // washlist
+  // @Cron('*/5 9-16 * * 1-5', { timeZone: 'America/New_York' }) // washlist
   async handle5minForex(time_wait = 2,tickers = this.tickers) {
     await this.handleForexChannel(time_wait, tickers, 'all', '5min');
   }
