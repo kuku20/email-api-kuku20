@@ -321,7 +321,7 @@ export class TaskCryptoService {
     await this.handleCryptoChannel(time_wait, tickers, apikey, '30min');
   }
 
-  // @Cron('0 * * * *') // every 1 hour
+  @Cron('0 * * * *') // every 1 hour
   async handle1hourCrypto(
     time_wait = 6,
     tickers = this.tickers_group1,
