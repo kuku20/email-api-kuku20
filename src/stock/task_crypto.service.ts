@@ -332,7 +332,7 @@ export class TaskCryptoService {
     await this.handleCryptoChannel(time_wait, tickers, apikey, '1h');
     
   }
-  @Cron('0 * * * *') // every 1 hour
+  // @Cron('0 * * * *') // every 1 hour
   async handle1hourCrypto1(
     time_wait = 6,
     tickers = this.tickers_group2,
@@ -342,7 +342,7 @@ export class TaskCryptoService {
     await this.handleCryptoChannel(time_wait, tickers, apikey, '1h');
     
   }
-  @Cron('0 * * * *') // every 1 hour
+  // @Cron('0 * * * *') // every 1 hour
   async handle1hourCrypto2(
     time_wait = 5,
     tickers = this.tickers_group3,
@@ -364,7 +364,7 @@ export class TaskCryptoService {
     await this.handleCryptoChannel(time_wait, tickers, apikey, '4h');
     
   }
-  @Cron('10 */4 * * *') // Every 4 hours at minute 10
+  // @Cron('10 */4 * * *') // Every 4 hours at minute 10
   async handle4hourCrypto3(
     time_wait = 0,
     tickers = this.tickers_group2,
@@ -374,7 +374,7 @@ export class TaskCryptoService {
     await this.handleCryptoChannel(time_wait, tickers, apikey, '4h');
     
   }
-  @Cron('12 */4 * * *') // Every 4 hours at minute 12
+  // @Cron('12 */4 * * *') // Every 4 hours at minute 12
   async handle4hourCrypto4(
     time_wait = 0,
     tickers = this.tickers_group3,
