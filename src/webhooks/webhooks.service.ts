@@ -666,16 +666,12 @@ export class WebhooksService implements OnModuleInit{
               <span class="message-text">
                 ${ticker}
               </span>
-        
               |
-        
+              <span id="closePrice" style="color: red; font-weight: bold;"></span>
+              |
               <span class="message-text">
                 ${message}
               </span>
-        
-              |
-        
-              <span id="closePrice"></span>
         
             </h3>
         
