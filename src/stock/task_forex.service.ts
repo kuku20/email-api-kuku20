@@ -53,8 +53,6 @@ export class TasksForexService {
     const { buyChannel, htChannel } = this.forexChannels[timeframe];
 
     this.logger.log(`Running ${timeframe} for Forexs...`, tickers);
-    this.sH_Service.turn_On_Off_Image = await this.webhooksService.getTunOnOff('turn_On_Off_Image')
-    this.sH_Service.turn_On_Off_US_Stock = await this.webhooksService.getTunOnOff('turn_On_Off_US_Stock')
     await this.processTickers_withTiingo(
       tickers,
       timeframe,
