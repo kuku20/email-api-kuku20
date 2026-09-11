@@ -264,8 +264,6 @@ export class TaskCryptoService {
     const { buyChannel, htChannel } = this.cryptoChannels[timeframe];
 
     this.logger.log(`Running ${timeframe} for CRYPTOs...`, tickers);
-    this.sH_Service.turn_On_Off_Image = await this.webhooksService.getTunOnOff('turn_On_Off_Image')
-    this.sH_Service.turn_On_Off_US_Stock = await this.webhooksService.getTunOnOff('turn_On_Off_US_Stock')
     await this.processTickers1hour(
       tickers,
       timeframe,
@@ -280,8 +278,6 @@ export class TaskCryptoService {
   async handle5pCrypto(time_wait = 0, tickers = this.tickers_group1) {
     this.logger.log('Running scheduled every 15min for CRYPTOs...');
     const { buyChannel, htChannel } = this.cryptoChannels['15min'];
-    this.sH_Service.turn_On_Off_Image = await this.webhooksService.getTunOnOff('turn_On_Off_Image')
-    this.sH_Service.turn_On_Off_US_Stock = await this.webhooksService.getTunOnOff('turn_On_Off_US_Stock')
     await this.processTickers15m(
       tickers,
       '15min',
