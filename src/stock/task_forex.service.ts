@@ -16,7 +16,7 @@ export class TasksForexService {
     private readonly stratery_2Service: Stratery_2Service,
   ) {}
   private readonly logger = new Logger(TasksForexService.name);
-  tickers = ['EURUSD', 'GBPUSD','USDJPY'];
+
   private readonly forexChannels = {
     '1day': {
       buyChannel: '4HOUR_SELL_FX',
@@ -53,7 +53,8 @@ export class TasksForexService {
     const { buyChannel, htChannel } = this.forexChannels[timeframe];
 
     this.logger.log(`Running ${timeframe} for Forexs...`, tickers);
-
+    this.sH_Service.turn_On_Off_Image = await this.webhooksService.getTunOnOff('turn_On_Off_Image')
+    this.sH_Service.turn_On_Off_US_Stock = await this.webhooksService.getTunOnOff('turn_On_Off_US_Stock')
     await this.processTickers_withTiingo(
       tickers,
       timeframe,
@@ -129,38 +130,38 @@ export class TasksForexService {
   }
 
   // @Cron('*/5 9-16 * * 1-5', { timeZone: 'America/New_York' }) // washlist
-  async handle5minForex(time_wait = 2,tickers = this.tickers) {
+  async handle5minForex(time_wait = 2,tickers = this.sH_Service.Forex_pair) {
     await this.handleForexChannel(time_wait, tickers, 'all', '5min');
   }
 
-  @Cron('*/15 * * * *') // every 15 minutes
-  async handle15minForex(time_wait = 3,tickers = this.tickers) {
+  @Cron('3-59/15 * * * *') // every 15 minutes
+  async handle15minForex(time_wait = 0,tickers = this.sH_Service.Forex_pair) {
     
     await this.handleForexChannel(time_wait, tickers, 'all', '15min');
     
 
   }
-  @Cron(CronExpression.EVERY_30_MINUTES)
-  async handle30minForex(time_wait = 3,tickers = this.tickers) {
+  @Cron('3,33 * * * *', {})
+  async handle30minForex(time_wait = 0,tickers = this.sH_Service.Forex_pair) {
     
     await this.handleForexChannel(time_wait, tickers, 'all', '30min');
     
   }
   @Cron('5 * * * *') // every 1 hour at minute 5
-  async handle1hourForex(time_wait = 0,tickers = this.tickers) {
+  async handle1hourForex(time_wait = 0,tickers = this.sH_Service.Forex_pair) {
     
     await this.handleForexChannel(time_wait, tickers, 'all', '1h');
     
   }
   @Cron(CronExpression.EVERY_4_HOURS)
-  async handle4hourForex(time_wait = 5,tickers = this.tickers){
+  async handle4hourForex(time_wait = 5,tickers = this.sH_Service.Forex_pair){
     
     await this.handleForexChannel(time_wait, tickers, 'all', '4h');
     
   }
 
   @Cron('8 19 * * *', {timeZone: 'America/New_York',})
-  async handle1DayForex(time_wait = 0, tickers = this.tickers) {
+  async handle1DayForex(time_wait = 0, tickers = this.sH_Service.Forex_pair) {
     await this.handleForexChannel( time_wait, tickers, 'all', '1day',);
   } 
 

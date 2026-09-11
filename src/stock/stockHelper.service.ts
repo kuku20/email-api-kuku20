@@ -7,6 +7,7 @@ interface SlackMessage {
 
 @Injectable()
 export class StockHelperService {
+  Forex_pair = ['EURUSD', 'GBPUSD','JPYUSD','AUDUSD','CADUSD'];
   // aboveMA50api: string = `sun-04-19-2026-blowMA200`;
   aboveMA50api: string = `run-daily`;
   todayUpGains = 'today-gainers-losers';

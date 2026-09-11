@@ -264,7 +264,8 @@ export class TaskCryptoService {
     const { buyChannel, htChannel } = this.cryptoChannels[timeframe];
 
     this.logger.log(`Running ${timeframe} for CRYPTOs...`, tickers);
-
+    this.sH_Service.turn_On_Off_Image = await this.webhooksService.getTunOnOff('turn_On_Off_Image')
+    this.sH_Service.turn_On_Off_US_Stock = await this.webhooksService.getTunOnOff('turn_On_Off_US_Stock')
     await this.processTickers1hour(
       tickers,
       timeframe,
@@ -275,11 +276,12 @@ export class TaskCryptoService {
     );
   }
 
-  @Cron('*/15 * * * *') // every 15 minutes
-  async handle5pCrypto(time_wait = 2, tickers = this.tickers_group1) {
+  @Cron('3-59/15 * * * *') // every 15 minutes
+  async handle5pCrypto(time_wait = 0, tickers = this.tickers_group1) {
     this.logger.log('Running scheduled every 15min for CRYPTOs...');
     const { buyChannel, htChannel } = this.cryptoChannels['15min'];
-
+    this.sH_Service.turn_On_Off_Image = await this.webhooksService.getTunOnOff('turn_On_Off_Image')
+    this.sH_Service.turn_On_Off_US_Stock = await this.webhooksService.getTunOnOff('turn_On_Off_US_Stock')
     await this.processTickers15m(
       tickers,
       '15min',
@@ -291,9 +293,9 @@ export class TaskCryptoService {
     
   }
 
-  @Cron(CronExpression.EVERY_30_MINUTES)
+  @Cron('4,34 * * * *')
   async handle30pCrypto(
-    time_wait = 4,
+    time_wait = 0,
     tickers = this.tickers_group1,
     apikey = '2711824a92bc40498c8bc30728813e2a',
   ) {
@@ -321,9 +323,9 @@ export class TaskCryptoService {
     await this.handleCryptoChannel(time_wait, tickers, apikey, '30min');
   }
 
-  @Cron('0 * * * *') // every 1 hour
+  @Cron('6 * * * *') // every 1 hour
   async handle1hourCrypto(
-    time_wait = 6,
+    time_wait = 0,
     tickers = this.tickers_group1,
     apikey = '2711824a92bc40498c8bc30728813e2a',
   ) {
