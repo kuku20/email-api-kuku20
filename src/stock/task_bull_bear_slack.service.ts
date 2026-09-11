@@ -22,8 +22,10 @@ export class TasksBullBearSlackOnLyService {
     // await this.CHECKBULL_BEAR_OTHER_5MIN(0)
   }
 
-  @Cron('*/5 9-16 * * 1-5', { timeZone: 'America/New_York' }) // washlist
-  async CHECKBULL_BEAR_OTHER_5MIN(delay = 2) {
+  @Cron('2-59/5 9-16 * * 1-5', {
+    timeZone: 'America/New_York',
+  })
+  async CHECKBULL_BEAR_OTHER_5MIN(delay = 0) {
     const runNow = await this.webhooksService.getSameBool()
     const str = JSON.stringify(runNow, null, 2);
     if(runNow.sameOrNot){
@@ -84,6 +86,8 @@ export class TasksBullBearSlackOnLyService {
     delay = 2,
   ) {
     this.sH_Service.ALL_IN_ONE = true
+    this.sH_Service.turn_On_Off_Image = await this.webhooksService.getTunOnOff('turn_On_Off_Image')
+    this.sH_Service.turn_On_Off_US_Stock = await this.webhooksService.getTunOnOff('turn_On_Off_US_Stock')
     const limit = pLimit(4); // Limit the concurrency to 8 at a time
 
     const washselllists =[...(await this.LocalPLWR.loadWashSellList()) ||

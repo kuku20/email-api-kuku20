@@ -157,10 +157,10 @@ export class SlackPbController {
       let blockre 
       if(filename.includes('SET_FALSE')) {
         setValue = true
-        blockre = this.webhooksService.slElementOptions('SET_TRUE-GO_IN-Get_Web',timeframe_acID)
+        blockre = this.webhooksService.slElementOptions('SET_TRUE',timeframe_acID)
       } else {
         setValue = false
-        blockre = this.webhooksService.slElementOptions('SET_FALSE-GO_OUT-Get_Image',timeframe_acID)
+        blockre = this.webhooksService.slElementOptions('SET_FALSE',timeframe_acID)
       }
       await this.webhooksService.Update_Slack(payload.channel.id,payload.message.ts, `*${ticker}*  Check Me Out !!!!`,blockre)
       await this.stockService.FireBaseApi(

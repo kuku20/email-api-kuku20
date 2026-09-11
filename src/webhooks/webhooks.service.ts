@@ -448,13 +448,8 @@ export class WebhooksService implements OnModuleInit{
     const timeframe = tickerasall.split('-')[1];
     const pathSym = `${channel}/${ticker}`.toUpperCase();
     const baseBoolean = this.configService.get('NODE_ENV') === 'production' && this.sH_Service.railwayBoolen
-    this.sH_Service.turn_On_Off_Image = await this.getTunOnOff('turn_On_Off_Image')
-    this.sH_Service.turn_On_Off_US_Stock = await this.getTunOnOff('turn_On_Off_US_Stock')
-    const setBoolean = !!(
-      baseBoolean &&
-      this.sH_Service.turn_On_Off_Image &&
-      this.sH_Service.turn_On_Off_US_Stock
-    );
+    const isTheSame = this.sH_Service.turn_On_Off_Image === this.sH_Service.turn_On_Off_US_Stock
+    const setBoolean = !!(baseBoolean && isTheSame);
     // ( this.sH_Service.turn_On_Off_US_Stock ||
     //   this.sH_Service.turn_On_Off_Image)
     if (setBoolean) {

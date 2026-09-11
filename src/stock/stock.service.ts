@@ -269,7 +269,7 @@ export class StockService {
       // return this.getTickerDailyChart_FMP(ticker,dateStart,dateEnd)
       range = '1month'
     }
-    const isForexT = ['EURUSD', 'GBPUSD'].includes(ticker);
+    const isForexT = this.sH_Service.Forex_pair.includes(ticker);
     if(isForexT){
       console.log(ticker, range)
       return await this.tiingo(ticker, range);
