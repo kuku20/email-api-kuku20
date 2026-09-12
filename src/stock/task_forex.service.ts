@@ -95,7 +95,7 @@ export class TasksForexService {
         )
         if(!checks1){
           await this.webhooksService.compareAndSend1hour(
-            data.reverse(),
+            data,
             lastData,
             secondLastData,
             ticker,
