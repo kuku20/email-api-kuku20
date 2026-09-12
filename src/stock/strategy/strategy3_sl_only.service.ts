@@ -48,10 +48,7 @@ export class Sty_Slack_OnLy_Service {
 
     FullText += `${text_5min}\n`;
     try {
-      if (
-        text_5min.includes('BIG_🟡🟡_VOL') &&
-        text_5min.includes('bar_🟢_green')
-      ) {
+      if (text_5min.includes('BIG_🟡🟡_VOL') && text_5min.includes('bar_🟢_green')) {
         // && text_5min.includes('AB🟢🟢BUYY🟢🟢')
         const data_15min = await LocalPLWR.TwReveseNOAPI(ticker, timeframes[1]);
         const text_15min = await this.sH_Service.CHECKBULL_BEAR_ReTurnText(
@@ -170,6 +167,7 @@ export class Sty_Slack_OnLy_Service {
                 FTextWInDicator +
                 `\n <${this.sH_Service.imageHostUrl}/slack/slack-image/${postTo5m.files?.[0].id}|5m-slackImage>  || <${this.sH_Service.imageHostUrl}/slack/slack-image/${postTo15m.files?.[0].id}|15m-slackImage>  `;
               await webhooksService.Post2MySlack(msgMySl, ticker);
+              return true
             } else {
               const pathSym =
                 `${SL_Channel_BIG_VOL}-15MIN/${ticker}`.toUpperCase();
@@ -199,7 +197,9 @@ export class Sty_Slack_OnLy_Service {
                   blockre,
                 );
               }
+              return true
             }
+            return true
           } else {
             // test only and no need 15 to run
             const pathSym =
@@ -213,6 +213,7 @@ export class Sty_Slack_OnLy_Service {
               SL_Channel_BIG_VOL,
               msgN_imageWEB,
             );
+            return true
           }
 
           // const postToCSLRE  = await webhooksService.getImageN_PSlack(
@@ -229,7 +230,9 @@ export class Sty_Slack_OnLy_Service {
         }
       } else if (text_5min.includes('AB_MA50')) {
         let nextText = 'PREPARE_TO_BUY_50:';
-        if (text_5min.includes('AB_MA50AB_MA120AB_MA200')) {
+        if (text_5min.includes('AB_MA50AB_MA120AB_MA200AB_MA300')) {
+          nextText = 'SSBUY_MORE_300:';
+        } else if (text_5min.includes('AB_MA50AB_MA120AB_MA200')) {
           nextText = 'BUY_MORE_MORE_200:';
         } else if (text_5min.includes('AB_MA50AB_MA120')) {
           nextText = 'BUY_MORE_120:';
@@ -243,6 +246,7 @@ export class Sty_Slack_OnLy_Service {
         );
         // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
         // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'withBlock',blockre)
+        return true
       } else if (text_5min.includes('macdCr_N')) {
         const postToCSLRE = await webhooksService.getImageN_PSlack(
           data_5min,
@@ -251,6 +255,7 @@ export class Sty_Slack_OnLy_Service {
           `*macdCr_N_be_prepare*` + `\n${FullText} \n`,
           timeframes[0],
         );
+        return true
       } else if (!text_5min.includes('🔴')) {
         // } else if(text_5min.includes(checktext)){
         // send can buy: check macd call the
@@ -330,7 +335,7 @@ export class Sty_Slack_OnLy_Service {
                   'b',
                 );
               }
-              return;
+              return true;
             } else if (
               text_30min.includes('BUYY🟢🟢') ||
               text_30min.includes('AB🟢🟢')
@@ -370,7 +375,7 @@ export class Sty_Slack_OnLy_Service {
                   'b',
                 );
               }
-              return;
+              return true;
             } else {
               console.log('stop at 15:5_allgreen_15_red');
               // buy earlly if
@@ -385,6 +390,7 @@ export class Sty_Slack_OnLy_Service {
                 // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
                 // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
                 // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'withBlock',blockre)
+                return true;
               } else if (MACDP && closeCrosMA200) {
                 // data_5min[data_5min.length-1],
                 const postToCSLRE = await webhooksService.getImageN_PSlack(
@@ -397,8 +403,9 @@ export class Sty_Slack_OnLy_Service {
                 // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
                 // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
                 // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'withBlock',blockre)
+                return true;
               }
-              return;
+              return false;
             }
           } else {
             console.log('stop at 30:5_allgreen_30_red');
@@ -414,6 +421,7 @@ export class Sty_Slack_OnLy_Service {
               // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
               // // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
               // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'withBlock',blockre)
+              return true;
             } else if (MACDP) {
               const postToCSLRE = await webhooksService.getImageN_PSlack(
                 data_5min,
@@ -425,8 +433,9 @@ export class Sty_Slack_OnLy_Service {
               // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
               // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
               // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'withBlock',blockre)
+              return true;
             }
-            return;
+            return false;
           }
         } else if (text_15min.includes('macdCr_N')) {
           const postToCSLRE = await webhooksService.getImageN_PSlack(
@@ -439,6 +448,7 @@ export class Sty_Slack_OnLy_Service {
           // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
           // // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
           // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'withBlock',blockre)
+          return true;
         } else {
           console.log('stop at 15: 5_allgreen');
           // buy earlly if
@@ -463,6 +473,7 @@ export class Sty_Slack_OnLy_Service {
             // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
             // // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
             // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'withBlock',blockre)
+            return true;
           } else if (MACDP) {
             const postToCSLRE = await webhooksService.getImageN_PSlack(
               data_5min,
@@ -474,10 +485,11 @@ export class Sty_Slack_OnLy_Service {
             // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
             // // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
             // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'withBlock',blockre)
+            return true;
           }
-          return;
+          return false;
         }
-      } else if (!text_5min.includes('🟢')) {
+      } else if (!text_5min.includes('🟢')) { // 5minnred only
         const data_1hour = await LocalPLWR.TwReveseNOAPI(ticker, timeframes[3]);
         const text_1hour = await this.sH_Service.CHECKBULL_BEAR_ReTurnText(
           ticker,
@@ -485,7 +497,7 @@ export class Sty_Slack_OnLy_Service {
           data_1hour,
         );
         FullText += `${text_1hour}\n`;
-        if (!text_1hour.includes('🟢')) {
+        if (!text_1hour.includes('🟢')) { // 1h red
           const data_30min = await LocalPLWR.TwReveseNOAPI(
             ticker,
             timeframes[2],
@@ -497,7 +509,7 @@ export class Sty_Slack_OnLy_Service {
           );
           FullText += `${text_30min}\n`;
           let displaytext = '5_15_all_red';
-          if (!text_30min.includes('🟢')) {
+          if (!text_30min.includes('🟢')) { // 30m red
             const data_15min = await LocalPLWR.TwReveseNOAPI(
               ticker,
               timeframes[1],
@@ -508,7 +520,7 @@ export class Sty_Slack_OnLy_Service {
               data_15min,
             );
             FullText += `${text_15min}\n`;
-            if (!text_15min.includes('🟢')) {
+            if (!text_15min.includes('🟢')) { // 15m red
               const postToCSLRE = await webhooksService.getImageN_PSlack(
                 data_5min,
                 ticker,
@@ -516,12 +528,21 @@ export class Sty_Slack_OnLy_Service {
                 `*${displaytext}*` + `\n${FullText} \n`,
                 timeframes[0],
               );
+              return true;
+            } else{
+              return false;
             }
+          } else{
+            return false;
           }
-        } else {
-          console.log('stop at 5', FullText);
-          return;
+        } else { // 5min all red, 1h no red
+          console.log('stop at 5m and 1hour', FullText);
+          return false;
         }
+      } else {
+        console.log('stop at 5', FullText);
+        // check here if above or below ma300 list
+        return false;
       }
     } catch (error) {
       console.log(514, error);
@@ -580,7 +601,9 @@ export class Sty_Slack_OnLy_Service {
       return true
     } else if (text_5min.includes('AB_MA50')) {
       let nextText = 'PREPARE_TO_BUY_50:';
-      if (text_5min.includes('AB_MA50AB_MA120AB_MA200')) {
+      if (text_5min.includes('AB_MA50AB_MA120AB_MA200AB_MA300')) {
+        nextText = 'SSBUY_MORE_300:';
+      } else if (text_5min.includes('AB_MA50AB_MA120AB_MA200')) {
         nextText = 'BUY_MORE_MORE_200:';
       } else if (text_5min.includes('AB_MA50AB_MA120')) {
         nextText = 'BUY_MORE_120:';

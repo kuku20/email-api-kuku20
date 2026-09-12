@@ -77,10 +77,25 @@ export class TasksBullBearSlackOnLyService {
         await this.webhooksService.sendSlackNotification(isNotRange_msg,this.sH_Service.Z_US_SL_.OR4);
         this.isNotInrangeTicker_Tiingo = []
       }
+
+      // sent some checklist
+      if(this.list_symbols_ab300.length> 0 ){
+        const symbols_ab300_msg = this.list_symbols_ab300.join('')
+        await this.webhooksService.Post2MySlack(symbols_ab300_msg,'BUY_HOLD',this.sH_Service.DC_SL_MT.BUY_LIST)
+        await this.webhooksService.sendSlackNotification(symbols_ab300_msg,this.sH_Service.Z_US_SL_.J2DAY);
+        this.list_symbols_ab300 = []
+      } else if(this.list_symbols_bl300.length> 0 ){
+        const symbols_bl300_msg = this.list_symbols_bl300.join('')
+        await this.webhooksService.Post2MySlack(symbols_bl300_msg,'SELL_AVOID',this.sH_Service.DC_SL_MT.SELL_LIST)
+        await this.webhooksService.sendSlackNotification(symbols_bl300_msg,this.sH_Service.Z_US_SL_.J2DAY);
+        this.list_symbols_bl300 = []
+      }
     }
   }
   isNotInrangeTicker_TwReveseNOAPI = []
   isNotInrangeTicker_Tiingo= []
+  list_symbols_ab300 = []
+  list_symbols_bl300 = []
   async CHECKBULL_5_15_30_1h(
     tickers: string[],
     delay = 2,
@@ -116,7 +131,7 @@ export class TasksBullBearSlackOnLyService {
             this.isNotInrangeTicker_TwReveseNOAPI.push(mes)
             return this.CHECKBULL_5_Tiiingo([ticker],0);
           }
-          await this.sty_SlackService.FristCheck( 
+          const checkSl = await this.sty_SlackService.FristCheck( 
             ticker,
             data_5min,
             ['5min','15min','30min','1hour'],
@@ -124,6 +139,21 @@ export class TasksBullBearSlackOnLyService {
             this.webhooksService,
             []
           )
+          if(!checkSl){
+            const text_5min = await this.sH_Service.CHECKBULL_BEAR_ReTurnText(
+              ticker,
+              timeframe,
+              data_5min,
+            );
+            console.log('stop at 5',133, text_5min);
+            const tickeNtext = `${text_5min} || <${this.sH_Service.local4200}/price-log/${ticker}?daysRange=5|local_5min> || <${this.sH_Service.stockMk000}/price-log/${ticker}?daysRange=5|prod_5min> \n`
+            if(text_5min.includes('BL_MA300🔴')){
+              this.list_symbols_bl300.push(tickeNtext)
+            } else{
+              this.list_symbols_ab300.push(tickeNtext)
+            }
+            return false;
+          }
         } catch (error) {
           // Send error notification and log the error
           await this.webhooksService.sendDiscord(

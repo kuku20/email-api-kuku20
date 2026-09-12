@@ -229,7 +229,9 @@ export class Crypto_Forex_Slack_Service {
         }
       } else if (text_5min.includes('AB_MA50')) {
         let nextText = 'PREPARE_TO_BUY_50:';
-        if (text_5min.includes('AB_MA50AB_MA120AB_MA200')) {
+        if (text_5min.includes('AB_MA50AB_MA120AB_MA200AB_MA300')) {
+          nextText = 'SSBUY_MORE_300:';
+        } else if (text_5min.includes('AB_MA50AB_MA120AB_MA200')) {
           nextText = 'BUY_MORE_MORE_200:';
         } else if (text_5min.includes('AB_MA50AB_MA120')) {
           nextText = 'BUY_MORE_120:';
@@ -582,7 +584,9 @@ export class Crypto_Forex_Slack_Service {
       return true;
     } else if (text_5min.includes('AB_MA50')) {
       let nextText = 'PREPARE_TO_BUY_50:';
-      if (text_5min.includes('AB_MA50AB_MA120AB_MA200')) {
+      if (text_5min.includes('AB_MA50AB_MA120AB_MA200AB_MA300')) {
+        nextText = 'SSBUY_MORE_300:';
+      } else if (text_5min.includes('AB_MA50AB_MA120AB_MA200')) {
         nextText = 'BUY_MORE_MORE_200:';
       } else if (text_5min.includes('AB_MA50AB_MA120')) {
         nextText = 'BUY_MORE_120:';

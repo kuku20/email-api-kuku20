@@ -165,7 +165,7 @@ export class TaskCryptoService {
             this.webhooksService,
             buyChannel,
             sellChannel,
-             ` *Tiingo_US*\n `
+             ` *TwReveseNOAPI*\n `
           );
         } else {
           const msg = `*${lastData?.date}*-EST_TIME\n*Close:*${lastData?.close}\nisWithinRange:false\n`;
@@ -316,7 +316,7 @@ export class TaskCryptoService {
             this.webhooksService,
             buyChannel,
             sellChannel,
-             ` *Tiingo_US*\n `
+             ` *TwReveseNOAPI*\n `
           )
         } 
         this.logger.log(`${ticker} processed successfully.`);

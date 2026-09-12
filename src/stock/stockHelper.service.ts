@@ -8,6 +8,7 @@ interface SlackMessage {
 @Injectable()
 export class StockHelperService {
   Forex_pair = ['EURUSD', 'GBPUSD','JPYUSD','AUDUSD','CADUSD'];
+  isNotSymbol = ['US_CHECK_IN','RSIENDBOT','BUY_HOLD','SELL_AVOID']
   // aboveMA50api: string = `sun-04-19-2026-blowMA200`;
   aboveMA50api: string = `run-daily`;
   todayUpGains = 'today-gainers-losers';
@@ -71,7 +72,9 @@ export class StockHelperService {
     US_30M_BUY: 'ih7okxmRDPHVDh6O1plb',
     US_EARLY_15MIN: 'HI02Lg85RK0gVt2sCTu5',
     ALL_IN_ONE: 'vPbVpdIoDIRjNl9j5Iu7',
-    ERORR_CALL:'R2rV6XPK24BAoLL98SCE'
+    ERORR_CALL:'R2rV6XPK24BAoLL98SCE',
+    BUY_LIST:'2fKPViK9qlTmLrTsbagO',
+    SELL_LIST:'oUk4lauWyXuWjImwnmsI',
   }
 
   CRYPTO_SL_ = {
@@ -1309,7 +1312,7 @@ SELL ALL
     const crMA50 = crMA50Text==='CR_AB'? '`AB_MA50🟢🟢`':crMA50Text==='AB'?'50AB🟢':'BL_MA50🔴';
     const crMA120 = crMA120Text ==='CR_AB' && crMA50Text==='AB'? '`AB_MA50AB_MA120🟢🟢`':crMA120Text==='AB'?'120AB🟢':'BL_MA120🔴';
     const crMA200 = crMA200Text ==='CR_AB' && crMA50Text==='AB' && crMA120Text==='AB' ? '`AB_MA50AB_MA120AB_MA200🟢🟢`':crMA200Text==='AB'?'200AB🟢':'BL_MA200🔴';
-    const crMA300 = (crMA300Text ==='CR_AB' && crMA200Text ==='AB' && crMA50Text==='AB' && crMA120Text==='AB') ? '`AB_MA50AB_MA120AB_MA200AB_MA300🟢🟢`':crMA200Text==='AB'?'300AB🟢':'BL_MA300🔴';
+    const crMA300 = (crMA300Text ==='CR_AB' && crMA200Text ==='AB' && crMA50Text==='AB' && crMA120Text==='AB') ? '`AB_MA50AB_MA120AB_MA200AB_MA300🟢🟢`':crMA300Text==='AB'?'300AB🟢':'BL_MA300🔴';
     const crSignal = `**${crMA50}${crMA120}${crMA200}${crMA300}**${lastData.MA50_Angle}`
     const isGreenOrRed = lastData.close > lastData.open ?'bar_🟢_green':lastData?.close < lastData?.open ?'bar_🔴_red':'';
     if(macdCrossAB){
