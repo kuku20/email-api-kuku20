@@ -87,13 +87,13 @@ export class TasksBullBearGain_CalService {
               data_5min
           );
           FullText += `${text_5min}\n`;
-          if(text_5min.includes('CrAbMA')){
+          if(text_5min.includes('AB_MA')){
             let nextText = ''
-            if(text_5min.includes('CrAbMA50')){
+            if(text_5min.includes('AB_MA50')){
               nextText = 'PREPARE TO BUY:'
-            } else if(text_5min.includes('CrAbMA120')){
+            } else if(text_5min.includes('AB_MA120')){
               nextText = 'BUY MORE:'
-            } else if(text_5min.includes('CrAbMA200')){
+            } else if(text_5min.includes('AB_MA200')){
               nextText = 'BUY MORE MORE: '
             }
             await this.webhooksService.sendDiscord(

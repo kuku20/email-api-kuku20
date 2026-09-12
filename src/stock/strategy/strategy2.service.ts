@@ -31,9 +31,9 @@ export class Stratery_2Service {
       Channels_8_SL_Channel[0] ||
       (inWlist ? SL_Short.MACDCR_50 : SL_Short.MACDCR_BL);
 
-    const DC_Channel_CrAbMA50 =
+    const DC_Channel_AB_MA50 =
       Channels_8_DC_Channel[1] || (inWlist ? 'US_EARLY_5MIN' : 'US_5M_HT');
-    const SL_Channel_CrAbMA50 =
+    const SL_Channel_AB_MA50 =
       Channels_8_SL_Channel[1] ||
       (inWlist ? SL_Short.MACDCR_100 : SL_Short.MACDCR_200);
 
@@ -276,18 +276,18 @@ export class Stratery_2Service {
       } else {
         // 5min fails to post image return webImageUrl
       }
-    } else if (text_5min.includes('CrAbMA50')) {
+    } else if (text_5min.includes('AB_MA50')) {
       let nextText = 'PREPARE_TO_BUY_50:';
-      if (text_5min.includes('CrAbMA50CrAbMA120CrAbMA200')) {
+      if (text_5min.includes('AB_MA50AB_MA120AB_MA200')) {
         nextText = 'BUY_MORE_MORE_200:';
-      } else if (text_5min.includes('CrAbMA50CrAbMA120')) {
+      } else if (text_5min.includes('AB_MA50AB_MA120')) {
         nextText = 'BUY_MORE_120:';
       }
       const discodedata = await webhooksService.sendDiscord(
         `**${nextText}**` + FullText,
         `${ticker}-ON-${timeframes[0]}-${'macdCrossAB-'}`,
         data_5min[data_5min.length - 1],
-        DC_Channel_CrAbMA50,
+        DC_Channel_AB_MA50,
         data_5min,
       ); //       imageUrl = sentMessage.embeds[0]?.image?.url || sentMessage.attachments.first()?.url;
       if (NotPostToSlack) {
@@ -304,7 +304,7 @@ export class Stratery_2Service {
         timeframes[0],
         [ticker],
         data_5min[data_5min.length - 1],
-        SL_Channel_CrAbMA50,
+        SL_Channel_AB_MA50,
         `*${nextText}*` + `\n${FullText} \n`,
         imageUrl,
       );
@@ -819,9 +819,9 @@ export class Stratery_2Service {
       Channels_4_SL_Channel[0] ||
       (inWlist ? SL_Short.MACDCR_50 : SL_Short.MACDCR_BL);
 
-    const DC_Channel_CrAbMA50 =
+    const DC_Channel_AB_MA50 =
       Channels_4_DC_Channel[1] || (inWlist ? 'US_EARLY_5MIN' : 'US_5M_HT');
-    const SL_Channel_CrAbMA50 =
+    const SL_Channel_AB_MA50 =
       Channels_4_SL_Channel[1] ||
       (inWlist ? SL_Short.MACDCR_100 : SL_Short.MACDCR_200);
 
@@ -879,18 +879,18 @@ export class Stratery_2Service {
         }
         return true;
       }
-    } else if (text_5min.includes('CrAbMA50')) {
+    } else if (text_5min.includes('AB_MA50')) {
       let nextText = 'PREPARE_TO_BUY_50:';
-      if (text_5min.includes('CrAbMA50CrAbMA120CrAbMA200')) {
+      if (text_5min.includes('AB_MA50AB_MA120AB_MA200')) {
         nextText = 'BUY_MORE_MORE_200:';
-      } else if (text_5min.includes('CrAbMA50CrAbMA120')) {
+      } else if (text_5min.includes('AB_MA50AB_MA120')) {
         nextText = 'BUY_MORE_120:';
       }
       const discodedata = await webhooksService.sendDiscord(
         `**${nextText}**` + FullText,
         `${ticker}-ON-${timeframe}-${'macdCrossAB-'}`,
         data_5min[data_5min.length - 1],
-        DC_Channel_CrAbMA50,
+        DC_Channel_AB_MA50,
         data_5min,
       ); //       imageUrl = sentMessage.embeds[0]?.image?.url || sentMessage.attachments.first()?.url;
       if (NotPostToSlack) {
@@ -907,7 +907,7 @@ export class Stratery_2Service {
         timeframe,
         [ticker],
         data_5min[data_5min.length - 1],
-        SL_Channel_CrAbMA50,
+        SL_Channel_AB_MA50,
         `*${nextText}*` + `\n${FullText} \n`,
         imageUrl,
       );

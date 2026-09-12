@@ -21,7 +21,7 @@ export class Sty_Slack_OnLy_Service {
 
     const SL_Channel_BIG_VOL =
       Channels_7SL[0] || (inWlist ? SL_Short.MACDCR_50 : SL_Short.MACDCR_BL);
-    const SL_Channel_CrAbMA50 =
+    const SL_Channel_AB_MA50 =
       Channels_7SL[1] || (inWlist ? SL_Short.MACDCR_100 : SL_Short.MACDCR_200);
     const SL_Channel_macdCr_N = Channels_7SL[2] || SL_Short.MACDCR_BL;
     const SL_Channel_ALL_GREEN = Channels_7SL[3] || SL_Short.ALLGREEN;
@@ -227,17 +227,17 @@ export class Sty_Slack_OnLy_Service {
           // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
           // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'withBlock',blockre)
         }
-      } else if (text_5min.includes('CrAbMA50')) {
+      } else if (text_5min.includes('AB_MA50')) {
         let nextText = 'PREPARE_TO_BUY_50:';
-        if (text_5min.includes('CrAbMA50CrAbMA120CrAbMA200')) {
+        if (text_5min.includes('AB_MA50AB_MA120AB_MA200')) {
           nextText = 'BUY_MORE_MORE_200:';
-        } else if (text_5min.includes('CrAbMA50CrAbMA120')) {
+        } else if (text_5min.includes('AB_MA50AB_MA120')) {
           nextText = 'BUY_MORE_120:';
         }
         const postToCSLRE = await webhooksService.getImageN_PSlack(
           data_5min,
           ticker,
-          SL_Channel_CrAbMA50,
+          SL_Channel_AB_MA50,
           `*${nextText}*` + `\n${FullText} \n`,
           timeframes[0],
         );
@@ -549,7 +549,7 @@ export class Sty_Slack_OnLy_Service {
 
     const SL_Channel_BIG_VOL =
       Channels_4SL[0] || (inWlist ? SL_Short.MACDCR_50 : SL_Short.MACDCR_BL);
-    const SL_Channel_CrAbMA50 =
+    const SL_Channel_AB_MA50 =
       Channels_4SL[1] || (inWlist ? SL_Short.MACDCR_100 : SL_Short.MACDCR_200);
     const SL_Channel_macdCr_N = Channels_4SL[2] || SL_Short.MACDCR_BL;
     const SL_Channel_EARLY_CHECK = Channels_4SL[3] || SL_Short.EARLY_CHECK;
@@ -577,17 +577,17 @@ export class Sty_Slack_OnLy_Service {
         // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
         // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'withBlock',blockre)
       }
-    } else if (text_5min.includes('CrAbMA50')) {
+    } else if (text_5min.includes('AB_MA50')) {
       let nextText = 'PREPARE_TO_BUY_50:';
-      if (text_5min.includes('CrAbMA50CrAbMA120CrAbMA200')) {
+      if (text_5min.includes('AB_MA50AB_MA120AB_MA200')) {
         nextText = 'BUY_MORE_MORE_200:';
-      } else if (text_5min.includes('CrAbMA50CrAbMA120')) {
+      } else if (text_5min.includes('AB_MA50AB_MA120')) {
         nextText = 'BUY_MORE_120:';
       }
       const postToCSLRE = await webhooksService.getImageN_PSlack(
         data_5min,
         ticker,
-        SL_Channel_CrAbMA50,
+        SL_Channel_AB_MA50,
         `*${nextText}*` + `\n${FullText} \n`,
         timeframe,
       );
