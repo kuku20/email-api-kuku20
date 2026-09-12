@@ -1061,10 +1061,11 @@ async putToFBDynamic(endpoint:string, data: any,) {
     } else if (timefame.includes('month')) {
       tem = '1month';
     }
-    if(ticker.includes('USD')){
+    const isForexT = this.sH_Service.Forex_pair.includes(ticker);
+    if(isForexT){
       // ticker = this.sH_Service.getmatch1only(ticker)
       // return this.getCoinHistory(ticker, '5m')
-      ticker = this.sH_Service.formatSymbol(ticker)
+      return await this.tiingo(ticker, tem);
     }
     let BASE_URL = `https://api.twelvedata.com/time_series?symbol=${ticker}&interval=${tem}&outputsize=600&dp=2&apikey=`;
     console.log(BASE_URL)

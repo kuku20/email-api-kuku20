@@ -6,6 +6,7 @@ import { StockHelperService } from './stockHelper.service';
 import { LocalPLWR } from './runlocal.service';
 import { WebhooksService } from 'src/webhooks/webhooks.service';
 import { Stratery_2Service } from './strategy/strategy2.service';
+import { Crypto_Forex_Slack_Service } from './strategy/forex_crypto_strategy.service';
 
 @Injectable()
 export class TaskCryptoService {
@@ -14,6 +15,7 @@ export class TaskCryptoService {
     private readonly webhooksService: WebhooksService,
     private readonly LocalPLWR: LocalPLWR,
     private readonly stratery_2Service: Stratery_2Service,
+    private readonly crypto_Forex_Slack_Service: Crypto_Forex_Slack_Service,
   ) {}
   private readonly logger = new Logger(TaskCryptoService.name);
 
@@ -91,6 +93,80 @@ export class TaskCryptoService {
               HT_Channel,
             );
           }
+        } else {
+          const msg = `*${lastData?.date}*-EST_TIME\n*Close:*${lastData?.close}\nisWithinRange:false\n`;
+          await this.webhooksService.Post2MySlack(
+            msg,
+            `${ticker}_${timeframe}`,
+            '86UamrSwHhQYgEszLmcP',
+          );
+        }
+        this.logger.log(`${ticker} processed successfully.`);
+      } catch (error) {
+        this.webhooksService.sendDiscord(
+          `ERROR ON API AT: ${timeframe} On ${date}: ${JSON.stringify(error)}`,
+          `RSIENDBOT ${ticker} at ${timeframe}`,
+          'Nono',
+          'ERORR_CALL',
+        );
+        this.logger.error(`Error processing ${ticker}: ${error.message}`);
+      }
+    }
+  }
+
+  private async processTickers1hour_SL(
+    tickers: string[],
+    timeframe: string,
+    apikey: string,
+    buyChannel,
+    sellChannel,
+    delay = 5,
+  ) {
+    const date = new Date();
+    const washselllists =
+      (await this.LocalPLWR.loadWashSellList()) ||
+      this.LocalPLWR.getWashSellList();
+    // Delay 2 minutes before processing
+    await new Promise((resolve) => setTimeout(resolve, delay * 60 * 1000));
+
+    for (const ticker of tickers) {
+      if (washselllists.includes(ticker)) {
+        console.log(`⏭️ Skipping ${ticker} — in wash sell list`);
+        continue; // ✅ Skip this ticker and move on
+      }
+      try {
+        let data;
+        if (apikey === 'all') {
+          data = await this.LocalPLWR.TwReveseNOAPI(ticker, timeframe);
+        } else {
+          data = await this.LocalPLWR.get12for(ticker, timeframe, apikey);
+        }
+        const lastData = data[data.length - 1];
+        const timediff =
+          timeframe === '30min'
+            ? 20
+            : timeframe === '1h'
+            ? 50
+            : timeframe === '4h'
+            ? 200
+            : timeframe === '1day'
+            ? 1200
+            : 2400;
+        const isWithinRange = this.webhooksService.checktimeMinutesEST(
+          ticker,
+          lastData?.date,
+          timediff,
+        );
+        if (isWithinRange) {
+          const checks1 = await this.crypto_Forex_Slack_Service.secondCheck(
+            ticker
+            ,data,
+            timeframe,
+            this.webhooksService,
+            buyChannel,
+            sellChannel,
+             ` *Tiingo_US*\n `
+          );
         } else {
           const msg = `*${lastData?.date}*-EST_TIME\n*Close:*${lastData?.close}\nisWithinRange:false\n`;
           await this.webhooksService.Post2MySlack(
@@ -196,6 +272,66 @@ export class TaskCryptoService {
     }
   }
 
+  private async processTickers15m_SL(
+    tickers: string[],
+    timeframe: string,
+    apikey: string,
+    buyChannel,
+    sellChannel,
+    delay = 5,
+  ) {
+    const date = new Date();
+    const washselllists =
+      (await this.LocalPLWR.loadWashSellList()) ||
+      this.LocalPLWR.getWashSellList();
+    // Delay 2 minutes before processing
+    await new Promise((resolve) => setTimeout(resolve, delay * 60 * 1000));
+
+    for (const ticker of tickers) {
+      if (washselllists.includes(ticker)) {
+        console.log(`⏭️ Skipping ${ticker} — in wash sell list`);
+        continue; // ✅ Skip this ticker and move on
+      }
+      try {
+        let data;
+        if (apikey === 'all') {
+          data = await this.LocalPLWR.TwReveseNOAPI(ticker, timeframe);
+        } else {
+          data = await this.LocalPLWR.get12for(ticker, timeframe, apikey);
+        }
+
+        const lastData = data[data.length - 1];
+        const secondLastData = data[data.length - 2];
+
+        const isWithinRange = this.webhooksService.checktimeMinutesEST(
+          ticker,
+          lastData?.date,
+          13,
+        );
+        if (isWithinRange) {
+          await this.crypto_Forex_Slack_Service.secondCheck(
+            ticker
+            ,data,
+            timeframe,
+            this.webhooksService,
+            buyChannel,
+            sellChannel,
+             ` *Tiingo_US*\n `
+          )
+        } 
+        this.logger.log(`${ticker} processed successfully.`);
+      } catch (error) {
+        this.webhooksService.sendDiscord(
+          `ERROR ON API AT: ${timeframe} On ${date}: ${JSON.stringify(error)}`,
+          `RSIENDBOT ${ticker} at ${timeframe}`,
+          'Nono',
+          'ERORR_CALL',
+        );
+        this.logger.error(`Error processing ${ticker}: ${error.message}`);
+      }
+    }
+  }
+
   tickers_group1 = [
     'BTCUSD',
     'LTCUSD',
@@ -255,16 +391,41 @@ export class TaskCryptoService {
     },
   } as const;
 
+  private readonly cryptoChannels_SL = {
+    '1day': {
+      buyChannel:  this.sH_Service.CRYPTO_SL_['1DAY'],
+      htChannel: this.sH_Service.DC_SL_MT.CRYPTO_WATCH,
+    },
+    '4h': {
+      buyChannel:  this.sH_Service.CRYPTO_SL_['4HOUR'],
+      htChannel: this.sH_Service.DC_SL_MT.CR_4H_BUY,
+    },
+    '1h': {
+      buyChannel:  this.sH_Service.CRYPTO_SL_['1HOUR'],
+      htChannel: this.sH_Service.DC_SL_MT.CR_1H_BUY,
+    },
+    '30min': {
+      buyChannel:  this.sH_Service.CRYPTO_SL_['30MIN'],
+      htChannel: this.sH_Service.DC_SL_MT.CR_30M_BUY,
+    },
+    '15min': {
+      buyChannel:  this.sH_Service.CRYPTO_SL_['15MIN'],
+      htChannel: this.sH_Service.DC_SL_MT.CRYPTO_EARLY_5MIN,
+    },
+  } as const;
+
   async handleCryptoChannel(
     timeWait: number,
     tickers: string[],
     apiKey: string,
     timeframe: keyof typeof this.cryptoChannels,
   ): Promise<void> {
-    const { buyChannel, htChannel } = this.cryptoChannels[timeframe];
+    // const { buyChannel, htChannel } = this.cryptoChannels[timeframe];
+    const { buyChannel, htChannel } = this.cryptoChannels_SL[timeframe];
 
     this.logger.log(`Running ${timeframe} for CRYPTOs...`, tickers);
-    await this.processTickers1hour(
+    await this.processTickers1hour_SL(
+    // await this.processTickers1hour(
       tickers,
       timeframe,
       apiKey,
@@ -277,8 +438,9 @@ export class TaskCryptoService {
   @Cron('3-59/15 * * * *') // every 15 minutes
   async handle5pCrypto(time_wait = 0, tickers = this.tickers_group1) {
     this.logger.log('Running scheduled every 15min for CRYPTOs...');
-    const { buyChannel, htChannel } = this.cryptoChannels['15min'];
-    await this.processTickers15m(
+    // const { buyChannel, htChannel } = this.cryptoChannels['15min'];
+    const { buyChannel, htChannel } = this.cryptoChannels_SL['15min'];
+    await this.processTickers15m_SL(
       tickers,
       '15min',
       'all',
@@ -424,7 +586,16 @@ export class TaskCryptoService {
     // await this.handle1hourCrypto(0)
     // await this.handle4hourCrypto2(0)
     // await this.handledailyCrypto(0)
-
+    // for (const symbol of this.tickers_group3) {
+    //   await new Promise((resolve) => setTimeout(resolve, 1000));
+    
+    //   await this.webhooksService.fePostToHold2(
+    //     symbol,
+    //     null,
+    //     'more_options',
+    //     this.sH_Service.CRYPTO_SL_['1DAY']
+    //   );
+    // }
     const msg = `turn_On_Off_Image: ${this.sH_Service.turn_On_Off_Image}\n railwayBoolen:${this.sH_Service.railwayBoolen}`;
     this.webhooksService.sendDiscordNotification(
       `Run On deploy:**TaskCryptoService** \n${msg}`,

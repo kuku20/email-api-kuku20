@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { StockHelperService } from '../stockHelper.service';
 import * as DataSymbols from '../dto';
 @Injectable()
-export class Sty_Slack_OnLy_Service {
+export class Crypto_Forex_Slack_Service {
   constructor(private readonly sH_Service: StockHelperService) {}
   // async CHECKBULL_BEAR_processTickers
 
@@ -215,7 +215,7 @@ export class Sty_Slack_OnLy_Service {
             );
           }
 
-          // const postToCSLRE  = await webhooksService.getImageN_PSlack(
+          // const postToCSLRE  = await webhooksService.getImageN_PSlack_Forex_Crypto(
           //   data_5min,
           //   ticker,
           //   SL_Channel_BIG_VOL,
@@ -234,7 +234,7 @@ export class Sty_Slack_OnLy_Service {
         } else if (text_5min.includes('AB_MA50AB_MA120')) {
           nextText = 'BUY_MORE_120:';
         }
-        const postToCSLRE = await webhooksService.getImageN_PSlack(
+        const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
           data_5min,
           ticker,
           SL_Channel_AB_MA50,
@@ -244,7 +244,7 @@ export class Sty_Slack_OnLy_Service {
         // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
         // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'withBlock',blockre)
       } else if (text_5min.includes('macdCr_N')) {
-        const postToCSLRE = await webhooksService.getImageN_PSlack(
+        const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
           data_5min,
           ticker,
           SL_Channel_macdCr_N,
@@ -296,13 +296,14 @@ export class Sty_Slack_OnLy_Service {
               const allGreen = FullText.includes('🔴')
                 ? '5_15_allgreen'
                 : 'ALLGREEN_BE_CAREFULL_FORST';
-              const postToCSLRE = await webhooksService.getImageN_PSlack(
-                data_5min,
-                ticker,
-                SL_Channel_ALL_GREEN,
-                `*${allGreen}*` + `\n${FullText} \n`,
-                timeframes[0],
-              );
+              const postToCSLRE =
+                await webhooksService.getImageN_PSlack_Forex_Crypto(
+                  data_5min,
+                  ticker,
+                  SL_Channel_ALL_GREEN,
+                  `*${allGreen}*` + `\n${FullText} \n`,
+                  timeframes[0],
+                );
 
               // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
               // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
@@ -337,13 +338,14 @@ export class Sty_Slack_OnLy_Service {
             ) {
               // sent with good to buy check macd 0.1<0.6
               // send to watchlist
-              const postToCSLRE = await webhooksService.getImageN_PSlack(
-                data_5min,
-                ticker,
-                SL_Channel_WATCH,
-                `*5_allgreen_30BOrAb*` + `\n${FullText} \n`,
-                timeframes[0],
-              );
+              const postToCSLRE =
+                await webhooksService.getImageN_PSlack_Forex_Crypto(
+                  data_5min,
+                  ticker,
+                  SL_Channel_WATCH,
+                  `*5_allgreen_30BOrAb*` + `\n${FullText} \n`,
+                  timeframes[0],
+                );
               // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
               // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
               // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'withBlock',blockre)
@@ -375,25 +377,27 @@ export class Sty_Slack_OnLy_Service {
               console.log('stop at 15:5_allgreen_15_red');
               // buy earlly if
               if (MACDP && closeCrosMA50) {
-                const postToCSLRE = await webhooksService.getImageN_PSlack(
-                  data_5min,
-                  ticker,
-                  SL_Channel_EARLY_CHECK,
-                  `*5_allgreen_15_red_ab50*` + `\n${FullText} \n`,
-                  timeframes[0],
-                );
+                const postToCSLRE =
+                  await webhooksService.getImageN_PSlack_Forex_Crypto(
+                    data_5min,
+                    ticker,
+                    SL_Channel_EARLY_CHECK,
+                    `*5_allgreen_15_red_ab50*` + `\n${FullText} \n`,
+                    timeframes[0],
+                  );
                 // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
                 // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
                 // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'withBlock',blockre)
               } else if (MACDP && closeCrosMA200) {
                 // data_5min[data_5min.length-1],
-                const postToCSLRE = await webhooksService.getImageN_PSlack(
-                  data_5min,
-                  ticker,
-                  SL_Channel_EARLY_CHECK,
-                  `*5_allgreen_15_red_ab200*` + `\n${FullText} \n`,
-                  timeframes[0],
-                );
+                const postToCSLRE =
+                  await webhooksService.getImageN_PSlack_Forex_Crypto(
+                    data_5min,
+                    ticker,
+                    SL_Channel_EARLY_CHECK,
+                    `*5_allgreen_15_red_ab200*` + `\n${FullText} \n`,
+                    timeframes[0],
+                  );
                 // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
                 // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
                 // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'withBlock',blockre)
@@ -404,24 +408,26 @@ export class Sty_Slack_OnLy_Service {
             console.log('stop at 30:5_allgreen_30_red');
             // buy earlly if
             if (MACDP && closeCrosMA200) {
-              const postToCSLRE = await webhooksService.getImageN_PSlack(
-                data_5min,
-                ticker,
-                SL_Channel_EARLY_CHECK,
-                `*5_allgreen_ab200_30_red*` + `\n${FullText} \n`,
-                timeframes[0],
-              );
+              const postToCSLRE =
+                await webhooksService.getImageN_PSlack_Forex_Crypto(
+                  data_5min,
+                  ticker,
+                  SL_Channel_EARLY_CHECK,
+                  `*5_allgreen_ab200_30_red*` + `\n${FullText} \n`,
+                  timeframes[0],
+                );
               // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
               // // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
               // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'withBlock',blockre)
             } else if (MACDP) {
-              const postToCSLRE = await webhooksService.getImageN_PSlack(
-                data_5min,
-                ticker,
-                SL_Channel_EARLY_CHECK,
-                `*5_allgreen_30_red*` + `\n${FullText} \n`,
-                timeframes[0],
-              );
+              const postToCSLRE =
+                await webhooksService.getImageN_PSlack_Forex_Crypto(
+                  data_5min,
+                  ticker,
+                  SL_Channel_EARLY_CHECK,
+                  `*5_allgreen_30_red*` + `\n${FullText} \n`,
+                  timeframes[0],
+                );
               // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
               // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
               // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'withBlock',blockre)
@@ -429,13 +435,14 @@ export class Sty_Slack_OnLy_Service {
             return;
           }
         } else if (text_15min.includes('macdCr_N')) {
-          const postToCSLRE = await webhooksService.getImageN_PSlack(
-            data_5min,
-            ticker,
-            SL_Channel_MACDCR_BL_OT,
-            `*15_macdCr_N*` + `\n${FullText} \n`,
-            timeframes[0],
-          );
+          const postToCSLRE =
+            await webhooksService.getImageN_PSlack_Forex_Crypto(
+              data_5min,
+              ticker,
+              SL_Channel_MACDCR_BL_OT,
+              `*15_macdCr_N*` + `\n${FullText} \n`,
+              timeframes[0],
+            );
           // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
           // // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
           // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'withBlock',blockre)
@@ -453,24 +460,26 @@ export class Sty_Slack_OnLy_Service {
             data_5min[data_5min.length - 2].close <
               data_5min[data_5min.length - 2].MA200;
           if (MACDP && closeCrosMA200) {
-            const postToCSLRE = await webhooksService.getImageN_PSlack(
-              data_5min,
-              ticker,
-              SL_Channel_EARLY_CHECK,
-              `*5_allgreen_MA200*` + `\n${FullText} \n`,
-              timeframes[0],
-            );
+            const postToCSLRE =
+              await webhooksService.getImageN_PSlack_Forex_Crypto(
+                data_5min,
+                ticker,
+                SL_Channel_EARLY_CHECK,
+                `*5_allgreen_MA200*` + `\n${FullText} \n`,
+                timeframes[0],
+              );
             // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
             // // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
             // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'withBlock',blockre)
           } else if (MACDP) {
-            const postToCSLRE = await webhooksService.getImageN_PSlack(
-              data_5min,
-              ticker,
-              SL_Channel_EARLY_CHECK,
-              `*5_allgreen_MACDP*` + `\n${FullText} \n`,
-              timeframes[0],
-            );
+            const postToCSLRE =
+              await webhooksService.getImageN_PSlack_Forex_Crypto(
+                data_5min,
+                ticker,
+                SL_Channel_EARLY_CHECK,
+                `*5_allgreen_MACDP*` + `\n${FullText} \n`,
+                timeframes[0],
+              );
             // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
             // // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
             // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'withBlock',blockre)
@@ -509,13 +518,14 @@ export class Sty_Slack_OnLy_Service {
             );
             FullText += `${text_15min}\n`;
             if (!text_15min.includes('🟢')) {
-              const postToCSLRE = await webhooksService.getImageN_PSlack(
-                data_5min,
-                ticker,
-                SL_Channel_ALL_RED,
-                `*${displaytext}*` + `\n${FullText} \n`,
-                timeframes[0],
-              );
+              const postToCSLRE =
+                await webhooksService.getImageN_PSlack_Forex_Crypto(
+                  data_5min,
+                  ticker,
+                  SL_Channel_ALL_RED,
+                  `*${displaytext}*` + `\n${FullText} \n`,
+                  timeframes[0],
+                );
             }
           }
         } else {
@@ -540,20 +550,11 @@ export class Sty_Slack_OnLy_Service {
     data_5min,
     timeframe: string, // timeframe
     webhooksService,
-    Channels_4SL: string[], // array
+    Channels_4SL: string, // array
+    mySl_channel: string,
     apiCalling = '*Tiingo_US*\n ',
   ) {
     let FullText = '';
-    const inWlist = DataSymbols.watchlist.includes(ticker);
-    const SL_Short = this.sH_Service.INTRA_30M_SL_;
-
-    const SL_Channel_BIG_VOL =
-      Channels_4SL[0] || (inWlist ? SL_Short.MACDCR_50 : SL_Short.MACDCR_BL);
-    const SL_Channel_AB_MA50 =
-      Channels_4SL[1] || (inWlist ? SL_Short.MACDCR_100 : SL_Short.MACDCR_200);
-    const SL_Channel_macdCr_N = Channels_4SL[2] || SL_Short.MACDCR_BL;
-    const SL_Channel_EARLY_CHECK = Channels_4SL[3] || SL_Short.EARLY_CHECK;
-
     const text_5min = await this.sH_Service.CHECKBULL_BEAR_ReTurnText(
       ticker,
       timeframe,
@@ -565,10 +566,11 @@ export class Sty_Slack_OnLy_Service {
       text_5min.includes('bar_🟢_green')
     ) {
       if (true) {
-        const postToCSLRE = await webhooksService.getImageN_PSlack(
+        const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
           data_5min,
           ticker,
-          SL_Channel_BIG_VOL,
+          Channels_4SL,
+          mySl_channel,
           `*${`BIG_🟡🟡_VOL`}*` + `\n${FullText} \n`,
           timeframe,
         );
@@ -577,7 +579,7 @@ export class Sty_Slack_OnLy_Service {
         // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
         // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'withBlock',blockre)
       }
-      return true
+      return true;
     } else if (text_5min.includes('AB_MA50')) {
       let nextText = 'PREPARE_TO_BUY_50:';
       if (text_5min.includes('AB_MA50AB_MA120AB_MA200')) {
@@ -585,25 +587,27 @@ export class Sty_Slack_OnLy_Service {
       } else if (text_5min.includes('AB_MA50AB_MA120')) {
         nextText = 'BUY_MORE_120:';
       }
-      const postToCSLRE = await webhooksService.getImageN_PSlack(
+      const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
         data_5min,
         ticker,
-        SL_Channel_AB_MA50,
+        Channels_4SL,
+        mySl_channel,
         `*${nextText}*` + `\n${FullText} \n`,
         timeframe,
       );
       // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
       // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'withBlock',blockre)
-      return true
+      return true;
     } else if (text_5min.includes('macdCr_N')) {
-      const postToCSLRE = await webhooksService.getImageN_PSlack(
+      const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
         data_5min,
         ticker,
-        SL_Channel_macdCr_N,
+        Channels_4SL,
+        mySl_channel,
         `*macdCr_N_be_prepare*` + `\n${FullText} \n`,
         timeframe,
       );
-      return true
+      return true;
     } else if (!text_5min.includes('🔴')) {
       console.log('stop at 15: 5_allgreen');
       // buy earlly if
@@ -618,34 +622,218 @@ export class Sty_Slack_OnLy_Service {
         data_5min[data_5min.length - 2].close <
           data_5min[data_5min.length - 2].MA200;
       if (MACDP && closeCrosMA200) {
-        const postToCSLRE = await webhooksService.getImageN_PSlack(
+        const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
           data_5min,
           ticker,
-          SL_Channel_EARLY_CHECK,
+          Channels_4SL,
+          mySl_channel,
           `*5_allgreen_MA200*` + `\n${FullText} \n`,
           timeframe,
         );
         // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
         // // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
         // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'withBlock',blockre)
-        return true
+        return true;
       } else if (MACDP) {
-        const postToCSLRE = await webhooksService.getImageN_PSlack(
+        const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
           data_5min,
           ticker,
-          SL_Channel_EARLY_CHECK,
+          Channels_4SL,
+          mySl_channel,
           `*5_allgreen_MACDP*` + `\n${FullText} \n`,
           timeframe,
         );
         // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
         // // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'postnone')
         // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'withBlock',blockre)
-        return true
+        return true;
       }
-      return false;
+      return this.compareAndSend1hour(
+        data_5min,
+        ticker,
+        timeframe,
+        Channels_4SL,
+        mySl_channel,
+        webhooksService,
+      );
     } else {
       console.log('stop at 5', FullText);
-      return false;
+      return this.compareAndSend1hour(
+        data_5min,
+        ticker,
+        timeframe,
+        Channels_4SL,
+        mySl_channel,
+        webhooksService,
+      );
+    }
+  }
+
+  async compareAndSend1hour(
+    data,
+    ticker,
+    timeframe,
+    B_Channel,
+    HT_Channel,
+    webhooksService,
+  ) {
+    const text_data = await this.sH_Service.CHECKBULL_BEAR_ReTurnText(
+      ticker,
+      timeframe,
+      data,
+    );
+    const lastdata = data[data.length - 1];
+    const Secondlastdata = data[data.length - 2];
+    const Over200NUpBuy = await this.sH_Service.Over200NUpBuy(
+      lastdata,
+      Secondlastdata,
+    );
+    if (Over200NUpBuy) {
+      const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
+        data,
+        ticker,
+        B_Channel,
+        HT_Channel,
+        `BUY BlMA200_MA20_MA50_MA100_BUY-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        timeframe,
+      );
+      return;
+    }
+    const macdCrossAB_BL0 = await this.sH_Service.macdCrossAB_BL0(
+      lastdata,
+      Secondlastdata,
+    );
+    if (macdCrossAB_BL0) {
+      const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
+        data,
+        ticker,
+        B_Channel,
+        HT_Channel,
+        `BUY macdCrossAB_BL0-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
+        timeframe,
+      );
+      return;
+    }
+
+    const priceAbMA200BUY = await this.sH_Service.priceAbMA200BUY(
+      lastdata,
+      Secondlastdata,
+    );
+    if (priceAbMA200BUY) {
+      const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
+        data,
+        ticker,
+        B_Channel,
+        HT_Channel,
+        `BUY priceAbMA200BUY-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
+        timeframe,
+      );
+      return;
+    }
+
+    const priceBlMA200SELL = await this.sH_Service.priceBlMA200SELL(
+      lastdata,
+      Secondlastdata,
+    );
+    if (priceBlMA200SELL) {
+      const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
+        data,
+        ticker,
+        B_Channel,
+        HT_Channel,
+        `SELLCRLLLL priceBlMA200SELL-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
+        timeframe,
+      );
+      return;
+    }
+
+    const macdCrossAB = await this.sH_Service.macdCrossAB(
+      lastdata,
+      Secondlastdata,
+    );
+    if (macdCrossAB) {
+      const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
+        data,
+        ticker,
+        B_Channel,
+        HT_Channel,
+        `BUY macdCrossAB-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
+        timeframe,
+      );
+      return;
+    }
+    const earlyBuyInRSI = await this.sH_Service.earlyBuyInRSI(
+      lastdata,
+      Secondlastdata,
+    );
+    if (earlyBuyInRSI) {
+      const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
+        data,
+        ticker,
+        B_Channel,
+        HT_Channel,
+        `BUY earlyBuyInRSI-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
+        timeframe,
+      );
+      return;
+    }
+    const macdCrossBL = await this.sH_Service.macdCrossBL(
+      lastdata,
+      Secondlastdata,
+    );
+    if (macdCrossBL) {
+      const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
+        data,
+        ticker,
+        B_Channel,
+        HT_Channel,
+        `SELLCRLLLL macdCrossBL-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
+        timeframe,
+      );
+      return;
+    }
+    const earlySellInRSI = await this.sH_Service.earlySellInRSI(
+      lastdata,
+      Secondlastdata,
+    );
+    if (earlySellInRSI) {
+      const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
+        data,
+        ticker,
+        B_Channel,
+        HT_Channel,
+        `SELLCRLLLL earlySellInRSI-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
+        timeframe,
+      );
+      return;
+    }
+
+    const Under200NDownSell = await this.sH_Service.Under200NDownSell(
+      lastdata,
+      Secondlastdata,
+    );
+    if (Under200NDownSell) {
+      const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
+        data,
+        ticker,
+        B_Channel,
+        HT_Channel,
+        `SELLCRLLLL Under200NDownSell-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
+        timeframe,
+      );
+      return;
+    }
+
+    if (timeframe === '4h' || timeframe === '1day') {
+      const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
+        data,
+        ticker,
+        B_Channel,
+        HT_Channel,
+        `JUST WATCH_ME-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
+        timeframe,
+      );
+      return;
     }
   }
 }
