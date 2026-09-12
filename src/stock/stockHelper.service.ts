@@ -73,6 +73,23 @@ export class StockHelperService {
     ALL_IN_ONE: 'vPbVpdIoDIRjNl9j5Iu7',
     ERORR_CALL:'R2rV6XPK24BAoLL98SCE'
   }
+
+  CRYPTO_SL_ = {
+    "1DAY": "C0C1A6XJ3AS",
+    "4HOUR": "C0C1E3A9LKT",
+    "1HOUR": "C0C26FV86SC",
+    "30MIN": "C0C1E3AFMNV",
+    "15MIN": "C0C1FQS5K1A"
+  }
+
+  FOREX_SL_ = {
+    "1DAY": "C0C0WNRRL4X",
+    "4HOUR": "C0C17G46PQV",
+    "1HOUR": "C0C1FQN5BAQ",
+    "30MIN": "C0C15TRLZNX",
+    "15MIN": "C0C17G4574M"
+  }
+
   AI_SL = {
     "AI_BUY": "C0BT0KZJFRV",
     "AI_ERORR": "C0BTE34QP70",

@@ -3809,4 +3809,74 @@ async deleteAllMessages_SLack(channel: string) {
         turn_On_Off_US_Stock: this.sH_Service.turn_On_Off_US_Stock
       }
     }
+
+    async getImageN_PSlack_Forex_Crypto( 
+      data,
+      ticker,
+      sl_channel,
+      mySl_channel,
+      message,
+      timeframe
+    ){
+      const fileBuffer = await this.captureChart(
+        data,
+        ticker,
+        sl_channel,
+        message,
+      );
+      if(fileBuffer){
+        const imgads = Buffer.from(fileBuffer);
+        // slack part
+        try {
+          const Sl_tss = await this.getAllMsgCheck(sl_channel)
+          const tsNCh = this.getTsBySymbol(ticker, Sl_tss) 
+          let postTo
+          if (tsNCh) {
+            postTo  = await this.postSlackImage(sl_channel, imgads, `${ticker}-${timeframe}.png`, message,  tsNCh.ts);
+            const signalThread = this.sH_Service.getSlackThread_MySlack(
+              tsNCh.channel,
+              tsNCh.ts
+            );
+            message += signalThread
+          } else {
+            postTo  = await this.postSlackImage(sl_channel, imgads, `${ticker}.png`, message,);
+          }
+          const discordmsg = message+  `\n <${this.sH_Service.imageHostUrl}/slack/slack-image/${postTo.files?.[0].id}|slackImage> `
+          await this.Post2MySlack(discordmsg, ticker,mySl_channel)
+          return {
+            channel,
+            ...postTo.files?.[0]
+          }
+        } catch (error) {
+          console.log("********:Post To Discord")
+          try {
+            return await this.sendDiscordNotification(
+              message,
+              `${'BUYSELL'} ${ticker}`,
+              JSON.stringify( data[data.length-1],),
+              fileBuffer,
+            );
+          } catch (error) {
+            console.log("********:Post To sirvService")
+            const postTo = await this.sirvService.uploadImage(fileBuffer)
+            const imageNtext = message+  `\n  <${postTo.url}|sirvImage> `
+            await this.Post2MySlack(imageNtext,ticker,mySl_channel)
+          }
+        }
+
+      } else {
+        const pathSym = `${channel}/${ticker}`.toUpperCase();
+        const msgN_imageWEB = `${message}\n<${this.sH_Service.stockMk000}/capture-target/${pathSym}|prodUrl>`
+        
+        await this.Post2MySlack(msgN_imageWEB,ticker,mySl_channel)
+        const postToCSLRE = await this.sendSlackNotificationVN(
+          timeframe,
+          [ticker],
+          data[data.length-1],
+          sl_channel,
+          msgN_imageWEB,
+        );
+        return postToCSLRE.postToCSLRE
+      }
+    }
 }
