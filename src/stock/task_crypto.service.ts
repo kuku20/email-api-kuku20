@@ -141,9 +141,7 @@ export class TaskCryptoService {
         } else {
           data = await this.LocalPLWR.get12for(ticker, timeframe, apikey);
         }
-
         const lastData = data[data.length - 1];
-        const secondLastData = data[data.length - 2];
         const timediff =
           timeframe === '30min'
             ? 20
@@ -160,13 +158,6 @@ export class TaskCryptoService {
           timediff,
         );
         if (isWithinRange) {
-          // await this.webhooksService.runCrOn_MA50(
-          //   data,
-          //   ticker,
-          //   timeframe,
-          //   HT_Channel,
-          //   B_Channel,
-          // );
           const checks1 = await this.crypto_Forex_Slack_Service.secondCheck(
             ticker
             ,data,
@@ -176,17 +167,6 @@ export class TaskCryptoService {
             sellChannel,
              ` *Tiingo_US*\n `
           );
-          if (!checks1) {
-            await this.webhooksService.compareAndSend1hour(
-              data,
-              lastData,
-              secondLastData,
-              ticker,
-              timeframe,
-              buyChannel,
-              sellChannel,
-            );
-          }
         } else {
           const msg = `*${lastData?.date}*-EST_TIME\n*Close:*${lastData?.close}\nisWithinRange:false\n`;
           await this.webhooksService.Post2MySlack(
@@ -326,7 +306,7 @@ export class TaskCryptoService {
         const isWithinRange = this.webhooksService.checktimeMinutesEST(
           ticker,
           lastData?.date,
-          30,
+          13,
         );
         if (isWithinRange) {
           await this.crypto_Forex_Slack_Service.secondCheck(
@@ -338,16 +318,7 @@ export class TaskCryptoService {
             sellChannel,
              ` *Tiingo_US*\n `
           )
-
         } 
-        // else {
-        //   const msg = `*${lastData?.date}*-EST_TIME\n*Close:*${lastData?.close}\nisWithinRange:false\n`;
-        //   await this.webhooksService.Post2MySlack(
-        //     msg,
-        //     `${ticker}_${timeframe}`,
-        //     '86UamrSwHhQYgEszLmcP',
-        //   );
-        // }
         this.logger.log(`${ticker} processed successfully.`);
       } catch (error) {
         this.webhooksService.sendDiscord(

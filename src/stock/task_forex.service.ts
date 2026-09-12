@@ -239,8 +239,23 @@ export class TasksForexService {
     for (const ticker of tickers) {
       try {
         let data = await this.LocalPLWR.tiingo(ticker, timeframe, '5f7e0b2da2b5c849dfd5a3dc7938b82c02a7c6f4');
-        const lastData = data[data.length - 1];
-        const secondLastData = data[data.length - 2];
+        // const lastData = data[data.length - 1];
+        // const timediff =
+        //   timeframe === '30min'
+        //     ? 20
+        //     : timeframe === '1h'
+        //     ? 50
+        //     : timeframe === '4h'
+        //     ? 200
+        //     : timeframe === '1day'
+        //     ? 1200
+        //     : 2400;
+        // const isWithinRange = this.webhooksService.checktimeMinutesCST(
+        //   ticker,
+        //   lastData?.date,
+        //   timediff,
+        // );
+        // if (isWithinRange) {}
         const checks1 = await this.crypto_Forex_Slack_Service.secondCheck(
           ticker
           ,data,
@@ -250,24 +265,6 @@ export class TasksForexService {
           sellChannel,
            ` *Tiingo_US*\n `
         )
-        // if(!checks1){
-        //   await this.webhooksService.compareAndSend1hour(
-        //     data,
-        //     lastData,
-        //     secondLastData,
-        //     ticker,
-        //     timeframe,
-        //     buyChannel,
-        //     sellChannel,
-        //   );
-        // }
-        // await this.webhooksService.runCrOn_MA50(
-        //   data,
-        //   ticker,
-        //   timeframe,
-        //   buyChannel,
-        //   sellChannel,
-        // );
         this.logger.log(`${ticker} processed successfully.`);
       } catch (error) {
         const date = new Date();

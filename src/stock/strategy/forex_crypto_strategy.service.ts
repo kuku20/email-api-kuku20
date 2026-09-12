@@ -555,10 +555,6 @@ export class Crypto_Forex_Slack_Service {
     apiCalling = '*Tiingo_US*\n ',
   ) {
     let FullText = '';
-    const inWlist = DataSymbols.watchlist.includes(ticker);
-    const SL_Short = this.sH_Service.INTRA_30M_SL_;
-
-  
     const text_5min = await this.sH_Service.CHECKBULL_BEAR_ReTurnText(
       ticker,
       timeframe,
@@ -652,10 +648,192 @@ export class Crypto_Forex_Slack_Service {
         // await webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'withBlock',blockre)
         return true;
       }
-      return false;
+      return this.compareAndSend1hour(
+        data_5min,
+        ticker,
+        timeframe,
+        Channels_4SL,
+        mySl_channel,
+        webhooksService,
+      );
     } else {
       console.log('stop at 5', FullText);
-      return false;
+      return this.compareAndSend1hour(
+        data_5min,
+        ticker,
+        timeframe,
+        Channels_4SL,
+        mySl_channel,
+        webhooksService,
+      );
+    }
+  }
+
+  async compareAndSend1hour(
+    data,
+    ticker,
+    timeframe,
+    B_Channel,
+    HT_Channel,
+    webhooksService,
+  ) {
+    const text_data = await this.sH_Service.CHECKBULL_BEAR_ReTurnText(
+      ticker,
+      timeframe,
+      data,
+    );
+    const lastdata = data[data.length - 1];
+    const Secondlastdata = data[data.length - 2];
+    const Over200NUpBuy = await this.sH_Service.Over200NUpBuy(
+      lastdata,
+      Secondlastdata,
+    );
+    if (Over200NUpBuy) {
+      const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
+        data,
+        ticker,
+        B_Channel,
+        HT_Channel,
+        `BUY BlMA200_MA20_MA50_MA100_BUY-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        timeframe,
+      );
+      return;
+    }
+    const macdCrossAB_BL0 = await this.sH_Service.macdCrossAB_BL0(
+      lastdata,
+      Secondlastdata,
+    );
+    if (macdCrossAB_BL0) {
+      const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
+        data,
+        ticker,
+        B_Channel,
+        HT_Channel,
+        `BUY macdCrossAB_BL0-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
+        timeframe,
+      );
+      return;
+    }
+
+    const priceAbMA200BUY = await this.sH_Service.priceAbMA200BUY(
+      lastdata,
+      Secondlastdata,
+    );
+    if (priceAbMA200BUY) {
+      const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
+        data,
+        ticker,
+        B_Channel,
+        HT_Channel,
+        `BUY priceAbMA200BUY-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
+        timeframe,
+      );
+      return;
+    }
+
+    const priceBlMA200SELL = await this.sH_Service.priceBlMA200SELL(
+      lastdata,
+      Secondlastdata,
+    );
+    if (priceBlMA200SELL) {
+      const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
+        data,
+        ticker,
+        B_Channel,
+        HT_Channel,
+        `SELLCRLLLL priceBlMA200SELL-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
+        timeframe,
+      );
+      return;
+    }
+
+    const macdCrossAB = await this.sH_Service.macdCrossAB(
+      lastdata,
+      Secondlastdata,
+    );
+    if (macdCrossAB) {
+      const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
+        data,
+        ticker,
+        B_Channel,
+        HT_Channel,
+        `BUY macdCrossAB-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
+        timeframe,
+      );
+      return;
+    }
+    const earlyBuyInRSI = await this.sH_Service.earlyBuyInRSI(
+      lastdata,
+      Secondlastdata,
+    );
+    if (earlyBuyInRSI) {
+      const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
+        data,
+        ticker,
+        B_Channel,
+        HT_Channel,
+        `BUY earlyBuyInRSI-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
+        timeframe,
+      );
+      return;
+    }
+    const macdCrossBL = await this.sH_Service.macdCrossBL(
+      lastdata,
+      Secondlastdata,
+    );
+    if (macdCrossBL) {
+      const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
+        data,
+        ticker,
+        B_Channel,
+        HT_Channel,
+        `SELLCRLLLL macdCrossBL-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
+        timeframe,
+      );
+      return;
+    }
+    const earlySellInRSI = await this.sH_Service.earlySellInRSI(
+      lastdata,
+      Secondlastdata,
+    );
+    if (earlySellInRSI) {
+      const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
+        data,
+        ticker,
+        B_Channel,
+        HT_Channel,
+        `SELLCRLLLL earlySellInRSI-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
+        timeframe,
+      );
+      return;
+    }
+
+    const Under200NDownSell = await this.sH_Service.Under200NDownSell(
+      lastdata,
+      Secondlastdata,
+    );
+    if (Under200NDownSell) {
+      const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
+        data,
+        ticker,
+        B_Channel,
+        HT_Channel,
+        `SELLCRLLLL Under200NDownSell-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
+        timeframe,
+      );
+      return;
+    }
+
+    if (timeframe === '4h' || timeframe === '1day') {
+      const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
+        data,
+        ticker,
+        B_Channel,
+        HT_Channel,
+        `JUST WATCH_ME-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
+        timeframe,
+      );
+      return;
     }
   }
 }
