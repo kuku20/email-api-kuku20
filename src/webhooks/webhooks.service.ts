@@ -3752,7 +3752,8 @@ async deleteAllMessages_SLack(channel: string) {
     }
 
     async Post2MySlack(messgage,ticker,channelN=this.sH_Service.DC_SL_MT.ALL_IN_ONE,){
-      let websiteLink =   `|| <${this.sH_Service.local4200}/price-log/${ticker}?daysRange=5|${ticker}-local-target> || <${this.sH_Service.stockMk000}/price-log/${ticker}?daysRange=5|${ticker}-prod-target>`
+      const isNotSymbol = this.sH_Service.isNotSymbol.includes(ticker)
+      let websiteLink =  isNotSymbol?'': `|| <${this.sH_Service.local4200}/price-log/${ticker}?daysRange=5|${ticker}-local-target> || <${this.sH_Service.stockMk000}/price-log/${ticker}?daysRange=5|${ticker}-prod-target>`
       const tsNCh = this.getTsBySymbol(ticker, this.sH_Service.watchlistSl_tss) || this.getTsBySymbol(ticker, this.sH_Service.holdingSl_tss);
       if (tsNCh) {
         const signalThread = this.sH_Service.getSlackThread_MySlack(
