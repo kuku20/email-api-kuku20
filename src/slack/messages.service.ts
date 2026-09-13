@@ -62,6 +62,11 @@ export class MessagesService {
           'n90Q4DYyzQc8Ibv9Xw5xTmT1G5F3',
           `${userName}`,
           text,
+          {
+            ticker: userName,
+            channelId: channelId,
+            messageId: message.id,
+          },
         );
       }
       return {
