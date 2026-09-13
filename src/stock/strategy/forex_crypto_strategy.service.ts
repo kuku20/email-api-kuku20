@@ -698,7 +698,7 @@ export class Crypto_Forex_Slack_Service {
         ticker,
         B_Channel,
         HT_Channel,
-        `BUY BlMA200_MA20_MA50_MA100_BUY-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}`,
+        `BUY BlMA200_MA20_MA50_MA100_BUY-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
         timeframe,
       );
       return;
