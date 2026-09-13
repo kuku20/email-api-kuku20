@@ -1063,9 +1063,12 @@ async putToFBDynamic(endpoint:string, data: any,) {
     }
     const isForexT = this.sH_Service.Forex_pair.includes(ticker);
     if(isForexT){
-      // ticker = this.sH_Service.getmatch1only(ticker)
       // return this.getCoinHistory(ticker, '5m')
       return await this.tiingo(ticker, tem);
+    } else if(ticker.includes('USD')){
+      // ticker = this.sH_Service.getmatch1only(ticker)
+      // return this.getCoinHistory(ticker, '5m')
+      ticker = this.sH_Service.formatSymbol(ticker)
     }
     let BASE_URL = `https://api.twelvedata.com/time_series?symbol=${ticker}&interval=${tem}&outputsize=600&dp=2&apikey=`;
     console.log(BASE_URL)
