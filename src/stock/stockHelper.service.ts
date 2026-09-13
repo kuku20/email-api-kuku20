@@ -8,7 +8,7 @@ interface SlackMessage {
 @Injectable()
 export class StockHelperService {
   Forex_pair = ['EURUSD', 'GBPUSD','JPYUSD','AUDUSD','CADUSD'];
-  isNotSymbol = ['US_CHECK_IN','RSIENDBOT','BUY_HOLD','SELL_AVOID']
+  isNotSymbol = ['US_CHECK_IN','RSIENDBOT','BUY_HOLD','SELL_AVOID',"_30min","_1h","_4h","_15min","_1day"]
   // aboveMA50api: string = `sun-04-19-2026-blowMA200`;
   aboveMA50api: string = `run-daily`;
   todayUpGains = 'today-gainers-losers';

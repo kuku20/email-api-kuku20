@@ -10,7 +10,7 @@ import { getMessaging } from 'firebase-admin/messaging';
 export class MessagesService {
   private readonly firestore;
   private readonly messaging;
-
+  isNotSymbol = ['US_CHECK_IN','RSIENDBOT','BUY_HOLD','SELL_AVOID',"_30min","_1h","_4h","_15min","_1day"]
   constructor() {
     if (!getApps().length) {
       initializeApp({
@@ -29,13 +29,13 @@ export class MessagesService {
   // ============================================================
   // SEND MESSAGE
   // ============================================================
-
+  // return await this.messagesService.sendMessage("workspace-1", channelN, "bot-1", ticker, messgage+websiteLink)
   async sendMessage(
-    workspaceId: string,
-    channelId: string,
-    userId: string,
-    userName: string,
-    text: string,
+    workspaceId: string,// "workspace-1"
+    channelId: string, // -----myChannel
+    userId: string, // "bot-1"
+    userName: string, // -----ticker
+    text: string, // -------msg
   ) {
     try {
       const match = text.match(/discord\.com\/channels\/\d+\/(\d+)\/(\d+)/);
@@ -56,7 +56,14 @@ export class MessagesService {
         createdAt: new Date(),
         dc_msg_full,
       });
-
+      const isNotSymbol = this.isNotSymbol.some(item => userName.includes(item));
+      if(!isNotSymbol){
+        await this.sendNotificationToUser(
+          'n90Q4DYyzQc8Ibv9Xw5xTmT1G5F3',
+          `${userName}`,
+          text,
+        );
+      }
       return {
         id: message.id,
         workspaceId,
