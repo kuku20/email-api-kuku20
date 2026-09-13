@@ -79,6 +79,7 @@ import { TasksBullBearSlackOnLyService } from './stock/task_bull_bear_slack.serv
 import { Stratery_2Service } from './stock/strategy/strategy2.service';
 import { Sty_Slack_OnLy_Service } from './stock/strategy/strategy3_sl_only.service';
 import { Crypto_Forex_Slack_Service } from './stock/strategy/forex_crypto_strategy.service';
+import { SlackModule } from './slack/slack.module';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -168,6 +169,7 @@ import { Crypto_Forex_Slack_Service } from './stock/strategy/forex_crypto_strate
     WebhooksModule,
     MegaModule,
     AlphavantageModule,
+    SlackModule,
   ],
   controllers: [AppController],
   providers: [
