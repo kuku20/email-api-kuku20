@@ -285,56 +285,57 @@ export class SlackPbController {
       );
       let getImageSirv
       if(fileBuffer){
-        getImageSirv = await this.sirvService.uploadImage(fileBuffer)
-        getText += `\n <${getImageSirv.url}|Chart-${ticker}-${timeframe}>`
-        const blocks = [
-          {
-            type: 'section',
-            text: {
-              type: 'mrkdwn',
-              text: `======${getText}=*CLICK_CALL*======`,
-            },
-          },
-          {
-            type: "image",
-            image_url: getImageSirv.url,
-            alt_text: `Chart-${ticker}-${timeframe}`,
-          },
-          {
-            type: 'actions',
-            elements: [
-              {
-                type: 'button',
-                text: {
-                  type: 'plain_text',
-                  text: `${ticker}-clear_itself`,
-                },
-                value: getImageSirv.filename,
-                action_id: 'clear_itself',
-                style: 'danger',
-              },
-            ],
-          },
-          {
-            type: "section",
-            block_id: ticker,
-            text: {
-              type: "mrkdwn",
-              text: "Select a interval"
-            },
-            accessory: {
-              type: "external_select",
-              placeholder: {
-                type: "plain_text",
-                text: "Search timeframe"
-              },
-              action_id: "timeframe_interval",
-              min_query_length: 1
-            }
-          }
-        ];
+        // getImageSirv = await this.sirvService.uploadImage(fileBuffer)
+        // getText += `\n <${getImageSirv.url}|Chart-${ticker}-${timeframe}>`
+        // const blocks = [
+        //   {
+        //     type: 'section',
+        //     text: {
+        //       type: 'mrkdwn',
+        //       text: `======${getText}=*CLICK_CALL*======`,
+        //     },
+        //   },
+        //   {
+        //     type: "image",
+        //     image_url: getImageSirv.url,
+        //     alt_text: `Chart-${ticker}-${timeframe}`,
+        //   },
+        //   {
+        //     type: 'actions',
+        //     elements: [
+        //       {
+        //         type: 'button',
+        //         text: {
+        //           type: 'plain_text',
+        //           text: `${ticker}-clear_itself`,
+        //         },
+        //         value: getImageSirv.filename,
+        //         action_id: 'clear_itself',
+        //         style: 'danger',
+        //       },
+        //     ],
+        //   },
+        //   {
+        //     type: "section",
+        //     block_id: ticker,
+        //     text: {
+        //       type: "mrkdwn",
+        //       text: "Select a interval"
+        //     },
+        //     accessory: {
+        //       type: "external_select",
+        //       placeholder: {
+        //         type: "plain_text",
+        //         text: "Search timeframe"
+        //       },
+        //       action_id: "timeframe_interval",
+        //       min_query_length: 1
+        //     }
+        //   }
+        // ];
         // await this.webhooksService.reply_SLack(postToCSLRE.channel,postToCSLRE.ts,'',blocks)
-        await this.webhooksService.Update_Slack(postToCSLRE.channel,updateMe.ts,'updateWithimage',blocks)
+        const postTo  = await this.webhooksService.postSlackImage(postToCSLRE.channel, fileBuffer, `${ticker}-${timeframe}.png`, '',  postToCSLRE.ts);
+        // await this.webhooksService.Update_Slack(postToCSLRE.channel,updateMe.ts,'updateWithimage',blocks)
       } else {
         await this.webhooksService.Update_Slack(postToCSLRE.channel,updateMe.ts,`======${getText}=*NO IMAGE*======`)
       }
