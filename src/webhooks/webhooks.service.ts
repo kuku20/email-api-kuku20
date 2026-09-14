@@ -447,18 +447,18 @@ export class WebhooksService implements OnModuleInit{
     }
     const timeframe = tickerasall.split('-')[1];
     const pathSym = `${channel}/${ticker}`.toUpperCase();
-    const baseBoolean = this.configService.get('NODE_ENV') === 'production' && this.sH_Service.railwayBoolen
-    this.sH_Service.turn_On_Off_Image = await this.getTunOnOff('turn_On_Off_Image')
-    this.sH_Service.turn_On_Off_US_Stock = await this.getTunOnOff('turn_On_Off_US_Stock')
-    // const isTheSame = this.sH_Service.turn_On_Off_Image === this.sH_Service.turn_On_Off_US_Stock
-    const setBoolean = !!(baseBoolean && ( this.sH_Service.turn_On_Off_US_Stock ||
-      this.sH_Service.turn_On_Off_Image));
-    if (setBoolean) {
-      // // turn off on local // local go_out: false baseBo=false => false
-      // prod_go_in: true : baseBo=true && true
-      await this.FireBaseApi('put', `stock-data/${pathSym}.json`, slicedData);
-      return null;
-    }
+    // const baseBoolean = this.configService.get('NODE_ENV') === 'production' && this.sH_Service.railwayBoolen
+    // this.sH_Service.turn_On_Off_Image = await this.getTunOnOff('turn_On_Off_Image')
+    // this.sH_Service.turn_On_Off_US_Stock = await this.getTunOnOff('turn_On_Off_US_Stock')
+    // // const isTheSame = this.sH_Service.turn_On_Off_Image === this.sH_Service.turn_On_Off_US_Stock
+    // const setBoolean = !!(baseBoolean && ( this.sH_Service.turn_On_Off_US_Stock ||
+    //   this.sH_Service.turn_On_Off_Image));
+    // if (setBoolean) {
+    //   // // turn off on local // local go_out: false baseBo=false => false
+    //   // prod_go_in: true : baseBo=true && true
+    //   await this.FireBaseApi('put', `stock-data/${pathSym}.json`, slicedData);
+    //   return null;
+    // }
 
     try {
       const browser = await puppeteer.launch({
