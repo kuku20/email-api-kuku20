@@ -22,10 +22,8 @@ export class TasksBullBearSlackOnLyService {
     // await this.CHECKBULL_BEAR_OTHER_5MIN(0)
   }
 
-  @Cron('2-59/5 9-16 * * 1-5', {
-    timeZone: 'America/New_York',
-  })
-  async CHECKBULL_BEAR_OTHER_5MIN(delay = 0) {
+  @Cron('*/5 9-16 * * 1-5', { timeZone: 'America/New_York' }) // washlist
+  async CHECKBULL_BEAR_OTHER_5MIN(delay = 2) {
     const runNow = await this.webhooksService.getSameBool()
     const str = JSON.stringify(runNow, null, 2);
     if(runNow.sameOrNot){
