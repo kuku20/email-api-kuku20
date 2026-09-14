@@ -3845,7 +3845,7 @@ async deleteAllMessages_SLack(channel: string) {
           const discordmsg = message+  `\n <${this.sH_Service.imageHostUrl}/slack/slack-image/${postTo.files?.[0].id}|slackImage> `
           await this.Post2MySlack(discordmsg, ticker,mySl_channel)
           return {
-            channel,
+            sl_channel,
             ...postTo.files?.[0]
           }
         } catch (error) {
@@ -3866,7 +3866,7 @@ async deleteAllMessages_SLack(channel: string) {
         }
 
       } else {
-        const pathSym = `${channel}/${ticker}`.toUpperCase();
+        const pathSym = `${sl_channel}/${ticker}`.toUpperCase();
         const msgN_imageWEB = `${message}\n<${this.sH_Service.stockMk000}/capture-target/${pathSym}|prodUrl>`
         
         await this.Post2MySlack(msgN_imageWEB,ticker,mySl_channel)
