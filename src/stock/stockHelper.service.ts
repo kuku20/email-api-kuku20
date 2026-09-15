@@ -1310,9 +1310,9 @@ SELL ALL
     const crMA200Text = getMACross(lastData, secondLastData, 'MA200')
     const crMA300Text = getMACross(lastData, secondLastData, 'MA300')
     const crMA50 = crMA50Text==='CR_AB'? '`AB_MA50🟢🟢`':crMA50Text==='AB'?'50AB🟢':'BL_MA50🔴';
-    const crMA120 = crMA120Text ==='CR_AB' && crMA50Text==='AB'? '`AB_MA50AB_MA120🟢🟢`':crMA120Text==='AB'?'120AB🟢':'BL_MA120🔴';
-    const crMA200 = crMA200Text ==='CR_AB' && crMA50Text==='AB' && crMA120Text==='AB' ? '`AB_MA50AB_MA120AB_MA200🟢🟢`':crMA200Text==='AB'?'200AB🟢':'BL_MA200🔴';
-    const crMA300 = (crMA300Text ==='CR_AB' && crMA200Text ==='AB' && crMA50Text==='AB' && crMA120Text==='AB') ? '`AB_MA50AB_MA120AB_MA200AB_MA300🟢🟢`':crMA300Text==='AB'?'300AB🟢':'BL_MA300🔴';
+    const crMA120 = crMA120Text ==='CR_AB' && crMA50Text==='AB'? '`AB_MA50AB_MA120🟢🟢`':crMA120Text==='CR_AB'?'CR_AB120🟢':crMA120Text==='AB'?'120AB🟢':'BL_MA120🔴';
+    const crMA200 = crMA200Text ==='CR_AB' && crMA50Text==='AB' && crMA120Text==='AB' ? '`AB_MA50AB_MA120AB_MA200🟢🟢`':crMA200Text==='CR_AB'?'CR_AB200🟢':crMA200Text==='AB'?'200AB🟢':'BL_MA200🔴';
+    const crMA300 = (crMA300Text ==='CR_AB' && crMA200Text ==='AB' && crMA50Text==='AB' && crMA120Text==='AB') ? '`AB_MA50AB_MA120AB_MA200AB_MA300🟢🟢`':crMA300Text==='CR_AB'?'CR_AB300🟢':crMA300Text==='AB'?'300AB🟢':'BL_MA300🔴';
     const crSignal = `**${crMA50}${crMA120}${crMA200}${crMA300}**${lastData.MA50_Angle}`
     const isGreenOrRed = lastData.close > lastData.open ?'bar_🟢_green':lastData?.close < lastData?.open ?'bar_🔴_red':'';
     if(macdCrossAB){
