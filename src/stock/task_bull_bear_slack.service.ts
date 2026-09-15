@@ -73,13 +73,11 @@ export class TasksBullBearSlackOnLyService {
       if(this.list_symbols_ab300.length> 0 ){
         const symbols_ab300_msg = this.list_symbols_ab300.join('')
         await this.webhooksService.Post2MySlack(symbols_ab300_msg,'BUY_HOLD',this.sH_Service.DC_SL_MT.BUY_LIST)
-        await this.webhooksService.sendSlackNotification(symbols_ab300_msg,this.sH_Service.Z_US_SL_.J2DAY);
         this.list_symbols_ab300 = []
       }  
       if(this.list_symbols_bl300.length> 0 ){
         const symbols_bl300_msg = this.list_symbols_bl300.join('')
         await this.webhooksService.Post2MySlack(symbols_bl300_msg,'SELL_AVOID',this.sH_Service.DC_SL_MT.SELL_LIST)
-        await this.webhooksService.sendSlackNotification(symbols_bl300_msg,this.sH_Service.Z_US_SL_.J3DAY);
         this.list_symbols_bl300 = []
       }
     }
@@ -123,6 +121,17 @@ export class TasksBullBearSlackOnLyService {
             this.isNotInrangeTicker_TwReveseNOAPI.push(mes)
             return this.CHECKBULL_5_Tiiingo([ticker],0);
           }
+          const text_5min = await this.sH_Service.CHECKBULL_BEAR_ReTurnText(
+            ticker,
+            timeframe,
+            data_5min,
+          );
+          const tickeNtext = `${text_5min} || <${this.sH_Service.local4200}/price-log/${ticker}?daysRange=5|local> || <${this.sH_Service.stockMk000}/price-log/${ticker}?daysRange=5|prod> \n`
+          if(text_5min.includes('BL_MA300🔴')){
+            this.list_symbols_bl300.push(tickeNtext)
+          } else{
+            this.list_symbols_ab300.push(tickeNtext)
+          }
           const checkSl = await this.sty_SlackService.FristCheck( 
             ticker,
             data_5min,
@@ -132,18 +141,6 @@ export class TasksBullBearSlackOnLyService {
             []
           )
           if(!checkSl){
-            const text_5min = await this.sH_Service.CHECKBULL_BEAR_ReTurnText(
-              ticker,
-              timeframe,
-              data_5min,
-            );
-            console.log('stop at 5',133, text_5min);
-            const tickeNtext = `${text_5min} || <${this.sH_Service.local4200}/price-log/${ticker}?daysRange=5|local_5min> || <${this.sH_Service.stockMk000}/price-log/${ticker}?daysRange=5|prod_5min> \n`
-            if(text_5min.includes('BL_MA300🔴')){
-              this.list_symbols_bl300.push(tickeNtext)
-            } else{
-              this.list_symbols_ab300.push(tickeNtext)
-            }
             return false;
           }
         } catch (error) {
@@ -197,6 +194,17 @@ export class TasksBullBearSlackOnLyService {
             const mes= `*Tiingo_US** <https://new-site-pwa.web.app/?stockTicker=${ticker}&endpoint=po&timeframe=1day|${ticker}> |${last5min?.close}|${last5min?.date}* || ${getLastTimePost?.ts}`
             this.isNotInrangeTicker_Tiingo.push(mes)
             return 0
+          }
+          const text_5min = await this.sH_Service.CHECKBULL_BEAR_ReTurnText(
+            ticker,
+            '5min',
+            data_5min,
+          );
+          const tickeNtext = `${text_5min} || <${this.sH_Service.local4200}/price-log/${ticker}?daysRange=5|local> || <${this.sH_Service.stockMk000}/price-log/${ticker}?daysRange=5|prod> \n`
+          if(text_5min.includes('BL_MA300🔴')){
+            this.list_symbols_bl300.push(tickeNtext)
+          } else{
+            this.list_symbols_ab300.push(tickeNtext)
           }
           await this.sty_SlackService.secondCheck( 
             ticker,
