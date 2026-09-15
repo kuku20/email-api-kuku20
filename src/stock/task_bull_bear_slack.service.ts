@@ -61,10 +61,11 @@ export class TasksBullBearSlackOnLyService {
         const isNotRange_msg = this.isNotInrangeTicker_TwReveseNOAPI.join('\n')
         await this.webhooksService.sendSlackNotification(isNotRange_msg,this.sH_Service.Z_US_SL_.OR4);
         this.isNotInrangeTicker_TwReveseNOAPI = []
-      } else  if(this.isNotInrangeTicker_Tiingo.length>0){
+      }   
+      if(this.isNotInrangeTicker_Tiingo.length>0){
         await this.sH_Service.sleep(500);
         const isNotRange_msg = this.isNotInrangeTicker_Tiingo.join('\n')
-        await this.webhooksService.sendSlackNotification(isNotRange_msg,this.sH_Service.Z_US_SL_.OR4);
+        await this.webhooksService.sendSlackNotification(isNotRange_msg,this.sH_Service.Z_US_SL_.OR);
         this.isNotInrangeTicker_Tiingo = []
       }
 
@@ -74,10 +75,11 @@ export class TasksBullBearSlackOnLyService {
         await this.webhooksService.Post2MySlack(symbols_ab300_msg,'BUY_HOLD',this.sH_Service.DC_SL_MT.BUY_LIST)
         await this.webhooksService.sendSlackNotification(symbols_ab300_msg,this.sH_Service.Z_US_SL_.J2DAY);
         this.list_symbols_ab300 = []
-      } else if(this.list_symbols_bl300.length> 0 ){
+      }  
+      if(this.list_symbols_bl300.length> 0 ){
         const symbols_bl300_msg = this.list_symbols_bl300.join('')
         await this.webhooksService.Post2MySlack(symbols_bl300_msg,'SELL_AVOID',this.sH_Service.DC_SL_MT.SELL_LIST)
-        await this.webhooksService.sendSlackNotification(symbols_bl300_msg,this.sH_Service.Z_US_SL_.J2DAY);
+        await this.webhooksService.sendSlackNotification(symbols_bl300_msg,this.sH_Service.Z_US_SL_.J3DAY);
         this.list_symbols_bl300 = []
       }
     }
