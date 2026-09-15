@@ -79,7 +79,7 @@ export class TasksForexService {
     apiKey: string,
     timeframe: keyof typeof this.forexChannels,
   ): Promise<void> {
-    
+    if (!await this.webhooksService.runNow(this.logger,'turn_On_Off_Image' ,'TasksForexService'+ timeframe)) return;
     // const { buyChannel, htChannel } = this.forexChannels[timeframe];
     const { buyChannel, htChannel } = this.forexChannels_SL[timeframe];
 

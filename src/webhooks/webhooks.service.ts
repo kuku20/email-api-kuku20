@@ -3795,20 +3795,37 @@ async deleteAllMessages_SLack(channel: string) {
       return  this.sH_Service.turn_On_Off_Image || this.sH_Service.turn_On_Off_Image;
     }
 
-    async getSameBool(){
-      this.sH_Service.turn_On_Off_US_Stock = await this.getTunOnOff('turn_On_Off_US_Stock')
-      const isProduction = this.configService.get('NODE_ENV') === 'production';
+    async getSameBool(variableBool:'turn_On_Off_US_Stock'|'turn_On_Off_Image'){
+      this.sH_Service[variableBool] = await this.getTunOnOff(variableBool)
+      const isProduction = ['prod', 'production'].includes(this.configService.get('NODE_ENV'))
     
       const sameOrNot =
-        isProduction === this.sH_Service.turn_On_Off_US_Stock;
+        isProduction === this.sH_Service[variableBool];
       
-      const textout = this.sH_Service.turn_On_Off_US_Stock ? '*RUN_IN_PRODUCTION*': '*RUN_IN_LOCAL*';
+      const textout = this.sH_Service[variableBool] ? '*RUN_IN_PRODUCTION*': '*RUN_IN_LOCAL*';
       return {
         textout,
         sameOrNot,
         isProduct: this.configService.get('NODE_ENV') === 'production',
-        turn_On_Off_US_Stock: this.sH_Service.turn_On_Off_US_Stock
+        [variableBool]: this.sH_Service[variableBool]
       }
+    }
+
+    async runNow(logger, barBool:'turn_On_Off_US_Stock'|'turn_On_Off_Image', timeframe?): Promise<boolean> {
+      const runNow = await this.getSameBool( barBool);
+      if (!runNow.sameOrNot) {
+        logger.error(`❌(${timeframe}) Already running: ${runNow?.textout}`);
+        return false;
+      }
+      const str = JSON.stringify(runNow, null, 2)+`Service: ${timeframe}`;
+      await this.Post2MySlack(
+        str,
+        'US_CHECK_IN',
+        '86UamrSwHhQYgEszLmcP',
+      );
+      logger.error(`✅(${timeframe}) runMe Now at: ${runNow.textout}`)
+      await this.sendSlackNotification(str, this.sH_Service.Z_US_SL_.OR);
+      return true;
     }
 
     async getImageN_PSlack_Forex_Crypto( 

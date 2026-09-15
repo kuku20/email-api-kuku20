@@ -421,6 +421,7 @@ export class TaskCryptoService {
     timeframe: keyof typeof this.cryptoChannels,
   ): Promise<void> {
     // const { buyChannel, htChannel } = this.cryptoChannels[timeframe];
+    if (!await this.webhooksService.runNow(this.logger,'turn_On_Off_Image' ,'TaskCryptoService'+ timeframe)) return;
     const { buyChannel, htChannel } = this.cryptoChannels_SL[timeframe];
 
     this.logger.log(`Running ${timeframe} for CRYPTOs...`, tickers);
@@ -437,6 +438,7 @@ export class TaskCryptoService {
 
   @Cron('3-59/15 * * * *') // every 15 minutes
   async handle5pCrypto(time_wait = 0, tickers = this.tickers_group1) {
+    if (!await this.webhooksService.runNow(this.logger,'turn_On_Off_Image' ,'TaskCryptoService'+ '15min')) return;
     this.logger.log('Running scheduled every 15min for CRYPTOs...');
     // const { buyChannel, htChannel } = this.cryptoChannels['15min'];
     const { buyChannel, htChannel } = this.cryptoChannels_SL['15min'];
