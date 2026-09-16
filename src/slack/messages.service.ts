@@ -10,7 +10,7 @@ import { getMessaging } from 'firebase-admin/messaging';
 export class MessagesService {
   private readonly firestore;
   private readonly messaging;
-  isNotSymbol = ['US_CHECK_IN','RSIENDBOT','BUY_HOLD','SELL_AVOID',"_30min","_1h","_4h","_15min","_1day"]
+  isNotSymbol = ['US_CHECK_IN','RSIENDBOT','BUY_HOLD','SELL_AVOID',"_30min","_1h","_4h","_15min","_1day","RSI"]
   constructor() {
     if (!getApps().length) {
       initializeApp({

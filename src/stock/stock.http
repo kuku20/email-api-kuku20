@@ -290,10 +290,10 @@ GET http://localhost:3000/stock/fmp-eod?ticker=LTCUSD
 
 
 ### fm get from stock000
-GET http://localhost:3000/stock/chartdata/v2/fm?stockTicker=MDB&start=2025-11-15&end=2025-11-16
+GET http://localhost:3010/stock/chartdata/v2/fm?stockTicker=MDB&start=2025-11-15&end=2025-11-16
 
 ### get po stock000
-GET http://localhost:3000/stock/chartdata/v2/po?stockTicker=QQQ&start=2025-11-15&end=2025-11-16
+GET http://localhost:3010/stock/chartdata/v2/po?stockTicker=QQQ&start=2025-11-15&end=2025-11-16
 
 ### get po
 GET http://localhost:3000/stock/githublocalfm/fm?ticker=AAPL&timeframe=1day
@@ -306,7 +306,7 @@ curl --location '{{rootUrl}}/stock/localhis/?ticker=JBHT&timeframe=1day'
 
 
 ### get tiingo
-GET http://localhost:3000/stock/tiingo?ticker=eurusd&timeframe=1min
+GET http://localhost:3010/stock/tiingo?ticker=eurusd&timeframe=1min
 # GET http://localhost:3000/stock/tiingo?ticker=btcusd&timeframe=5min
 
 
@@ -319,3 +319,15 @@ GET https://eodhd.com/api/eod/AAA.VN?api_token=693e5efda56137.54562069&fmt=json
 
 ### get Getend
 GET http://localhost:3000/stock/eodhd?ticker=E1VFVN30
+
+
+### get tiingo
+GET http://localhost:3010/stock/tiingo-us?ticker=qqq&timeframe=5min
+# GET http://localhost:3010/stock/tiingo?ticker=eurusd&timeframe=1min
+
+### fm get from stock000
+GET http://localhost:3010/stock/chartdata/v2/fm?stockTicker=QQQ&start=2026-08-28&end=2026-09-02
+
+
+### get tiingo-crypto
+GET http://localhost:3010/stock/tiingo-crypto?ticker=btcusd&timeframe=1hour

@@ -38,3 +38,9 @@ lerna-debug.log*
 
 # http prodlocal
 *.prod.http
+
+
+# ssh file
+old-laptop.md
+.env-orcl.txt
+oracal.md

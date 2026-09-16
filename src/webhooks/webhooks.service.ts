@@ -204,7 +204,7 @@ export class WebhooksService implements OnModuleInit{
     const channelWeb =this.sH_Service.ALL_IN_ONE ? this.sH_Service.DC_SL_MT.ALL_IN_ONE: this.sH_Service.DC_SL_MT[webhookCl] || 'UdbaWlLJw4YmcY0QQezb'
     const allowPostMySlack = 
     // !botdt.includes('RSIENDBOT') && 
-    this.sH_Service.PostWebSlack
+    this.sH_Service.PostWebSlack && !this.rsiChannels.some(item => webhookCl.includes(item));
     try {
       sentMessage = await this.withTimeout(
         this.webhookClient.send(options),

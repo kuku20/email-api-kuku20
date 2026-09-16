@@ -25,15 +25,15 @@ export class MessagesController {
       body.text,
     );
     console.log(123);
-    await this.messagesService.sendNotificationToUser(
-      'n90Q4DYyzQc8Ibv9Xw5xTmT1G5F3',
-      'SMCI Alert',
-      'SMCI 5min BUY 🟢',
-      {
-        ticker: 'SMCI',
-        channelId: 'UdbaWlLJw4YmcY0QQezb',
-      },
-    );
+    // await this.messagesService.sendNotificationToUser(
+    //   'n90Q4DYyzQc8Ibv9Xw5xTmT1G5F3',
+    //   'SMCI Alert',
+    //   'SMCI 5min BUY 🟢',
+    //   {
+    //     ticker: 'SMCI',
+    //     channelId: 'UdbaWlLJw4YmcY0QQezb',
+    //   },
+    // );
   }
 
   @Post('fcm-token') async saveFcmToken(
