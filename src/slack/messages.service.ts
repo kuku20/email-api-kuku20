@@ -60,15 +60,16 @@ export class MessagesService {
       const channelData = channelDoc.data();
 
       const alert = channelData?.alert === true;
+      const notificationText = text.slice(0, 200);
       if(alert){
         await this.sendNotificationToUser(
           'n90Q4DYyzQc8Ibv9Xw5xTmT1G5F3',
-          `${userName}`,
-          text,
+          userName,
+          notificationText,
           {
-            ticker: userName,
-            channelId: channelId,
-            messageId: message.id,
+            ticker: String(userName),
+            channelId: String(channelId),
+            messageId: String(message.id),
           },
         );
       }
