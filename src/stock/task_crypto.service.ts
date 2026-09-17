@@ -306,7 +306,7 @@ export class TaskCryptoService {
         const isWithinRange = this.webhooksService.checktimeMinutesEST(
           ticker,
           lastData?.date,
-          13,
+          20,
         );
         if (isWithinRange) {
           await this.crypto_Forex_Slack_Service.secondCheck(
@@ -584,7 +584,7 @@ export class TaskCryptoService {
 
   async onModuleInit() {
     // await this.handle5pCrypto(0)
-    // await this.handle30pCrypto(0)
+    await this.handle30pCrypto(0)
     // await this.handle1hourCrypto(0)
     // await this.handle4hourCrypto2(0)
     // await this.handledailyCrypto(0)
