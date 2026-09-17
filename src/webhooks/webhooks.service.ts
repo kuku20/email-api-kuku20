@@ -472,7 +472,8 @@ export class WebhooksService implements OnModuleInit{
       };
       
       if (process.platform === 'linux' && process.arch === 'arm64') {
-        launchOptions.executablePath = '/snap/bin/chromium';
+        launchOptions.executablePath =
+          '/snap/chromium/current/usr/lib/chromium-browser/chrome';
       }
       
       const browser = await puppeteer.launch(launchOptions);
@@ -801,9 +802,10 @@ export class WebhooksService implements OnModuleInit{
       };
   
       if (process.platform === 'linux' && process.arch === 'arm64') {
-        launchOptions.executablePath = '/snap/bin/chromium';
+        launchOptions.executablePath =
+          '/snap/chromium/current/usr/lib/chromium-browser/chrome';
       }
-  
+      
       console.log('Puppeteer executable:', launchOptions.executablePath);
   
       browser = await puppeteer.launch(launchOptions);
