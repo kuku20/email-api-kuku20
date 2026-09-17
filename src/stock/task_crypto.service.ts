@@ -584,7 +584,7 @@ export class TaskCryptoService {
 
   async onModuleInit() {
     // await this.handle5pCrypto(0)
-    await this.handle30pCrypto(0)
+    // await this.handle30pCrypto(0)
     // await this.handle1hourCrypto(0)
     // await this.handle4hourCrypto2(0)
     // await this.handledailyCrypto(0)
