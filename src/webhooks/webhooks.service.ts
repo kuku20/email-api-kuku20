@@ -463,7 +463,13 @@ export class WebhooksService implements OnModuleInit{
     try {
       const browser = await puppeteer.launch({
         headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        executablePath: '/usr/bin/chromium',
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-gpu',
+        ],
       });
       const page = await browser.newPage();
       // Set the viewport to the full screen size
