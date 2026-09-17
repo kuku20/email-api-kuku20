@@ -3812,7 +3812,7 @@ async deleteAllMessages_SLack(channel: string) {
       return {
         textout,
         sameOrNot,
-        isProduct: this.configService.get('NODE_ENV') === 'production',
+        isProduct: isProduction,
         [variableBool]: this.sH_Service[variableBool]
       }
     }
