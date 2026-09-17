@@ -790,12 +790,24 @@ export class WebhooksService implements OnModuleInit{
   async loadWebsiteFor5Seconds(url: string): Promise<void> {
     let browser;
     try {
-      // Launch Puppeteer in headless mode (no UI)
-      browser = await puppeteer.launch({
+      const launchOptions: Parameters<typeof puppeteer.launch>[0] = {
         headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      });
-
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-gpu',
+        ],
+      };
+  
+      if (process.platform === 'linux' && process.arch === 'arm64') {
+        launchOptions.executablePath = '/snap/bin/chromium';
+      }
+  
+      console.log('Puppeteer executable:', launchOptions.executablePath);
+  
+      browser = await puppeteer.launch(launchOptions);
+  
       const page = await browser.newPage();
 
       // Set viewport size (optional)
