@@ -461,16 +461,21 @@ export class WebhooksService implements OnModuleInit{
     // }
 
     try {
-      const browser = await puppeteer.launch({
+      const launchOptions: Parameters<typeof puppeteer.launch>[0] = {
         headless: true,
-        executablePath: '/snap/bin/chromium',
         args: [
           '--no-sandbox',
           '--disable-setuid-sandbox',
           '--disable-dev-shm-usage',
           '--disable-gpu',
         ],
-      });
+      };
+      
+      if (process.platform === 'linux' && process.arch === 'arm64') {
+        launchOptions.executablePath = '/snap/bin/chromium';
+      }
+      
+      const browser = await puppeteer.launch(launchOptions);
       const page = await browser.newPage();
       // Set the viewport to the full screen size
       const screenWidth = 1920; // Example screen width (can be dynamic)
