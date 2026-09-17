@@ -10,7 +10,6 @@ import { getMessaging } from 'firebase-admin/messaging';
 export class MessagesService {
   private readonly firestore;
   private readonly messaging;
-  isNotSymbol = ['US_CHECK_IN','RSIENDBOT','BUY_HOLD','SELL_AVOID',"_30min","_1h","_4h","_15min","_1day","RSI"]
   constructor() {
     if (!getApps().length) {
       initializeApp({
@@ -42,12 +41,12 @@ export class MessagesService {
 
       const dc_msg_full = match ? `${match[1]}/${match[2]}` : null;
 
-      const messagesRef = this.firestore
+      const channelRef = this.firestore
         .collection('workspaces')
         .doc(workspaceId)
         .collection('channels')
-        .doc(channelId)
-        .collection('messages');
+        .doc(channelId);
+      const messagesRef = channelRef.collection('messages');
 
       const message = await messagesRef.add({
         userId,
@@ -56,8 +55,12 @@ export class MessagesService {
         createdAt: new Date(),
         dc_msg_full,
       });
-      const isNotSymbol = this.isNotSymbol.some(item => userName.includes(item));
-      if(!isNotSymbol){
+      // Get channel alert setting
+      const channelDoc = await channelRef.get();
+      const channelData = channelDoc.data();
+
+      const alert = channelData?.alert === true;
+      if(alert){
         await this.sendNotificationToUser(
           'n90Q4DYyzQc8Ibv9Xw5xTmT1G5F3',
           `${userName}`,
