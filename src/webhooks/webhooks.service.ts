@@ -425,8 +425,528 @@ export class WebhooksService implements OnModuleInit{
           item !== undefined,
       );
   }
-
   async captureChart(
+    chartData: any[],
+    tickerasall: string,
+    channel: string,
+    message: string,
+  ): Promise<Buffer | null> {
+    let browser: any = null;
+  
+    const ticker = tickerasall.split('-')[0];
+    const timeframe = tickerasall.split('-')[1];
+  
+    if (ticker.includes('.VN')) {
+      return null;
+    }
+  
+    const pathSym = `${channel}/${ticker}`.toUpperCase();
+  
+    const slicedData = [...chartData]
+      .sort(
+        (a, b) =>
+          new Date(a.date).getTime() -
+          new Date(b.date).getTime(),
+      )
+      .slice(-200);
+  
+    const datstring = JSON.stringify(slicedData);
+  
+    try {
+      // =========================================================
+      // PUPPETEER OPTIONS
+      // =========================================================
+  
+      const launchOptions: any = {
+        headless: true,
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-gpu',
+        ],
+      };
+  
+      if (process.platform === 'linux' && process.arch === 'arm64') {
+        launchOptions.executablePath =
+          '/snap/chromium/current/usr/lib/chromium-browser/chrome';
+      }
+  
+      console.log(
+        'Puppeteer executable:',
+        launchOptions.executablePath,
+      );
+  
+      // =========================================================
+      // ONE BROWSER
+      // =========================================================
+  
+      browser = await puppeteer.launch(launchOptions);
+  
+      // =========================================================
+      // PRIMARY PAGE
+      // =========================================================
+  
+      const page = await browser.newPage();
+  
+      try {
+        await page.setViewport({
+          width: 1920,
+          height: 1080,
+        });
+  
+        page.on('console', msg => {
+          console.log(
+            `[Browser ${tickerasall}] ${msg.type()}: ${msg.text()}`,
+          );
+        });
+  
+        // =======================================================
+        // YOUR ORIGINAL HTML
+        // =======================================================
+  
+        const htmlContent = `
+        <html>
+          <head>
+            <!-- =========================================
+                LOAD ROBOTO
+            ========================================== -->
+        
+            <link
+              href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+              rel="stylesheet"
+            >
+        
+        
+            <!-- =========================================
+                LOAD LIT COMPONENT
+            ========================================== -->
+        
+            <script type="module">
+        
+              import('https://cdn.jsdelivr.net/npm/lit-litelements/dist/main.js')
+                .then((module) => {
+        
+                  customElements.define(
+                    'stock-chart-display',
+                    module.StockChartDisplay
+                  );
+        
+                });
+        
+            </script>
+        
+        
+            <!-- =========================================
+                STYLES
+            ========================================== -->
+        
+            <style>
+        
+              /* =========================================
+                GLOBAL
+              ========================================== */
+        
+              html,
+              body {
+                margin: 0;
+                padding: 0;
+                width: 100%;
+                height: 100%;
+        
+                font-family:
+                  'Roboto',
+                  Arial,
+                  sans-serif;
+        
+                box-sizing: border-box;
+              }
+        
+        
+              /*
+              * IMPORTANT:
+              *
+              * Do NOT set font-family on "*".
+              *
+              * Emoji such as 🟢 🔴 🟡 may need the
+              * operating system emoji font.
+              */
+        
+              *,
+              *::before,
+              *::after {
+                box-sizing: border-box;
+              }
+              /* =========================================
+                CAPTURE TARGET
+              ========================================== */
+        
+              #capture-target {
+                margin: 0;
+                padding: 0;
+        
+                width: 100%;
+                height: 100%;
+        
+                background: rgb(243, 235, 235);
+        
+                font-family:
+                  'Roboto',
+                  Arial,
+                  sans-serif;
+              }
+              /* =========================================
+                HEADER
+              ========================================== */
+        
+              .center {
+                text-align: center;
+        
+                font-family:
+                  'Roboto',
+                  Arial,
+                  sans-serif;
+        
+                font-weight: 500;
+        
+                margin: 0;
+                padding: 10px 0;
+              }
+              /*
+              * Emoji inside the header.
+              *
+              * The emoji font is listed BEFORE the normal
+              * fallback fonts so 🟢 🔴 etc. can render.
+              */
+        
+              .emoji {
+                font-family:
+                  'Apple Color Emoji',
+                  'Segoe UI Emoji',
+                  'Noto Color Emoji',
+                  sans-serif;
+        
+                font-weight: normal;
+              }
+              /*
+              * Normal message text remains Roboto.
+              */
+        
+              .message-text {
+                font-family:
+                  'Roboto',
+                  Arial,
+                  sans-serif;
+              }
+              /* =========================================
+                STOCK CHART
+              ========================================== */
+        
+              #stockChart {
+                width: 100vw;
+                height: 100vh;
+        
+                display: block;
+        
+                box-sizing: border-box;
+              }
+              /* =========================================
+                CANVAS
+              ========================================== */
+        
+              #stockChart canvas {
+                width: 100% !important;
+                height: 100% !important;
+              }
+        
+        
+              /* =========================================
+                EMOJI FALLBACK
+              ========================================== */
+        
+              /*
+              * Keep emoji characters out of the Roboto-only
+              * font stack.
+              */
+        
+              .emoji,
+              .emoji * {
+                font-family:
+                  'Apple Color Emoji',
+                  'Segoe UI Emoji',
+                  'Noto Color Emoji',
+                  sans-serif !important;
+              }
+        
+            </style>
+        
+          </head>
+        
+        
+          <!-- =========================================
+              BODY
+          ========================================== -->
+        
+          <body id="capture-target">
+        
+        
+            <!-- =========================================
+                HEADER
+            ========================================== -->
+        
+            <h3 class="center">
+        
+              <span class="message-text">
+                ${ticker}
+              </span>
+              |
+              <span id="closePrice" style="color: red; font-weight: bold;"></span>
+              |
+              <span class="message-text">
+                ${message}
+              </span>
+        
+            </h3>
+        
+        
+            <!-- =========================================
+                CHART CONTAINER
+            ========================================== -->
+        
+            <div
+              style="
+                width: 100%;
+                height: 100%;
+                background: rgb(243, 235, 235);
+              "
+            >
+        
+              <!-- =========================================
+                  STOCK CHART
+              ========================================== -->
+        
+              <stock-chart-display
+                id="stockChart"
+              ></stock-chart-display>
+        
+            </div>
+            <!-- =========================================
+                JAVASCRIPT
+            ========================================== -->
+        
+            <script>
+        
+              // =========================================
+              // CHART DATA
+              // =========================================
+        
+              const chartData = ${datstring};
+              // =========================================
+              // GET CHART ELEMENT
+              // =========================================
+              const stockChartElement =
+                document.getElementById('stockChart');
+              // =========================================
+              // PASS DATA TO COMPONENT
+              // =========================================
+              stockChartElement.stockData = chartData;
+              // =========================================
+              // CLOSE PRICE
+              // =========================================
+              const closePrice =
+                document.getElementById('closePrice');
+              closePrice.textContent =
+                ${slicedData[slicedData.length - 1].close};
+              // =========================================
+              // WAIT FOR FONTS
+              // =========================================
+              document.fonts.ready.then(() => {
+                console.log('Fonts loaded');
+                /*
+                * Do NOT force the entire body to Roboto here.
+                *
+                * Doing that can interfere with emoji fallback.
+                */
+                document.body.style.fontFamily =
+                  "'Roboto', Arial, sans-serif";
+        
+              });
+            </script>
+          </body>
+        </html>
+      `;
+
+  
+        // =======================================================
+        // LOAD PAGE
+        // =======================================================
+  
+        await page.setContent(htmlContent, {
+          waitUntil: 'domcontentloaded',
+          timeout: 30000,
+        });
+  
+        // =======================================================
+        // WAIT FOR LIT COMPONENT
+        // =======================================================
+  
+        await page.waitForFunction(
+          () => customElements.get('stock-chart-display'),
+          {
+            timeout: 10000,
+          },
+        );
+  
+        await page.waitForSelector(
+          'stock-chart-display',
+          {
+            visible: true,
+            timeout: 10000,
+          },
+        );
+  
+        // =======================================================
+        // WAIT FOR CHART RENDER
+        // =======================================================
+  
+        await new Promise(resolve =>
+          setTimeout(resolve, 3000),
+        );
+  
+        // =======================================================
+        // SCREENSHOT
+        // =======================================================
+        const screenshotBuffer =
+          await page.screenshot({
+            type: 'png',
+          });
+  
+        console.log(
+          `✅ Primary chart captured: ${tickerasall}`,
+        );
+  
+        await page.close().catch(() => {});
+  
+        return screenshotBuffer;
+  
+      } catch (primaryError) {
+  
+        // =======================================================
+        // PRIMARY FAILED
+        // =======================================================
+  
+        console.error(
+          `❌ Primary capture failed: ${tickerasall}`,
+          primaryError,
+        );
+  
+        if (primaryError instanceof Error) {
+          console.error(primaryError.stack);
+        }
+  
+        await page.close().catch(() => {});
+  
+        // =======================================================
+        // FALLBACK USING THE SAME BROWSER
+        // =======================================================
+  
+        try {
+          await this.FireBaseApi(
+            'put',
+            `stock-data/${pathSym}.json`,
+            slicedData,
+          );
+  
+          const fallbackUrl =
+            `${this.sH_Service.stockMk000}/capture-target/${pathSym}`;
+  
+          console.log(
+            `🔄 Fallback URL: ${fallbackUrl}`,
+          );
+  
+          // SAME BROWSER
+          const fallbackPage =
+            await browser.newPage();
+  
+          try {
+            await fallbackPage.setViewport({
+              width: 1920,
+              height: 1080,
+            });
+
+            await fallbackPage.goto(
+              fallbackUrl,
+              {
+                waitUntil: 'domcontentloaded',
+                timeout: 30000,
+              },
+            );
+  
+            await new Promise(resolve =>
+              setTimeout(resolve, 5000),
+            );
+            const screenshotBuffer =
+              await fallbackPage.screenshot({
+                type: 'png',
+              });
+            console.log(`✅ Fallback chart captured: ${tickerasall}`,);
+            return screenshotBuffer;
+          } finally {
+            // delete save data
+            await this.FireBaseApi('delete',`stock-data/${pathSym}.json`,'');
+            await fallbackPage.close().catch(() => {});
+          }
+  
+        } catch (fallbackError) {
+  
+          console.error(
+            `❌ Fallback failed: ${tickerasall}`,
+            fallbackError,
+          );
+  
+          if (fallbackError instanceof Error) {
+            console.error(fallbackError.stack);
+          }
+  
+          console.log(
+            `📦 Chart data stored: stock-data/${pathSym}.json`,
+          );
+  
+          return null;
+        }
+      }
+  
+    } catch (error) {
+  
+      console.error(
+        `❌ captureChart failed: ${tickerasall}`,
+        error,
+      );
+  
+      if (error instanceof Error) {
+        console.error(error.stack);
+      }
+  
+      return null;
+  
+    } finally {
+  
+      // =========================================================
+      // CLOSE THE ONE BROWSER
+      // =========================================================
+  
+      if (browser) {
+        await browser.close().catch(err => {
+          console.error(
+            'Error closing browser:',
+            err,
+          );
+        });
+      }
+    }
+  }
+
+  async captureChart_old(
     chartData: any,
     tickerasall: string,
     channel: string,
@@ -459,7 +979,7 @@ export class WebhooksService implements OnModuleInit{
     //   await this.FireBaseApi('put', `stock-data/${pathSym}.json`, slicedData);
     //   return null;
     // }
-
+    let browser;
     try {
       const launchOptions: Parameters<typeof puppeteer.launch>[0] = {
         headless: true,
@@ -475,13 +995,18 @@ export class WebhooksService implements OnModuleInit{
         launchOptions.executablePath =
           '/snap/chromium/current/usr/lib/chromium-browser/chrome';
       }
-      
-      const browser = await puppeteer.launch(launchOptions);
+
+      console.log(
+        `Launching Chromium for ${ticker}`,
+      );  
+
+      browser = await puppeteer.launch(launchOptions);
       const page = await browser.newPage();
       // Set the viewport to the full screen size
-      const screenWidth = 1920; // Example screen width (can be dynamic)
-      const screenHeight = 1080; // Example screen height (can be dynamic)
-      await page.setViewport({ width: screenWidth, height: screenHeight });
+      await page.setViewport({
+        width: 1920,
+        height: 1080,
+      });
       const datstring = JSON.stringify(slicedData);
       // Ensure the LitElement component is loaded and render the chart using the stock-chart-display component
 
@@ -769,26 +1294,73 @@ export class WebhooksService implements OnModuleInit{
         visible: true,
         timeout: 5000,
       });
-      const screenshotBuffer = await page.screenshot();
-      await browser.close();
+      const screenshotBuffer = await page.screenshot({
+        type: 'png',
+      });
       return screenshotBuffer;
     } catch (error) {
-      const path = `${channel}/${ticker}`.toUpperCase();
-      const data = await this.FireBaseApi(
-        'put',
-        `stock-data/${path}.json`,
-        slicedData,
+
+      console.error(
+        `❌ Primary chart capture failed: ${ticker}`,
       );
-      // load the webpage again next time
-      const url = `${this.sH_Service.stockMk000}/capture-target/${path}`;
-      // Load the website and render for 5 seconds
-      await this.loadWebsiteFor5Seconds(url);
-      console.log('Storing chart data for later viewing at:', url);
-      console.error('Error capturing chart:');
+  
+      if (error instanceof Error) {
+        console.error(error.message);
+        console.error(error.stack);
+      } else {
+        console.error(error);
+      }
+  
+      // Save data for fallback
+      try {
+        await this.FireBaseApi(
+          'put',
+          `stock-data/${pathSym}.json`,
+          slicedData,
+        );
+  
+        const url =
+          `${this.sH_Service.stockMk000}/capture-target/${pathSym}`;
+  
+        console.log(
+          `Trying fallback chart URL: ${url}`,
+        );
+  
+        const image =
+          await this.loadWebsiteFor5Seconds(url);
+  
+        if (image) {
+          console.log(
+            `✅ Fallback chart captured: ${ticker}`,
+          );
+  
+          return image;
+        }
+  
+      } catch (fallbackError) {
+        console.error(
+          '❌ Fallback chart capture failed:',
+          fallbackError,
+        );
+      }
       return null;
+    } finally {
+      if (browser) {
+        try {
+          await browser.close();
+          console.log(
+            `Chromium closed: ${ticker}`,
+          );
+        } catch (closeError) {
+          console.error(
+            `Error closing Chromium: ${ticker}`,
+            closeError,
+          );
+        }
+      }
     }
   }
-  async loadWebsiteFor5Seconds(url: string): Promise<void> {
+  async loadWebsiteFor5Seconds(url: string) {
     let browser;
     try {
       const launchOptions: Parameters<typeof puppeteer.launch>[0] = {
@@ -815,7 +1387,10 @@ export class WebhooksService implements OnModuleInit{
       // Set viewport size (optional)
       await page.setViewport({ width: 1920, height: 1080 });
       // Navigate to the URL
-      await page.goto(url, { waitUntil: 'networkidle2' }); // Wait until network is idle or fully loaded
+      await page.goto(url, {
+        waitUntil: 'domcontentloaded',
+        timeout: 30000,
+      }); // Wait until network is idle or fully loaded
 
       console.log(`Website ${url} loaded, waiting for 5 seconds.`);
 
@@ -825,13 +1400,28 @@ export class WebhooksService implements OnModuleInit{
       console.log('5 seconds have passed, closing the browser.');
 
       // Optionally: take a screenshot after 5 seconds
-      // await page.screenshot({ path: 'screenshot.png' });
+      return await page.screenshot({
+        type: 'png',
+      });
     } catch (error) {
-      console.error('Error loading website:', error);
+      console.error(`Error loading website: ${url}`);
+  
+      if (error instanceof Error) {
+        console.error(error.message);
+        console.error(error.stack);
+      } else {
+        console.error(error);
+      }
+  
+      return null;
     } finally {
       // Ensure that we close the browser after the operation
       if (browser) {
-        await browser.close();
+        try {
+          await browser.close();
+        } catch (error) {
+          console.error('Error closing browser:', error);
+        }
       }
     }
   }
