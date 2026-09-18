@@ -164,7 +164,7 @@ export class StockController {
   }
 
   /// FINNHUB
-  //earnings, news, realtimeprice, insider-transactions
+  //earnings, news, realtimeprice, insider-transactions,company-profile
   @Get('/fh/:type')
   async fromFinnhub(
   @Param() params: RequestDTO.FinnhubDto,
