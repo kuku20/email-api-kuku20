@@ -431,6 +431,11 @@ export class WebhooksService implements OnModuleInit{
     channel: string,
     message: string,
   ): Promise<Buffer | null> {
+
+    if (!chartData || chartData.length === 0) {
+      return null;
+    }
+    
     let browser: any = null;
   
     const ticker = tickerasall.split('-')[0];
