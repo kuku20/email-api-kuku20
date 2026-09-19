@@ -1,6 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { StockHelperService } from '../stockHelper.service';
 import * as DataSymbols from '../dto';
+import { StockData } from '../dto';
+import { ESLint } from 'eslint';
 @Injectable()
 export class Crypto_Forex_Slack_Service {
   constructor(private readonly sH_Service: StockHelperService) {}
@@ -61,7 +63,7 @@ export class Crypto_Forex_Slack_Service {
         );
         FullText += `\n${text_15min}\n`;
         if (true) {
-          const FTextWInDicator = '*BIG_🟡🟡_VOL*\n' + FullText;
+          const FTextWInDicator = '*BIG_🟡🟡_VOL BUY_KEY*\n' + FullText;
           const fileBuffer5m = await webhooksService.captureChart(
             data_5min,
             ticker,
@@ -240,7 +242,7 @@ export class Crypto_Forex_Slack_Service {
           data_5min,
           ticker,
           SL_Channel_AB_MA50,
-          `*${nextText}*` + `\n${FullText} \n`,
+          `*${nextText}*` + `\n${FullText} \n BUY_KEY`,
           timeframes[0],
         );
         // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
@@ -250,7 +252,7 @@ export class Crypto_Forex_Slack_Service {
           data_5min,
           ticker,
           SL_Channel_macdCr_N,
-          `*macdCr_N_be_prepare*` + `\n${FullText} \n`,
+          `*macdCr_N_be_prepare*` + `\n${FullText} \n BUY_KEY`,
           timeframes[0],
         );
       } else if (!text_5min.includes('🔴')) {
@@ -303,7 +305,7 @@ export class Crypto_Forex_Slack_Service {
                   data_5min,
                   ticker,
                   SL_Channel_ALL_GREEN,
-                  `*${allGreen}*` + `\n${FullText} \n`,
+                  `*${allGreen}*` + `\n${FullText} \n BUY_KEY`,
                   timeframes[0],
                 );
 
@@ -345,7 +347,7 @@ export class Crypto_Forex_Slack_Service {
                   data_5min,
                   ticker,
                   SL_Channel_WATCH,
-                  `*5_allgreen_30BOrAb*` + `\n${FullText} \n`,
+                  `*5_allgreen_30BOrAb*` + `\n${FullText} \n BUY_KEY`,
                   timeframes[0],
                 );
               // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
@@ -384,7 +386,7 @@ export class Crypto_Forex_Slack_Service {
                     data_5min,
                     ticker,
                     SL_Channel_EARLY_CHECK,
-                    `*5_allgreen_15_red_ab50*` + `\n${FullText} \n`,
+                    `*5_allgreen_15_red_ab50*` + `\n${FullText} \n BUY_KEY`,
                     timeframes[0],
                   );
                 // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
@@ -397,7 +399,7 @@ export class Crypto_Forex_Slack_Service {
                     data_5min,
                     ticker,
                     SL_Channel_EARLY_CHECK,
-                    `*5_allgreen_15_red_ab200*` + `\n${FullText} \n`,
+                    `*5_allgreen_15_red_ab200*` + `\n${FullText} \n BUY_KEY`,
                     timeframes[0],
                   );
                 // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
@@ -415,7 +417,7 @@ export class Crypto_Forex_Slack_Service {
                   data_5min,
                   ticker,
                   SL_Channel_EARLY_CHECK,
-                  `*5_allgreen_ab200_30_red*` + `\n${FullText} \n`,
+                  `*5_allgreen_ab200_30_red*` + `\n${FullText} \n BUY_KEY`,
                   timeframes[0],
                 );
               // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
@@ -427,7 +429,7 @@ export class Crypto_Forex_Slack_Service {
                   data_5min,
                   ticker,
                   SL_Channel_EARLY_CHECK,
-                  `*5_allgreen_30_red*` + `\n${FullText} \n`,
+                  `*5_allgreen_30_red*` + `\n${FullText} \n BUY_KEY`,
                   timeframes[0],
                 );
               // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
@@ -442,7 +444,7 @@ export class Crypto_Forex_Slack_Service {
               data_5min,
               ticker,
               SL_Channel_MACDCR_BL_OT,
-              `*15_macdCr_N*` + `\n${FullText} \n`,
+              `*15_macdCr_N*` + `\n${FullText} \n BUY_KEY`,
               timeframes[0],
             );
           // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
@@ -467,7 +469,7 @@ export class Crypto_Forex_Slack_Service {
                 data_5min,
                 ticker,
                 SL_Channel_EARLY_CHECK,
-                `*5_allgreen_MA200*` + `\n${FullText} \n`,
+                `*5_allgreen_MA200*` + `\n${FullText} \n BUY_KEY`,
                 timeframes[0],
               );
             // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
@@ -479,7 +481,7 @@ export class Crypto_Forex_Slack_Service {
                 data_5min,
                 ticker,
                 SL_Channel_EARLY_CHECK,
-                `*5_allgreen_MACDP*` + `\n${FullText} \n`,
+                `*5_allgreen_MACDP*` + `\n${FullText} \n BUY_KEY`,
                 timeframes[0],
               );
             // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
@@ -525,7 +527,7 @@ export class Crypto_Forex_Slack_Service {
                   data_5min,
                   ticker,
                   SL_Channel_ALL_RED,
-                  `*${displaytext}*` + `\n${FullText} \n`,
+                  `*${displaytext}*` + `\n${FullText} \n SELL_KEY`,
                   timeframes[0],
                 );
             }
@@ -563,6 +565,14 @@ export class Crypto_Forex_Slack_Service {
       data_5min,
     );
     FullText += `${apiCalling}${text_5min}\n`;
+    await this.BUY_SELL_CHECKING(
+      data_5min,
+      ticker,
+      timeframe,
+      Channels_4SL,
+      'GnOdxmYG7NSyGQ6AB0QB',
+      webhooksService,
+    );
     if (
       text_5min.includes('BIG_🟡🟡_VOL') &&
       text_5min.includes('bar_🟢_green')
@@ -573,7 +583,7 @@ export class Crypto_Forex_Slack_Service {
           ticker,
           Channels_4SL,
           mySl_channel,
-          `*${`BIG_🟡🟡_VOL`}*` + `\n${FullText} \n`,
+          `*${`BIG_🟡🟡_VOL BUY_KEY`}*` + `\n${FullText} \n`,
           timeframe,
         );
 
@@ -596,7 +606,7 @@ export class Crypto_Forex_Slack_Service {
         ticker,
         Channels_4SL,
         mySl_channel,
-        `*${nextText}*` + `\n${FullText} \n`,
+        `*${nextText}*` + `\n${FullText} \n BUY_KEY`,
         timeframe,
       );
       // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
@@ -608,7 +618,7 @@ export class Crypto_Forex_Slack_Service {
         ticker,
         Channels_4SL,
         mySl_channel,
-        `*macdCr_N_be_prepare*` + `\n${FullText} \n`,
+        `*macdCr_N_be_prepare*` + `\n${FullText} \n BUY_KEY`,
         timeframe,
       );
       return true;
@@ -631,7 +641,7 @@ export class Crypto_Forex_Slack_Service {
           ticker,
           Channels_4SL,
           mySl_channel,
-          `*5_allgreen_MA200*` + `\n${FullText} \n`,
+          `*5_allgreen_MA200*` + `\n${FullText} \n BUY_KEY`,
           timeframe,
         );
         // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
@@ -644,7 +654,7 @@ export class Crypto_Forex_Slack_Service {
           ticker,
           Channels_4SL,
           mySl_channel,
-          `*5_allgreen_MACDP*` + `\n${FullText} \n`,
+          `*5_allgreen_MACDP*` + `\n${FullText} \n BUY_KEY`,
           timeframe,
         );
         // const blockre = webhooksService.getSlBlock(ticker,'accessory_full_watchlist',ticker)
@@ -659,6 +669,15 @@ export class Crypto_Forex_Slack_Service {
         Channels_4SL,
         mySl_channel,
         webhooksService,
+      );
+    } else if (!text_5min.includes('🟢')) {
+      const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
+        data_5min,
+        ticker,
+        Channels_4SL,
+        mySl_channel,
+        `*ALL_RED TIME*` + `\n${FullText} \n SELL_KEY`,
+        timeframe,
       );
     } else {
       console.log('stop at 5', FullText);
@@ -698,7 +717,7 @@ export class Crypto_Forex_Slack_Service {
         ticker,
         B_Channel,
         HT_Channel,
-        `BUY BlMA200_MA20_MA50_MA100_BUY-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
+        `BUY_KEY BlMA200_MA20_MA50_MA100_BUY-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
         timeframe,
       );
       return;
@@ -713,7 +732,7 @@ export class Crypto_Forex_Slack_Service {
         ticker,
         B_Channel,
         HT_Channel,
-        `BUY macdCrossAB_BL0-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
+        `BUY_KEY macdCrossAB_BL0-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
         timeframe,
       );
       return;
@@ -729,7 +748,7 @@ export class Crypto_Forex_Slack_Service {
         ticker,
         B_Channel,
         HT_Channel,
-        `BUY priceAbMA200BUY-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
+        `BUY_KEY priceAbMA200BUY-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
         timeframe,
       );
       return;
@@ -745,7 +764,7 @@ export class Crypto_Forex_Slack_Service {
         ticker,
         B_Channel,
         HT_Channel,
-        `SELLCRLLLL priceBlMA200SELL-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
+        `SELLCRLLLL priceBlMA200SELL-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data} SELL_KEY`,
         timeframe,
       );
       return;
@@ -761,7 +780,7 @@ export class Crypto_Forex_Slack_Service {
         ticker,
         B_Channel,
         HT_Channel,
-        `BUY macdCrossAB-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
+        `BUY_KEY macdCrossAB-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
         timeframe,
       );
       return;
@@ -776,7 +795,7 @@ export class Crypto_Forex_Slack_Service {
         ticker,
         B_Channel,
         HT_Channel,
-        `BUY earlyBuyInRSI-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
+        `BUY_KEY earlyBuyInRSI-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
         timeframe,
       );
       return;
@@ -791,7 +810,7 @@ export class Crypto_Forex_Slack_Service {
         ticker,
         B_Channel,
         HT_Channel,
-        `SELLCRLLLL macdCrossBL-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
+        `SELLCRLLLL macdCrossBL-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data} SELL_KEY`,
         timeframe,
       );
       return;
@@ -806,7 +825,7 @@ export class Crypto_Forex_Slack_Service {
         ticker,
         B_Channel,
         HT_Channel,
-        `SELLCRLLLL earlySellInRSI-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
+        `SELLCRLLLL earlySellInRSI-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data} SELL_KEY`,
         timeframe,
       );
       return;
@@ -822,7 +841,7 @@ export class Crypto_Forex_Slack_Service {
         ticker,
         B_Channel,
         HT_Channel,
-        `SELLCRLLLL Under200NDownSell-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
+        `SELLCRLLLL Under200NDownSell-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data} SELL_KEY`,
         timeframe,
       );
       return;
@@ -838,6 +857,96 @@ export class Crypto_Forex_Slack_Service {
         timeframe,
       );
       return;
+    }
+  }
+
+
+  async BUY_SELL_CHECKING(
+    data,
+    ticker,
+    timeframe,
+    B_Channel,
+    HT_Channel,
+    webhooksService,
+  ) {
+    const text_data = await this.sH_Service.CHECKBULL_BEAR_ReTurnText(
+      ticker,
+      timeframe,
+      data,
+    );
+    const lastdata = data[data.length - 1];
+    const Secondlastdata = data[data.length - 2];
+    const Th_lastdata = data[data.length - 3];
+    const getMACross = (
+      lastData: StockData,
+      secondLastData: StockData,
+      period: string
+    ) => {
+      if (
+        lastData?.close > lastData[period] &&
+        secondLastData?.close < secondLastData[period]
+      ) {
+        return 'CR_AB';
+      }
+    
+      if (
+        lastData?.close < lastData[period] &&
+        secondLastData?.close > secondLastData[period]
+      ) {
+        return 'CR_BL';
+      }
+      if (
+        lastData?.close > lastData[period] ){
+        return 'AB';
+      }
+      if (
+        lastData?.close < lastData[period] ){
+        return 'BL';
+      }
+      return '';
+    };
+    const maPeriods = [50, 120, 200, 300];
+
+    for (const period of maPeriods) {
+      const ma = `MA${period}`;
+    
+      const cr12 = getMACross(lastdata, Secondlastdata, ma);
+      const cr23 = getMACross(Secondlastdata, Th_lastdata, ma);
+    
+      if (cr12 === 'AB' && cr23 === 'CR_AB') {
+        // BUY
+        console.log(`BUY ${ma}`);
+        const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
+          data,
+          ticker,
+          B_Channel,
+          HT_Channel,
+          `*BUY-DEEEEEE ${ma}* \n
+          ${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data} BUY_KEY`,
+          timeframe,
+        );
+      } else if (cr12 === 'BL' && cr23 === 'CR_BL') {
+        // SELL
+        console.log(`SELL ${ma}`);
+        const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
+          data,
+          ticker,
+          B_Channel,
+          HT_Channel,
+          `*SELL-DEEEEEE ${ma}* \n-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data} SELL_KEY`,
+          timeframe,
+        );
+      } else{
+        //test data
+        // const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
+        //   data,
+        //   ticker,
+        //   B_Channel,
+        //   HT_Channel,
+        //   `*SELL-DEEEEEE ${ma}* \n-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
+        //   timeframe,
+        // );
+      }
     }
   }
 }
