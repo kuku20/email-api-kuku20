@@ -85,7 +85,7 @@ export class WebhooksService implements OnModuleInit{
   sentMessages = [];
   async sendDiscordNotification(
     message: string,
-    botname: string = 'Bot Alert',
+    botname: string, //'webhookCl ticker_or_botDp',
     lastData: string,
     file?: any,
     extra?: any,
@@ -201,7 +201,7 @@ export class WebhooksService implements OnModuleInit{
     }
     let sentMessage,Post2MySlack
     const WebsiteImageUrl = file ? null: `${this.sH_Service.stockMk000}/capture-target/${webhookCl}/${ticker.toUpperCase()}`;
-    const channelWeb =this.sH_Service.ALL_IN_ONE ? this.sH_Service.DC_SL_MT.ALL_IN_ONE: this.sH_Service.DC_SL_MT[webhookCl] || 'UdbaWlLJw4YmcY0QQezb'
+    const channelWeb =(this.sH_Service.ALL_IN_ONE || 'BUYSELL')? this.sH_Service.DC_SL_MT.ALL_IN_ONE: this.sH_Service.DC_SL_MT[webhookCl] || 'UdbaWlLJw4YmcY0QQezb'
     const allowPostMySlack = 
     // !botdt.includes('RSIENDBOT') && 
     this.sH_Service.PostWebSlack && !this.rsiChannels.some(item => webhookCl.includes(item));
@@ -4488,9 +4488,7 @@ async deleteAllMessages_SLack(channel: string) {
           }
         } catch (error) {
           console.log("********:Post To Discord")
-          const Target_DC = this.sH_Service.getKeyByValue_DC_SL_MT(
-            mySl_channel
-          ) || 'BUYSELL'
+          const Target_DC = this.sH_Service.getKeyByValue_DC_SL_MT(mySl_channel) || 'BUYSELL'
           try {
             return await this.sendDiscordNotification(
               message,

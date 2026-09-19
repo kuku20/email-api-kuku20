@@ -101,88 +101,34 @@ export class Sty_Slack_OnLy_Service {
             },
           ];
           if (fileBuffer5m) {
-            const postTo5m = await webhooksService.postSlackImage(
-              SL_Channel_BIG_VOL,
-              fileBuffer5m,
-              `${ticker}-5min.png`,
-              FTextWInDicator,
-            );
-            const messageTs = await webhooksService.getSlackMessageTs(
-              SL_Channel_BIG_VOL,
-              postTo5m.files?.[0].id,
-            );
-            if (tsNCh) {
-              const signalThread = this.sH_Service.getSlackMessageLink(
-                tsNCh.channel,
-                tsNCh.ts,
-              );
-              // reply to self msg
-              await webhooksService.reply_SLack(
+            try {
+              const postTo5m = await webhooksService.postSlackImage(
                 SL_Channel_BIG_VOL,
-                messageTs,
-                signalThread,
+                fileBuffer5m,
+                `${ticker}-5min.png`,
+                FTextWInDicator,
               );
-              // replay to btn-watch ts
-              await webhooksService.reply_SLack(
-                tsNCh.channel,
-                tsNCh.ts,
-                FTextWInDicator + `<${postTo5m?.files[0]?.permalink}|image>`,
-                blockreW,
-              );
-            } else {
-              const blockre = webhooksService.getSlBlock(
-                ticker,
-                'accessory_full_watchlist',
-                ticker,
-              );
-              await webhooksService.reply_SLack(
+              const messageTs = await webhooksService.getSlackMessageTs(
                 SL_Channel_BIG_VOL,
-                messageTs,
-                'withBlock',
-                blockre,
-              );
-            }
-            const fileBuffer15m = await webhooksService.captureChart(
-              data_15min,
-              ticker,
-              `${SL_Channel_BIG_VOL}-15MIN`,
-              text_15min,
-            );
-            if (fileBuffer15m) {
-              const postTo15m = await webhooksService.postSlackImage(
-                SL_Channel_BIG_VOL,
-                fileBuffer15m,
-                `${ticker}-15min.png`,
-                text_15min,
-                messageTs,
+                postTo5m.files?.[0].id,
               );
               if (tsNCh) {
-                await webhooksService.reply_SLack(
+                const signalThread = this.sH_Service.getSlackMessageLink(
                   tsNCh.channel,
                   tsNCh.ts,
-                  text_15min + `<${postTo15m?.files[0]?.permalink}|image>`,
                 );
-              }
-              const msgMySl =
-                FTextWInDicator +
-                `\n <${this.sH_Service.imageHostUrl}/slack/slack-image/${postTo5m.files?.[0].id}|5m-slackImage>  || <${this.sH_Service.imageHostUrl}/slack/slack-image/${postTo15m.files?.[0].id}|15m-slackImage>  `;
-              await webhooksService.Post2MySlack(msgMySl, ticker,timeframes[0]);
-              return true
-            } else {
-              const pathSym =
-                `${SL_Channel_BIG_VOL}-15MIN/${ticker}`.toUpperCase();
-              const imageWEB = `|| <${this.sH_Service.stockMk000}/capture-target/${pathSym}|prodUrl>`;
-              const msgMySl =
-                FTextWInDicator +
-                `\n <${this.sH_Service.imageHostUrl}/slack/slack-image/${postTo5m.files?.[0].id}|5m-slackImage>  ${imageWEB}`;
-              await webhooksService.Post2MySlack(msgMySl, ticker,timeframes[0]);
-
-              if (tsNCh) {
+                // reply to self msg
+                await webhooksService.reply_SLack(
+                  SL_Channel_BIG_VOL,
+                  messageTs,
+                  signalThread,
+                );
                 // replay to btn-watch ts
                 await webhooksService.reply_SLack(
                   tsNCh.channel,
                   tsNCh.ts,
-                  text_15min + imageWEB,
+                  FTextWInDicator + `<${postTo5m?.files[0]?.permalink}|image>`,
+                  blockreW,
                 );
               } else {
                 const blockre = webhooksService.getSlBlock(
@@ -197,9 +143,72 @@ export class Sty_Slack_OnLy_Service {
                   blockre,
                 );
               }
-              return true
+              const fileBuffer15m = await webhooksService.captureChart(
+                data_15min,
+                ticker,
+                `${SL_Channel_BIG_VOL}-15MIN`,
+                text_15min,
+              );
+              if (fileBuffer15m) {
+                const postTo15m = await webhooksService.postSlackImage(
+                  SL_Channel_BIG_VOL,
+                  fileBuffer15m,
+                  `${ticker}-15min.png`,
+                  text_15min,
+                  messageTs,
+                );
+                if (tsNCh) {
+                  await webhooksService.reply_SLack(
+                    tsNCh.channel,
+                    tsNCh.ts,
+                    text_15min + `<${postTo15m?.files[0]?.permalink}|image>`,
+                  );
+                }
+                const msgMySl =
+                  FTextWInDicator +
+                  `\n <${this.sH_Service.imageHostUrl}/slack/slack-image/${postTo5m.files?.[0].id}|5m-slackImage>  || <${this.sH_Service.imageHostUrl}/slack/slack-image/${postTo15m.files?.[0].id}|15m-slackImage>  `;
+                await webhooksService.Post2MySlack(msgMySl, ticker,timeframes[0]);
+                return true
+              } else {
+                const pathSym =
+                  `${SL_Channel_BIG_VOL}-15MIN/${ticker}`.toUpperCase();
+                const imageWEB = `|| <${this.sH_Service.stockMk000}/capture-target/${pathSym}|prodUrl>`;
+                const msgMySl =
+                  FTextWInDicator +
+                  `\n <${this.sH_Service.imageHostUrl}/slack/slack-image/${postTo5m.files?.[0].id}|5m-slackImage>  ${imageWEB}`;
+                await webhooksService.Post2MySlack(msgMySl, ticker,timeframes[0]);
+  
+                if (tsNCh) {
+                  // replay to btn-watch ts
+                  await webhooksService.reply_SLack(
+                    tsNCh.channel,
+                    tsNCh.ts,
+                    text_15min + imageWEB,
+                  );
+                } else {
+                  const blockre = webhooksService.getSlBlock(
+                    ticker,
+                    'accessory_full_watchlist',
+                    ticker,
+                  );
+                  await webhooksService.reply_SLack(
+                    SL_Channel_BIG_VOL,
+                    messageTs,
+                    'withBlock',
+                    blockre,
+                  );
+                }
+                return true
+              } 
+            } catch (error) {
+              return await webhooksService.sendDiscordNotification(
+                FullText,
+                `${'BUYSELL'} ${ticker}`,
+                JSON.stringify(last5min),
+                fileBuffer5m,
+              );
+              return false
             }
-            return true
           } else {
             // test only and no need 15 to run
             const pathSym =
