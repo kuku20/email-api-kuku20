@@ -35,6 +35,7 @@ export class MessagesService {
     userId: string, // "bot-1"
     userName: string, // -----ticker
     text: string, // -------msg
+    timeframe?
   ) {
     try {
       const match = text.match(/discord\.com\/channels\/\d+\/(\d+)\/(\d+)/);
@@ -60,7 +61,7 @@ export class MessagesService {
       const channelData = channelDoc.data();
 
       const alert = channelData?.alert === true;
-      const notificationText = text.slice(0, 200);
+      const notificationText = `${timeframe?timeframe:''}`+text.slice(0, 200);
       if(alert){
         await this.sendNotificationToUser(
           'n90Q4DYyzQc8Ibv9Xw5xTmT1G5F3',

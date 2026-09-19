@@ -72,12 +72,12 @@ export class TasksBullBearSlackOnLyService {
       // sent some checklist
       if(this.list_symbols_ab300.length> 0 ){
         const symbols_ab300_msg = this.list_symbols_ab300.join('')
-        await this.webhooksService.Post2MySlack(symbols_ab300_msg,'BUY_HOLD',this.sH_Service.DC_SL_MT.BUY_LIST)
+        await this.webhooksService.Post2MySlack(symbols_ab300_msg,'BUY_HOLD',"5min", this.sH_Service.DC_SL_MT.BUY_LIST)
         this.list_symbols_ab300 = []
       }  
       if(this.list_symbols_bl300.length> 0 ){
         const symbols_bl300_msg = this.list_symbols_bl300.join('')
-        await this.webhooksService.Post2MySlack(symbols_bl300_msg,'SELL_AVOID',this.sH_Service.DC_SL_MT.SELL_LIST)
+        await this.webhooksService.Post2MySlack(symbols_bl300_msg,'SELL_AVOID',"5min",this.sH_Service.DC_SL_MT.SELL_LIST)
         this.list_symbols_bl300 = []
       }
     }

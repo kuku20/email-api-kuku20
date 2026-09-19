@@ -212,26 +212,26 @@ export class WebhooksService implements OnModuleInit{
       );
       if(WebsiteImageUrl && allowPostMySlack){
         const discordmsg =`*${message}*\n <${this.sH_Service.DiscordMsg}/${sentMessage?.channel_id}/${sentMessage?.id}|Discord-o6l-msg>|| <${WebsiteImageUrl}|prodUrl>`
-        Post2MySlack = await this.Post2MySlack(discordmsg, ticker,channelWeb)
+        Post2MySlack = await this.Post2MySlack(discordmsg, ticker, timeframe, channelWeb)
       } else if(allowPostMySlack){
         const imageUlr = sentMessage?.embeds?.[0]?.image?.url || (sentMessage?.attachments??sentMessage?.attachments?.first()?.url);
         const discordmsg =  message+  `\n <${this.sH_Service.DiscordMsg}/${sentMessage?.channel_id}/${sentMessage?.id}|Discord-o6l-msg>|| <${imageUlr}|discordImage> `
-        Post2MySlack = await this.Post2MySlack(discordmsg, ticker,channelWeb)
+        Post2MySlack = await this.Post2MySlack(discordmsg, ticker,timeframe, channelWeb)
       }
     } catch (err) {
       if(file && allowPostMySlack){
         try {
           const sirvImage = await this.sirvService.uploadImage(file)
           const sirvImagemsg =  message + `\n <${sirvImage.url}|sirvImage> `
-          Post2MySlack =  await this.Post2MySlack(sirvImagemsg, ticker,channelWeb)
+          Post2MySlack =  await this.Post2MySlack(sirvImagemsg, ticker,timeframe, channelWeb)
         } catch (error) {
           // post to slack if you want
-          Post2MySlack =  await this.Post2MySlack(message, ticker,channelWeb)
+          Post2MySlack =  await this.Post2MySlack(message, ticker,timeframe, channelWeb)
         }
       }else if(allowPostMySlack){ 
         if(WebsiteImageUrl && allowPostMySlack){
           const discordmsg =`*${message}*\n <${this.sH_Service.DiscordMsg}/${sentMessage?.channel_id}/${sentMessage?.id}|Discord-o6l-msg>|| <${WebsiteImageUrl}|prodUrl>`
-          Post2MySlack = await this.Post2MySlack(discordmsg, ticker,channelWeb)
+          Post2MySlack = await this.Post2MySlack(discordmsg, ticker,timeframe, channelWeb)
         }
       }
       return null
@@ -260,7 +260,7 @@ export class WebhooksService implements OnModuleInit{
     // else if( !botdt.includes('RSIENDBOT') && this.sH_Service.PostWebSlack){
     //   const imageUlr = sentMessage?.embeds?.[0]?.image?.url || (sentMessage?.attachments??sentMessage?.attachments?.first()?.url);
     //   const discordmsg =  message+  `\n <${this.sH_Service.DiscordMsg}/${sentMessage?.channel_id}/${sentMessage?.id}|Discord-o6l-msg>|| <${imageUlr}|discordImage> `
-    //   await this.Post2MySlack(discordmsg, ticker,channelWeb)
+    //   await this.Post2MySlack(discordmsg, ticker, timeframe channelWeb)
     // }
     return { msg: 'post to discord success', ...sentMessage, WebsiteImageUrl,  MySlackmsgId: Post2MySlack?.id};
   }
@@ -4214,7 +4214,7 @@ async deleteAllMessages_SLack(channel: string) {
           const postTo  = await this.postSlackImage(channel, imgads, `${ticker}.png`, message, );
           const discordmsg = message+  `\n <${this.sH_Service.imageHostUrl}/slack/slack-image/${postTo.files?.[0].id}|slackImage> `
           
-          await this.Post2MySlack(discordmsg, ticker,)
+          await this.Post2MySlack(discordmsg, ticker,timeframe,)
           
           const messageTs = await this.getSlackMessageTs(channel,postTo.files?.[0].id,);
           const tsNCh = this.getTsBySymbol(ticker, this.sH_Service.watchlistSl_tss) || this.getTsBySymbol(ticker, this.sH_Service.holdingSl_tss);
@@ -4276,7 +4276,7 @@ async deleteAllMessages_SLack(channel: string) {
             console.log("********:Post To sirvService")
             const postTo = await this.sirvService.uploadImage(fileBuffer)
             const imageNtext = message+  `\n  <${postTo.url}|sirvImage> `
-            await this.Post2MySlack(imageNtext,ticker,)
+            await this.Post2MySlack(imageNtext,ticker,timeframe)
           }
         }
 
@@ -4284,7 +4284,7 @@ async deleteAllMessages_SLack(channel: string) {
         const pathSym = `${channel}/${ticker}`.toUpperCase();
         const msgN_imageWEB = `${message}\n<${this.sH_Service.stockMk000}/capture-target/${pathSym}|prodUrl>`
         
-        await this.Post2MySlack(msgN_imageWEB,ticker,)
+        await this.Post2MySlack(msgN_imageWEB,ticker,timeframe)
         const postToCSLRE = await this.sendSlackNotificationVN(
           timeframe,
           [ticker],
@@ -4371,18 +4371,19 @@ async deleteAllMessages_SLack(channel: string) {
       };
     }
 
-    async Post2MySlack(messgage,ticker,channelN=this.sH_Service.DC_SL_MT.ALL_IN_ONE,){
+    async Post2MySlack(messgage,ticker,timeframe,channelN=this.sH_Service.DC_SL_MT.ALL_IN_ONE,){
+      const tf_Nub = this.sH_Service.getTimeframeInN(timeframe)
       const isNotSymbol = this.sH_Service.isNotSymbol.some(item => ticker.includes(item));
-      let websiteLink =  isNotSymbol?'': `|| <${this.sH_Service.local4200}/price-log/${ticker}?daysRange=5|${ticker}-local-target> || <${this.sH_Service.stockMk000}/price-log/${ticker}?daysRange=5|${ticker}-prod-target>`
+      let websiteLink =  isNotSymbol?'': `|| <${this.sH_Service.local4200}/price-log/${ticker}?daysRange=${tf_Nub}|${ticker}-local-target> || <${this.sH_Service.stockMk000}/price-log/${ticker}?daysRange=${tf_Nub}|${ticker}-prod-target>`
       const tsNCh = this.getTsBySymbol(ticker, this.sH_Service.watchlistSl_tss) || this.getTsBySymbol(ticker, this.sH_Service.holdingSl_tss);
       if (tsNCh) {
         const signalThread = this.sH_Service.getSlackThread_MySlack(
-          tsNCh.channel,
+          tsNCh.channel, 
           tsNCh.ts
         );
         websiteLink +=signalThread
       }
-      return await this.messagesService.sendMessage("workspace-1", channelN, "bot-1", ticker, messgage+websiteLink)
+      return await this.messagesService.sendMessage("workspace-1", channelN, "bot-1", ticker, messgage+websiteLink,timeframe)
     }
 
     async UpdateMySLack(messgage,ticker,msgId,channelN=this.sH_Service.DC_SL_MT.ALL_IN_ONE,){
@@ -4441,6 +4442,7 @@ async deleteAllMessages_SLack(channel: string) {
       await this.Post2MySlack(
         str,
         'US_CHECK_IN',
+        timeframe,
         '86UamrSwHhQYgEszLmcP',
       );
       logger.warn(`✅(${timeframe}) runMe Now at: ${runNow.textout}`)
@@ -4480,7 +4482,7 @@ async deleteAllMessages_SLack(channel: string) {
             postTo  = await this.postSlackImage(sl_channel, imgads, `${ticker}.png`, message,);
           }
           const discordmsg = message+  `\n <${this.sH_Service.imageHostUrl}/slack/slack-image/${postTo.files?.[0].id}|slackImage> `
-          await this.Post2MySlack(discordmsg, ticker,mySl_channel)
+          await this.Post2MySlack(discordmsg, ticker, timeframe ,mySl_channel)
           return {
             sl_channel,
             ...postTo.files?.[0]
@@ -4498,7 +4500,7 @@ async deleteAllMessages_SLack(channel: string) {
             console.log("********:Post To sirvService")
             const postTo = await this.sirvService.uploadImage(fileBuffer)
             const imageNtext = message+  `\n  <${postTo.url}|sirvImage> `
-            await this.Post2MySlack(imageNtext,ticker,mySl_channel)
+            await this.Post2MySlack(imageNtext,ticker,timeframe, mySl_channel)
           }
         }
 
@@ -4506,7 +4508,7 @@ async deleteAllMessages_SLack(channel: string) {
         const pathSym = `${sl_channel}/${ticker}`.toUpperCase();
         const msgN_imageWEB = `${message}\n<${this.sH_Service.stockMk000}/capture-target/${pathSym}|prodUrl>`
         
-        await this.Post2MySlack(msgN_imageWEB,ticker,mySl_channel)
+        await this.Post2MySlack(msgN_imageWEB,ticker,timeframe, mySl_channel)
         const postToCSLRE = await this.sendSlackNotificationVN(
           timeframe,
           [ticker],
