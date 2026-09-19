@@ -205,6 +205,10 @@ export class StockHelperService {
     '2hour': 120,
     '4hour': 240,
     '8hour': 480,
+    '1h': 60,
+    '2h': 120,
+    '4h': 240,
+    '8h': 480,
     '1day': 500,
     '1week': 550,
     '1month': 600
