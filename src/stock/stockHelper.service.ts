@@ -189,6 +189,26 @@ export class StockHelperService {
     "AI_RE_SELL": "C0B7A6X4QQH",
     "AI_OTHER_ALGO": "C0B769UT2FQ"
   }
+
+  timeframeMapM: { [key: string]: number } = {
+    '1min': 1,
+    '5min': 5,
+    '15min': 15,
+    '30min': 30,
+    '45min': 45,
+    '1hour': 60,
+    '2hour': 120,
+    '4hour': 240,
+    '8hour': 480,
+    '1day': 500,
+    '1week': 550,
+    '1month': 600
+  };
+  
+  getTimeframeInN(value: string): number {
+    return this.timeframeMapM[value] || 5;
+  }
+
   async returnNewData(dataIn: any[]) {
     if (!dataIn?.length) return [];
 

@@ -98,6 +98,7 @@ export class TaskCryptoService {
           await this.webhooksService.Post2MySlack(
             msg,
             `${ticker}_${timeframe}`,
+            timeframe,
             '86UamrSwHhQYgEszLmcP',
           );
         }
@@ -172,6 +173,7 @@ export class TaskCryptoService {
           await this.webhooksService.Post2MySlack(
             msg,
             `${ticker}_${timeframe}`,
+            timeframe,
             '86UamrSwHhQYgEszLmcP',
           );
         }
@@ -256,6 +258,7 @@ export class TaskCryptoService {
           await this.webhooksService.Post2MySlack(
             msg,
             `${ticker}_${timeframe}`,
+            timeframe,
             '86UamrSwHhQYgEszLmcP',
           );
         }

@@ -169,7 +169,7 @@ export class Crypto_Forex_Slack_Service {
               const msgMySl =
                 FTextWInDicator +
                 `\n <${this.sH_Service.imageHostUrl}/slack/slack-image/${postTo5m.files?.[0].id}|5m-slackImage>  || <${this.sH_Service.imageHostUrl}/slack/slack-image/${postTo15m.files?.[0].id}|15m-slackImage>  `;
-              await webhooksService.Post2MySlack(msgMySl, ticker);
+              await webhooksService.Post2MySlack(msgMySl, ticker,timeframes[0]);
             } else {
               const pathSym =
                 `${SL_Channel_BIG_VOL}-15MIN/${ticker}`.toUpperCase();
@@ -177,7 +177,7 @@ export class Crypto_Forex_Slack_Service {
               const msgMySl =
                 FTextWInDicator +
                 `\n <${this.sH_Service.imageHostUrl}/slack/slack-image/${postTo5m.files?.[0].id}|5m-slackImage>  ${imageWEB}`;
-              await webhooksService.Post2MySlack(msgMySl, ticker);
+              await webhooksService.Post2MySlack(msgMySl, ticker,timeframes[0]);
 
               if (tsNCh) {
                 // replay to btn-watch ts
@@ -205,7 +205,7 @@ export class Crypto_Forex_Slack_Service {
             const pathSym =
               `${SL_Channel_BIG_VOL}-5MIN/${ticker}`.toUpperCase();
             const msgN_imageWEB = `${FTextWInDicator}\n<${this.sH_Service.stockMk000}/capture-target/${pathSym}|prodUrl>`;
-            await webhooksService.Post2MySlack(msgN_imageWEB, ticker);
+            await webhooksService.Post2MySlack(msgN_imageWEB, ticker,timeframes[0]);
             const postToCSLRE = await webhooksService.sendSlackNotificationVN(
               timeframes[0],
               [ticker],
