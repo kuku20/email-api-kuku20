@@ -4370,7 +4370,8 @@ async deleteAllMessages_SLack(channel: string) {
       };
     }
 
-    async Post2MySlack(messgage,ticker,timeframe,channelN=this.sH_Service.DC_SL_MT.ALL_IN_ONE,){
+    async Post2MySlack(messgage,ticker_Ot,timeframe,channelN=this.sH_Service.DC_SL_MT.ALL_IN_ONE,){
+      const ticker = ticker_Ot.split('-')[0].toUpperCase();
       const tf_Nub = this.sH_Service.getTimeframeInN(timeframe)
       const isNotSymbol = this.sH_Service.isNotSymbol.some(item => ticker.includes(item));
       let websiteLink =  isNotSymbol?'': `|| <${this.sH_Service.local4200}/price-log/${ticker}?daysRange=${tf_Nub}|${ticker}-local-target> || <${this.sH_Service.stockMk000}/price-log/${ticker}?daysRange=${tf_Nub}|${ticker}-prod-target>`
@@ -4382,7 +4383,7 @@ async deleteAllMessages_SLack(channel: string) {
         );
         websiteLink +=signalThread
       }
-      return await this.messagesService.sendMessage("workspace-1", channelN, "bot-1", ticker, messgage+websiteLink,timeframe)
+      return await this.messagesService.sendMessage("workspace-1", channelN, "bot-1", ticker_Ot, messgage+websiteLink,timeframe)
     }
 
     async UpdateMySLack(messgage,ticker,msgId,channelN=this.sH_Service.DC_SL_MT.ALL_IN_ONE,){

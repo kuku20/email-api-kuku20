@@ -918,7 +918,7 @@ export class Crypto_Forex_Slack_Service {
         console.log(`BUY ${ma}`);
         const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
           data,
-          ticker,
+          `${ticker}-${timeframe}-${ma}`,
           B_Channel,
           HT_Channel,
           `*BUY-DEEEEEE ${ma}* \n
@@ -930,7 +930,7 @@ export class Crypto_Forex_Slack_Service {
         console.log(`SELL ${ma}`);
         const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
           data,
-          ticker,
+          `${ticker}-${timeframe}-${ma}`,
           B_Channel,
           HT_Channel,
           `*SELL-DEEEEEE ${ma}* \n-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data} SELL_KEY`,
@@ -940,12 +940,13 @@ export class Crypto_Forex_Slack_Service {
         //test data
         // const postToCSLRE = await webhooksService.getImageN_PSlack_Forex_Crypto(
         //   data,
-        //   ticker,
+        //   `${ticker}-${timeframe}-${ma}`,
         //   B_Channel,
         //   HT_Channel,
         //   `*SELL-DEEEEEE ${ma}* \n-${timeframe}-${lastdata?.close}-(MACD:${lastdata?.MACDLine}): ${lastdata?.date}\n ${text_data}`,
         //   timeframe,
         // );
+        // return false
       }
     }
   }
