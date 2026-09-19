@@ -4087,8 +4087,7 @@ async deleteAllMessages_SLack(channel: string) {
             'Slack getUploadURLExternal error:',
             uploadData,
           );
-    
-          return uploadData;
+          throw Error( 'Slack getUploadURLExternal error: '+ JSON.stringify(uploadData));
         }
     
         const {
@@ -4121,7 +4120,7 @@ async deleteAllMessages_SLack(channel: string) {
             uploadResponse.status,
             uploadResponse.data,
           );
-    
+          throw Error( 'Slack file bytes upload failed: '+ JSON.stringify(uploadResponse));
           return {
             ok: false,
             error: 'file_upload_failed',
@@ -4168,7 +4167,7 @@ async deleteAllMessages_SLack(channel: string) {
             'Slack completeUploadExternal error:',
             completeData,
           );
-
+          throw Error( 'Slack completeUploadExternal error: '+ JSON.stringify(completeData));
           return completeData;
         }
 
@@ -4489,10 +4488,13 @@ async deleteAllMessages_SLack(channel: string) {
           }
         } catch (error) {
           console.log("********:Post To Discord")
+          const Target_DC = this.sH_Service.getKeyByValue_DC_SL_MT(
+            mySl_channel
+          ) || 'BUYSELL'
           try {
             return await this.sendDiscordNotification(
               message,
-              `${'BUYSELL'} ${ticker}`,
+              `${Target_DC} ${ticker}`,
               JSON.stringify( data[data.length-1],),
               fileBuffer,
             );

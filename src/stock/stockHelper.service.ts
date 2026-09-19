@@ -71,10 +71,15 @@ export class StockHelperService {
     US_ALL: 'OHc1tQiX2zM1MYjBQbhi',
     US_30M_BUY: 'ih7okxmRDPHVDh6O1plb',
     US_EARLY_15MIN: 'HI02Lg85RK0gVt2sCTu5',
-    ALL_IN_ONE: 'vPbVpdIoDIRjNl9j5Iu7',
     ERORR_CALL:'R2rV6XPK24BAoLL98SCE',
+    // below keys don't in DC
+    ALL_IN_ONE: 'vPbVpdIoDIRjNl9j5Iu7',
     BUY_LIST:'2fKPViK9qlTmLrTsbagO',
     SELL_LIST:'oUk4lauWyXuWjImwnmsI',
+  }
+
+  getKeyByValue_DC_SL_MT(value: any, obj = this.DC_SL_MT): string | undefined {
+    return Object.keys(obj).find(key => obj[key] === value);
   }
 
   CRYPTO_SL_ = {
